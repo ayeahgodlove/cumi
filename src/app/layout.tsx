@@ -1,6 +1,6 @@
 import { DevtoolsProvider } from "@providers/devtools";
 import { useNotificationProvider } from "@refinedev/antd";
-import { GitHubBanner, Refine } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import routerProvider from "@refinedev/nextjs-router";
 import { Metadata } from "next";
@@ -12,6 +12,13 @@ import { ColorModeContextProvider } from "@contexts/color-mode";
 import { authProvider } from "@providers/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
+
+import { GrBlog, GrServices } from "react-icons/gr";
+import { TbCategoryPlus } from "react-icons/tb";
+import { FiTag, FiUsers } from "react-icons/fi";
+import { FcEditImage } from "react-icons/fc";
+import { SlEvent } from "react-icons/sl";
+import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 
 export const metadata: Metadata = {
   title: "Refine",
@@ -34,7 +41,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Suspense>
-          <GitHubBanner />
           <RefineKbarProvider>
             <AntdRegistry>
               <ColorModeContextProvider defaultMode={defaultMode}>
@@ -46,24 +52,92 @@ export default function RootLayout({
                     authProvider={authProvider}
                     resources={[
                       {
-                        name: "blog_posts",
-                        list: "/blog-posts",
-                        create: "/blog-posts/create",
-                        edit: "/blog-posts/edit/:id",
-                        show: "/blog-posts/show/:id",
+                        name: "posts",
+                        list: "/dashboard/blog-posts",
+                        create: "/dashboard/blog-posts/create",
+                        edit: "/dashboard/blog-posts/edit/:id",
+                        show: "/dashboard/blog-posts/show/:id",
                         meta: {
                           canDelete: true,
                         },
+                        icon: <GrBlog />
                       },
                       {
                         name: "categories",
-                        list: "/categories",
-                        create: "/categories/create",
-                        edit: "/categories/edit/:id",
-                        show: "/categories/show/:id",
+                        list: "/dashboard/categories",
+                        create: "/dashboard/categories/create",
+                        edit: "/dashboard/categories/edit/:id",
+                        show: "/dashboard/categories/show/:id",
                         meta: {
                           canDelete: true,
                         },
+                        icon: <TbCategoryPlus />
+                      },
+                      {
+                        name: "tags",
+                        list: "/dashboard/tags",
+                        create: "/dashboard/tags/create",
+                        edit: "/dashboard/tags/edit/:id",
+                        show: "/dashboard/tags/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon: <FiTag />
+                      },
+                      {
+                        name: "banners",
+                        list: "/dashboard/banners",
+                        create: "/dashboard/banners/create",
+                        edit: "/dashboard/banners/edit/:id",
+                        show: "/dashboard/banners/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon: <FcEditImage />
+                      },
+                      {
+                        name: "events",
+                        list: "/dashboard/events",
+                        create: "/dashboard/events/create",
+                        edit: "/dashboard/events/edit/:id",
+                        show: "/dashboard/events/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon: <SlEvent />
+                      },
+                      {
+                        name: "services",
+                        list: "/dashboard/services",
+                        create: "/dashboard/services/create",
+                        edit: "/dashboard/services/edit/:id",
+                        show: "/dashboard/services/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon: <GrServices />
+                      },
+                      {
+                        name: "projects",
+                        list: "/dashboard/projects",
+                        create: "/dashboard/projects/create",
+                        edit: "/dashboard/projects/edit/:id",
+                        show: "/dashboard/projects/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon:<AiOutlineFundProjectionScreen />
+                      },
+                      {
+                        name: "users",
+                        list: "/dashboard/users",
+                        create: "/dashboard/users/create",
+                        edit: "/dashboard/users/edit/:id",
+                        show: "/dashboard/users/show/:id",
+                        meta: {
+                          canDelete: true,
+                        },
+                        icon: <FiUsers />
                       },
                     ]}
                     options={{
@@ -71,6 +145,7 @@ export default function RootLayout({
                       warnWhenUnsavedChanges: true,
                       useNewQueryKeys: true,
                       projectId: "njMZZm-fu7OWZ-sdebsw",
+                      breadcrumb: true,
                     }}
                   >
                     {children}

@@ -1,48 +1,45 @@
 "use client";
 
+import { TOKEN_KEY } from "@constants/constant";
 import { AuthBindings } from "@refinedev/core";
+import { authService } from "@service/auth.service";
+import { userService } from "@service/user.service";
 import Cookies from "js-cookie";
-
-const mockUsers = [
-  {
-    name: "John Doe",
-    email: "johndoe@mail.com",
-    roles: ["admin"],
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    name: "Jane Doe",
-    email: "janedoe@mail.com",
-    roles: ["editor"],
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-];
 
 export const authProvider: AuthBindings = {
   login: async ({ email, username, password, remember }) => {
     // Suppose we actually send a request to the back end here.
-    const user = mockUsers[0];
+    try {
+      const response = await authService.login({ email, password });
+      const user = response.data.data;
 
-    if (user) {
-      Cookies.set("auth", JSON.stringify(user), {
-        expires: 30, // 30 days
-        path: "/",
-      });
+      localStorage.setItem(TOKEN_KEY, user.token);
+      if (user) {
+        Cookies.set("auth", JSON.stringify(user), {
+          expires: 30, // 30 days
+          path: "/",
+        });
+        return {
+          success: true,
+          redirectTo: "/",
+        };
+      }
+
+      return response.data.data;
+    } catch (error: any) {
+      console.log("login error", error.response.data);
+      const { message } = error.response.data;
       return {
-        success: true,
-        redirectTo: "/",
+        success: false,
+        error: {
+          name: "LoginError",
+          message,
+        },
       };
     }
-
-    return {
-      success: false,
-      error: {
-        name: "LoginError",
-        message: "Invalid username or password",
-      },
-    };
   },
   logout: async () => {
+    localStorage.removeItem(TOKEN_KEY);
     Cookies.remove("auth", { path: "/" });
     return {
       success: true,
@@ -50,8 +47,8 @@ export const authProvider: AuthBindings = {
     };
   },
   check: async () => {
-    const auth = Cookies.get("auth");
-    if (auth) {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
       return {
         authenticated: true,
       };
@@ -73,9 +70,16 @@ export const authProvider: AuthBindings = {
   },
   getIdentity: async () => {
     const auth = Cookies.get("auth");
-    if (auth) {
-      const parsedUser = JSON.parse(auth);
-      return parsedUser;
+    const parsedUser = auth ? JSON.parse(auth) : null;
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+      try {
+        const userInfo = await userService.details(parsedUser.id);
+        return userInfo.data;
+      } catch (error) {
+        console.warn(error);
+        return null;
+      }
     }
     return null;
   },
