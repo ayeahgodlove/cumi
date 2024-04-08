@@ -9,11 +9,11 @@ const FeatureSection = () => {
         <div className={`titleHolder ${styles.headerCp}`}>
           <h1 className={styles.heading}>What we offer</h1>
           <p>
-		  Whether you're an individual entrepreneur or a multinational
-          corporation, Cumi has got you covered.
+            Whether you're an individual entrepreneur or a multinational
+            corporation, Cumi has got you covered.
           </p>
         </div>
-       
+
         <div className={styles.content}>
           <div className={styles.content_group}>
             <img
@@ -32,10 +32,11 @@ const FeatureSection = () => {
                 innovative solutions that yield tangible results.
               </p>
               <Button
-                className="text-white"
+                className="primary-btn"
                 shape="round"
                 style={{ background: "darkslategray" }}
                 href="/contact-us"
+                size="large"
               >
                 Hire our expertise
               </Button>
@@ -53,10 +54,11 @@ const FeatureSection = () => {
                 the competitive tech industry.
               </p>
               <Button
-                className="text-white"
+                className="primary-btn"
                 shape="round"
                 style={{ background: "darkslategray" }}
                 href="/contact-us"
+                size="large"
               >
                 Hire our expertise
               </Button>

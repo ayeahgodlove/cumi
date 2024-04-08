@@ -5,7 +5,7 @@ import {
 	LinkedinFilled,
 	MediumSquareFilled
 } from '@ant-design/icons'
-import styles from './Footnote.module.css'
+import styles from './footnote.module.css'
 
 export const AppFootnote = () => {
 	return (
@@ -21,7 +21,7 @@ export const AppFootnote = () => {
 					<div className={styles.content_group_text}>
 						<a href='#'>Terms of Use</a>
 						<a href='#'>Privacy Policy</a>
-						<span>All rights reserved © AudiBooks Inc.</span>
+						<span>All rights reserved © Cumi Inc.</span>
 					</div>
 				</div>
 			</div>

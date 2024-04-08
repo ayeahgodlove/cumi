@@ -1,25 +1,17 @@
 "use client";
 
-import { Button, Card, Space } from "antd";
+import { Button, Space } from "antd";
 import { Suspense } from "react";
-import { MdLightbulbOutline } from "react-icons/md";
-import { IoMedalOutline, IoPeopleOutline } from "react-icons/io5";
-import { PiTargetDuotone } from "react-icons/pi";
+
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
-import { Subscribe } from "@components/subscribe/subscribe";
-import { GrUserExpert } from "react-icons/gr";
+
 import FeatureSection from "@components/feature-section/feature-section";
-// import { Authenticated } from "@refinedev/core";
-// import { NavigateToResource } from "@refinedev/nextjs-router";
+import AboutNote from "@components/about-note/about-note";
 
 export default function IndexPage() {
   return (
     <Suspense>
-      {/* <Authenticated key="home-page">
-        <NavigateToResource />
-      </Authenticated> */}
-      {/* landing page */}
       <div
         className="container-fluid mx-auto mt-3"
         style={{ width: "90%" }}
@@ -27,13 +19,12 @@ export default function IndexPage() {
       >
         <nav className="navbar bg-white navbar-expand-lg">
           <div className="container-fluid">
-            <a
-              className="navbar-brand fw-bold"
-              style={{ color: "#00BFFF" }}
-              href="/landing-page-1"
-            >
-              Cumi
-            </a>
+            <img
+              src="./cumi-green.jpeg"
+              height={50}
+              width={100}
+              alt="Cumi logo"
+            />
             <button
               className="navbar-toggler"
               type="button"
@@ -86,21 +77,14 @@ export default function IndexPage() {
               </ul>
               <div className="d-flex flex-sm-column flex-md-row">
                 <Button
-                  className="text-white"
+                  className="primary-btn"
                   shape="round"
                   style={{ backgroundColor: "#00BFFF" }}
                   href="/login"
+                  size="large"
                 >
                   Log in
                 </Button>
-                {/* <Button
-                  className="border mt-sm-2 mt-md-0 ms-2"
-                  shape="round"
-                  type="primary"
-                  href="/register"
-                >
-                  Register
-                </Button> */}
               </div>
             </div>
           </div>
@@ -110,9 +94,7 @@ export default function IndexPage() {
           style={{ marginTop: "6rem", width: "90%", minHeight: "23rem" }}
         >
           <div className="col-12 d-flex flex-column col-md-5">
-            <h1 style={{ color: "darkslategray" }}>
-              Welcome to Cumi - Empowering Your Digital Journey
-            </h1>
+            <h1 className="gradient-title">Empowering Your Digital Journey</h1>
             <p className="text-wrap">
               We're committed to revolutionizing the digital landscape, offering
               cutting-edge solutions tailored to individuals, startups,
@@ -121,14 +103,19 @@ export default function IndexPage() {
             <div className="mt-3">
               <Space>
                 <Button
-                  className="text-white"
+                  className="primary-btn shadow-sm"
                   shape="round"
-                  style={{ background: "#00BFFF" }}
                   href="/contact-us"
+                  size="large"
                 >
                   Hire our services
                 </Button>
-                <Button href="/about#mission" className="fw-bold" shape="round">
+                <Button
+                  size="large"
+                  href="/about#mission"
+                  className="default-btn fw-bold"
+                  shape="round"
+                >
                   Our Mission
                 </Button>
               </Space>
@@ -143,105 +130,12 @@ export default function IndexPage() {
           </div>
         </div>
       </div>
-      {/* feature section */}
-      <FeatureSection />
 
       {/* why us */}
-      <div id="about" className="block mt-sm-0 py-5">
-        <div className="titleHolder">
-          <h2>Why Choose Cumi?</h2>
-          <p>
-            Together let's collaborate to turn your vision into reality and
-            shape the future of technology together.
-          </p>
-        </div>
-        {/* next */}
-        <div
-          className="mx-auto  row"
-          style={{ width: "85%", minHeight: "15rem" }}
-        >
-          <div className="col-sm-6 col-lg-3 p-3">
-            <Card
-              bordered={false}
-              hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
-            >
-              <p className="fw-bold text-center">Expertise</p>
-              <GrUserExpert
-                className="mx-auto d-block"
-                style={{
-                  width: "3rem",
-                  height: "3rem",
-                  color: "darkslategray",
-                }}
-              />
-              <small className="d-block text-center">
-                Our team comprises professionals with extensive experience in
-                software development and technology consulting. We leverage our
-                expertise to deliver.
-              </small>
-            </Card>
-          </div>
+      <AboutNote />
 
-          <div className="col-sm-6 col-lg-3 p-3">
-            <Card
-              bordered={false}
-              hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
-            >
-              <p className="fw-bold text-center">Innovation</p>
-              <MdLightbulbOutline
-                className="mx-auto d-block"
-                style={{ width: "3rem", height: "3rem", color: "#FFDF00" }}
-              />
-
-              <small className="d-block text-center">
-                We're constantly exploring new technologies and methodologies to
-                stay ahead of the curve and deliver cutting-edge solutions that
-                drive business growth.
-              </small>
-            </Card>
-          </div>
-
-          <div className="col-sm-6 col-lg-3 p-3">
-            <Card
-              bordered={false}
-              hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
-            >
-              <p className="fw-bold text-center">Collaboration</p>
-              <IoPeopleOutline
-                className="mx-auto d-block"
-                style={{ width: "3rem", height: "3rem", color: "#00BFFF" }}
-              />
-              <small className="d-block text-center">
-                We work closely with our clients, fostering open communication
-                and collaboration every step of the way to ensure that we're
-                aligned with their goals and objectives.
-              </small>
-            </Card>
-          </div>
-
-          <div className="col-sm-6 col-lg-3 p-3">
-            <Card
-              bordered={false}
-              hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
-            >
-              <p className="fw-bold text-center">Commitment to Excellence</p>
-              <IoMedalOutline
-                className="mx-auto d-block"
-                style={{ width: "3rem", height: "3rem", color: "#32CD32" }}
-              />
-              <small className="d-block text-center">
-                From the quality of our work to the level of service we provide,
-                we strive for nothing less than perfection to ensure the success
-                of our clients.
-              </small>
-            </Card>
-          </div>
-        </div>
-      </div>
+      {/* feature section */}
+      <FeatureSection />
 
       {/* next */}
       <div
@@ -263,11 +157,12 @@ export default function IndexPage() {
             shape the future of technology together.
           </p>
           <Button
-            className="text-white mt-3 mx-auto"
+            className="primary-btn mt-3 mx-auto"
             href="/contact-us"
+            size="large"
             style={{
-              background: "darkslategray",
-              borderColor: "#362F2A",
+              // background: "darkslategray",
+              // borderColor: "#362F2A",
               width: "10rem",
             }}
             shape="round"
@@ -299,7 +194,6 @@ export default function IndexPage() {
         </div>
       </div>
 
-      <Subscribe />
       <AppFooter />
       <AppFootnote />
     </Suspense>

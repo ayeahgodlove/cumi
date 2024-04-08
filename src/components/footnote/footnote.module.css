@@ -2,7 +2,7 @@
 	opacity: 0.8;
 	padding-top: 22px;
 	padding-bottom: 22px;
-	background: var(--golden-purple-7);
+	background: var(--green);
 }
 
 .content {
@@ -15,7 +15,7 @@
 .content_group_social > a {
 	margin-right: 20px;
 	font-size: 28px;
-	color: var(--neutral-4);
+	color: var(--dark);
 }
 
 .content_group_text {
@@ -27,7 +27,7 @@
 }
 .content_group_text > span, 
 .content_group_text > a {
-	color: var(--neutral-2);
+	color: var(--dark);
 }
 
 @media (max-width: 992px) {
