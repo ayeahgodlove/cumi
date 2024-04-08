@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Space } from "antd";
+import { Affix, Button, Space } from "antd";
 import { Suspense } from "react";
 
 import { AppFooter } from "@components/footer/footer";
@@ -17,78 +17,85 @@ export default function IndexPage() {
         style={{ width: "90%" }}
         // minHeight: "50rem",
       >
-        <nav className="navbar bg-white navbar-expand-lg">
-          <div className="container-fluid">
-            <img
-              src="./cumi-green.jpeg"
-              height={50}
-              width={100}
-              alt="Cumi logo"
-            />
-            <button
-              className="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span className="navbar-toggler-icon"></span>
-            </button>
-            <div
-              className="collapse navbar-collapse"
-              id="navbarSupportedContent"
-            >
-              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                <li className="nav-item">
-                  <a
-                    className="nav-link active"
-                    aria-current="page"
-                    href="/landing-page-1"
+        <Affix offsetTop={0}>
+          <nav className="navbar bg-white navbar-expand-lg">
+            <div className="container-fluid">
+              <img
+                src="./cumi-green.jpeg"
+                height={50}
+                width={100}
+                alt="Cumi logo"
+              />
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div
+                className="collapse navbar-collapse"
+                id="navbarSupportedContent"
+              >
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li className="nav-item">
+                    <a
+                      className="nav-link active"
+                      aria-current="page"
+                      href="/landing-page-1"
+                    >
+                      Home
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/our_services">
+                      Services
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/blog_posts">
+                      Blog Posts
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      aria-disabled="true"
+                      href="/about_us"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      aria-disabled="true"
+                      href="/contact_us"
+                    >
+                      Contact Us
+                    </a>
+                  </li>
+                </ul>
+                <div className="d-flex flex-sm-column flex-md-row">
+                  <Button
+                    className="primary-btn"
+                    shape="round"
+                    style={{ backgroundColor: "#00BFFF" }}
+                    href="/login"
+                    size="large"
                   >
-                    Home
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="/our_services">
-                    Services
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="/blog_posts">
-                    Blog Posts
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" aria-disabled="true" href="/about_us">
-                    About Us
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    aria-disabled="true"
-                    href="/contact_us"
-                  >
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
-              <div className="d-flex flex-sm-column flex-md-row">
-                <Button
-                  className="primary-btn"
-                  shape="round"
-                  style={{ backgroundColor: "#00BFFF" }}
-                  href="/login"
-                  size="large"
-                >
-                  Log in
-                </Button>
+                    Log in
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </Affix>
+
         <div
           className="mx-auto row"
           style={{ marginTop: "6rem", width: "90%", minHeight: "23rem" }}
