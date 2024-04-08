@@ -1,5 +1,6 @@
+// import { TOKEN_KEY } from "@constants/constant";
 import { AuthBindings } from "@refinedev/core";
-import { cookies } from "next/headers";
+import { cookies, } from "next/headers";
 
 export const authProviderServer: Pick<AuthBindings, "check"> = {
   check: async () => {
@@ -18,4 +19,20 @@ export const authProviderServer: Pick<AuthBindings, "check"> = {
       redirectTo: "/login",
     };
   },
+  // check: async () => {
+  //   const token = JSON.parse(
+  //     JSON.stringify(localStorage.getItem(TOKEN_KEY)!)
+  //   );
+  //   if (token) {
+  //     return {
+  //       authenticated: true,
+  //     };
+  //   }
+
+  //   return {
+  //     authenticated: false,
+  //     logout: true,
+  //     redirectTo: "/login",
+  //   };
+  // },
 };

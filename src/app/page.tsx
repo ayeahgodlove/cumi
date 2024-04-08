@@ -2,8 +2,7 @@
 
 import { Button, Card, Space } from "antd";
 import { Suspense } from "react";
-import { MdLightbulbOutline, MdOutlinePayment } from "react-icons/md";
-import { Ri24HoursFill } from "react-icons/ri";
+import { MdLightbulbOutline } from "react-icons/md";
 import { IoMedalOutline, IoPeopleOutline } from "react-icons/io5";
 import { PiTargetDuotone } from "react-icons/pi";
 import { AppFooter } from "@components/footer/footer";
@@ -137,8 +136,8 @@ export default function IndexPage() {
           </div>
           <div className="d-sm-none ms-auto d-md-inline col-md-6">
             <img
-              src={"./undraw_buy_house_re_8xq7.svg"}
-              alt="Buy house"
+              src={"./undraw_software_engineer_re_tnjc.svg"}
+              alt="Software engineering"
               style={{ width: "100%", height: "20rem" }}
             />
           </div>

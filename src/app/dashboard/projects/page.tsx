@@ -29,7 +29,7 @@ export default function CategoryList() {
           }
         />
         <Table.Column dataIndex="title" title={"Title"} />
-        <Table.Column dataIndex="description" title={"Description"} />
+        {/* <Table.Column dataIndex="description" title={"Description"} /> */}
         <Table.Column
           dataIndex="imageUrl"
           title={"Image"}

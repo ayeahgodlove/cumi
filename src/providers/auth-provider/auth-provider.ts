@@ -1,6 +1,6 @@
 "use client";
 
-import { TOKEN_KEY } from "@constants/constant";
+import { TOKEN_KEY, USER_DATA } from "@constants/constant";
 import { AuthBindings } from "@refinedev/core";
 import { authService } from "@service/auth.service";
 import { userService } from "@service/user.service";
@@ -13,15 +13,17 @@ export const authProvider: AuthBindings = {
       const response = await authService.login({ email, password });
       const user = response.data.data;
 
-      localStorage.setItem(TOKEN_KEY, user.token);
       if (user) {
         Cookies.set("auth", JSON.stringify(user), {
           expires: 30, // 30 days
-          path: "/",
+          path: "/dashboard",
         });
+        localStorage.setItem(TOKEN_KEY, user.token);
+        localStorage.setItem(USER_DATA, user);
+
         return {
           success: true,
-          redirectTo: "/",
+          redirectTo: "/dashboard",
         };
       }
 
@@ -40,7 +42,8 @@ export const authProvider: AuthBindings = {
   },
   logout: async () => {
     localStorage.removeItem(TOKEN_KEY);
-    Cookies.remove("auth", { path: "/" });
+    localStorage.removeItem(USER_DATA);
+    // Cookies.remove("auth", { path: "/" });
     return {
       success: true,
       redirectTo: "/login",
@@ -63,22 +66,26 @@ export const authProvider: AuthBindings = {
     };
   },
   getPermissions: async () => {
-    const auth = Cookies.get("auth");
-    if (auth) {
-      const parsedUser = JSON.parse(auth);
-      return parsedUser.roles;
+    const user = JSON.parse(
+      JSON.stringify(window.localStorage.getItem(USER_DATA)!)
+    );
+    if (user) {
+      return user.roles;
     }
     return null;
   },
   getIdentity: async () => {
-    const auth = Cookies.get("auth");
-    const parsedUser = auth ? JSON.parse(auth) : null;
+    // const auth = Cookies.get("auth");
+    // const parsedUser = auth ? JSON.parse(auth) : null;
     const token = JSON.parse(
       JSON.stringify(window.localStorage.getItem(TOKEN_KEY)!)
     );
+    const user = JSON.parse(
+      JSON.stringify(window.localStorage.getItem(USER_DATA)!)
+    );
     if (token) {
       try {
-        const userInfo = await userService.details(parsedUser.id);
+        const userInfo = await userService.details(user.id);
         return userInfo.data;
       } catch (error) {
         console.warn(error);
