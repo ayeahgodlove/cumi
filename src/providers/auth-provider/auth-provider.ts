@@ -47,7 +47,9 @@ export const authProvider: AuthBindings = {
     };
   },
   check: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = JSON.parse(
+      JSON.stringify(window.localStorage.getItem(TOKEN_KEY)!)
+    );
     if (token) {
       return {
         authenticated: true,
@@ -71,7 +73,9 @@ export const authProvider: AuthBindings = {
   getIdentity: async () => {
     const auth = Cookies.get("auth");
     const parsedUser = auth ? JSON.parse(auth) : null;
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = JSON.parse(
+      JSON.stringify(window.localStorage.getItem(TOKEN_KEY)!)
+    );
     if (token) {
       try {
         const userInfo = await userService.details(parsedUser.id);

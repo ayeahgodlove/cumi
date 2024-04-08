@@ -7,7 +7,6 @@ import {
   ConfigProvider,
   Form,
   Input,
-  message,
   Row,
   Space,
   Typography,

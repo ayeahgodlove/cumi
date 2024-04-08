@@ -6,6 +6,7 @@ export const useUpload = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
+  const [fileInfo, setFileInfo] = useState<any>(null);
 
   const progress = {
     strokeColor: {
@@ -38,6 +39,14 @@ export const useUpload = () => {
     }
     if (info.file.status === "done") {
       message.success(`${info.file.name} file uploaded successfully`);
+      if (info.fileList.length > 0) {
+        const file = info.fileList[0];
+        const { name, type, size } = file;
+        setFileInfo({ name, type, size });
+      } else {
+        setFileInfo(null);
+      }
+
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} file upload failed.`);
     }
@@ -74,6 +83,7 @@ export const useUpload = () => {
     previewImage,
     previewOpen,
     previewTitle,
-    handleCancel
+    handleCancel,
+    fileInfo
   };
 };

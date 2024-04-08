@@ -2,8 +2,8 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import { useUpload } from "@hooks/shared/upload.hook";
-import { Create, useForm } from "@refinedev/antd";
-import { Col, Form, Input, Row, Upload } from "antd";
+import { Create, useForm, getValueFromEvent  } from "@refinedev/antd";
+import { Col, Form, Input, Row, Upload  } from "antd";
 
 export default function CategoryCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -14,6 +14,7 @@ export default function CategoryCreate() {
     beforeUpload,
     progress,
     handlePreview,
+    fileInfo
   } = useUpload();
 
   const uploadButton = (
@@ -23,11 +24,14 @@ export default function CategoryCreate() {
     </button>
   );
 
+
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
         <Form.Item
           name="image"
+          valuePropName="fileList"
+          getValueFromEvent={getValueFromEvent}
           label="Upload"
           style={{ marginBottom: 15 }}
           rules={[
@@ -38,18 +42,20 @@ export default function CategoryCreate() {
           ]}
         >
           <>
-            <Upload
+            <Upload.Dragger
               maxCount={1}
+              action={"http:localhost:8000/uploads/projects"}
               listType="picture-card"
               beforeUpload={beforeUpload}
               onChange={onChangeUpload}
               onRemove={onRemove}
               progress={progress}
-              fileList={fileList}
+              fileList={fileInfo}
               onPreview={handlePreview}
+              style={{ width: "200px"}}
             >
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
+              {fileList.length > 1 ? null : uploadButton}
+            </Upload.Dragger>
           </>
         </Form.Item>
         <Form.Item

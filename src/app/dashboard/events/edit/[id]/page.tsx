@@ -1,9 +1,10 @@
 "use client";
 
 import { PlusOutlined } from "@ant-design/icons";
+import { useToken } from "@hooks/shared/token.hook";
 import { useUpload } from "@hooks/shared/upload.hook";
 import { Edit, useForm } from "@refinedev/antd";
-import {  Col, DatePicker, Form, Input, Row, Upload } from "antd";
+import { Col, DatePicker, Form, Input, Row, Upload } from "antd";
 
 export default function CategoryEdit() {
   const { formProps, saveButtonProps } = useForm({});
@@ -40,7 +41,7 @@ export default function CategoryEdit() {
               progress={progress}
               fileList={fileList}
             >
-              {fileList.length >= 8 ? null : uploadButton}
+              {fileList.length > 1 ? null : uploadButton}
             </Upload>
           </>
         </Form.Item>

@@ -40,7 +40,7 @@ export default function CategoryEdit() {
               progress={progress}
               fileList={fileList}
             >
-              {fileList.length >= 8 ? null : uploadButton}
+              {fileList.length > 1 ? null : uploadButton}
             </Upload>
           </>
         </Form.Item>

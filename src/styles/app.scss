@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+  --neutral-2: #fafafa;
+  --neutral-4: #f0f0f0;
+  --neutral-8: #595959;
+  --neutral-9: #434343;
+  --golden-purple-5: #9254de;
+  --golden-purple-6: #722ed1;
+  --golden-purple-7: #531dab;
+  --golden-purple-8: #391085;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  a {
+    font-family: "Roboto", sans-serif !important;
+  }
+
+  p {
+    font-family: "Poppins", sans-serif !important;
+  }
+}
+
+.titleHolder {
+  text-align: center;
+  position: relative;
+  padding: 0 0 20px;
+  margin: 0 0 40px;
+}
+
+.titleHolder:after {
+  transform: translateX(-50%);
+  content: "";
+  background: #1890ff;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 3px;
+  width: 50px;
+}
+
+.titleHolder h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+// about us
+#about,
+#work-with-us,
+#subscribe {
+  margin: 60px 0;
+}
+
+@media screen and (min-width: 767px) {
+  #about,
+  #work-with-us,
+  #subscribe {
+    margin: 80px 0;
+  }
+}

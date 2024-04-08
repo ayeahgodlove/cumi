@@ -48,7 +48,7 @@ export default function CategoryCreate() {
               fileList={fileList}
               onPreview={handlePreview}
             >
-              {fileList.length >= 8 ? null : uploadButton}
+              {fileList.length > 1 ? null : uploadButton}
             </Upload>
           </>
         </Form.Item>

@@ -12,14 +12,18 @@ export default function CategoryShow() {
 
   const record = data?.data;
 
-  return (
+  return ( 
     <Show isLoading={isLoading}>
       <Title level={5}>{"ID"}</Title>
       <TextField value={record?.id ?? ""} />
-      <Title level={5}>{"Slug"}</Title>
-      <TextField value={record?.slug} />
-      <Title level={5}>{"Name"}</Title>
-      <TextField value={record?.name} />
+      <Title level={5}>{"Title"}</Title>
+      <TextField value={record?.title} />
+      <Title level={5}>{"Description"}</Title>
+      <TextField value={record?.description} />
+      <Title level={5}>{"Deploy Url"}</Title>
+      <TextField value={record?.deployUrl} />
+      <Title level={5}>{"Github Url"}</Title>
+      <TextField value={record?.githubUrl} />
     </Show>
   );
 }

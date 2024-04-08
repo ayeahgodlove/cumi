@@ -1,5 +1,6 @@
 "use client";
 
+import { useToken } from "@hooks/shared/token.hook";
 // import { ICategory } from "@models/category.model";
 import {
   DeleteButton,
@@ -8,13 +9,12 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { BaseRecord, useCustom } from "@refinedev/core";
+import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Space, Table } from "antd";
 
 export default function CategoryList() {
-
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
 

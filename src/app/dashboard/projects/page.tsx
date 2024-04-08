@@ -8,13 +8,13 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { BaseRecord, useCustom } from "@refinedev/core";
+import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Image, Space, Table } from "antd";
 
 export default function CategoryList() {
 
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
 
@@ -37,6 +37,8 @@ export default function CategoryList() {
             <Image
               src={`${API_URL_UPLOADS_PROJECTS}/${value}`}
               alt={record?.title}
+              height={100}
+              width={100}
             />
           )}
         />

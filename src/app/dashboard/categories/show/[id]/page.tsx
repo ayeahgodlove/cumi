@@ -1,6 +1,5 @@
 "use client";
 
-import { useToken } from "@hooks/shared/token.hook";
 import { Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography } from "antd";
@@ -8,14 +7,7 @@ import { Typography } from "antd";
 const { Title } = Typography;
 
 export default function CategoryShow() {
-  const { token } = useToken();
-  const { queryResult } = useShow({
-    meta: {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    },
-  });
+  const { queryResult } = useShow({});
   const { data, isLoading } = queryResult;
 
   const record = data?.data;

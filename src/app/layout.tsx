@@ -13,12 +13,13 @@ import { authProvider } from "@providers/auth-provider";
 import { dataProvider } from "@providers/data-provider";
 import "@refinedev/antd/dist/reset.css";
 
-import { GrBlog, GrServices } from "react-icons/gr";
+import { GrBlog, GrDashboard, GrServices } from "react-icons/gr";
 import { TbCategoryPlus } from "react-icons/tb";
 import { FiTag, FiUsers } from "react-icons/fi";
 import { FcEditImage } from "react-icons/fc";
 import { SlEvent } from "react-icons/sl";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
+import "../styles/app.scss";
 
 export const metadata: Metadata = {
   title: "Refine",
@@ -39,6 +40,19 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossOrigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+          crossOrigin="anonymous"
+        ></script>
+      </head>
       <body>
         <Suspense>
           <RefineKbarProvider>
@@ -52,6 +66,11 @@ export default function RootLayout({
                     authProvider={authProvider}
                     resources={[
                       {
+                        name: "dashboard",
+                        list: "/dashboard",
+                        icon: <GrDashboard />,
+                      },
+                      {
                         name: "posts",
                         list: "/dashboard/blog-posts",
                         create: "/dashboard/blog-posts/create",
@@ -60,7 +79,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <GrBlog />
+                        icon: <GrBlog />,
                       },
                       {
                         name: "categories",
@@ -71,7 +90,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <TbCategoryPlus />
+                        icon: <TbCategoryPlus />,
                       },
                       {
                         name: "tags",
@@ -82,7 +101,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <FiTag />
+                        icon: <FiTag />,
                       },
                       {
                         name: "banners",
@@ -93,7 +112,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <FcEditImage />
+                        icon: <FcEditImage />,
                       },
                       {
                         name: "events",
@@ -104,7 +123,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <SlEvent />
+                        icon: <SlEvent />,
                       },
                       {
                         name: "services",
@@ -115,7 +134,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <GrServices />
+                        icon: <GrServices />,
                       },
                       {
                         name: "projects",
@@ -126,7 +145,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon:<AiOutlineFundProjectionScreen />
+                        icon: <AiOutlineFundProjectionScreen />,
                       },
                       {
                         name: "users",
@@ -137,7 +156,7 @@ export default function RootLayout({
                         meta: {
                           canDelete: true,
                         },
-                        icon: <FiUsers />
+                        icon: <FiUsers />,
                       },
                     ]}
                     options={{

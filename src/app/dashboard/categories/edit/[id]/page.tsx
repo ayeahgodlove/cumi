@@ -1,18 +1,10 @@
 "use client";
 
-import { useToken } from "@hooks/shared/token.hook";
 import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input } from "antd";
 
 export default function CategoryEdit() {
-  const { token } = useToken();
-  const { formProps, saveButtonProps } = useForm({
-    meta: {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    },
-  });
+  const { formProps, saveButtonProps } = useForm({});
 
   return (
     <Edit saveButtonProps={saveButtonProps}>

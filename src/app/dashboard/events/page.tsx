@@ -1,7 +1,6 @@
 "use client";
 
 import { API_URL_UPLOADS_BANNERS } from "@constants/api-url";
-// import { ICategory } from "@models/category.model";
 import {
   DeleteButton,
   EditButton,
@@ -9,12 +8,12 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { BaseRecord, useCustom } from "@refinedev/core";
+import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Image, Space, Table } from "antd";
 
 export default function CategoryList() {
- 
+
   const { tableProps, tableQueryResult } = useTable({
     syncWithLocation: true,
   });
@@ -33,7 +32,11 @@ export default function CategoryList() {
         />
         <Table.Column dataIndex="title" title={"Title"} />
         <Table.Column dataIndex="description" title={"Description"} />
-        <Table.Column dataIndex="eventDate" title={"Event Date"} render={(value) => format.date(value)} />
+        <Table.Column
+          dataIndex="eventDate"
+          title={"Event Date"}
+          render={(value) => format.date(value)}
+        />
         <Table.Column dataIndex="location" title={"Location"} />
         <Table.Column
           dataIndex="imageUrl"

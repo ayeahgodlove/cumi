@@ -19,8 +19,6 @@ export default function CategoryList() {
     syncWithLocation: true,
   });
 
-  console.log("data: ", tableQueryResult);
-
   return (
     <List>
       <Table {...tableProps} rowKey="id">
