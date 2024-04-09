@@ -20,6 +20,7 @@ import { FcEditImage } from "react-icons/fc";
 import { SlEvent } from "react-icons/sl";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import "../styles/app.scss";
+import ClientProvider from "@contexts/provider";
 
 export const metadata: Metadata = {
   title: "Refine",
@@ -57,121 +58,123 @@ export default function RootLayout({
         <Suspense>
           <RefineKbarProvider>
             <AntdRegistry>
-              <ColorModeContextProvider defaultMode={defaultMode}>
-                <DevtoolsProvider>
-                  <Refine
-                    routerProvider={routerProvider}
-                    dataProvider={dataProvider}
-                    notificationProvider={useNotificationProvider}
-                    authProvider={authProvider}
-                    resources={[
-                      {
-                        name: "dashboard",
-                        list: "/dashboard",
-                        icon: <GrDashboard />,
-                      },
-                      {
-                        name: "posts",
-                        list: "/dashboard/blog-posts",
-                        create: "/dashboard/blog-posts/create",
-                        edit: "/dashboard/blog-posts/edit/:id",
-                        show: "/dashboard/blog-posts/show/:id",
-                        meta: {
-                          canDelete: true,
+              <ClientProvider>
+                <ColorModeContextProvider defaultMode={defaultMode}>
+                  <DevtoolsProvider>
+                    <Refine
+                      routerProvider={routerProvider}
+                      dataProvider={dataProvider}
+                      notificationProvider={useNotificationProvider}
+                      authProvider={authProvider}
+                      resources={[
+                        {
+                          name: "dashboard",
+                          list: "/dashboard",
+                          icon: <GrDashboard />,
                         },
-                        icon: <GrBlog />,
-                      },
-                      {
-                        name: "categories",
-                        list: "/dashboard/categories",
-                        create: "/dashboard/categories/create",
-                        edit: "/dashboard/categories/edit/:id",
-                        show: "/dashboard/categories/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "posts",
+                          list: "/dashboard/blog-posts",
+                          create: "/dashboard/blog-posts/create",
+                          edit: "/dashboard/blog-posts/edit/:id",
+                          show: "/dashboard/blog-posts/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <GrBlog />,
                         },
-                        icon: <TbCategoryPlus />,
-                      },
-                      {
-                        name: "tags",
-                        list: "/dashboard/tags",
-                        create: "/dashboard/tags/create",
-                        edit: "/dashboard/tags/edit/:id",
-                        show: "/dashboard/tags/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "categories",
+                          list: "/dashboard/categories",
+                          create: "/dashboard/categories/create",
+                          edit: "/dashboard/categories/edit/:id",
+                          show: "/dashboard/categories/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <TbCategoryPlus />,
                         },
-                        icon: <FiTag />,
-                      },
-                      {
-                        name: "banners",
-                        list: "/dashboard/banners",
-                        create: "/dashboard/banners/create",
-                        edit: "/dashboard/banners/edit/:id",
-                        show: "/dashboard/banners/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "tags",
+                          list: "/dashboard/tags",
+                          create: "/dashboard/tags/create",
+                          edit: "/dashboard/tags/edit/:id",
+                          show: "/dashboard/tags/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <FiTag />,
                         },
-                        icon: <FcEditImage />,
-                      },
-                      {
-                        name: "events",
-                        list: "/dashboard/events",
-                        create: "/dashboard/events/create",
-                        edit: "/dashboard/events/edit/:id",
-                        show: "/dashboard/events/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "banners",
+                          list: "/dashboard/banners",
+                          create: "/dashboard/banners/create",
+                          edit: "/dashboard/banners/edit/:id",
+                          show: "/dashboard/banners/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <FcEditImage />,
                         },
-                        icon: <SlEvent />,
-                      },
-                      {
-                        name: "services",
-                        list: "/dashboard/services",
-                        create: "/dashboard/services/create",
-                        edit: "/dashboard/services/edit/:id",
-                        show: "/dashboard/services/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "events",
+                          list: "/dashboard/events",
+                          create: "/dashboard/events/create",
+                          edit: "/dashboard/events/edit/:id",
+                          show: "/dashboard/events/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <SlEvent />,
                         },
-                        icon: <GrServices />,
-                      },
-                      {
-                        name: "projects",
-                        list: "/dashboard/projects",
-                        create: "/dashboard/projects/create",
-                        edit: "/dashboard/projects/edit/:id",
-                        show: "/dashboard/projects/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "services",
+                          list: "/dashboard/services",
+                          create: "/dashboard/services/create",
+                          edit: "/dashboard/services/edit/:id",
+                          show: "/dashboard/services/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <GrServices />,
                         },
-                        icon: <AiOutlineFundProjectionScreen />,
-                      },
-                      {
-                        name: "users",
-                        list: "/dashboard/users",
-                        create: "/dashboard/users/create",
-                        edit: "/dashboard/users/edit/:id",
-                        show: "/dashboard/users/show/:id",
-                        meta: {
-                          canDelete: true,
+                        {
+                          name: "projects",
+                          list: "/dashboard/projects",
+                          create: "/dashboard/projects/create",
+                          edit: "/dashboard/projects/edit/:id",
+                          show: "/dashboard/projects/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <AiOutlineFundProjectionScreen />,
                         },
-                        icon: <FiUsers />,
-                      },
-                    ]}
-                    options={{
-                      syncWithLocation: true,
-                      warnWhenUnsavedChanges: true,
-                      useNewQueryKeys: true,
-                      projectId: "njMZZm-fu7OWZ-sdebsw",
-                      breadcrumb: true,
-                    }}
-                  >
-                    {children}
-                    <RefineKbar />
-                  </Refine>
-                </DevtoolsProvider>
-              </ColorModeContextProvider>
+                        {
+                          name: "users",
+                          list: "/dashboard/users",
+                          create: "/dashboard/users/create",
+                          edit: "/dashboard/users/edit/:id",
+                          show: "/dashboard/users/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <FiUsers />,
+                        },
+                      ]}
+                      options={{
+                        syncWithLocation: true,
+                        warnWhenUnsavedChanges: true,
+                        useNewQueryKeys: true,
+                        projectId: "njMZZm-fu7OWZ-sdebsw",
+                        breadcrumb: true,
+                      }}
+                    >
+                      {children}
+                      <RefineKbar />
+                    </Refine>
+                  </DevtoolsProvider>
+                </ColorModeContextProvider>
+              </ClientProvider>
             </AntdRegistry>
           </RefineKbarProvider>
         </Suspense>

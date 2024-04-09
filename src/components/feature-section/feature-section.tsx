@@ -17,7 +17,7 @@ const FeatureSection = () => {
         <div className={styles.content}>
           <div className={styles.content_group}>
             <img
-              src="./undraw_My_code_snippets_re_4adu.png"
+              src="./img/daniel-korpai-pKRNxEguRgM-unsplash.jpg"
               alt="screenshot of audio player"
               className={styles.content_group_image_1}
             />
@@ -64,7 +64,7 @@ const FeatureSection = () => {
               </Button>
             </div>
             <img
-              src="./undraw_Modern_design_re_dlp8.png"
+              src="./img/linkedin-sales-solutions-EI50ZDA-l8Y-unsplash.jpg"
               alt="screenshot of app homepage"
               className={styles.content_group_image_2}
             />

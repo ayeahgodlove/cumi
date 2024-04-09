@@ -1,0 +1,53 @@
+import React from "react";
+import { Button, Space } from "antd";
+
+export const AppHero = () => {
+  return (
+    <div
+      className="mx-auto row align-items-center"
+      style={{ marginTop: "6rem", width: "90%", minHeight: "23rem" }}
+    >
+      <div className="col-12 d-flex flex-column col-md-5">
+        <h1 className="gradient-title">Empowering Your Digital Journey</h1>
+        <p className="text-wrap">
+          We're committed to revolutionizing the digital landscape, offering
+          cutting-edge solutions tailored to individuals, startups, enterprises,
+          and organizations.
+        </p>
+        <div className="mt-3">
+          <Space>
+            <Button
+              className="primary-btn shadow-sm"
+              shape="round"
+              href="/contact-us"
+              size="large"
+            >
+              Hire our services
+            </Button>
+            <Button
+              size="large"
+              href="/about#mission"
+              className="default-btn fw-bold"
+              shape="round"
+            >
+              Our Mission
+            </Button>
+          </Space>
+        </div>
+      </div>
+      <div className="d-sm-none ms-auto d-md-inline col-md-6">
+        <img
+          src={"./img/jason-goodman-vbxyFxlgpjM-unsplash.jpg"}
+          alt="Software engineering"
+          style={{
+            width: "100%",
+            height: "20rem",
+            borderRadius: 50,
+            objectFit: "cover",
+            border: "6px solid #54c6aa",
+          }}
+        />
+      </div>
+    </div>
+  );
+};
