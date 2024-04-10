@@ -2,7 +2,7 @@
 	opacity: 0.8;
 	padding-top: 22px;
 	padding-bottom: 22px;
-	background: var(--green);
+	background: var(--secondary);
 }
 
 .content {
@@ -22,12 +22,16 @@
 	display: flex;
 	justify-content: space-between;
 	width: 551px;
-	font-size: 17px;
+	font-size: 16px;
 	line-height: 25px;
 }
 .content_group_text > span, 
 .content_group_text > a {
-	color: var(--dark);
+	color: #000;
+}
+
+.content_group_text > a:hover {
+	color: var(--white);
 }
 
 @media (max-width: 992px) {

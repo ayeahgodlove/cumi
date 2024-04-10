@@ -31,6 +31,14 @@ body {
   a {
     font-family: "Poppins", sans-serif !important;
   }
+
+  a {
+    text-decoration: none !important;
+    color: var(--dark);
+  }
+  a:hover {
+    color: var(--secondary);
+  }
 }
 
 .titleHolder {

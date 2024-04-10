@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Button, Input } from "antd";
+import { Button, ConfigProvider, Input } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import styles from "./footer.module.css";
+import Link from "next/link";
+import { THEME } from "@constants/constant";
 
 export const AppFooter = () => {
   const [email, setEmail] = useState("");
 
   return (
-    <footer className={`mt-5 section ${styles.section}`}>
+    <footer className={`section ${styles.section}`}>
       <div className="container">
         <div className={styles.content}>
           <div className={styles.content_group_logo}>
@@ -22,16 +24,15 @@ export const AppFooter = () => {
           </div>
           <div className={styles.content_group}>
             <h4>Discover</h4>
-            <a href="#">Tech</a>
-            <a href="#">Features</a>
-            <a href="#">Careers</a>
-            <a href="#">About</a>
+            <Link href="/our_services">Services</Link>
+            <Link href="/careers">Careers</Link>
+            <Link href="/about_us">About</Link>
           </div>
           <div className={styles.content_group}>
             <h4>Info</h4>
-            <a href="#">Press</a>
-            <a href="#">Contact us</a>
-            <a href="#">FAQs</a>
+            <Link href="/blog_posts">Blog Posts</Link>
+            <Link href="/contact_us">Contact us</Link>
+            <Link href="/faqs">FAQs</Link>
           </div>
           <div className={styles.content_group_waitlist}>
             <h4>Join Our Mailing List</h4>
@@ -39,15 +40,19 @@ export const AppFooter = () => {
               Get notified and updated with our marketing emails.
             </p>
             <form>
-              <Input
-                placeholder="Email"
-                size="large"
-                addonAfter={
-                  <Button type="link" icon={<ArrowRightOutlined />} />
-                }
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <ConfigProvider
+              theme={THEME}
+              >
+                <Input
+                  placeholder="Your Email"
+                  size="large"
+                  addonAfter={
+                    <Button type="link" icon={<ArrowRightOutlined style={{ color: "#81ce89"}} />} />
+                  }
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </ConfigProvider>
             </form>
           </div>
         </div>
