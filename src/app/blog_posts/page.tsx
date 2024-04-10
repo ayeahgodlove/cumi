@@ -11,6 +11,8 @@ import SearchPosts from "@components/blog_post/containers/SearchPosts";
 import SortPosts from "@components/blog_post/containers/SortPosts";
 import { FilterOutlined } from "@ant-design/icons";
 import BannerComponent from "@components/banner/banner.component";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 
 const { Content } = Layout;
 export default function IndexPage() {
@@ -50,9 +52,9 @@ export default function IndexPage() {
       </div>
 
       {/* banner */}
-      <BannerComponent />
+      <BannerComponent pageTitle="Blog Posts" />
 
-      <div className="container">
+      <div className="container mb-5">
         <Row justify="space-between">
           <Col span={12} style={{ alignSelf: "center" }}>
             <SortPosts
@@ -110,6 +112,9 @@ export default function IndexPage() {
           </Row>
         </Content>
       </div>
+
+      <AppFooter />
+      <AppFootnote />
     </Suspense>
   );
 }

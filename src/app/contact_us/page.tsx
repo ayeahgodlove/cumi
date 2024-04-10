@@ -1,4 +1,7 @@
 "use client";
+import BannerComponent from "@components/banner/banner.component";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import { Suspense } from "react";
 
@@ -9,8 +12,11 @@ export default function IndexPage() {
         {/* navigation bar */}
         <AppNav />
       </div>
+      {/* banner */}
+      <BannerComponent pageTitle="Contact Us" />
 
-      
+      <AppFooter />
+      <AppFootnote />
     </Suspense>
   );
 }
