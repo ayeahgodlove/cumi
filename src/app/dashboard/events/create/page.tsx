@@ -1,15 +1,21 @@
 "use client";
 
 import { PlusOutlined } from "@ant-design/icons";
-import { useToken } from "@hooks/shared/token.hook";
 import { useUpload } from "@hooks/shared/upload.hook";
 import { Create, useForm } from "@refinedev/antd";
-import { Col, DatePicker, Form, Input, Row, Upload } from "antd";
+import { upload } from "@utils/upload";
+import { Col, DatePicker, Form, Input, Row, Typography, Upload } from "antd";
+import { useCallback } from "react";
 
 export default function CategoryCreate() {
-  const { formProps, saveButtonProps } = useForm({});
-  const { fileList, onChangeUpload, onRemove, beforeUpload, progress } =
-    useUpload();
+  const { formProps, saveButtonProps, form } = useForm({});
+  const {
+    fileList,
+    onRemove,
+    beforeUpload,
+    progress,
+    handlePreview,
+  } = useUpload();
 
   const uploadButton = (
     <button style={{ border: 0, background: "none" }} type="button">
@@ -18,35 +24,31 @@ export default function CategoryCreate() {
     </button>
   );
 
+  const formData = new FormData();
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
-        <Form.Item
-          name="imageUrl"
-          label="Upload"
-          style={{ marginBottom: 15 }}
-          rules={[
-            {
-              required: true,
-              message: "Upload is required",
-            },
-          ]}
+      <>
+        <Typography.Title level={5}>Upload Image</Typography.Title>
+        <Upload
+          name="image"
+          maxCount={1}
+          listType="picture-card"
+          beforeUpload={beforeUpload}
+          onRemove={onRemove}
+          progress={progress}
+          fileList={fileList}
+          onPreview={handlePreview}
+          action={useCallback(async () => {
+            formData.append("imageUrl", fileList[0] as any);
+            const response = await upload("events", formData);
+            form.setFieldValue("imageUrl", response);
+            return response;
+          }, [form, fileList])}
         >
-          <>
-            <Upload
-              maxCount={1}
-              listType="picture-card"
-              beforeUpload={beforeUpload}
-              onChange={onChangeUpload}
-              onRemove={onRemove}
-              progress={progress}
-              fileList={fileList}
-            >
-              {fileList.length >1 ? null : uploadButton}
-            </Upload>
-          </>
-        </Form.Item>
-
+          {fileList.length > 1 ? null : uploadButton}
+        </Upload>
+      </>
+      <Form {...formProps} layout="vertical">
         <Form.Item
           name={"title"}
           label="Title"
@@ -101,6 +103,20 @@ export default function CategoryCreate() {
               ]}
             >
               <Input />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={24}>
+            <Form.Item
+              name={"imageUrl"}
+              label="Image"
+              required={true}
+              rules={[
+                { required: true, message: "This field is a required field" },
+              ]}
+              style={{ marginBottom: 10 }}
+            >
+              <Input disabled={true} />
             </Form.Item>
           </Col>
         </Row>

@@ -2,8 +2,6 @@
 
 import {
   DateField,
-  MarkdownField,
-  NumberField,
   Show,
   TextField,
 } from "@refinedev/antd";
@@ -29,11 +27,17 @@ export default function BlogPostShow() {
   return (
     <Show isLoading={isLoading}>
       <Title level={5}>{"ID"}</Title>
-      <NumberField value={record?.id ?? ""} />
+      <TextField value={record?.id ?? ""} />
       <Title level={5}>{"Title"}</Title>
       <TextField value={record?.title} />
       <Title level={5}>{"Content"}</Title>
-      <MarkdownField value={record?.content} />
+      {/* <MarkdownField value={record?.content} /> */}
+      <div
+      style={{ padding: 10, background: "#f2f2f2"}}
+        dangerouslySetInnerHTML={{
+          __html: record?.content,
+        }}
+      />
       <Title level={5}>{"Category"}</Title>
       <TextField
         value={

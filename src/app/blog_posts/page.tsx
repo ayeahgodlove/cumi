@@ -44,6 +44,9 @@ export default function IndexPage() {
     setSortOrder(event.target.value as SortPostsType);
   };
 
+  const loading = !isLoading || !isFetching;
+  console.log("posts: ", posts, error, isLoading, isFetching);
+
   return (
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
@@ -81,7 +84,8 @@ export default function IndexPage() {
               <SpinnerList />
             </motion.div>
           )}
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+          {
+            (loading) &&        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
             {posts && posts.length ? (
               posts?.map((post) => (
                 <Col
@@ -98,7 +102,7 @@ export default function IndexPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                   >
-                    <BlogPostItem post={post} />
+                  <BlogPostItem post={post} />
                   </motion.div>
                 </Col>
               ))
@@ -110,6 +114,8 @@ export default function IndexPage() {
               </Col>
             )}
           </Row>
+          }
+   
         </Content>
       </div>
 

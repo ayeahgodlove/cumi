@@ -4,53 +4,54 @@ import { PlusOutlined } from "@ant-design/icons";
 import { modules } from "@components/shared/react-quil-config";
 import { useUpload } from "@hooks/shared/upload.hook";
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select, Upload } from "antd";
+import { upload } from "@utils/upload";
+import { Form, Input, Select, Typography, Upload } from "antd";
+import { useCallback } from "react";
 import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export default function BlogPostCreate() {
-  const { formProps, saveButtonProps } = useForm({});
-  const { fileList, onChangeUpload, onRemove, beforeUpload, progress } =
-  useUpload();
+  const { formProps, saveButtonProps, form } = useForm({});
+  const { fileList, handlePreview, onRemove, beforeUpload, progress } =
+    useUpload();
 
-const uploadButton = (
-  <button style={{ border: 0, background: "none" }} type="button">
-    <PlusOutlined />
-    <div style={{ marginTop: 8 }}>Upload</div>
-  </button>
-);
+  const uploadButton = (
+    <button style={{ border: 0, background: "none" }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  );
 
-  const { selectProps: categorySelectProps } = useSelect({
+  const { queryResult, selectProps } = useSelect({
     resource: "categories",
   });
 
+  const formData = new FormData();
+  const { data } = queryResult;
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
-      <Form.Item
-          name="imageUrl"
-          label="Upload"
-          style={{ marginBottom: 15 }}
-          rules={[
-            {
-              required: true,
-              message: "Upload is required",
-            },
-          ]}
+      <>
+        <Typography.Title level={5}>Upload Image</Typography.Title>
+        <Upload
+          name="image"
+          maxCount={1}
+          listType="picture-card"
+          beforeUpload={beforeUpload}
+          onRemove={onRemove}
+          progress={progress}
+          fileList={fileList}
+          onPreview={handlePreview}
+          action={useCallback(async () => {
+            formData.append("imageUrl", fileList[0] as any);
+            const response = await upload("posts", formData);
+            form.setFieldValue("imageUrl", response);
+            return response;
+          }, [form, fileList])}
         >
-          <>
-            <Upload
-              maxCount={1}
-              listType="picture-card"
-              beforeUpload={beforeUpload}
-              onChange={onChangeUpload}
-              onRemove={onRemove}
-              progress={progress}
-              fileList={fileList}
-            >
-              {fileList.length >1 ? null : uploadButton}
-            </Upload>
-          </>
-        </Form.Item>
+          {fileList.length > 1 ? null : uploadButton}
+        </Upload>
+      </>
+      <Form {...formProps} layout="vertical">
         <Form.Item
           label={"Title"}
           name={["title"]}
@@ -96,14 +97,29 @@ const uploadButton = (
         </Form.Item>
         <Form.Item
           label={"Category"}
-          name={["category", "id"]}
+          name={"categoryId"}
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Select {...categorySelectProps} />
+          <Select
+            showSearch
+            onChange={selectProps.onChange}
+            onSearch={selectProps.onSearch}
+            filterOption={selectProps.filterOption}
+            options={
+              data
+                ? data.data.map((d) => {
+                    return {
+                      label: d.name,
+                      value: d.id,
+                    };
+                  })
+                : []
+            }
+          />
         </Form.Item>
         <Form.Item
           label={"Status"}
@@ -118,12 +134,24 @@ const uploadButton = (
           <Select
             defaultValue={"draft"}
             options={[
-              { value: "draft", label: "Draft" },
-              { value: "published", label: "Published" },
-              { value: "rejected", label: "Rejected" },
+              { value: "DRAFT", label: "Draft" },
+              { value: "PUBLISHED", label: "Published" },
+              { value: "REJECTED", label: "Rejected" },
             ]}
             style={{ width: 120 }}
           />
+        </Form.Item>
+
+        <Form.Item
+          name={"imageUrl"}
+          label="Image"
+          required={true}
+          rules={[
+            { required: true, message: "This field is a required field" },
+          ]}
+          style={{ marginBottom: 10 }}
+        >
+          <Input disabled={true} />
         </Form.Item>
       </Form>
     </Create>

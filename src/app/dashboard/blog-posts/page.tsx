@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
 import {
   DateField,
   DeleteButton,
@@ -11,7 +12,7 @@ import {
 } from "@refinedev/antd";
 import { BaseRecord, useMany } from "@refinedev/core";
 import { format } from "@utils/format";
-import { Space, Table } from "antd";
+import { Image, Space, Table } from "antd";
 
 export default function BlogPostList() {
   const { tableProps } = useTable({
@@ -29,6 +30,7 @@ export default function BlogPostList() {
     },
   });
 
+  console.log("tableProps: ", tableProps)
   return (
     <List>
       <Table {...tableProps} rowKey="id">
@@ -41,12 +43,16 @@ export default function BlogPostList() {
         />
         <Table.Column dataIndex="title" title={"Title"} />
         <Table.Column
-          dataIndex="content"
-          title={"Content"}
-          render={(value: any) => {
-            if (!value) return "-";
-            return <MarkdownField value={value.slice(0, 80) + "..."} />;
-          }}
+          dataIndex="imageUrl"
+          title={"Image"}
+          render={(value, record: any) => (
+            <Image
+              src={`${API_URL_UPLOADS_POSTS}/${record.imageUrl}`}
+              alt={record?.title}
+              height={100}
+              width={100}
+            />
+          )}
         />
         <Table.Column
           dataIndex={"categoryId"}

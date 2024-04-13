@@ -4,8 +4,8 @@ import { useState } from "react";
 export const useUpload = () => {
   const [fileList, setFileList] = useState<UploadFile<any>[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [previewTitle, setPreviewTitle] = useState('');
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewTitle, setPreviewTitle] = useState("");
   const [fileInfo, setFileInfo] = useState<any>(null);
 
   const progress = {
@@ -46,20 +46,19 @@ export const useUpload = () => {
       } else {
         setFileInfo(null);
       }
-
     } else if (info.file.status === "error") {
       message.error(`${info.file.name} file upload failed.`);
     }
   };
 
-  type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+  type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
   const getBase64 = (file: FileType): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-  });
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -68,7 +67,9 @@ export const useUpload = () => {
 
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
+    setPreviewTitle(
+      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
+    );
   };
 
   const handleCancel = () => setPreviewOpen(false);
@@ -84,6 +85,6 @@ export const useUpload = () => {
     previewOpen,
     previewTitle,
     handleCancel,
-    fileInfo
+    fileInfo,
   };
 };

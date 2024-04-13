@@ -38,6 +38,8 @@ export default function CategoryList() {
             <Image
               src={`${API_URL_UPLOADS_BANNERS}/${value}`}
               alt={record?.title}
+              height={100}
+              width={100}
             />
           )}
         />

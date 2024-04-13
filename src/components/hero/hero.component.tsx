@@ -5,7 +5,7 @@ export const AppHero = () => {
   return (
     <div
       className="mx-auto row align-items-center"
-      style={{ marginTop: "6rem", width: "90%", minHeight: "23rem" }}
+      style={{ marginTop: "4rem", width: "90%", minHeight: "23rem" }}
     >
       <div className="col-12 d-flex flex-column col-md-5">
         <h1 className="gradient-title">Empowering Your Digital Journey</h1>
@@ -37,11 +37,11 @@ export const AppHero = () => {
       </div>
       <div className="d-sm-none ms-auto d-md-inline col-md-6">
         <img
-          src={"./img/jason-goodman-vbxyFxlgpjM-unsplash.jpg"}
+          src={"./img/rectangle.png"}
           alt="Software engineering"
           style={{
             width: "100%",
-            height: "20rem",
+            height: "23rem",
             borderRadius: 50,
             objectFit: "cover",
             border: "6px solid #54c6aa",
