@@ -14,8 +14,11 @@ export const postAPI = createApi({
   }),
   tagTypes: ["Post"],
   endpoints: (build) => ({
-    getSinglePost: build.query({
+    getSinglePost: build.query<IPost, string>({
       query: (postId) => `/posts/${postId}`,
+    }),
+    getSinglePostBySlug: build.query<IPost, string>({
+      query: (slug) => `/posts/${slug}`,
     }),
     fetchAllPosts: build.query<IPost[], ISort>({
       query: ({ searchTitle, sortBy, }) => {

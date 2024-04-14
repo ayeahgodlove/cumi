@@ -6,7 +6,8 @@ import Link from "next/link";
 import { ICategory } from "@models/category.model";
 import { IUser } from "@models/user.model";
 import { FaRegCircleUser } from "react-icons/fa6";
-import { CiFolderOn } from "react-icons/ci";
+import { CiCalendarDate, CiFolderOn } from "react-icons/ci";
+import { format } from "@utils/format";
 
 const { Meta } = Card;
 const { Title } = Typography;
@@ -53,6 +54,9 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
                 <Typography.Link className="text-secondary">
                 <CiFolderOn /> {categoryDescription?.name}
                 </Typography.Link>
+                <Typography.Text className="text-secondary">
+                <CiCalendarDate /> {format.date(post?.publishedAt)}
+                </Typography.Text>
               </Space>
               <Typography.Paragraph>{post.description}</Typography.Paragraph>
             </div>

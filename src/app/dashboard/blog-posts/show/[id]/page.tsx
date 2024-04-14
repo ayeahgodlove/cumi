@@ -1,12 +1,7 @@
 "use client";
 
 import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
-import {
-  DateField,
-  ImageField,
-  Show,
-  TextField,
-} from "@refinedev/antd";
+import { DateField, ImageField, Show, TextField } from "@refinedev/antd";
 import { useOne, useShow } from "@refinedev/core";
 import { Typography } from "antd";
 
@@ -35,7 +30,7 @@ export default function BlogPostShow() {
       <Title level={5}>{"Content"}</Title>
       {/* <MarkdownField value={record?.content} /> */}
       <div
-      style={{ padding: 10, background: "#f2f2f2"}}
+        style={{ padding: 10, background: "#f2f2f2" }}
         dangerouslySetInnerHTML={{
           __html: record?.content,
         }}
