@@ -3,6 +3,8 @@ import { postAPI } from "./api/post_api";
 import { categoryAPI } from "./api/category_api";
 import { tagAPI } from "./api/tag_api";
 import { userAPI } from "./api/user_api";
+import { eventAPI } from "./api/event_api";
+import { projectAPI } from "./api/project_api";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     [categoryAPI.reducerPath]: categoryAPI.reducer,
     [tagAPI.reducerPath]: tagAPI.reducer,
     [userAPI.reducerPath]: userAPI.reducer,
+    [eventAPI.reducerPath]: eventAPI.reducer,
+    [projectAPI.reducerPath]: projectAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -17,6 +21,8 @@ export const store = configureStore({
       categoryAPI.middleware,
       tagAPI.middleware,
       userAPI.middleware,
+      eventAPI.middleware,
+      projectAPI.middleware,
     ]),
 });
 
