@@ -30,7 +30,6 @@ export default function BlogPostList() {
     },
   });
 
-  console.log("tableProps: ", tableProps)
   return (
     <List>
       <Table {...tableProps} rowKey="id">

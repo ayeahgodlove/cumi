@@ -81,6 +81,42 @@ export const AppNav = () => {
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
+                    pathname === "/events"
+                      ? " active fw-bold text-secondary"
+                      : ""
+                  }`}
+                  href="/events"
+                >
+                  Events
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link  ${
+                    pathname === "/projects"
+                      ? " active fw-bold text-secondary"
+                      : ""
+                  }`}
+                  href="/projects"
+                >
+                  Projects
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link  ${
+                    pathname === "/courses"
+                      ? " active fw-bold text-secondary"
+                      : ""
+                  }`}
+                  href="/courses"
+                >
+                  Courses
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`nav-link  ${
                     pathname === "/about_us"
                       ? " active fw-bold text-secondary"
                       : ""

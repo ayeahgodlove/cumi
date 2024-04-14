@@ -1,6 +1,7 @@
 "use client";
 
-import { Show, TextField } from "@refinedev/antd";
+import { API_URL_UPLOADS_PROJECTS } from "@constants/api-url";
+import { ImageField, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography } from "antd";
 
@@ -24,6 +25,10 @@ export default function CategoryShow() {
       <TextField value={record?.deployUrl} />
       <Title level={5}>{"Github Url"}</Title>
       <TextField value={record?.githubUrl} />
+      <ImageField
+        imageTitle={record?.title}
+        value={`${API_URL_UPLOADS_PROJECTS}/${record?.imageUrl}`}
+      />
     </Show>
   );
 }

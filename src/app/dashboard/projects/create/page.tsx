@@ -98,6 +98,19 @@ export default function CategoryCreate() {
         >
           <Input.TextArea />
         </Form.Item>
+        <Col xs={24} md={24}>
+          <Form.Item
+            name={"imageUrl"}
+            label="Image"
+            required={true}
+            rules={[
+              { required: true, message: "This field is a required field" },
+            ]}
+            style={{ marginBottom: 10 }}
+          >
+            <Input disabled={true} />
+          </Form.Item>
+        </Col>
       </Form>
     </Create>
   );

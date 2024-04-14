@@ -1,8 +1,9 @@
 "use client";
 
-import { API_URL_UPLOADS_BANNERS } from "@constants/api-url";
+import { API_URL_UPLOADS_EVENTS } from "@constants/api-url";
 import { ImageField, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
+import { format } from "@utils/format";
 import { Typography } from "antd";
 
 const { Title } = Typography;
@@ -19,12 +20,14 @@ export default function CategoryShow() {
       <TextField value={record?.id ?? ""} />
       <Title level={5}>{"Title"}</Title>
       <TextField value={record?.title} />
+      <Title level={5}>{"Event Date"}</Title>
+      <TextField value={format.date(record?.eventDate)} />
       <Title level={5}>{"Description"}</Title>
-      <TextField value={record?.subTitle} />
+      <TextField value={record?.description} />
       <Title level={5}>{"Image"}</Title>
       <ImageField
         imageTitle={record?.title}
-        value={`${API_URL_UPLOADS_BANNERS}/${record?.image}`}
+        value={`${API_URL_UPLOADS_EVENTS}/${record?.imageUrl}`}
       />
     </Show>
   );

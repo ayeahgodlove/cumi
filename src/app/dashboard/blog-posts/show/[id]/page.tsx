@@ -1,7 +1,9 @@
 "use client";
 
+import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
 import {
   DateField,
+  ImageField,
   Show,
   TextField,
 } from "@refinedev/antd";
@@ -48,6 +50,10 @@ export default function BlogPostShow() {
       <TextField value={record?.status} />
       <Title level={5}>{"CreatedAt"}</Title>
       <DateField value={record?.createdAt} />
+      <ImageField
+        imageTitle={record?.title}
+        value={`${API_URL_UPLOADS_POSTS}/${record?.imageUrl}`}
+      />
     </Show>
   );
 }

@@ -21,10 +21,8 @@ export default function CategoryShow() {
       <TextField value={record?.title} />
       <Title level={5}>{"Description"}</Title>
       <TextField value={record?.description} />
-      <Title level={5}>{"Location"}</Title>
-      <TextField value={record?.location} />
-      <Title level={5}>{"EventDate"}</Title>
-      <TextField value={format.date(record?.eventDate)} />
+      <Title level={5}>{"Icon"}</Title>
+      <TextField value={record?.icon} />
     </Show>
   );
 }

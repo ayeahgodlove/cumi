@@ -12,7 +12,6 @@ import { format } from "@utils/format";
 import { Space, Table } from "antd";
 
 export default function CategoryList() {
-
   const { tableProps, tableQueryResult } = useTable({
     syncWithLocation: true,
   });
@@ -28,6 +27,11 @@ export default function CategoryList() {
           }
         />
         <Table.Column dataIndex="title" title={"Title"} />
+        <Table.Column
+          dataIndex="icon"
+          title={"Icon"}
+          render={(_, record: BaseRecord) => <>{record.icon as React.ReactNode}</>}
+        />
         <Table.Column dataIndex="description" title={"Description"} />
         <Table.Column
           title={"Actions"}

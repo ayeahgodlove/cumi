@@ -4,7 +4,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useUpload } from "@hooks/shared/upload.hook";
 import { Edit, useForm } from "@refinedev/antd";
 import { upload } from "@utils/upload";
-import { Col, DatePicker, Form, Input, Row, Typography, Upload } from "antd";
+import { Col, Form, Input, Row, Typography, Upload, DatePicker } from "antd";
+import dayjs from "dayjs";
 import { useCallback } from "react";
 
 export default function CategoryEdit() {
@@ -20,6 +21,7 @@ export default function CategoryEdit() {
   );
 
   const formData = new FormData();
+
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <>
@@ -43,7 +45,14 @@ export default function CategoryEdit() {
           {fileList.length > 1 ? null : uploadButton}
         </Upload>
       </>
-      <Form {...formProps} layout="vertical">
+      <Form
+        {...formProps}
+        layout="vertical"
+        initialValues={{
+          ...formProps.initialValues,
+          eventDate: dayjs(formProps.initialValues?.eventDate),
+        }}
+      >
         <Form.Item
           name={"title"}
           label="Title"
@@ -78,14 +87,12 @@ export default function CategoryEdit() {
               ]}
               style={{ marginRight: 10 }}
             >
-              {/* <ConfigProvider locale={enUS as any}> */}
               <DatePicker
                 placeholder="Enter event date"
                 name="eventDate"
                 format={"DD/MM/YYYY"}
                 style={{ width: "100%" }}
               />
-              {/* </ConfigProvider> */}
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
