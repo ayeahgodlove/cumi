@@ -70,7 +70,7 @@ export default function IndexPage() {
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav />
+        <AppNav logoPath="./"/>
       </div>
 
       {/* banner */}

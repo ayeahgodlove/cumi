@@ -3,7 +3,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-export const AppNav = () => {
+type Props  = {
+  logoPath: string
+}
+export const AppNav: React.FC<Props> = ({ logoPath}) => {
   const pathname = usePathname();
   return (
     <Affix offsetTop={0}>
@@ -11,7 +14,7 @@ export const AppNav = () => {
         <div className="container-fluid">
           <Link href={"/"}>
             <img
-              src="./cumi-green.jpeg"
+              src={`${logoPath}cumi-green.jpeg`}
               height={50}
               width={100}
               alt="Cumi logo"
