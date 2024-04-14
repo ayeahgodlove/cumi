@@ -65,6 +65,7 @@ export default function IndexPage() {
     setSortOrder(event.target.value as SortPostsType);
   };
 
+
   return (
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>

@@ -8,24 +8,27 @@ import { IUser } from "@models/user.model";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { CiCalendarDate, CiFolderOn } from "react-icons/ci";
 import { format } from "@utils/format";
+import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 
 const { Meta } = Card;
 const { Title } = Typography;
 
 export interface PostItemProps {
   post: IPost;
-  categories: ICategory[]| undefined;
-  users: IUser[]| undefined;
+  categories: ICategory[] | undefined;
+  users: IUser[] | undefined;
 }
 
 const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
   const categoryDescription = categories?.find((c) => c.id === post.categoryId);
   const userDescription = users?.find((c) => c.id === post.authorId);
+  const { width } = useWindowSize();
   return (
     <Link href={`/blog_posts/${post.slug}`}>
       <Card
         hoverable
         style={{ width: "100%" }}
+        styles={{ header: { overflow: "hidden"}}}
         key={post.id}
         cover={
           <img
@@ -47,18 +50,33 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
           }
           description={
             <div className="w-100">
-              <Space style={{ marginBottom: 5 }}>
-                <Typography.Link className="text-secondary">
-                <FaRegCircleUser /> {userDescription?.username}
-                </Typography.Link>
-                <Typography.Link className="text-secondary">
-                <CiFolderOn /> {categoryDescription?.name}
-                </Typography.Link>
-                <Typography.Text className="text-secondary">
-                <CiCalendarDate /> {format.date(post?.publishedAt)}
-                </Typography.Text>
-              </Space>
+              {width > 767 && (
+                <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
+                  <Typography.Link className="text-secondary">
+                    <FaRegCircleUser /> {userDescription?.username}
+                  </Typography.Link>
+                  <Typography.Link className="text-secondary">
+                    <CiFolderOn /> {categoryDescription?.name}
+                  </Typography.Link>
+                  <Typography.Text className="text-secondary">
+                    <CiCalendarDate /> {format.date(post?.publishedAt)}
+                  </Typography.Text>
+                </Space>
+              )}
               <Typography.Paragraph>{post.description}</Typography.Paragraph>
+              {width < 767 && (
+                <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
+                  <Typography.Link className="text-secondary">
+                    <FaRegCircleUser /> {userDescription?.username}
+                  </Typography.Link>
+                  {/* <Typography.Link className="text-secondary">
+                    <CiFolderOn /> {categoryDescription?.name}
+                  </Typography.Link> */}
+                  <Typography.Text className="text-secondary">
+                    <CiCalendarDate /> {format.date(post?.publishedAt)}
+                  </Typography.Text>
+                </Space>
+              )}
             </div>
           }
         />
