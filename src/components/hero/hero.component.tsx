@@ -1,7 +1,9 @@
 import React from "react";
 import { Button, Space } from "antd";
+import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 
 export const AppHero = () => {
+  const { width } = useWindowSize()
   return (
     <div
       className="mx-auto row align-items-center"
@@ -35,7 +37,7 @@ export const AppHero = () => {
           </Space>
         </div>
       </div>
-      <div className="d-sm-none ms-auto d-md-inline col-md-6">
+      <div className="d-sm-none ms-auto d-md-inline col-md-6" style={{ marginTop: width < 767 ? 40 : 0 }}>
         <img
           src={"./img/rectangle.png"}
           alt="Software engineering"
