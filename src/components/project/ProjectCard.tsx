@@ -34,6 +34,7 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
           href={project.deployUrl}
           target="_blank"
           className="default-btn rounded-2"
+          key={"link-1"}
         >
           Visit Website
         </Link>,
@@ -41,6 +42,7 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
           href={project.githubUrl}
           target="_blank"
           className="default-btn rounded-2"
+          key={"link-2"}
         >
           View Source Code
         </Link>,

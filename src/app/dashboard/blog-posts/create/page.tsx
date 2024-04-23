@@ -6,9 +6,12 @@ import { useUpload } from "@hooks/shared/upload.hook";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { upload } from "@utils/upload";
 import { Form, Input, Select, Typography, Upload } from "antd";
+import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import ReactQuill from "react-quill";
+// import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps, form } = useForm({});

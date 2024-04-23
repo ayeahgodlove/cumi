@@ -28,6 +28,7 @@ const EventCard: React.FC<Prop> = ({ event }) => {
           // shape="round"
           href={`/events/${event.id}`}
           className="primary-btn"
+          key={"btn-1"}
         >
           Read more
         </Button>,
