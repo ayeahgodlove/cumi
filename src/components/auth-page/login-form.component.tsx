@@ -11,7 +11,6 @@ import {
   Space,
   Typography,
 } from "antd";
-import Image from "next/image";
 import { useWindowSize } from "usehooks-ts";
 import { useLogin } from "@refinedev/core";
 import Link from "next/link";
@@ -57,7 +56,7 @@ export const LoginForm = () => {
             alignItems: "center",
           }}
         >
-          <Image
+          <img
             src={"/11436091_4707067.svg"}
             width={width < 1024 ? 250 : 350}
             height={width < 1024 ? 250 : 350}
@@ -122,7 +121,7 @@ export const LoginForm = () => {
               }}
             >
               <Space>
-                <span>Don't have account? </span>
+                <span>{`Don't have account?`} </span>
                 <Link href={"/auth/signup"}>Signup</Link>
               </Space>
             </Col>

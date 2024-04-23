@@ -12,9 +12,9 @@ export const AppHero = () => {
       <div className="col-12 d-flex flex-column col-md-5">
         <h1 className="gradient-title">Empowering Your Digital Journey</h1>
         <p className="text-wrap">
-          We're committed to revolutionizing the digital landscape, offering
+         {` We're committed to revolutionizing the digital landscape, offering
           cutting-edge solutions tailored to individuals, startups, enterprises,
-          and organizations.
+          and organizations.`}
         </p>
         <div className="mt-3">
           <Space>

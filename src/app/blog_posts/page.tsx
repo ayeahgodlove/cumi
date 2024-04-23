@@ -156,7 +156,7 @@ export default function IndexPage() {
         </Content>
       </div>
 
-      <AppFooter />
+      <AppFooter logoPath="./" />
       <AppFootnote />
     </Suspense>
   );

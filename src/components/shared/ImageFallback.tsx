@@ -2,7 +2,6 @@
 "use client";
 
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
-import { Image } from "antd";
 import { useEffect, useState } from "react";
 
 const ImageFallback = (props: any) => {

@@ -15,7 +15,7 @@ export default function IndexPage() {
       {/* banner */}
       <BannerComponent pageTitle="About Us" />
 
-      <AppFooter />
+      <AppFooter  logoPath="./"/>
       <AppFootnote />
     </Suspense>
   );

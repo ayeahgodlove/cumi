@@ -39,7 +39,7 @@ export default function CategoryEdit() {
             const response = await upload("banners", formData);
             form.setFieldValue("image", response);
             return response;
-          }, [form, fileList])}
+          }, [form, fileList,formData])}
         >
           {fileList.length > 1 ? null : uploadButton}
         </Upload>

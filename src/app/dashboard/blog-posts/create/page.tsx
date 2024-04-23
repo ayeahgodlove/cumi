@@ -46,7 +46,7 @@ export default function BlogPostCreate() {
             const response = await upload("posts", formData);
             form.setFieldValue("imageUrl", response);
             return response;
-          }, [form, fileList])}
+          }, [form, fileList,formData])}
         >
           {fileList.length > 1 ? null : uploadButton}
         </Upload>

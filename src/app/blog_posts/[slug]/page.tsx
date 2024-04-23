@@ -1,11 +1,16 @@
 "use client";
+import BannerDetailComponent from "@components/banner/banner-detail.component";
 import BlogPostItem from "@components/blog_post/blog_post_item";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/Disqus";
 import ImageFallback from "@components/shared/ImageFallback";
 import Share from "@components/shared/Share";
 import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
+import { emptyBanner } from "@models/banner";
 import { ITag } from "@models/tag.model";
+import { bannerAPI } from "@store/api/banner_api";
 import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
@@ -28,6 +33,11 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
   const { data: posts } = postAPI.useFetchAllPostsQuery({
     searchTitle: "",
   });
+  const {
+    data: banners,
+    isLoading: isLoadingBaner,
+    isFetching: isFetchBaner,
+  } = bannerAPI.useFetchAllBannersQuery(1);
 
   const {
     data: categories,
@@ -43,9 +53,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
     isFetching: isFetchUser,
   } = userAPI.useGetSingleUserQuery(post ? post.authorId : "");
 
-  const {
-    data: tags,
-  } = tagAPI.useFetchAllTagsQuery(1);
+  const { data: tags } = tagAPI.useFetchAllTagsQuery(1);
   const similarPosts = post
     ? posts?.filter((p) => p.categoryId === post.categoryId)
     : [];
@@ -59,8 +67,18 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="./../"/>
-
+        <AppNav logoPath="./../" />
+        <BannerDetailComponent
+          banner={
+            banners
+              ? { imageUrl: banners[1].image, title: post?.title }
+              : { imageUrl: post?.imageUrl, title: post?.title }
+          }
+          page={[
+            { title: "Blog Posts", path: "/blog_posts" },
+            { title: "Details", path: "" },
+          ]}
+        />
         <Content>
           <section className="section pt-4">
             <div className="container">
@@ -109,8 +127,8 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
                     />
                   </div>
                   <div className="row justify-items-start justify-content-between">
-                    <div className="mb-10 flex justify-items-center col-lg-5 mb-lg-0">
-                      <h5 className="mr-3">Tags :</h5>
+                    <div className="mb-5 flex justify-items-center col-lg-5 mb-lg-0">
+                      <h5 className="me-3">Tags :</h5>
                       <ul className="nav">
                         {tags?.map((tag: ITag) => (
                           <li key={tag.id} className="inline-block">
@@ -159,6 +177,8 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
           </section>
         </Content>
       </div>
+      <AppFooter logoPath="./../" />
+      <AppFootnote />
     </Suspense>
   );
 }

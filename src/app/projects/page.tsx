@@ -74,7 +74,7 @@ export default function IndexPage() {
         )}
       </Content>
 
-      <AppFooter />
+      <AppFooter logoPath="./" />
       <AppFootnote />
     </Suspense>
   );

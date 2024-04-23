@@ -16,7 +16,7 @@ export default function IndexPage() {
       {/* banner */}
       <BannerComponent pageTitle="Courses" />
 
-      <AppFooter />
+      <AppFooter logoPath="./" />
       <AppFootnote />
     </Suspense>
   );

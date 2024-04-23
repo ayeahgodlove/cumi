@@ -17,9 +17,9 @@ export const AppService = () => {
       >
         <h3 className="text-center mb-4">Ready to work with Cumi?</h3>
         <p className="text-center">
-          Reach out to us today to learn more about our services and training
+          {` Reach out to us today to learn more about our services and training
           programs. Let's collaborate to turn your vision into reality and shape
-          the future of technology together.
+          the future of technology together.`}
         </p>
         <Button
           className="primary-btn mt-3 mx-auto"

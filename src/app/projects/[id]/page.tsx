@@ -1,4 +1,6 @@
 "use client";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/Disqus";
 import ImageFallback from "@components/shared/ImageFallback";
@@ -100,6 +102,8 @@ export default function IndexPage({ params }: { params: { id: string } }) {
           </section>
         </Content>
       </div>
+      <AppFooter  logoPath="./../"/>
+      <AppFootnote />
     </Suspense>
   );
 }

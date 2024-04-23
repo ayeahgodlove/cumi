@@ -31,7 +31,7 @@ const DynamicIcon: FC<IDynamicIcon> = ({ icon, ...props }) => {
   return <Icon {...props} />;
 };
 
-const getIconLibrary = (icon: string): IconMap | undefined => {
+const getIconLibrary = (icon: any): IconMap | undefined => {
   const libraryKey = [...icon].reduce((lib, letter, i) => {
     if (letter === letter.toUpperCase() && lib === "" && i > 0) {
       return icon.slice(0, i).toLowerCase();

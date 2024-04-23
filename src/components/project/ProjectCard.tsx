@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Button } from "antd";
+import { Card } from "antd";
 import { IProject } from "@models/project";
 import { API_URL_UPLOADS_PROJECTS } from "@constants/api-url";
 import Link from "next/link";
@@ -12,6 +12,7 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
   //each project card will display the title, a button, date, location, and description
   return (
     <Card
+      key={project.id}
       cover={
         <img
           src={`${API_URL_UPLOADS_PROJECTS}/${project.imageUrl}`}
@@ -29,21 +30,28 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
         },
       }}
       actions={[
-        <Button href={project.deployUrl} className="default-btn">
+        <Link
+          href={project.deployUrl}
+          target="_blank"
+          className="default-btn rounded-2"
+        >
           Visit Website
-        </Button>,
-        <Button href={project.githubUrl} className="default-btn">
+        </Link>,
+        <Link
+          href={project.githubUrl}
+          target="_blank"
+          className="default-btn rounded-2"
+        >
           View Source Code
-        </Button>,
+        </Link>,
       ]}
     >
-      <Link
-        href={`/projects/${project.id}`}
-        className="h5 text-wrap"
-      >
+      <Link href={`/projects/${project.id}`} className="h5 text-wrap">
         <FaHandPointRight /> {project.title}
       </Link>
-      <p style={{ marginBottom: 0, marginTop: 15 }}>{project.description.slice(0, 275)}</p>
+      <p style={{ marginBottom: 0, marginTop: 15 }}>
+        {project.description.slice(0, 275)}
+      </p>
     </Card>
   );
 };

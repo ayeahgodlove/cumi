@@ -17,7 +17,7 @@ export default function IndexPage() {
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="./" />
+        <AppNav logoPath="/" />
 
         {/* hero section */}
         <AppHero />
@@ -32,7 +32,7 @@ export default function IndexPage() {
       {/* service section */}
       <AppService />
 
-      <AppFooter />
+      <AppFooter logoPath="./" />
       <AppFootnote />
     </Suspense>
   );

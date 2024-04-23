@@ -43,7 +43,7 @@ export default function CategoryCreate() {
             const response = await upload("events", formData);
             form.setFieldValue("imageUrl", response);
             return response;
-          }, [form, fileList])}
+          }, [form, fileList, formData])}
         >
           {fileList.length > 1 ? null : uploadButton}
         </Upload>

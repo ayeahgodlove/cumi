@@ -12,8 +12,8 @@ const AboutNote = () => {
         <div className="titleHolder">
           <h1>Why Choose Cumi?</h1>
           <p>
-            Together let's collaborate to turn your vision into reality and
-            shape the future of technology together.
+            {`Together let's collaborate to turn your vision into reality and
+            shape the future of technology together.`}
           </p>
         </div>
         {/* next */}
@@ -57,9 +57,9 @@ const AboutNote = () => {
               />
 
               <small className="d-block text-center">
-                We're constantly exploring new technologies and methodologies to
+                {`We're constantly exploring new technologies and methodologies to
                 stay ahead of the curve and deliver cutting-edge solutions that
-                drive business growth.
+                drive business growth.`}
               </small>
             </Card>
           </div>
@@ -76,9 +76,9 @@ const AboutNote = () => {
                 style={{ width: "3rem", height: "3rem", color: "#00BFFF" }}
               />
               <small className="d-block text-center">
-                We work closely with our clients, fostering open communication
+                {`We work closely with our clients, fostering open communication
                 and collaboration every step of the way to ensure that we're
-                aligned with their goals and objectives.
+                aligned with their goals and objectives.`}
               </small>
             </Card>
           </div>
@@ -95,9 +95,9 @@ const AboutNote = () => {
                 style={{ width: "3rem", height: "3rem", color: "#32CD32" }}
               />
               <small className="d-block text-center">
-                From the quality of our work to the level of service we provide,
+               {` From the quality of our work to the level of service we provide,
                 we strive for nothing less than perfection to ensure the success
-                of our clients.
+                of our clients.`}
               </small>
             </Card>
           </div>

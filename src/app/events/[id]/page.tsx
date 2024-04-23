@@ -1,9 +1,14 @@
 "use client";
+import BannerDetailComponent from "@components/banner/banner-detail.component";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/Disqus";
 import ImageFallback from "@components/shared/ImageFallback";
 import Share from "@components/shared/Share";
 import { API_URL_UPLOADS_EVENTS } from "@constants/api-url";
+import { emptyBanner } from "@models/banner";
+import { bannerAPI } from "@store/api/banner_api";
 import { eventAPI } from "@store/api/event_api";
 import { userAPI } from "@store/api/user_api";
 import { format } from "@utils/format";
@@ -21,6 +26,12 @@ export default function IndexPage({ params }: { params: { id: string } }) {
     isFetching,
   } = eventAPI.useGetSingleEventQuery(params.id);
 
+  const {
+    data: banners,
+    isLoading: isLoadingBaner,
+    isFetching: isFetchBaner,
+  } = bannerAPI.useFetchAllBannersQuery(1);
+
   const { data: user } = userAPI.useGetSingleUserQuery(
     event ? event?.userId : ""
   );
@@ -34,6 +45,18 @@ export default function IndexPage({ params }: { params: { id: string } }) {
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="./../" />
+
+        <BannerDetailComponent
+          banner={
+            banners
+              ? { imageUrl: banners[1].image, title: event?.title }
+              : { imageUrl: event?.imageUrl, title: event?.title }
+          }
+          page={[
+            { title: "Blog Posts", path: "/blog_posts" },
+            { title: "Details", path: "" },
+          ]}
+        />
 
         <Content>
           <section className="section pt-4">
@@ -99,6 +122,8 @@ export default function IndexPage({ params }: { params: { id: string } }) {
           </section>
         </Content>
       </div>
+      <AppFooter logoPath="./../" />
+      <AppFootnote />
     </Suspense>
   );
 }

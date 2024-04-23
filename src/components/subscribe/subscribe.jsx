@@ -12,7 +12,7 @@ export const Subscribe = () => {
         <div className={styles.content}>
           <h1 className={styles.heading}>Subscribe.</h1>
           <p className={styles.subheading}>
-		  Sign up for our marketing notifications.
+            Sign up for our marketing notifications.
           </p>
           <form className={styles.form}>
             <Input
@@ -26,16 +26,16 @@ export const Subscribe = () => {
               }}
             />
             <Button
-            //   type="primary"
+              //   type="primary"
               size="large"
               className={styles.button}
               shape="round"
-			  style={{ backgroundColor: "#32CD32", color: "#fff"}}
+              style={{ backgroundColor: "#32CD32", color: "#fff" }}
             >
               Subscribe
             </Button>
           </form>
-          <img src="img/pattern/pattern-4.svg" className={styles.pattern} />
+          <img src="./img/pattern/pattern-4.svg" className={styles.pattern} />
         </div>
       </div>
     </section>

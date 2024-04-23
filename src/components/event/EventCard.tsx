@@ -1,9 +1,8 @@
 import React from "react";
-import { Card, Button, Typography } from "antd";
+import { Card, Button } from "antd";
 import { IEvent } from "@models/event";
 import { format } from "@utils/format";
 import { API_URL_UPLOADS_EVENTS } from "@constants/api-url";
-import slugify from "slugify";
 
 type Prop = {
   event: IEvent;
@@ -12,6 +11,7 @@ const EventCard: React.FC<Prop> = ({ event }) => {
   //each event card will display the title, a button, date, location, and description
   return (
     <Card
+      key={event.id}
       title={<h5 className="text-wrap">{event.title}</h5>}
       style={{ margin: "16px" }}
       bordered={false}

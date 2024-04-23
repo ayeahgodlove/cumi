@@ -5,7 +5,10 @@ import styles from "./footer.module.css";
 import Link from "next/link";
 import { THEME } from "@constants/constant";
 
-export const AppFooter = () => {
+type Props = {
+  logoPath: string;
+};
+export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
   const [email, setEmail] = useState("");
 
   return (
@@ -14,7 +17,7 @@ export const AppFooter = () => {
         <div className={styles.content}>
           <div className={styles.content_group_logo}>
             <img
-              src="./cumi-green.jpeg"
+              src={`${logoPath}cumi-green.jpeg`}
               className={styles.logo}
               height={70}
               width={120}
@@ -40,14 +43,15 @@ export const AppFooter = () => {
               Get notified and updated with our marketing emails.
             </p>
             <form>
-              <ConfigProvider
-              theme={THEME}
-              >
+              <ConfigProvider theme={THEME}>
                 <Input
                   placeholder="Your Email"
                   size="large"
                   addonAfter={
-                    <Button type="link" icon={<ArrowRightOutlined style={{ color: "#81ce89"}} />} />
+                    <Button
+                      type="link"
+                      icon={<ArrowRightOutlined style={{ color: "#81ce89" }} />}
+                    />
                   }
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

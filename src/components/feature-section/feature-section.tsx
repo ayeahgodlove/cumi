@@ -9,8 +9,8 @@ const FeatureSection = () => {
         <div className={`titleHolder ${styles.headerCp}`}>
           <h1 className={styles.heading}>What we offer</h1>
           <p>
-            Whether you're an individual entrepreneur or a multinational
-            corporation, Cumi has got you covered.
+            {`Whether you're an individual entrepreneur or a multinational
+            corporation, Cumi has got you covered.`}
           </p>
         </div>
 
@@ -26,10 +26,10 @@ const FeatureSection = () => {
                 Custom Digital Solutions
               </h1>
               <p className={styles.content_group_subheading}>
-                Cumi offers custom digital solutions for individuals and
+                {` Cumi offers custom digital solutions for individuals and
                 corporations, tailored to your unique needs. We collaborate
                 closely with clients from concept to execution, delivering
-                innovative solutions that yield tangible results.
+                innovative solutions that yield tangible results.`}
               </p>
               <Button
                 className="primary-btn"
@@ -48,10 +48,10 @@ const FeatureSection = () => {
                 Software Development Training
               </h1>
               <p className={styles.content_group_subheading}>
-                Cumi equips tech enthusiasts with expertise in JavaScript,
+               {` Cumi equips tech enthusiasts with expertise in JavaScript,
                 Python, PHP, React, Laravel, Django, and React-Native. Our
                 hands-on training empowers aspiring developers for success in
-                the competitive tech industry.
+                the competitive tech industry.`}
               </p>
               <Button
                 className="primary-btn"
