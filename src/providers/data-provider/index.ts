@@ -3,8 +3,9 @@
 import axios from "axios";
 import dataProviderSimpleRest from "@refinedev/simple-rest";
 import { TOKEN_KEY } from "@constants/constant";
+import { API_URL as API_URL_BASE } from "@constants/api-url";
 
-export const API_URL = "http://localhost:8000/api";
+export const API_URL = `${API_URL_BASE}/api`;
 
 const axiosInstance = () => {
   // const token = window.localStorage.getItem(TOKEN_KEY);

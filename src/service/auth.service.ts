@@ -1,8 +1,9 @@
+import { API_URL } from "@constants/api-url";
 import { IUser, IUserResponse } from "@models/user.model";
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8000", // Replace with your API server URL
+  baseURL: API_URL // Replace with your API server URL
 });
 
 export const authService = {
