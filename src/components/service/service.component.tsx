@@ -1,7 +1,10 @@
+"use client";
+import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 import { Button } from "antd";
 import React from "react";
 
 export const AppService = () => {
+  const { width } = useWindowSize();
   return (
     <div
       id="work-with-us"
@@ -18,16 +21,16 @@ export const AppService = () => {
         <h3 className="text-center mb-4">Ready to work with Cumi?</h3>
         <p className="text-center">
           {` Reach out to us today to learn more about our services and training
-          programs. Let's collaborate to turn your vision into reality and shape
-          the future of technology together.`}
+          programs. ${
+            width > 767 &&
+            "Let's collaborate to turn your vision into reality and shape the future of technology together."
+          }`}
         </p>
         <Button
           className="primary-btn mt-3 mx-auto"
           href="/contact-us"
           size="large"
           style={{
-            // background: "darkslategray",
-            // borderColor: "#362F2A",
             width: "10rem",
           }}
           shape="round"
