@@ -8,7 +8,6 @@ import Disqus from "@components/shared/Disqus";
 import ImageFallback from "@components/shared/ImageFallback";
 import Share from "@components/shared/Share";
 import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
-import { emptyBanner } from "@models/banner";
 import { ITag } from "@models/tag.model";
 import { bannerAPI } from "@store/api/banner_api";
 import { categoryAPI } from "@store/api/category_api";
@@ -63,6 +62,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
   if (isLoading || isFetching) {
     <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
   }
+  console.log("banners: ", banners)
   return (
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
@@ -71,7 +71,10 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
         <BannerDetailComponent
           banner={
             banners
-              ? { imageUrl: banners[1].image, title: post?.title }
+              ? {
+                  imageUrl: banners.length > 0 ? banners[0].image : "",
+                  title: post?.title,
+                }
               : { imageUrl: post?.imageUrl, title: post?.title }
           }
           page={[
@@ -120,7 +123,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
                   </ul>
                   <div className="content mb-3">
                     <div
-                      style={{ padding: 10, background: "#f2f2f2" }}
+                      style={{ padding: 30, background: "#f2f2f2" }}
                       dangerouslySetInnerHTML={{
                         __html: post?.content as any,
                       }}
