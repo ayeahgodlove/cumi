@@ -49,9 +49,7 @@ export const authProvider: AuthBindings = {
     };
   },
   check: async () => {
-    const token = JSON.parse(
-      JSON.stringify(window.localStorage.getItem(TOKEN_KEY)!)
-    );
+    const token = JSON.parse(window.localStorage.getItem(TOKEN_KEY)!);
     if (token) {
       return {
         authenticated: true,
@@ -65,9 +63,7 @@ export const authProvider: AuthBindings = {
     };
   },
   getPermissions: async () => {
-    const user = JSON.parse(
-      JSON.stringify(window.localStorage.getItem(USER_DATA)!)
-    );
+    const user = JSON.parse(window.localStorage.getItem(USER_DATA)!);
     if (user) {
       return user.roles;
     }
@@ -76,12 +72,8 @@ export const authProvider: AuthBindings = {
   getIdentity: async () => {
     // const auth = Cookies.get("auth");
     // const parsedUser = auth ? JSON.parse(auth) : null;
-    const token = JSON.parse(
-      JSON.stringify(window.localStorage.getItem(TOKEN_KEY)!)
-    );
-    const user = JSON.parse(
-      JSON.stringify(window.localStorage.getItem(USER_DATA)!)
-    );
+    const token = JSON.parse(window.localStorage.getItem(TOKEN_KEY)!);
+    const user = JSON.parse(window.localStorage.getItem(USER_DATA)!);
     if (token) {
       try {
         const userInfo = await userService.details(user.id);

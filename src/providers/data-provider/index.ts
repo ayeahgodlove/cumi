@@ -8,14 +8,13 @@ import { API_URL as API_URL_BASE } from "@constants/api-url";
 export const API_URL = `${API_URL_BASE}/api`;
 
 const axiosInstance = () => {
-  // const token = window.localStorage.getItem(TOKEN_KEY);
   let headers = {
     "Content-Type": "application/json",
     Authorization: "",
   };
 
   if (typeof window !== "undefined") {
-    const token = window.localStorage.getItem(TOKEN_KEY);
+    const token = JSON.parse(window.localStorage.getItem(TOKEN_KEY)!);
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
