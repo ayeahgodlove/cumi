@@ -16,7 +16,12 @@ const Share = ({
   slug: string;
   className?: string;
 }) => {
-  const base_url = window.location.origin;
+  let base_url = ""
+
+  if (typeof window !== "undefined") {
+    base_url = window.location.origin;
+  }
+
   return (
     <ul className={className}>
       <li className="inline-block">
