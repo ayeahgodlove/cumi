@@ -1,5 +1,6 @@
 "use client";
 
+import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { API_URL_UPLOADS_PROJECTS } from "@constants/api-url";
 import { ImageField, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
@@ -13,22 +14,26 @@ export default function CategoryShow() {
 
   const record = data?.data;
 
-  return ( 
-    <Show isLoading={isLoading}>
-      <Title level={5}>{"ID"}</Title>
-      <TextField value={record?.id ?? ""} />
-      <Title level={5}>{"Title"}</Title>
-      <TextField value={record?.title} />
-      <Title level={5}>{"Description"}</Title>
-      <TextField value={record?.description} />
-      <Title level={5}>{"Deploy Url"}</Title>
-      <TextField value={record?.deployUrl} />
-      <Title level={5}>{"Github Url"}</Title>
-      <TextField value={record?.githubUrl} />
-      <ImageField
-        imageTitle={record?.title}
-        value={`${API_URL_UPLOADS_PROJECTS}/${record?.imageUrl}`}
-      />
-    </Show>
+  console.log("record: ", record, data);
+  return (
+    <>
+      <PageBreadCrumbs items={["Projects", "Lists", "Details"]} />
+      <Show isLoading={isLoading}>
+        <Title level={5}>{"ID"}</Title>
+        <TextField value={record?.id ?? ""} />
+        <Title level={5}>{"Title"}</Title>
+        <TextField value={record?.title} />
+        <Title level={5}>{"Description"}</Title>
+        <TextField value={record?.description} />
+        <Title level={5}>{"Deploy Url"}</Title>
+        <TextField value={record?.deployUrl} />
+        <Title level={5}>{"Github Url"}</Title>
+        <TextField value={record?.githubUrl} />
+        <ImageField
+          imageTitle={record?.title}
+          value={`${API_URL_UPLOADS_PROJECTS}/${record?.imageUrl}`}
+        />
+      </Show>
+    </>
   );
 }

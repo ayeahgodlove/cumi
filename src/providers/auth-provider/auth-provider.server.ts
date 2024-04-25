@@ -1,4 +1,5 @@
 // import { TOKEN_KEY } from "@constants/constant";
+// "use server";
 import { AuthBindings } from "@refinedev/core";
 import { cookies, } from "next/headers";
 

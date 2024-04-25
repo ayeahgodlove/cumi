@@ -18,8 +18,8 @@ export const authProvider: AuthBindings = {
           expires: 30, // 30 days
           path: "/dashboard",
         });
-        localStorage.setItem(TOKEN_KEY, user.token);
-        localStorage.setItem(USER_DATA, user);
+        localStorage.setItem(TOKEN_KEY, JSON.stringify(user.token));
+        localStorage.setItem(USER_DATA, JSON.stringify(user));
 
         return {
           success: true,

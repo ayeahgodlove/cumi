@@ -1,6 +1,7 @@
 "use client";
 
 import { ColorModeContext } from "@contexts/color-mode";
+import { IUser } from "@models/user.model";
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
 import {
@@ -16,11 +17,11 @@ import React, { useContext } from "react";
 const { Text } = Typography;
 const { useToken } = theme;
 
-type IUser = {
-  id: number;
-  name: string;
-  avatar: string;
-};
+// type IUser = {
+//   id: string;
+//   username: string;
+//   avatar: string;
+// };
 
 export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   sticky,
@@ -53,10 +54,10 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           onChange={() => setMode(mode === "light" ? "dark" : "light")}
           defaultChecked={mode === "dark"}
         />
-        {(user?.name || user?.avatar) && (
+        {(user?.username || user?.avatar) && (
           <Space style={{ marginLeft: "8px" }} size="middle">
-            {user?.name && <Text strong>{user.name}</Text>}
-            {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+            {user?.username && <Text strong>{user.username}</Text>}
+            {user?.avatar && <Avatar src={user?.avatar} alt={user?.username} />}
           </Space>
         )}
       </Space>

@@ -38,7 +38,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-, "src/components/banner/circle.jsx"  ],
+, "src/components/banner/circle.jsx", "src/components/dashboard/feature-card.component.jsx"  ],
   "exclude": [
     "node_modules"
   ]

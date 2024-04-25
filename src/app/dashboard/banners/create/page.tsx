@@ -1,12 +1,12 @@
 "use client";
 
 import { PlusOutlined } from "@ant-design/icons";
+import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { useUpload } from "@hooks/shared/upload.hook";
 import { Create, useForm } from "@refinedev/antd";
 import { upload } from "@utils/upload";
-import {  Form, Input, Typography, Upload } from "antd";
+import { Form, Input, Typography, Upload } from "antd";
 import { useCallback } from "react";
-
 
 export default function CategoryCreate() {
   const { formProps, saveButtonProps, form } = useForm({});
@@ -23,8 +23,10 @@ export default function CategoryCreate() {
   const formData = new FormData();
 
   return (
-    <Create saveButtonProps={saveButtonProps}>
-      <>
+    <>
+      <PageBreadCrumbs items={["Banners", "Lists", "Create"]} />
+      <Create saveButtonProps={saveButtonProps}>
+        <>
           <Typography.Title level={5}>Upload Image</Typography.Title>
           <Upload
             name="image"
@@ -44,42 +46,43 @@ export default function CategoryCreate() {
           >
             {fileList.length > 1 ? null : uploadButton}
           </Upload>
-      </>
-      <Form {...formProps} layout="vertical">
-        <Form.Item
-          name={"title"}
-          label="Title"
-          required={true}
-          rules={[
-            { required: true, message: "This field is a required field" },
-          ]}
-          style={{ marginBottom: 10 }}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name={"subTitle"}
-          label="Description"
-          required={true}
-          rules={[
-            { required: true, message: "This field is a required field" },
-          ]}
-          style={{ marginBottom: 10 }}
-        >
-          <Input.TextArea />
-        </Form.Item>
-        <Form.Item
-          name={"image"}
-          label="Image"
-          required={true}
-          rules={[
-            { required: true, message: "This field is a required field" },
-          ]}
-          style={{ marginBottom: 10 }}
-        >
-          <Input disabled={true} />
-        </Form.Item>
-      </Form>
-    </Create>
+        </>
+        <Form {...formProps} layout="vertical">
+          <Form.Item
+            name={"title"}
+            label="Title"
+            required={true}
+            rules={[
+              { required: true, message: "This field is a required field" },
+            ]}
+            style={{ marginBottom: 10 }}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name={"subTitle"}
+            label="Description"
+            required={true}
+            rules={[
+              { required: true, message: "This field is a required field" },
+            ]}
+            style={{ marginBottom: 10 }}
+          >
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item
+            name={"image"}
+            label="Image"
+            required={true}
+            rules={[
+              { required: true, message: "This field is a required field" },
+            ]}
+            style={{ marginBottom: 10 }}
+          >
+            <Input disabled={true} />
+          </Form.Item>
+        </Form>
+      </Create>
+    </>
   );
 }
