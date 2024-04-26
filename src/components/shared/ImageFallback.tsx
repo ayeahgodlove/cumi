@@ -23,7 +23,9 @@ const ImageFallback = (props: any) => {
       style={{
         objectFit: "cover",
         maxWidth: "100%",
-        height: width > 767 ? "450px" : "350px",
+        minHeight: width > 767 ? "450px" : "350px",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     />
   );

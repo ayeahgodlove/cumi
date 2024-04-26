@@ -1,5 +1,5 @@
 "use client";
-import BannerDetailComponent from "@components/banner/banner-detail.component";
+import PageContent from "@components/shared/page-content/index";
 import BlogPostItem from "@components/blog_post/blog_post_item";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
@@ -15,7 +15,7 @@ import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
 import { userAPI } from "@store/api/user_api";
 import { format } from "@utils/format";
-import { Layout, Spin } from "antd";
+import { Col, Layout, Spin } from "antd";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FaRegClock, FaRegFolder, FaRegUserCircle } from "react-icons/fa";
@@ -62,24 +62,23 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
   if (isLoading || isFetching) {
     <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
   }
-  console.log("banners: ", banners)
+  console.log("banners: ", banners);
   return (
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="./../" />
-        <BannerDetailComponent
-          banner={
-            banners
-              ? {
-                  imageUrl: banners.length > 0 ? banners[0].image : "",
-                  title: post?.title,
-                }
-              : { imageUrl: post?.imageUrl, title: post?.title }
-          }
-          page={[
-            { title: "Blog Posts", path: "/blog_posts" },
-            { title: "Details", path: "" },
+        <PageContent
+          title={post?.title}
+          banner={banners ? (banners.length > 0 ? banners[0].image : "") : []}
+          breadcrumb={[
+            {
+              title: "Blog Posts",
+              link: "/blog_posts",
+            },
+            {
+              title: "Details",
+            },
           ]}
         />
         <Content>
@@ -88,7 +87,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
               <div className="row justify-content-center">
                 <article className="col-lg-10">
                   {post && (
-                    <div className="mb-5">
+                    <div className="mb-3">
                       <ImageFallback
                         src={`${API_URL_UPLOADS_POSTS}/${post.imageUrl}`}
                         height={500}
@@ -98,7 +97,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
                       />
                     </div>
                   )}
-                  <h1 className="mb-2">{post?.title}</h1>
+                  {/* <h1 className="mb-2">{post?.title}</h1> */}
                   <ul className="nav mb-2">
                     <li className="me-3 inline-block">
                       <Link href={`/authors/${slugify(`${user?.username}`)}`}>
