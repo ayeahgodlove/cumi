@@ -32,7 +32,7 @@ export default function IndexPage() {
       {/* service section */}
       <AppService />
 
-      <AppFooter logoPath="./" />
+      <AppFooter logoPath="/" />
       <AppFootnote />
     </Suspense>
   );

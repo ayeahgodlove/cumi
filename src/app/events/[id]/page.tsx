@@ -44,7 +44,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="./../" />
+        <AppNav logoPath="/../" />
 
         <BannerDetailComponent
           banner={
@@ -69,6 +69,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
                         src={`${API_URL_UPLOADS_EVENTS}/${event.imageUrl}`}
                         height={500}
                         width={1200}
+                        quality={100}
                         alt={event?.title}
                         className="w-full rounded"
                       />
@@ -122,7 +123,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
           </section>
         </Content>
       </div>
-      <AppFooter logoPath="./../" />
+      <AppFooter logoPath="/../" />
       <AppFootnote />
     </Suspense>
   );

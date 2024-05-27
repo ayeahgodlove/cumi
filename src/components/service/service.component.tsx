@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "antd";
+import Image from "next/image";
 import React from "react";
 
 export const AppService = () => {
@@ -20,7 +21,7 @@ export const AppService = () => {
         <p className="text-center">
           {` Reach out to us today to learn more about our services and training
           programs.`}
-           {/* ${
+          {/* ${
             width > 767 &&
             "Let's collaborate to turn your vision into reality and shape the future of technology together."
           } */}
@@ -45,8 +46,11 @@ export const AppService = () => {
           borderBottomRightRadius: 0,
         }}
       >
-        <img
-          src={"./two-business-woman-cafe.jpg"}
+        <Image
+          height={500}
+          width={1200}
+          quality={100}
+          src={"/two-business-woman-cafe.jpg"}
           style={{
             width: "100%",
             height: "20rem",

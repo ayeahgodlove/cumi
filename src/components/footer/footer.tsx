@@ -4,6 +4,7 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import styles from "./footer.module.css";
 import Link from "next/link";
 import { THEME } from "@constants/constant";
+import Image from "next/image";
 
 type Props = {
   logoPath: string;
@@ -16,11 +17,12 @@ export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
       <div className="container">
         <div className={styles.content}>
           <div className={styles.content_group_logo}>
-            <img
+            <Image
               src={`${logoPath}cumi-green.jpeg`}
               className={styles.logo}
               height={70}
               width={120}
+              quality={100}
               alt="Cumi logo"
             />
             <p className={styles.subheading}>Empowering Your Digital Journey</p>

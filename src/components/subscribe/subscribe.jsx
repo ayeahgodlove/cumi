@@ -35,7 +35,13 @@ export const Subscribe = () => {
               Subscribe
             </Button>
           </form>
-          <img src="./img/pattern/pattern-4.svg" alt="pattern image" className={styles.pattern} />
+          <Image
+            height={250}
+            width={100}
+            src="/img/pattern/pattern-4.svg"
+            alt="pattern image"
+            className={styles.pattern}
+          />
         </div>
       </div>
     </section>

@@ -9,6 +9,7 @@ import { FaRegCircleUser } from "react-icons/fa6";
 import { CiCalendarDate, CiFolderOn } from "react-icons/ci";
 import { format } from "@utils/format";
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
+import Image from "next/image";
 
 const { Meta } = Card;
 const { Title } = Typography;
@@ -28,12 +29,15 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
       <Card
         hoverable
         style={{ width: "100%" }}
-        styles={{ header: { overflow: "hidden"}}}
+        styles={{ header: { overflow: "hidden" } }}
         key={post.id}
         cover={
-          <img
+          <Image
             alt={post.title}
             src={`${API_URL_UPLOADS_POSTS}/${post.imageUrl}`}
+            height={500}
+            width={1200}
+            quality={100}
             style={{
               height: 250,
               objectFit: "cover",

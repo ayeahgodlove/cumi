@@ -1,4 +1,5 @@
 import { Affix, Button } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -13,10 +14,11 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
       <nav className="navbar bg-white navbar-expand-lg">
         <div className="container-fluid">
           <Link href={"/"}>
-            <img
+            <Image
               src={`${logoPath}cumi-green.jpeg`}
               height={50}
               width={100}
+              quality={100}
               alt="Cumi logo"
               style={{ marginRight: 15 }}
             />

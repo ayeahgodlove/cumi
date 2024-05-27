@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./feature.module.css";
 import { Button } from "antd";
+import Image from "next/image";
 
 const FeatureSection = () => {
   return (
@@ -16,8 +17,11 @@ const FeatureSection = () => {
 
         <div className={styles.content}>
           <div className={styles.content_group}>
-            <img
-              src="./img/daniel-korpai-pKRNxEguRgM-unsplash.jpg"
+            <Image
+              height={500}
+              width={1200}
+              quality={100}
+              src="/img/daniel-korpai-pKRNxEguRgM-unsplash.jpg"
               alt="screenshot of audio player"
               className={styles.content_group_image_1}
             />
@@ -48,7 +52,7 @@ const FeatureSection = () => {
                 Software Development Training
               </h1>
               <p className={styles.content_group_subheading}>
-               {` Cumi equips tech enthusiasts with expertise in JavaScript,
+                {` Cumi equips tech enthusiasts with expertise in JavaScript,
                 Python, PHP, React, Laravel, Django, and React-Native. Our
                 hands-on training empowers aspiring developers for success in
                 the competitive tech industry.`}
@@ -63,8 +67,11 @@ const FeatureSection = () => {
                 Hire our expertise
               </Button>
             </div>
-            <img
-              src="./img/linkedin-sales-solutions-EI50ZDA-l8Y-unsplash.jpg"
+            <Image
+              height={500}
+              width={1200}
+              quality={100}
+              src="/img/linkedin-sales-solutions-EI50ZDA-l8Y-unsplash.jpg"
               alt="screenshot of app homepage"
               className={styles.content_group_image_2}
             />

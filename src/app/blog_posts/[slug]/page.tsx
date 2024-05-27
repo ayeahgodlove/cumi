@@ -67,7 +67,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="./../" />
+        <AppNav logoPath="/../" />
         <PageContent
           title={post?.title}
           banner={banners ? (banners.length > 0 ? banners[0].image : "") : []}
@@ -179,7 +179,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
           </section>
         </Content>
       </div>
-      <AppFooter logoPath="./../" />
+      <AppFooter logoPath="/../" />
       <AppFootnote />
     </Suspense>
   );

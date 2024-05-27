@@ -14,6 +14,7 @@ import {
 import { useWindowSize } from "usehooks-ts";
 import { useLogin } from "@refinedev/core";
 import Link from "next/link";
+import Image from "next/image";
 
 type FieldType = {
   username?: string;
@@ -56,7 +57,7 @@ export const LoginForm = () => {
             alignItems: "center",
           }}
         >
-          <img
+          <Image
             src={"/11436091_4707067.svg"}
             width={width < 1024 ? 250 : 350}
             height={width < 1024 ? 250 : 350}

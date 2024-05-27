@@ -3,6 +3,7 @@ import { Card, Button } from "antd";
 import { IEvent } from "@models/event";
 import { format } from "@utils/format";
 import { API_URL_UPLOADS_EVENTS } from "@constants/api-url";
+import Image from "next/image";
 
 type Prop = {
   event: IEvent;
@@ -34,7 +35,10 @@ const EventCard: React.FC<Prop> = ({ event }) => {
         </Button>,
       ]}
     >
-      <img
+      <Image
+        height={500}
+        width={1200}
+        quality={100}
         src={`${API_URL_UPLOADS_EVENTS}/${event.imageUrl}`}
         alt={event.title}
         style={{ maxWidth: "100%", height: "auto", objectFit: "cover" }}

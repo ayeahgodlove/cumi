@@ -4,6 +4,7 @@ import { IProject } from "@models/project";
 import { API_URL_UPLOADS_PROJECTS } from "@constants/api-url";
 import Link from "next/link";
 import { FaHandPointRight } from "react-icons/fa6";
+import Image from "next/image";
 
 type Prop = {
   project: IProject;
@@ -14,7 +15,10 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
     <Card
       key={project.id}
       cover={
-        <img
+        <Image
+          height={500}
+          width={1200}
+          quality={100}
           src={`${API_URL_UPLOADS_PROJECTS}/${project.imageUrl}`}
           alt={project.title}
           style={{ maxWidth: "100%", height: "auto", objectFit: "cover" }}

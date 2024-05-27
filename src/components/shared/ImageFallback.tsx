@@ -2,6 +2,7 @@
 "use client";
 
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const ImageFallback = (props: any) => {
@@ -14,7 +15,7 @@ const ImageFallback = (props: any) => {
   const { width } = useWindowSize();
 
   return (
-    <img
+    <Image
       {...rest}
       src={imgSrc}
       onError={() => {
@@ -27,6 +28,7 @@ const ImageFallback = (props: any) => {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
+      quality={100}
     />
   );
 };

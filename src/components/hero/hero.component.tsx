@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Space } from "antd";
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
+import Image from "next/image";
 
 export const AppHero = () => {
   const { width } = useWindowSize()
@@ -38,9 +39,12 @@ export const AppHero = () => {
         </div>
       </div>
       <div className="d-sm-none ms-auto d-md-inline col-md-6" style={{ marginTop: width < 767 ? 40 : 0 }}>
-        <img
-          src={"./img/rectangle.png"}
+        <Image
+          src={"/img/rectangle.png"}
           alt="Software engineering"
+          height={500}
+          width={1200}
+          quality={100}
           style={{
             width: "100%",
             height: "23rem",
