@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Button, Input } from "antd";
 import styles from "./subscribe.module.css";
+import Image from "next/image";
 
 export const Subscribe = () => {
   const [email, setEmail] = useState("");

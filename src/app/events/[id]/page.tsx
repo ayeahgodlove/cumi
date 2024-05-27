@@ -1,5 +1,4 @@
 "use client";
-import BannerDetailComponent from "@components/banner/banner-detail.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
@@ -46,7 +45,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
         {/* navigation bar */}
         <AppNav logoPath="/../" />
 
-        <BannerDetailComponent
+        {/* <BannerDetailComponent
           banner={
             banners
               ? { imageUrl: banners[1].image, title: event?.title }
@@ -56,7 +55,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
             { title: "Blog Posts", path: "/blog_posts" },
             { title: "Details", path: "" },
           ]}
-        />
+        /> */}
 
         <Content>
           <section className="section pt-4">
