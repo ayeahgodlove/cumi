@@ -5,6 +5,9 @@ import { IPost } from "@domain/models/post.model";
 import Tag from "@data/entities/tag";
 import PostTag from "@data/entities/post_tag";
 import sequelize from "@database/db-sequelize.config";
+import Category from "@data/entities/category";
+import { ICategory } from "@domain/models/category";
+import { ITag } from "@domain/models/tag";
 
 export class PostRepository implements IPostRepository {
   /**
@@ -34,6 +37,51 @@ export class PostRepository implements IPostRepository {
       throw error;
     }
   }
+
+  async findByCategory(category: string): Promise<Post[] | null> {
+    try {
+      const categoryItem = await Category.findOne({
+        where: { slug: category },
+      });
+
+      if (!categoryItem) {
+        throw new Error("Category does not exists!");
+      }
+      const item = categoryItem.toJSON<ICategory>();
+
+      const posts = await Post.findAll({
+        where: { categoryId: item.id },
+        include: Tag,
+      });
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // findByTag
+
+  async findByTag(tag: string): Promise<Post[] | null> {
+    try {
+      const tagItem = await Tag.findOne({
+        where: { slug: tag },
+      });
+
+      if (!tagItem) {
+        throw new Error("Tag does not exists!");
+      }
+      const item = tagItem.toJSON<ITag>();
+
+      const posts = await Post.findAll({
+        where: { tagId: item.id },
+        include: Tag,
+      });
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * Receives a Post as parameter
    * @post

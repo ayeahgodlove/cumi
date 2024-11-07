@@ -24,11 +24,16 @@ export class ProjectRequestDto {
   @Length(10, 128)
   deployUrl: string;
 
+  @IsNotEmpty()
+  @IsString()
+  imageUrl: string;
+
   constructor(data: IProject) {
     this.title = data.title;
     this.description = data.description;
     this.githubUrl = data.githubUrl;
     this.deployUrl = data.deployUrl;
+    this.imageUrl = data.imageUrl
   }
 
   toData(): IProject {
@@ -40,6 +45,7 @@ export class ProjectRequestDto {
       description: this.description,
       githubUrl: this.githubUrl,
       slug:  slugify(this.title, {lower: true, replacement: "-"}),
+      imageUrl: this.imageUrl
     };
   }
 

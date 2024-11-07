@@ -1,6 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -8,12 +9,12 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { BaseRecord, useCustom } from "@refinedev/core";
+import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
-import { Space, Table } from "antd";
+import { Image, Space, Table } from "antd";
 
 export default function CategoryList() {
-  const { tableProps, tableQueryResult } = useTable({
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
 
@@ -31,10 +32,15 @@ export default function CategoryList() {
           />
           <Table.Column dataIndex="title" title={"Title"} />
           <Table.Column
-            dataIndex="icon"
-            title={"Icon"}
-            render={(_, record: BaseRecord) => (
-              <>{record.icon as React.ReactNode}</>
+            dataIndex="imageUrl"
+            title={"Image"}
+            render={(value, record: any) => (
+              <Image
+                src={`${API_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
+                alt={record?.title}
+                height={50}
+                width={50}
+              />
             )}
           />
           <Table.Column dataIndex="description" title={"Description"} />

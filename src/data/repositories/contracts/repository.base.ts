@@ -35,6 +35,8 @@ export interface IMediaRepository extends IRepository<IMedia, Media> {
 export interface IPostRepository extends IRepository<IPost, Post> {
   findByTitle(title: string): Promise<Post | null>;
   findBySlug(slug: string): Promise<Post | null>;
+  findByCategory(category: string): Promise<Post[] | null>;
+  findByTag(tag: string): Promise<Post[] | null>;
 }
 
 export interface ICategoryRepository extends IRepository<ICategory, Category> {

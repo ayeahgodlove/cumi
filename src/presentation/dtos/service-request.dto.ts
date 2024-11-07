@@ -14,10 +14,14 @@ export class ServiceRequestDto {
   @IsString()
   description: string;
 
+  @IsNotEmpty()
+  @IsString()
+  imageUrl: string;
 
   constructor(data: IService) {
     this.title = data.title;
     this.description = data.description;
+    this.imageUrl = data.imageUrl;
   }
 
   toData(): IService {
@@ -26,7 +30,8 @@ export class ServiceRequestDto {
       id: nanoid(10),
       title: this.title,
       description: this.description,
-      slug:  slugify(this.title, {lower: true, replacement: "-"}),
+      slug: slugify(this.title, { lower: true, replacement: "-" }),
+      imageUrl: this.imageUrl,
     };
   }
 
@@ -36,7 +41,8 @@ export class ServiceRequestDto {
       title: data.title,
       description: data.description,
       userId: data.userId,
-      slug: data.slug
+      slug: data.slug,
+      imageUrl: data.imageUrl,
     };
   }
 }

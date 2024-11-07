@@ -13,6 +13,7 @@ export interface IPost {
   categoryId: string; //foreign key to user table
   status: string;
   tags: string[];
+  Tags?: any
 }
 
 export const emptyPost: IPost = {

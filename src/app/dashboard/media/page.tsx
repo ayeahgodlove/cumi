@@ -32,7 +32,7 @@ export default function MediaList() {
               format.twoChar((index + 1).toString())
             }
           />
-          <Table.Column dataIndex="slug" title={"Slug"} />
+          {/* <Table.Column dataIndex="slug" title={"Slug"} /> */}
           <Table.Column dataIndex="title" title={"Title"} />
           <Table.Column
             dataIndex="imageUrl"
@@ -41,8 +41,8 @@ export default function MediaList() {
               <Image
                 src={`${API_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
                 alt={record?.title}
-                height={100}
-                width={100}
+                height={50}
+                width={50}
               />
             )}
           />

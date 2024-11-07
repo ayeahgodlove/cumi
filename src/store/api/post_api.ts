@@ -19,7 +19,13 @@ export const postAPI = createApi({
     }),
     getSinglePostBySlug: build.query<IPost, string>({
       query: (slug) => `/posts/slugs/${slug}`,
-    }), 
+    }),
+    getPostsByCategory: build.query<IPost[], string>({
+      query: (category) => `/posts/categories/${category}`,
+    }),
+    getPostsByTag: build.query<IPost[], string>({
+      query: (tag) => `/posts/categories/${tag}`,
+    }),
     fetchAllPosts: build.query<IPost[], number | ISort>({
       query: (page = 1) => `/posts?page=${page}`,
       // query: ({ searchTitle, sortBy, }) => {
@@ -31,9 +37,9 @@ export const postAPI = createApi({
       //   } else if (sortBy === "author") {
       //     queryString += "&_sort=author&_order=desc";
       //   }
-       
+
       //   return queryString;
-      // }, 
+      // },
       providesTags: (result) => ["Post"],
     }),
   }),

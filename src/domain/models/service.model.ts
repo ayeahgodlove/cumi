@@ -7,6 +7,7 @@ export interface IService {
   description: string;
   userId: string;
   slug: string;
+  imageUrl: string
 }
 
 export const emptyService: IService = {
@@ -15,6 +16,7 @@ export const emptyService: IService = {
   description: "",
   userId: "",
   slug: "",
+  imageUrl: ""
 };
 
 export interface IServiceState extends IBaseState {
