@@ -13,7 +13,7 @@ export default function IndexPage() {
         <AppNav logoPath="/"/>
       </div>
       {/* banner */}
-      <BannerComponent pageTitle="About Us" />
+      <BannerComponent breadcrumbs={["about_us"]} pageTitle="About Us" />
 
       <AppFooter  logoPath="/"/>
       <AppFootnote />

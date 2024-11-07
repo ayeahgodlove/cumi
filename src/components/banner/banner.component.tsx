@@ -6,8 +6,9 @@ import { API_URL } from "@constants/api-url";
 
 type Props = {
   pageTitle: string;
+  breadcrumbs: string[];
 };
-const BannerComponent: React.FC<Props> = ({ pageTitle }) => {
+const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
   return (
     <>
       <div className="container-fluid mx-auto px-3 position-relative custom__banner">
@@ -26,9 +27,11 @@ const BannerComponent: React.FC<Props> = ({ pageTitle }) => {
               {
                 title: <Link href="/">Home</Link>,
               },
-              {
-                title: `${pageTitle}`,
-              },
+              ...breadcrumbs.map((b, index) => {
+                return {
+                  title:  <Link href={`/${b}`} key={index} className="text-capitalize">{b}</Link>,
+                };
+              }),
             ]}
           />
         </div>

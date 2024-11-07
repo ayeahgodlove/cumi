@@ -1,4 +1,3 @@
-import Post from "@data/entities/post";
 import { PostRepository } from "@data/repositories/impl/post.repository";
 import { PostUseCase } from "@domain/usecases/post.usecase";
 import { PostRequestDto } from "@presentation/dtos/post-request.dto";
@@ -13,9 +12,9 @@ const postMapper = new PostMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Post.findAll();
-
-    return NextResponse.json(categories);
+    const posts = await postUseCase.getAll();
+    const postsDto = postMapper.toDTOs(posts);
+    return NextResponse.json(postsDto);
   } catch (error: any) {
     return NextResponse.json(
       {

@@ -59,7 +59,10 @@ export default function IndexPage({ params }: { params: { tag: string } }) {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent pageTitle="Blog Posts" />
+      <BannerComponent
+        breadcrumbs={["tags", params.tag]}
+        pageTitle="Blog Posts"
+      />
       <div className="container mb-5">
         <Row justify="end">
           <Col span={12} style={{ textAlign: "right" }}>

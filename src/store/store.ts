@@ -6,6 +6,7 @@ import { userAPI } from "./api/user_api";
 import { eventAPI } from "./api/event_api";
 import { projectAPI } from "./api/project_api";
 import { bannerAPI } from "./api/banner_api";
+import { serviceAPI } from "./api/service_api";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     [eventAPI.reducerPath]: eventAPI.reducer,
     [projectAPI.reducerPath]: projectAPI.reducer,
     [bannerAPI.reducerPath]: bannerAPI.reducer,
+    [serviceAPI.reducerPath]: serviceAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -26,6 +28,7 @@ export const store = configureStore({
       eventAPI.middleware,
       projectAPI.middleware,
       bannerAPI.middleware,
+      serviceAPI.middleware,
     ]),
 });
 

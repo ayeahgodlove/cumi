@@ -62,7 +62,10 @@ export default function IndexPage({
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent pageTitle="Blog Posts" />
+      <BannerComponent
+        breadcrumbs={["categories", params.category]}
+        pageTitle="Blog Posts"
+      />
 
       <div className="container mb-5">
         <Row justify="end">

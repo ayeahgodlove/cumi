@@ -14,7 +14,7 @@ export default function IndexPage() {
       </div>
 
       {/* banner */}
-      <BannerComponent pageTitle="Courses" />
+      <BannerComponent breadcrumbs={["courses"]} pageTitle="Courses" />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

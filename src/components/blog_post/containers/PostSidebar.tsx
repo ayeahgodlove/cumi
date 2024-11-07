@@ -12,13 +12,13 @@ const PostSidebar = ({
 }: {
   tags: ITag[] | undefined;
   categories: ICategory[] | undefined;
-  posts: IPost[];
+  posts: IPost[] | undefined;
 }) => {
   const pathname = usePathname();
-  const allCategories: string[] = posts.map((p) => p.categoryId);
-  const [allTags] = posts.map((p) => p.Tags);
+  const allCategories: string[] =
+    posts && posts.length > 0 ? posts.map((p) => p.categoryId) : [];
+  const [allTags] = posts && posts.length > 0 ? posts.map((p) => p.Tags) : [];
 
-  console.log("pathname: ", pathname)
   return (
     <>
       {/* <!-- categories --> */}
@@ -37,13 +37,13 @@ const PostSidebar = ({
                 return (
                   <li key={category.id} className="d-block mb-2">
                     <Link
-                      className="flex justify-content-between"
+                      className="fs-6 d-flex justify-content-between"
                       href={`/categories/${category.slug}`}
                       style={{
                         color: isActive ? "#81ce89" : "none",
                       }}
                     >
-                      {category.name} <span>({count})</span>
+                      <span>{category.name}</span> <span>({count})</span>
                     </Link>
                   </li>
                 );
@@ -69,13 +69,13 @@ const PostSidebar = ({
                 return (
                   <li className="inline-block" key={tag.id}>
                     <Link
-                      className={`m-1 d-block rounded bg-white px-2 py-1`}
+                      className={`fs-6 m-1 d-block rounded bg-white px-2 py-1`}
                       href={`/tags/${tag.slug}`}
                       style={{
                         color: isActive ? "#81ce89" : "none",
                       }}
                     >
-                      {tag.name} <span>({count})</span>
+                      <span>{tag.name}</span> <span>({count})</span>
                     </Link>
                   </li>
                 );

@@ -65,16 +65,15 @@ export default function IndexPage() {
     setSortOrder(event.target.value as SortPostsType);
   };
 
-
   return (
     <Suspense fallback={<Spin size="large" />}>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/"/>
+        <AppNav logoPath="/" />
       </div>
 
       {/* banner */}
-      <BannerComponent pageTitle="Blog Posts" />
+      <BannerComponent breadcrumbs={["blog_posts"]} pageTitle="Blog Posts" />
 
       <div className="container mb-5">
         <Row justify="space-between">
@@ -138,8 +137,9 @@ export default function IndexPage() {
               </div>
               <div className="col-12 col-md-4">
                 <PostSidebar
+                  posts={isLoading || isFetching ? [] : posts}
                   tags={isFetchTag || isLoadingTag ? [] : tags}
-                  allCategories={isFetchCategory || isLoadingCategory ? [] : posts.map(p => p.categoryId)}
+                  // allCategories={isFetchCategory || isLoadingCategory ? [] : posts.map(p => p.categoryId)}
                   categories={
                     isFetchCategory || isLoadingCategory ? [] : categories
                   }
