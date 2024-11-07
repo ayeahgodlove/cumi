@@ -7,8 +7,8 @@ import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/Disqus";
 import ImageFallback from "@components/shared/ImageFallback";
 import Share from "@components/shared/Share";
-import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
-import { ITag } from "@models/tag.model";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { ITag } from "@domain/models/tag";
 import { bannerAPI } from "@store/api/banner_api";
 import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
@@ -89,7 +89,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
                   {post && (
                     <div className="mb-3">
                       <ImageFallback
-                        src={`${API_URL_UPLOADS_POSTS}/${post.imageUrl}`}
+                        src={`${API_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
                         height={500}
                         width={1200}
                         alt={post?.title}

@@ -5,7 +5,7 @@ import { Button, Col, Divider, Empty, Layout, Row, Spin } from "antd";
 import { Suspense, useState, useTransition } from "react";
 import { motion } from "framer-motion";
 import { postAPI } from "@store/api/post_api";
-import { SortPostsType } from "@models/shared/sort.model";
+import { SortPostsType } from "@domain/models/shared/sort.model";
 import BlogPostItem from "@components/blog_post/blog_post_item";
 import SearchPosts from "@components/blog_post/containers/SearchPosts";
 import SortPosts from "@components/blog_post/containers/SortPosts";

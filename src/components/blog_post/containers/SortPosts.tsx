@@ -1,4 +1,4 @@
-import { SortPostsType } from "@models/shared/sort.model";
+import { SortPostsType } from "@domain/models/shared/sort.model";
 import { Select } from "antd";
 
 interface SortPostsProps {

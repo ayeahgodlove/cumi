@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { DateField, ImageField, Show, TextField } from "@refinedev/antd";
 import { useOne, useShow } from "@refinedev/core";
 import { Typography } from "antd";
@@ -56,7 +56,7 @@ export default function BlogPostShow() {
         <DateField value={record?.createdAt} />
         <ImageField
           imageTitle={record?.title}
-          value={`${API_URL_UPLOADS_POSTS}/${record?.imageUrl}`}
+          value={`${API_URL_UPLOADS_MEDIA}/${record?.imageUrl}`}
         />
       </Show>
     </>

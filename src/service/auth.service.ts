@@ -1,5 +1,5 @@
 import { API_URL } from "@constants/api-url";
-import { IUser, IUserResponse } from "@models/user.model";
+import { IUser, IUserResponse } from "@domain/models/user";
 import axios from "axios";
 
 const instance = axios.create({
@@ -12,6 +12,6 @@ export const authService = {
   login: async (user: {
     email: string;
     password: string;
-  }): Promise<any> => await instance.post("/auth/login", user),
-  logout: async (): Promise<any> => await instance.get("/auth/logout"),
+  }): Promise<any> => await instance.post("/api/auth", user),
+  logout: async (): Promise<any> => await instance.get("/api/auth/logout"),
 };

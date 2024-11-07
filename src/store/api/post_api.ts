@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IPost } from "@models/post";
+import { IPost } from "@domain/models/post.model";
 import { BASE_URL } from "@constants/api-url";
 
 interface ISort {

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColorModeContext } from "@contexts/color-mode";
-import { IUser } from "@models/user.model";
+import { IUser } from "@domain/models/user";
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
 import {

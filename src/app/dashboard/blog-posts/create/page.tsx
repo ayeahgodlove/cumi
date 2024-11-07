@@ -1,62 +1,43 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { modules } from "@components/shared/react-quil-config";
-import { useUpload } from "@hooks/shared/upload.hook";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { ICategory } from "@domain/models/category";
+import { IMedia } from "@domain/models/media.model";
+import { ITag } from "@domain/models/tag";
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { upload } from "@utils/upload";
-import { Form, Input, Select, Typography, Upload } from "antd";
+import { Col, Form, Image, Input, Row, Select, Space, Typography } from "antd";
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
+
 // import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function BlogPostCreate() {
-  const { formProps, saveButtonProps, form } = useForm({});
-  const { fileList, handlePreview, onRemove, beforeUpload, progress } =
-    useUpload();
+  const { formProps, saveButtonProps } = useForm({});
 
-  const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
+  const { queryResult: mediaData, selectProps: mediaSelectProps } =
+    useSelect<IMedia>({
+      resource: "media",
+    });
 
-  const { queryResult, selectProps } = useSelect({
+  const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
     resource: "categories",
   });
+  const { queryResult: tagData } = useSelect<ITag>({
+    resource: "tags",
+  });
 
-  const formData = new FormData();
-  const { data } = queryResult;
+  const categories = categoryData.data;
+  const tags = tagData.data;
+  const media = mediaData.data;
+
   return (
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <>
-          <Typography.Title level={5}>Upload Image</Typography.Title>
-          <Upload
-            name="image"
-            maxCount={1}
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            onRemove={onRemove}
-            progress={progress}
-            fileList={fileList}
-            onPreview={handlePreview}
-            action={useCallback(async () => {
-              formData.append("imageUrl", fileList[0] as any);
-              const response = await upload("posts", formData);
-              form.setFieldValue("imageUrl", response);
-              return response;
-            }, [form, fileList, formData])}
-          >
-            {fileList.length > 1 ? null : uploadButton}
-          </Upload>
-        </>
         <Form {...formProps} layout="vertical">
           <Form.Item
             label={"Title"}
@@ -67,7 +48,7 @@ export default function BlogPostCreate() {
               },
             ]}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
 
           <Form.Item
@@ -81,7 +62,7 @@ export default function BlogPostCreate() {
               },
             ]}
           >
-            <Input.TextArea />
+            <Input.TextArea size="large" />
           </Form.Item>
 
           <Form.Item
@@ -103,9 +84,65 @@ export default function BlogPostCreate() {
               placeholder="Enter content..."
             />
           </Form.Item>
+          <Row gutter={[8, 16]}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                label={"Category"}
+                name={"categoryId"}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  onChange={selectProps.onChange}
+                  onSearch={selectProps.onSearch}
+                  filterOption={selectProps.filterOption}
+                  options={
+                    categories
+                      ? categories.data.map((d) => {
+                          return {
+                            label: d.name,
+                            value: d.id,
+                          };
+                        })
+                      : []
+                  }
+                  placeholder="Select a related category"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item
+                label={"Status"}
+                name={["status"]}
+                initialValue={"draft"}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select
+                  defaultValue={"draft"}
+                  options={[
+                    { value: "DRAFT", label: "Draft" },
+                    { value: "PUBLISHED", label: "Published" },
+                    { value: "REJECTED", label: "Rejected" },
+                  ]}
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <Form.Item
-            label={"Category"}
-            name={"categoryId"}
+            label={"Tags"}
+            name={["tags"]}
             rules={[
               {
                 required: true,
@@ -113,13 +150,9 @@ export default function BlogPostCreate() {
             ]}
           >
             <Select
-              showSearch
-              onChange={selectProps.onChange}
-              onSearch={selectProps.onSearch}
-              filterOption={selectProps.filterOption}
               options={
-                data
-                  ? data.data.map((d) => {
+                tags
+                  ? tags.data.map((d) => {
                       return {
                         label: d.name,
                         value: d.id,
@@ -127,26 +160,9 @@ export default function BlogPostCreate() {
                     })
                   : []
               }
-            />
-          </Form.Item>
-          <Form.Item
-            label={"Status"}
-            name={["status"]}
-            initialValue={"draft"}
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Select
-              defaultValue={"draft"}
-              options={[
-                { value: "DRAFT", label: "Draft" },
-                { value: "PUBLISHED", label: "Published" },
-                { value: "REJECTED", label: "Rejected" },
-              ]}
-              style={{ width: 120 }}
+              mode="tags"
+              placeholder="Select related tags"
+              size="large"
             />
           </Form.Item>
 
@@ -159,7 +175,46 @@ export default function BlogPostCreate() {
             ]}
             style={{ marginBottom: 10 }}
           >
-            <Input disabled={true} />
+            <Select
+              {...mediaSelectProps}
+              showSearch
+              options={
+                media
+                  ? media.data.map((d) => {
+                      return {
+                        label: d.title,
+                        value: d.imageUrl,
+                        emoji: (
+                          <Image
+                            src={`${API_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
+                            alt={d?.title}
+                            height={50}
+                            width={60}
+                          />
+                        ),
+                        desc: (
+                          <Typography.Title level={5}>
+                            {d.title}
+                          </Typography.Title>
+                        ),
+                      };
+                    })
+                  : []
+              }
+              optionRender={(option) => (
+                <Space>
+                  <span role="img" aria-label={option.data.label}>
+                    {option.data.emoji}
+                  </span>
+                  {option.data.desc}
+                </Space>
+              )}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              placeholder="Select image"
+              size="large"
+            />
           </Form.Item>
         </Form>
       </Create>

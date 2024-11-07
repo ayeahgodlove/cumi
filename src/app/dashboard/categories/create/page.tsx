@@ -21,7 +21,7 @@ export default function CategoryCreate() {
               },
             ]}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
         </Form>
       </Create>

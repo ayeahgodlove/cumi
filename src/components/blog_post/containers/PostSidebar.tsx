@@ -1,5 +1,5 @@
-import { ICategory } from "@models/category.model";
-import { ITag } from "@models/tag.model";
+import { ICategory } from "@domain/models/category";
+import { ITag } from "@domain/models/tag";
 import Link from "next/link";
 // import "./post-sidebar.scss";
 

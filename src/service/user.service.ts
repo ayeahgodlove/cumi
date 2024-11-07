@@ -1,8 +1,8 @@
 import { requestType } from ".";
-import { IUser, IUserResponse, IUserResponses } from "@models/user.model";
+import { IUser, IUserResponse } from "@domain/models/user";
 
 export const userService = {
-  list: (): Promise<IUserResponses> => requestType.get("/api/users"),
+  list: (): Promise<IUserResponse> => requestType.get("/api/users"),
   details: (code: string): Promise<IUserResponse> =>
     requestType.get(`/api/users/${code}`),
   create: (user: IUser): Promise<IUserResponse> =>

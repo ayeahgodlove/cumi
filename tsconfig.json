@@ -31,7 +31,9 @@
         "./pages/*"
       ]
     },
-    "incremental": true
+    "incremental": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "next-env.d.ts",

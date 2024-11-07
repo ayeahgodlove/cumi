@@ -1,51 +1,23 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { useUpload } from "@hooks/shared/upload.hook";
-import { Edit, useForm } from "@refinedev/antd";
-import { upload } from "@utils/upload";
-import { Col, Form, Input, Row, Typography, Upload } from "antd";
-import { useCallback } from "react";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { IMedia } from "@domain/models/media.model";
+import { Edit, useForm, useSelect } from "@refinedev/antd";
+import { Col, Form, Image, Input, Row, Select, Space, Typography } from "antd";
 
 export default function CategoryEdit() {
   const { formProps, saveButtonProps, form } = useForm({});
-  const { fileList, handlePreview, onRemove, beforeUpload, progress } =
-    useUpload();
+  const { queryResult: mediaData, selectProps: mediaSelectProps } =
+    useSelect<IMedia>({
+      resource: "media",
+    });
 
-  const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
-
-  const formData = new FormData();
+  const media = mediaData.data;
   return (
     <>
       <PageBreadCrumbs items={["Projects", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <>
-          <Typography.Title level={5}>Upload Image</Typography.Title>
-          <Upload
-            name="image"
-            maxCount={1}
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            onRemove={onRemove}
-            progress={progress}
-            fileList={fileList}
-            onPreview={handlePreview}
-            action={useCallback(async () => {
-              formData.append("imageUrl", fileList[0] as any);
-              const response = await upload("projects", formData);
-              form.setFieldValue("imageUrl", response);
-              return response;
-            }, [form, fileList, formData])}
-          >
-            {fileList.length > 1 ? null : uploadButton}
-          </Upload>
-        </>
         <Form {...formProps} layout="vertical">
           <Form.Item
             name={"title"}
@@ -68,7 +40,7 @@ export default function CategoryEdit() {
                   { required: true, message: "This field is a required field" },
                 ]}
               >
-                <Input type="website" />
+                <Input type="website" size="large" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
@@ -80,7 +52,7 @@ export default function CategoryEdit() {
                   { required: true, message: "This field is a required field" },
                 ]}
               >
-                <Input type="website" />
+                <Input type="website" size="large" />
               </Form.Item>
             </Col>
           </Row>
@@ -93,7 +65,7 @@ export default function CategoryEdit() {
             ]}
             style={{ marginBottom: 10 }}
           >
-            <Input.TextArea />
+            <Input.TextArea size="large" />
           </Form.Item>
           <Col xs={24} md={24}>
             <Form.Item
@@ -105,7 +77,46 @@ export default function CategoryEdit() {
               ]}
               style={{ marginBottom: 10 }}
             >
-              <Input disabled={true} />
+              <Select
+                {...mediaSelectProps}
+                showSearch
+                options={
+                  media
+                    ? media.data.map((d) => {
+                        return {
+                          label: d.title,
+                          value: d.imageUrl,
+                          emoji: (
+                            <Image
+                              src={`${API_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
+                              alt={d?.title}
+                              height={50}
+                              width={60}
+                            />
+                          ),
+                          desc: (
+                            <Typography.Title level={5}>
+                              {d.title}
+                            </Typography.Title>
+                          ),
+                        };
+                      })
+                    : []
+                }
+                optionRender={(option) => (
+                  <Space>
+                    <span role="img" aria-label={option.data.label}>
+                      {option.data.emoji}
+                    </span>
+                    {option.data.desc}
+                  </Space>
+                )}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                placeholder="Select image"
+                size="large"
+              />
             </Form.Item>
           </Col>
         </Form>

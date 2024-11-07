@@ -21,7 +21,7 @@ export default function CategoryEdit() {
               },
             ]}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
         </Form>
       </Edit>

@@ -4,7 +4,7 @@ import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.
 import { Edit, useForm } from "@refinedev/antd";
 import { Form, Input } from "antd";
 
-export default function CategoryEdit() {
+export default function TagEdit() {
   const { formProps, saveButtonProps } = useForm({});
 
   return (
@@ -21,7 +21,7 @@ export default function CategoryEdit() {
               },
             ]}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
         </Form>
       </Edit>

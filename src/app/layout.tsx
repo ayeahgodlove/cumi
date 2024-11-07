@@ -21,6 +21,22 @@ import { SlEvent } from "react-icons/sl";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import "../styles/app.scss";
 import ClientProvider from "@contexts/provider";
+import sequelize from "@database/db-sequelize.config";
+import { MdBrowseGallery } from "react-icons/md";
+
+// initialize.ts
+
+const initializeDatabase = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully.");
+    await sequelize.sync(); // Sync all models
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
+
+initializeDatabase();
 
 export const metadata: Metadata = {
   title: "Cumi - Empowering Your Digital Journey",
@@ -59,6 +75,7 @@ export default function RootLayout({
                   <DevtoolsProvider>
                     <Refine
                       routerProvider={routerProvider}
+                      // dataProvider={dataProvider}
                       dataProvider={dataProvider}
                       notificationProvider={useNotificationProvider}
                       authProvider={authProvider}
@@ -155,6 +172,17 @@ export default function RootLayout({
                             canDelete: true,
                           },
                           icon: <FiUsers />,
+                        },
+                        {
+                          name: "media",
+                          list: "/dashboard/media",
+                          create: "/dashboard/media/create",
+                          edit: "/dashboard/media/edit/:id",
+                          show: "/dashboard/media/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <MdBrowseGallery />,
                         },
                       ]}
                       options={{

@@ -5,7 +5,7 @@ import { useToken } from "@hooks/shared/token.hook";
 import { Create, useForm } from "@refinedev/antd";
 import { Form, Input } from "antd";
 
-export default function CategoryCreate() {
+export default function TagCreate() {
   const { formProps, saveButtonProps } = useForm({});
 
   return (
@@ -22,7 +22,7 @@ export default function CategoryCreate() {
               },
             ]}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
         </Form>
       </Create>

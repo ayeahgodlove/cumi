@@ -14,7 +14,7 @@ import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Space, Table } from "antd";
 
-export default function CategoryList() {
+export default function TagList() {
   const { tableProps } = useTable({
     syncWithLocation: true,
   });

@@ -1,52 +1,24 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { useUpload } from "@hooks/shared/upload.hook";
-import { Create, useForm } from "@refinedev/antd";
-import { upload } from "@utils/upload";
-import { Form, Input, Typography, Upload } from "antd";
-import { useCallback } from "react";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { IMedia } from "@domain/models/media.model";
+import { Create, useForm, useSelect } from "@refinedev/antd";
+import { Form, Image, Input, Select, Space, Typography } from "antd";
 
 export default function CategoryCreate() {
-  const { formProps, saveButtonProps, form } = useForm({});
-  const { fileList, onRemove, beforeUpload, progress, handlePreview } =
-    useUpload();
+  const { formProps, saveButtonProps } = useForm({});
 
-  const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
-  );
+  const { queryResult: mediaData, selectProps: mediaSelectProps } =
+    useSelect<IMedia>({
+      resource: "media",
+    });
 
-  const formData = new FormData();
-
+  const media = mediaData.data;
   return (
     <>
       <PageBreadCrumbs items={["Banners", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <>
-          <Typography.Title level={5}>Upload Image</Typography.Title>
-          <Upload
-            name="image"
-            maxCount={1}
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            onRemove={onRemove}
-            progress={progress}
-            fileList={fileList}
-            onPreview={handlePreview}
-            action={useCallback(async () => {
-              formData.append("image", fileList[0] as any);
-              const response = await upload("banners", formData);
-              form.setFieldValue("image", response);
-              return response;
-            }, [form, fileList, formData])}
-          >
-            {fileList.length > 1 ? null : uploadButton}
-          </Upload>
-        </>
         <Form {...formProps} layout="vertical">
           <Form.Item
             name={"title"}
@@ -57,7 +29,7 @@ export default function CategoryCreate() {
             ]}
             style={{ marginBottom: 10 }}
           >
-            <Input />
+            <Input size="large" />
           </Form.Item>
           <Form.Item
             name={"subTitle"}
@@ -68,7 +40,7 @@ export default function CategoryCreate() {
             ]}
             style={{ marginBottom: 10 }}
           >
-            <Input.TextArea />
+            <Input.TextArea size="large" />
           </Form.Item>
           <Form.Item
             name={"image"}
@@ -79,7 +51,46 @@ export default function CategoryCreate() {
             ]}
             style={{ marginBottom: 10 }}
           >
-            <Input disabled={true} />
+            <Select
+              {...mediaSelectProps}
+              showSearch
+              options={
+                media
+                  ? media.data.map((d) => {
+                      return {
+                        label: d.title,
+                        value: d.imageUrl,
+                        emoji: (
+                          <Image
+                            src={`${API_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
+                            alt={d?.title}
+                            height={50}
+                            width={60}
+                          />
+                        ),
+                        desc: (
+                          <Typography.Title level={5}>
+                            {d.title}
+                          </Typography.Title>
+                        ),
+                      };
+                    })
+                  : []
+              }
+              optionRender={(option) => (
+                <Space>
+                  <span role="img" aria-label={option.data.label}>
+                    {option.data.emoji}
+                  </span>
+                  {option.data.desc}
+                </Space>
+              )}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              placeholder="Select image"
+              size="large"
+            />
           </Form.Item>
         </Form>
       </Create>

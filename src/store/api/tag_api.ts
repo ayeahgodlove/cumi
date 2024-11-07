@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "@constants/api-url";
-import { ITag } from "@models/tag.model";
+import { ITag } from "@domain/models/tag";
 
 export const tagAPI = createApi({
   reducerPath: "tagAPI",

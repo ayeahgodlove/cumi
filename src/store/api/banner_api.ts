@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { BASE_URL } from "@constants/api-url";
-import { IBanner } from "@models/banner";
+import { IBanner } from "@domain/models/banner.model";
 
 export const bannerAPI = createApi({
   reducerPath: "bannerAPI",

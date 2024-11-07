@@ -1,10 +1,10 @@
 import { Card, Space, Typography } from "antd";
 import React from "react";
-import { IPost } from "@models/post";
-import { API_URL_UPLOADS_POSTS } from "@constants/api-url";
+import { IPost } from "@domain/models/post.model";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
-import { ICategory } from "@models/category.model";
-import { IUser } from "@models/user.model";
+import { ICategory } from "@domain/models/category";
+import { IUser } from "@domain/models/user";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { CiCalendarDate, CiFolderOn } from "react-icons/ci";
 import { format } from "@utils/format";
@@ -34,7 +34,7 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
         cover={
           <Image
             alt={post.title}
-            src={`${API_URL_UPLOADS_POSTS}/${post.imageUrl}`}
+            src={`${API_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
             height={500}
             width={1200}
             quality={100}
