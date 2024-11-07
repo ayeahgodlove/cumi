@@ -54,12 +54,12 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           onChange={() => setMode(mode === "light" ? "dark" : "light")}
           defaultChecked={mode === "dark"}
         />
-        {(user?.username || user?.avatar) && (
+        {/* {(user?.username || user?.avatar) && (
           <Space style={{ marginLeft: "8px" }} size="middle">
             {user?.username && <Text strong>{user.username}</Text>}
             {user?.avatar && <Avatar src={user?.avatar} alt={user?.username} />}
           </Space>
-        )}
+        )} */}
       </Space>
     </AntdLayout.Header>
   );

@@ -205,7 +205,7 @@ export default function BlogPostEdit() {
                   {option.data.desc}
                 </Space>
               )}
-              filterOption={(input, option) =>
+              filterOption={(input: any, option: any) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
               }
               placeholder="Select image"
