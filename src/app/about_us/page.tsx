@@ -3,6 +3,9 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
+import Social from "@components/shared/Social";
+import { API_URL } from "@constants/api-url";
+import Link from "next/link";
 import { Suspense } from "react";
 
 export default function IndexPage() {
@@ -10,12 +13,53 @@ export default function IndexPage() {
     <Suspense>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/"/>
+        <AppNav logoPath="/" />
       </div>
       {/* banner */}
       <BannerComponent breadcrumbs={["about_us"]} pageTitle="About Us" />
-
-      <AppFooter  logoPath="/"/>
+      <div className="container">
+        <div className="d-flex justify-content-center">
+          <div className="rounded bg-light p-4 text-center">
+            <img
+              className="mx-auto mb-3 rounded"
+              src={`${API_URL}/img/avatar.png`}
+              alt={"authors"}
+              width={120}
+              height={120}
+            />
+            <h4 className="mb-2">
+              <Link href={`/authors/john-doe`}>John Doe</Link>
+            </h4>
+            <p className="mb-3">this is meta description</p>
+            <Social
+              source={[
+                {
+                  name: "facebook",
+                  icon: "FaFacebook",
+                  link: "https://www.facebook.com/",
+                },
+                {
+                  name: "twitter",
+                  icon: "FaTwitter",
+                  link: "https://twitter.com/",
+                },
+                {
+                  name: "github",
+                  icon: "FaGithub",
+                  link: "https://www.github.com/",
+                },
+                {
+                  name: "linkedin",
+                  icon: "FaLinkedin",
+                  link: "https://www.linkedin.com/",
+                },
+              ]}
+              className="nav d-flex justify-content-center social-icons"
+            />
+          </div>
+        </div>
+      </div>
+      <AppFooter logoPath="/" />
       <AppFootnote />
     </Suspense>
   );

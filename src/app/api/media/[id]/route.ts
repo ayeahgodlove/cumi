@@ -16,7 +16,10 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const dto = new MediaRequestDto(await req.json());
+  const data = await req.json();
+  const imageUrl = data.imageUrl[0].name;
+
+  const dto = new MediaRequestDto(data.title, imageUrl);
   const validationErrors = await validate(dto);
 
   if (validationErrors.length > 0) {
