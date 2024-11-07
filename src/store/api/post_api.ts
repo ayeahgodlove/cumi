@@ -19,7 +19,7 @@ export const postAPI = createApi({
     }),
     getSinglePostBySlug: build.query<IPost, string>({
       query: (slug) => `/posts/slugs/${slug}`,
-    }),
+    }), 
     fetchAllPosts: build.query<IPost[], number | ISort>({
       query: (page = 1) => `/posts?page=${page}`,
       // query: ({ searchTitle, sortBy, }) => {

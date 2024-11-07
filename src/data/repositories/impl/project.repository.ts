@@ -50,6 +50,15 @@ export class ProjectRepository implements IProjectRepository {
     }
   }
 
+  async findBySlug(slug: string): Promise<Project | null> {
+    try {
+      const project = await Project.findOne({ where: { slug } });
+      return project;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /*
    * Returns an array of Project
    */

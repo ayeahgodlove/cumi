@@ -31,6 +31,11 @@ export class ServiceUseCase {
     return this.serviceRepository.findById(id);
   }
 
+  async getServiceBySlug(slug: string): Promise<Service | null> {
+    return this.serviceRepository.findBySlug(slug);
+  }
+
+
   async updateService(service: IService): Promise<Service> {
     return this.serviceRepository.update(service);
   }

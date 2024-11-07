@@ -5,7 +5,7 @@ import { IEvent } from "@domain/models/event.model";
 export class EventUseCase {
   /**
    *
-   */
+   */ 
   constructor(private readonly eventRepository: IEventRepository) {}
 
   async createEvent(event: IEvent): Promise<Event> {
@@ -28,6 +28,10 @@ export class EventUseCase {
 
   async getEventById(id: string): Promise<Event | null> {
     return this.eventRepository.findById(id);
+  }
+
+  async getEventBySlug(slug: string): Promise<Event | null> {
+    return this.eventRepository.findBySlug(slug);
   }
 
   async updateEvent(event: IEvent): Promise<Event> {

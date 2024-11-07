@@ -30,6 +30,11 @@ export class ProjectUseCase {
     return this.projectRepository.findById(id);
   }
 
+  async getProjectBySlug(slug: string): Promise<Project | null> {
+    return this.projectRepository.findBySlug(slug);
+  }
+
+
   async updateProject(project: IProject): Promise<Project> {
     return this.projectRepository.update(project);
   }

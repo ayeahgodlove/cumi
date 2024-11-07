@@ -52,12 +52,15 @@ export interface ITagRepository extends IRepository<ITag, Tag> {
 }
 export interface IProjectRepository extends IRepository<IProject, Project> {
   findByTitle(title: string): Promise<Project | null>;
+  findBySlug(slug: string): Promise<Project | null>;
 }
 export interface IServiceRepository extends IRepository<IService, Service> {
   findByTitle(title: string): Promise<Service | null>;
+  findBySlug(slug: string): Promise<Service | null>;
 }
 export interface IEventRepository extends IRepository<IEvent, Event> {
   findByTitle(title: string): Promise<Event | null>;
+  findBySlug(slug: string): Promise<Event | null>;
 }
 
 export interface IBannerRepository extends IRepository<IBanner, Banner> {

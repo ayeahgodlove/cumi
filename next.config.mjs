@@ -2,11 +2,12 @@
 const nextConfig = {
   transpilePackages: ["@refinedev/antd"],
   images: {
+    domains: ["localhost"],
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "api.honeyman.shop",
-        port: "",
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
         pathname: "/uploads/**",
       },
     ],

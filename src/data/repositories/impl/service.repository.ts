@@ -50,6 +50,15 @@ export class ServiceRepository implements IServiceRepository {
     }
   }
 
+  async findBySlug(slug: string): Promise<Service | null> {
+    try {
+      const service = await Service.findOne({ where: { slug } });
+      return service;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /*
    * Returns an array of Service
    */

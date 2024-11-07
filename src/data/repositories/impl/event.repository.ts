@@ -50,6 +50,15 @@ export class EventRepository implements IEventRepository {
     }
   }
 
+  async findBySlug(slug: string): Promise<Event | null> {
+    try {
+      const event = await Event.findOne({ where: { slug } });
+      return event;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /*
    * Returns an array of Event
    */
