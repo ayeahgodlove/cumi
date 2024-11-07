@@ -67,6 +67,23 @@ Event.init(
   }
 );
 
-Event.belongsToMany(Tag, { through: "EventTags" }); // Many-to-many relationship
-Tag.belongsToMany(Event, { through: "EventTags" });
+Event.belongsToMany(Tag, {
+  through: {
+    model: "event_tags",
+    unique: false,
+  },
+  foreignKey: "eventId",
+  otherKey: "tagId",
+  timestamps: false,
+}); // Many-to-many relationship
+Tag.belongsToMany(Event, {
+  through: {
+    model: "event_tags",
+    unique: false,
+  },
+  foreignKey: "tagId",
+  otherKey: "eventId",
+  timestamps: false,
+});
+
 export default Event;

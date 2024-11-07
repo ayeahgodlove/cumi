@@ -3,6 +3,7 @@
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { IMedia } from "@domain/models/media.model";
+import { ITag } from "@domain/models/tag";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import {
   Col,
@@ -24,9 +25,12 @@ export default function CategoryCreate() {
     useSelect<IMedia>({
       resource: "media",
     });
+  const { queryResult: tagData } = useSelect<ITag>({
+    resource: "tags",
+  });
 
   const media = mediaData.data;
-
+  const tags = tagData.data;
   return (
     <>
       <PageBreadCrumbs items={["Events", "Lists", "Create"]} />
@@ -135,9 +139,39 @@ export default function CategoryCreate() {
                     </Space>
                   )}
                   filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    (option?.label ?? "")
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
                   }
                   placeholder="Select image"
+                  size="large"
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={24}>
+              <Form.Item
+                label={"Tags"}
+                name={["tags"]}
+                rules={[
+                  {
+                    required: true,
+                  },
+                ]}
+              >
+                <Select
+                  options={
+                    tags
+                      ? tags.data.map((d) => {
+                          return {
+                            label: d.name,
+                            value: d.id,
+                          };
+                        })
+                      : []
+                  }
+                  mode="tags"
+                  placeholder="Select related tags"
                   size="large"
                 />
               </Form.Item>

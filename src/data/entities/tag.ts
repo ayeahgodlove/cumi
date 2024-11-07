@@ -1,6 +1,8 @@
 // models/Tag.ts
 import sequelize from "@database/db-sequelize.config";
 import { DataTypes, Model } from "sequelize";
+import Post from "./post";
+import Event from "./event";
 
 class Tag extends Model {
   public id!: string;
@@ -14,7 +16,6 @@ Tag.init(
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
     },
     name: {
       type: DataTypes.STRING,

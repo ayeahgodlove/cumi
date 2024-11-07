@@ -2,44 +2,69 @@ import Post from "@data/entities/post";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IPostRepository } from "../contracts/repository.base";
 import { IPost } from "@domain/models/post.model";
+import Tag from "@data/entities/tag";
+import PostTag from "@data/entities/post_tag";
+import sequelize from "@database/db-sequelize.config";
 
-export class PostRepository implements IPostRepository{
+export class PostRepository implements IPostRepository {
   /**
    *
    */
   constructor() {}
 
-    /**
+  /**
    * Receives a String as parameter
    * @title
    * returns Category
    */
-    async findByTitle(title: string): Promise<Post | null> {
-      try {
-        const post = await Post.findOne({ where: { title } });
-        return post;
-      } catch (error) {
-        throw error;
-      }
+  async findByTitle(title: string): Promise<Post | null> {
+    try {
+      const post = await Post.findOne({ where: { title }, include: Tag });
+      return post;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    async findBySlug(slug: string): Promise<Post | null> {
-      try {
-        const post = await Post.findOne({ where: { slug } });
-        return post;
-      } catch (error) {
-        throw error;
-      }
+  async findBySlug(slug: string): Promise<Post | null> {
+    try {
+      const post = await Post.findOne({ where: { slug }, include: Tag });
+      return post;
+    } catch (error) {
+      throw error;
     }
+  }
   /**
    * Receives a Post as parameter
    * @post
    * returns void
    */
   async create(post: IPost): Promise<Post> {
+    // Begin transaction if needed
+    const transaction = await sequelize.transaction();
     try {
-      return await Post.create<Post>({ ...post });
+      const { tags, ...rest } = post;
+
+      const postItem = await Post.create<Post>({ ...rest }, { transaction });
+
+      await Promise.all(
+        post.tags.map((tagId) =>
+          PostTag.create(
+            { tagId: tagId, postId: post.id },
+            {
+              transaction,
+              ignoreDuplicates: true,
+              returning: false,
+            }
+          )
+        )
+      );
+      // Commit transaction
+      await transaction.commit();
+
+      return postItem;
     } catch (error) {
+      await transaction.rollback();
       throw error;
     }
   }
@@ -51,7 +76,9 @@ export class PostRepository implements IPostRepository{
    */
   async findById(id: string): Promise<Post | null> {
     try {
-      const postItem = await Post.findByPk(id);
+      const postItem = await Post.findByPk(id, {
+        include: Tag,
+      });
 
       if (!postItem) {
         throw new NotFoundException("Post", id);
@@ -67,7 +94,7 @@ export class PostRepository implements IPostRepository{
    */
   async getAll(): Promise<Post[]> {
     try {
-      const categories = await Post.findAll();
+      const categories = await Post.findAll({ include: Tag });
       return categories;
     } catch (error) {
       throw error;

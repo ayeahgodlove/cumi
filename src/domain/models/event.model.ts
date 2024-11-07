@@ -10,6 +10,7 @@ export interface IEvent {
   location: string;
   userId: string;
   slug: string;
+  tags: string[]
 }
 
 export const emptyEvent: IEvent = {
@@ -20,7 +21,8 @@ export const emptyEvent: IEvent = {
   eventDate: new Date(),
   location: "",
   userId: "",
-  slug: ""
+  slug: "",
+  tags: []
 };
 
 export interface IEventState extends IBaseState {

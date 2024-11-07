@@ -22,7 +22,7 @@ class Post extends Model {
   public categoryId!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
-  public status!: string; 
+  public status!: string;
 }
 
 Post.init(
@@ -30,7 +30,6 @@ Post.init(
     id: {
       type: DataTypes.STRING,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
     },
     title: {
       type: DataTypes.STRING,
@@ -88,6 +87,22 @@ Post.init(
 Post.belongsTo(Category, { foreignKey: "categoryId" });
 Category.hasMany(Post, { foreignKey: "categoryId" });
 
-Post.belongsToMany(Tag, { through: "PostTags" }); // Many-to-many relationship
-Tag.belongsToMany(Post, { through: "PostTags" });
+Post.belongsToMany(Tag, {
+  through: {
+    model: "post_tags",
+    unique: false,
+  },
+  foreignKey: "postId",
+  otherKey: "tagId",
+  timestamps: false,
+}); // Many-to-many relationship
+Tag.belongsToMany(Post, {
+  through: {
+    model: "post_tags",
+    unique: false,
+  },
+  foreignKey: "tagId",
+  otherKey: "postId",
+  timestamps: false,
+});
 export default Post;

@@ -1,6 +1,6 @@
 // src/presentation/dtos/post-request.dto.ts
 
-import { IsNotEmpty, IsString, Length } from "class-validator";
+import { IsArray, IsNotEmpty, IsString, Length } from "class-validator";
 import slugify from "slugify";
 import { nanoid } from "nanoid";
 import { emptyPost, IPost } from "@domain/models/post.model";
@@ -32,13 +32,16 @@ export class PostRequestDto {
   @IsString()
   imageUrl: string;
 
+  @IsArray()
+  tags: string[];
+
   constructor(data: IPost) {
     this.title = data.title;
     this.content = data.content;
     this.description = data.description;
     this.categoryId = data.categoryId;
     this.status = data.status;
-    this.imageUrl = data.imageUrl
+    (this.imageUrl = data.imageUrl), (this.tags = data.tags);
   }
 
   toData(): IPost {
@@ -51,7 +54,8 @@ export class PostRequestDto {
       categoryId: this.categoryId,
       description: this.description,
       status: this.status,
-      imageUrl: this.imageUrl
+      imageUrl: this.imageUrl,
+      tags: this.tags,
     };
   }
 
@@ -67,6 +71,7 @@ export class PostRequestDto {
       slug: data.slug,
       description: data.description,
       status: data.status,
+      tags: data.tags,
     };
   }
 }

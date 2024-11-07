@@ -1,7 +1,7 @@
 // src/presentation/dtos/event-request.dto.ts
 
 import { emptyEvent, IEvent } from "@domain/models/event.model";
-import {  IsNotEmpty, IsString, Length } from "class-validator";
+import {  IsArray, IsNotEmpty, IsString, Length } from "class-validator";
 import { nanoid } from "nanoid";
 import slugify from "slugify";
 export class EventRequestDto {
@@ -16,14 +16,22 @@ export class EventRequestDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(10, 128)
   location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  imageUrl: string;
+
+  @IsArray()
+  tags: string[];
   
 
   constructor(data: IEvent) {
     this.title = data.title;
     this.description = data.description;
     this.location = data.location;
+    this.tags = data.tags;
+    this.imageUrl = data.imageUrl
   }
 
   toData(): IEvent {
@@ -34,6 +42,8 @@ export class EventRequestDto {
       description: this.description,
       location: this.location,
       slug:  slugify(this.title, {lower: true, replacement: "-"}),
+      tags: this.tags,
+      imageUrl: this.imageUrl
     };
   }
 
@@ -46,7 +56,8 @@ export class EventRequestDto {
       location: data.location,
       userId: data.userId,
       eventDate: data.eventDate,
-      slug: data.slug
+      slug: data.slug,
+      tags: data.tags,
     }
   }
 }
