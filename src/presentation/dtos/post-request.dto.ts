@@ -24,11 +24,21 @@ export class PostRequestDto {
   @IsString()
   categoryId: string;
 
+  @IsNotEmpty()
+  @IsString()
+  status: string;
+
+  @IsNotEmpty()
+  @IsString()
+  imageUrl: string;
+
   constructor(data: IPost) {
     this.title = data.title;
     this.content = data.content;
     this.description = data.description;
     this.categoryId = data.categoryId;
+    this.status = data.status;
+    this.imageUrl = data.imageUrl
   }
 
   toData(): IPost {
@@ -40,6 +50,8 @@ export class PostRequestDto {
       content: this.content,
       categoryId: this.categoryId,
       description: this.description,
+      status: this.status,
+      imageUrl: this.imageUrl
     };
   }
 
@@ -54,6 +66,7 @@ export class PostRequestDto {
       publishedAt: data.publishedAt,
       slug: data.slug,
       description: data.description,
+      status: data.status,
     };
   }
 }

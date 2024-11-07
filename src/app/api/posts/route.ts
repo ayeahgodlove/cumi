@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
   const validationErrors = await validate(dto);
   const userId = request.headers.get("X-User-Id") || "";
 
+  console.log("tags: ", body.tags);
   if (validationErrors.length > 0) {
     return NextResponse.json(
       {
@@ -52,6 +53,8 @@ export async function POST(request: NextRequest) {
       ...dto.toData(),
       authorId: userId,
     });
+
+    // postResponse.
     return NextResponse.json(
       {
         data: postResponse.toJSON(),

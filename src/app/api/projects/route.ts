@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const dto = new ProjectRequestDto(body);
   const validationErrors = await validate(dto);
+  const userId = request.headers.get("X-User-Id") || "";
 
   if (validationErrors.length > 0) {
     return NextResponse.json(
@@ -47,7 +48,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const projectResponse = await projectUseCase.createProject(dto.toData());
+    const projectResponse = await projectUseCase.createProject({
+      ...dto.toData(),
+      userId,
+    });
     return NextResponse.json(
       {
         data: projectResponse.toJSON(),

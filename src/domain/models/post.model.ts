@@ -11,6 +11,7 @@ export interface IPost {
   publishedAt: Date;
   authorId: string; //foreign key to user table
   categoryId: string; //foreign key to user table
+  status: string; 
 }
 
 export const emptyPost: IPost = {
@@ -22,15 +23,14 @@ export const emptyPost: IPost = {
   publishedAt: new Date(),
   authorId: "",
   categoryId: "",
-  description: ""
+  description: "",
+  status: ""
 };
-
 
 export interface IPostState extends IBaseState {
   readonly posts: IPost[];
   readonly post: IPost;
 }
-
 
 export interface IPostResponse extends IResponseBase {
   data: IPost | null | IPost[];

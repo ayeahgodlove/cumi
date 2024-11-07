@@ -22,6 +22,7 @@ class Post extends Model {
   public categoryId!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
+  public status!: string; 
 }
 
 Post.init(
@@ -34,7 +35,7 @@ Post.init(
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
     },
     description: {
       type: DataTypes.STRING,
