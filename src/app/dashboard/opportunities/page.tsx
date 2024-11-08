@@ -1,26 +1,28 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { API_URL_UPLOADS_EVENTS, API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
+  DateField,
   DeleteButton,
   EditButton,
   List,
+  MarkdownField,
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import { BaseRecord } from "@refinedev/core";
+import { BaseRecord, useMany } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Image, Space, Table } from "antd";
 
-export default function CategoryList() {
-  const { tableProps, tableQueryResult } = useTable({
+export default function OpportunityList() {
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
 
   return (
     <>
-      <PageBreadCrumbs items={["Events", "Lists"]} />
+      <PageBreadCrumbs items={["Blog Posts", "Lists"]} />
       <List>
         <Table {...tableProps} rowKey="id">
           <Table.Column
@@ -31,25 +33,17 @@ export default function CategoryList() {
             }
           />
           <Table.Column dataIndex="title" title={"Title"} />
-          {/* <Table.Column dataIndex="description" title={"Description"} /> */}
           <Table.Column
-            dataIndex="eventDate"
-            title={"Event Date"}
+            dataIndex="deadline"
+            title={"Deadline"}
             render={(value) => format.date(value)}
           />
           <Table.Column dataIndex="location" title={"Location"} />
           <Table.Column
-            dataIndex="imageUrl"
-            title={"Image"}
-            render={(value, record: any) => (
-              <Image
-                src={`${API_URL_UPLOADS_MEDIA}/${value}`}
-                alt={record?.title}
-                height={100}
-                width={100}
-              />
-            )}
+            dataIndex="companyOrInstitution"
+            title={"Institution"}
           />
+          <Table.Column dataIndex="contactEmail" title={"Email"} />
           <Table.Column
             title={"Actions"}
             dataIndex="actions"

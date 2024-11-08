@@ -5,20 +5,24 @@ export async function up(knex: Knex): Promise<void> {
     table.string("id", 10).primary().notNullable();
     table.string("title", 1000).notNullable();
     table
-      .enum("type", ["Jobs", "Scholarships"])
+      .enum("opp_type", ["job", "scholarships"])
       .notNullable()
       .comment("Defines if the opportunity is a job or a scholarship");
-    table.string("description", 2000).notNullable();
+    table.text("description").notNullable();
     table
-      .string("requirements", 2000)
+      .text("requirements")
       .notNullable()
       .comment("Requirements or qualifications for the job or scholarship");
-    table.timestamp("deadline").nullable().comment("Deadline for the application");
+    table
+      .date("deadline")
+      .nullable()
+      .comment("Deadline for the application");
     table.string("location", 255).notNullable();
     table.string("companyOrInstitution", 500).notNullable();
     table.string("contactEmail", 255).notNullable();
     table.string("applicationLink", 255).notNullable();
     table.boolean("isActive").defaultTo(false);
+    table.string("slug", 500).unique().notNullable();
     table.timestamps(true, true);
   });
 }

@@ -15,7 +15,7 @@ import "@refinedev/antd/dist/reset.css";
 
 import { GrBlog, GrDashboard, GrServices } from "react-icons/gr";
 import { TbCategoryPlus } from "react-icons/tb";
-import { FiTag, FiUsers } from "react-icons/fi";
+import { FiGlobe, FiTag, FiUsers } from "react-icons/fi";
 import { FcEditImage } from "react-icons/fc";
 import { SlEvent } from "react-icons/sl";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
@@ -184,6 +184,17 @@ export default function RootLayout({
                             canDelete: true,
                           },
                           icon: <MdBrowseGallery />,
+                        },
+                        {
+                          name: "opportunities",
+                          list: "/dashboard/opportunities",
+                          create: "/dashboard/opportunities/create",
+                          edit: "/dashboard/opportunities/edit/:id",
+                          show: "/dashboard/opportunities/show/:id",
+                          meta: {
+                            canDelete: true,
+                          },
+                          icon: <FiGlobe />,
                         },
                       ]}
                       options={{

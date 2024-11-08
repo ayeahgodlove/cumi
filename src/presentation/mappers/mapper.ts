@@ -2,6 +2,7 @@ import Banner from "@data/entities/banner";
 import Category from "@data/entities/category";
 import Event from "@data/entities/event";
 import Media from "@data/entities/media";
+import Opportunity from "@data/entities/opportunity";
 import Post from "@data/entities/post";
 import Project from "@data/entities/project";
 import Role from "@data/entities/role";
@@ -12,6 +13,7 @@ import { IBanner } from "@domain/models/banner.model";
 import { ICategory } from "@domain/models/category";
 import { IEvent } from "@domain/models/event.model";
 import { IMedia } from "@domain/models/media.model";
+import { IOpportunity } from "@domain/models/opportunity.model";
 import { IPost } from "@domain/models/post.model";
 import { IProject } from "@domain/models/project.model";
 import { IRole } from "@domain/models/role.model";
@@ -44,6 +46,20 @@ export class PostMapper {
       return entity;
     });
     return _posts;
+  }
+}
+
+export class OpportunityMapper {
+  toDTO(opportunity: Opportunity): IOpportunity {
+    const entity = opportunity.toJSON<IOpportunity>();
+    return entity;
+  }
+  toDTOs(opportunitys: Opportunity[]): IOpportunity[] {
+    const _opportunities = opportunitys.map((opportunity) => {
+      const entity = opportunity.toJSON<IOpportunity>();
+      return entity;
+    });
+    return _opportunities;
   }
 }
 

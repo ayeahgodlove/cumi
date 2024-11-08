@@ -6,6 +6,7 @@ class Opportunity extends Model {
   public id!: string;
   public title!: string;
   public type!: string;
+  public slug!: string;
   public description!: string;
   public requirements!: string;
   public deadline!: Date;
@@ -29,7 +30,12 @@ Opportunity.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    type: {
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    opp_type: {
       type: DataTypes.ENUM("job", "scholarship"),
       allowNull: false,
       comment: "Defines if the opportunity is a job or a scholarship",
@@ -76,13 +82,22 @@ Opportunity.init(
       defaultValue: true,
       comment: "Indicates if the opportunity is still active",
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      field: "created_at",
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      field: "updated_at",
+    },
   },
   {
     sequelize,
     modelName: "Opportunity",
     tableName: "opportunities",
     timestamps: true,
-    paranoid: true, // Enables soft delete
   }
 );
 

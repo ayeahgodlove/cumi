@@ -2,6 +2,7 @@ import Banner from "@data/entities/banner";
 import Category from "@data/entities/category";
 import Event from "@data/entities/event";
 import Media from "@data/entities/media";
+import Opportunity from "@data/entities/opportunity";
 import Post from "@data/entities/post";
 import Project from "@data/entities/project";
 import Role from "@data/entities/role";
@@ -12,6 +13,7 @@ import { IBanner } from "@domain/models/banner.model";
 import { ICategory } from "@domain/models/category";
 import { IEvent } from "@domain/models/event.model";
 import { IMedia } from "@domain/models/media.model";
+import { IOpportunity } from "@domain/models/opportunity.model";
 import { IPost } from "@domain/models/post.model";
 import { IProject } from "@domain/models/project.model";
 import { IRole } from "@domain/models/role.model";
@@ -37,6 +39,12 @@ export interface IPostRepository extends IRepository<IPost, Post> {
   findBySlug(slug: string): Promise<Post | null>;
   findByCategory(category: string): Promise<Post[] | null>;
   findByTag(tag: string): Promise<Post[] | null>;
+}
+
+export interface IOpportunityRepository
+  extends IRepository<IOpportunity, Opportunity> {
+  findByTitle(title: string): Promise<Opportunity | null>;
+  findBySlug(slug: string): Promise<Opportunity | null>;
 }
 
 export interface ICategoryRepository extends IRepository<ICategory, Category> {
