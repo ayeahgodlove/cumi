@@ -3,14 +3,13 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import ImageFallback from "@components/shared/ImageFallback";
 import { API_URL, API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { IService } from "@domain/models/service.model";
 import { serviceAPI } from "@store/api/service_api";
 import { Empty } from "antd";
-import Image from "next/image";
 import Link from "next/link";
-import { Suspense } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import "swiper/css";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -22,6 +21,19 @@ export default function IndexPage() {
     isFetching: isFetchService,
   } = serviceAPI.useFetchAllServicesQuery(1);
 
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (services && services.length > 0) {
+      // Example: Navigate to the first service's detail page
+      const firstService = services[0];
+      const newPath = `our_services/${firstService.slug}#service-details`;
+
+      // Programmatically navigate to the new path
+      router.push(newPath);
+    }
+  }, [services, pathname, router]);
   return (
     <Suspense>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
@@ -30,7 +42,10 @@ export default function IndexPage() {
       </div>
 
       {/* banner */}
-      <BannerComponent breadcrumbs={["services"]} pageTitle="Our Services" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Services", uri: "our_services" }]}
+        pageTitle="Our Services"
+      />
       {/* page */}
 
       {/* call-t-action */}
@@ -56,7 +71,10 @@ export default function IndexPage() {
                   Next. Build lightning-fast static sites with ease and
                   flexibility.
                 </p>
-                <Link className="btn btn-lg px-5 btn-dark rounded-pill" href={"/contact_us"}>
+                <Link
+                  className="btn btn-lg px-5 btn-dark rounded-pill"
+                  href={"/contact_us"}
+                >
                   Contact us
                 </Link>
               </div>

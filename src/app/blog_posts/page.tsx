@@ -73,7 +73,10 @@ export default function IndexPage() {
       </div>
 
       {/* banner */}
-      <BannerComponent breadcrumbs={["blog_posts"]} pageTitle="Blog Posts" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Blog Posts", uri: "blog_posts" }]}
+        pageTitle="Blog Posts"
+      />
 
       <div className="container mb-5">
         <Row justify="space-between">

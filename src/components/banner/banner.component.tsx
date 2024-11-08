@@ -4,9 +4,13 @@ import React from "react";
 import "./banner.scss";
 import { API_URL } from "@constants/api-url";
 
+interface IBreadcrumb {
+  label: string;
+  uri: string;
+}
 type Props = {
   pageTitle: string;
-  breadcrumbs: string[];
+  breadcrumbs: IBreadcrumb[];
 };
 const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
   return (
@@ -29,7 +33,15 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
               },
               ...breadcrumbs.map((b, index) => {
                 return {
-                  title:  <Link href={`/${b}`} key={index} className="text-capitalize">{b}</Link>,
+                  title: (
+                    <Link
+                      href={`/${b.uri}`}
+                      key={index}
+                      className="text-capitalize"
+                    >
+                      {b.label}
+                    </Link>
+                  ),
                 };
               }),
             ]}

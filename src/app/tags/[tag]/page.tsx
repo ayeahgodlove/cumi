@@ -60,7 +60,10 @@ export default function IndexPage({ params }: { params: { tag: string } }) {
       </div>
       {/* banner */}
       <BannerComponent
-        breadcrumbs={["tags", params.tag]}
+        breadcrumbs={[
+          { label: "Tags", uri: "tags" },
+          { label: params.tag, uri: "#" },
+        ]}
         pageTitle="Blog Posts"
       />
       <div className="container mb-5">

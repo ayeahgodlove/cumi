@@ -16,7 +16,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["about_us"]} pageTitle="About Us" />
+      <BannerComponent
+        breadcrumbs={[{ label: "About Us", uri: "about_us" }]}
+        pageTitle="About Us"
+      />
       <div className="container">
         <div className="d-flex justify-content-center">
           <div className="rounded bg-light p-4 text-center">

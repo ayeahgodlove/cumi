@@ -20,6 +20,7 @@ import { FcEditImage } from "react-icons/fc";
 import { SlEvent } from "react-icons/sl";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
 import "../styles/app.scss";
+import "../styles/home.scss";
 import ClientProvider from "@contexts/provider";
 import sequelize from "@database/db-sequelize.config";
 import { MdBrowseGallery } from "react-icons/md";

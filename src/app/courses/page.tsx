@@ -10,11 +10,14 @@ export default function IndexPage() {
     <Suspense>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/"/>
+        <AppNav logoPath="/" />
       </div>
 
       {/* banner */}
-      <BannerComponent breadcrumbs={["courses"]} pageTitle="Courses" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Courses", uri: "courses" }]}
+        pageTitle="Courses"
+      />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

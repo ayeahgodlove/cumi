@@ -31,7 +31,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["tags"]} pageTitle="Tags" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Tags", uri: "tags" }]}
+        pageTitle="Tags"
+      />
 
       <TagContainer
         posts={isLoading || isFetching ? [] : posts}

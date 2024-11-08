@@ -25,7 +25,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["events"]} pageTitle="Events" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Events", uri: "events" }]}
+        pageTitle="Events"
+      />
 
       <Content className="container">
         {(isLoadingEvent || isFetchEvent) && (
@@ -57,15 +60,12 @@ export default function IndexPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <EventCard
-                        event={event}
-                      />
+                      <EventCard event={event} />
                     </motion.div>
                   </Col>
                 ))}
               </Row>
             </div>
-          
           </div>
         ) : (
           <Col span={24}>

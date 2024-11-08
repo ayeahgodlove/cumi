@@ -12,6 +12,9 @@ export const serviceAPI = createApi({
     getSingleService: build.query<IService, string>({
       query: (serviceId) => `/services/${serviceId}`,
     }),
+    getServiceBySlug: build.query<IService, string>({
+      query: (slug) => `/services/slugs/${slug}`,
+    }),
     fetchAllServices: build.query<IService[], number | void>({
       query: (page = 1) => `/services?page=${page}`,
     }),

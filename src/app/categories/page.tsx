@@ -27,7 +27,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["categories"]} pageTitle="Categories" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Categories", uri: "categories" }]}
+        pageTitle="Categories"
+      />
 
       <CategoryContainer
         posts={isLoading || isFetching ? [] : posts}

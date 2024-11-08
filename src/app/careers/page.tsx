@@ -13,9 +13,12 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["careers"]} pageTitle="Careers & Opportunities" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Careers", uri: "careers" }]}
+        pageTitle="Careers & Opportunities"
+      />
 
-      <AppFooter  logoPath="/"/>
+      <AppFooter logoPath="/" />
       <AppFootnote />
     </Suspense>
   );

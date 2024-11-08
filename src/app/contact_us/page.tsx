@@ -13,7 +13,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["contact_us"]} pageTitle="Contact Us" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Contact us", uri: "contact_us" }]}
+        pageTitle="Contact Us"
+      />
 
       <section className="py-3">
         <div className="container">

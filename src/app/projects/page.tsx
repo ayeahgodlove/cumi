@@ -26,7 +26,10 @@ export default function IndexPage() {
         <AppNav logoPath="/" />
       </div>
       {/* banner */}
-      <BannerComponent breadcrumbs={["projects"]} pageTitle="Projects" />
+      <BannerComponent
+        breadcrumbs={[{ label: "Projects", uri: "projects" }]}
+        pageTitle="Projects"
+      />
 
       <Content className="container">
         {(isLoadingEvent || isFetchEvent) && (
