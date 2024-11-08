@@ -22,6 +22,7 @@ const makeConfig = () => {
     dialect: "postgres",
     dialectModule: pg,
     logging: isDev ? logQuery : false,
+    ssl: true,
   };
 
   if (!isDev) {
