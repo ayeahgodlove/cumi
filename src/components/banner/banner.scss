@@ -1,0 +1,24 @@
+.custom__banner {
+  margin-bottom: 2rem;
+  background-image:
+  radial-gradient(circle, var(--white), #e8f2e9);
+  padding: 2rem;
+
+  .top-circle {
+    margin: 1.5rem 3rem;
+  }
+  .bottom-circle {
+    margin: 2rem;
+  }
+}
+
+@media screen and (min-width: 767px) {
+  .custom__banner {
+    .top-circle {
+      margin: 5rem 10rem;
+    }
+    .bottom-circle {
+      margin: 6rem;
+    }
+  }
+}

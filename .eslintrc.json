@@ -1,0 +1,16 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    // Add custom ESLint rules here
+    "@next/next/no-sync-scripts": "off", // Ignore "Synchronous scripts should not be used" error
+    "@next/next/no-img-element": "off" // Ignore "Using <img> could result in slower LCP and higher bandwidth" warning
+  }
+  // "react-hooks/exhaustive-deps": [
+  //   // Warning: React Hook useCallback has a missing dependency: 'formData'. Either include it or remove the dependency array.
+  //   "warn",
+  //   {
+  //     "additionalHooks": "useCallback",
+  //     "enableDangerousAutofixThisMayCauseInfiniteLoops": true
+  //   }
+  // ]
+}

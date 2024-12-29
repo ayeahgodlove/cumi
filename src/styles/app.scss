@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+  --primary-color: #54c6aa;
+  --secondary: #81ce89;
+  --green: #adff83;
+  --dark: #070025;
+  --white: #fff;
+  --gray: #E7E9F8;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // color: #070025;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Roboto", sans-serif !important;
+  }
+
+  p,
+  a {
+    font-family: "Poppins", sans-serif !important;
+  }
+
+  a {
+    text-decoration: none !important;
+    color: var(--dark);
+  }
+  a:hover {
+    color: var(--secondary);
+  }
+}
+
+.titleHolder {
+  text-align: center;
+  position: relative;
+  padding: 0 0 20px;
+  margin: 0 0 40px;
+}
+
+.titleHolder:after {
+  transform: translateX(-50%);
+  content: "";
+  background: var(--secondary);
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  height: 3px;
+  width: 50px;
+}
+
+.titleHolder h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.primary-btn {
+  background: var(--primary-color) !important;
+  color: var(--white) !important;
+  border: 1px solid var(--primary-color) !important;
+  font-weight: bold !important;
+
+  &:hover {
+    border: 1px solid var(--green) !important;
+    background: var(--green) !important;
+    color: var(--dark) !important;
+  }
+}
+
+.default-btn {
+  background: transparent !important;
+  color: var(--primary-color) !important;
+  border: 1px solid var(--primary-color) !important;
+  font-weight: bold !important;
+
+  &:hover {
+    border: 1px solid var(--green) !important;
+    color: var(--primary-color) !important;
+  }
+}
+
+.gradient-title {
+  background: linear-gradient(to right, #2e856f, #81ce89);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+}
+
+// about us
+// #about,
+// #work-with-us,
+// #subscribe {
+//   margin: 60px 0;
+// }
+
+@media screen and (min-width: 767px) {
+  #about,
+  #work-with-us,
+  #subscribe {
+    margin: 100px 0;
+  }
+}
