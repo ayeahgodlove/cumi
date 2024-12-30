@@ -84,8 +84,8 @@ Post.init(
   }
 );
 
-Post.belongsTo(Category, { foreignKey: "categoryId" });
-Category.hasMany(Post, { foreignKey: "categoryId" });
+Post.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
+Category.hasMany(Post, { foreignKey: "categoryId", as: "posts" });
 
 Post.belongsToMany(Tag, {
   through: {
@@ -95,6 +95,7 @@ Post.belongsToMany(Tag, {
   foreignKey: "postId",
   otherKey: "tagId",
   timestamps: false,
+  as: "tags",
 }); // Many-to-many relationship
 Tag.belongsToMany(Post, {
   through: {
@@ -104,5 +105,6 @@ Tag.belongsToMany(Post, {
   foreignKey: "tagId",
   otherKey: "postId",
   timestamps: false,
+  as: "posts",
 });
 export default Post;

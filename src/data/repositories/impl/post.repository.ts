@@ -142,8 +142,13 @@ export class PostRepository implements IPostRepository {
    */
   async getAll(): Promise<Post[]> {
     try {
-      const categories = await Post.findAll({ include: Tag });
-      return categories;
+      const posts = await Post.findAll({
+        include: [
+          { model: Tag, as: "tags" },
+          { model: Category, as: "category" },
+        ],
+      });
+      return posts;
     } catch (error) {
       throw error;
     }
