@@ -8,6 +8,21 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = withBundleAnalyzer({
   transpilePackages: ["@refinedev/antd"],
   productionBrowserSourceMaps: false,
+  headers: () => {
+    return [
+      {
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Origin", value: "https://cumitech.com" },
+          { key: "Access-Control-Allow-Methods", value: "GET, POST, OPTIONS" },
+          {
+            key: "Access-Control-Allow-Headers",
+            value: "Content-Type, Authorization",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     domains: ["localhost"],
     remotePatterns: [
