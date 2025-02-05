@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
   const dto = new UserRequestDto(body);
   const validationErrors = await validate(dto);
 
-
   if (validationErrors.length > 0) {
     return NextResponse.json(
       {

@@ -1,5 +1,5 @@
-// export const API_URL = "http://localhost:3000";
-export const API_URL = "https://www.cumitech.com";
+export const API_URL = "http://localhost:3000";
+// export const API_URL = "https://www.cumitech.com";
 export const API_URL_UPLOADS_POSTS = `${API_URL}/uploads/posts`;
 export const API_URL_UPLOADS_DOCUMENTS = `${API_URL}/uploads/document`;
 export const API_URL_UPLOADS_EVENTS = `${API_URL}/uploads/events`;

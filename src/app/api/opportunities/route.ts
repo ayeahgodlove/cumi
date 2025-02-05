@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const dto = new OpportunityRequestDto({ ...body, isActive: false });
   const validationErrors = await validate(dto);
+
   // Begin transaction if needed
 
   if (validationErrors.length > 0) {

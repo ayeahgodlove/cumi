@@ -43,9 +43,19 @@ const initializeDatabase = async () => {
 initializeDatabase();
 
 export const metadata: Metadata = {
-  title: "Cumi - Empowering Your Digital Journey",
-  description:
-    "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
+  title: "",
+  description: "",
+  openGraph: {
+    title: "",
+    description: "",
+    url: "",
+    images: [
+      {
+        url: "/desola-lanre-ologun-IgUR1iX0mqM-unsplash",
+        alt: "",
+      },
+    ],
+  },
   icons: {
     icon: "/favicon.ico",
   },

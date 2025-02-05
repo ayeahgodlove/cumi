@@ -71,7 +71,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                   Blog Posts
                 </Link>
               </li>
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/careers"
@@ -82,7 +82,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                 >
                   Careers
                 </Link>
-              </li> */}
+              </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
@@ -107,7 +107,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                   Projects
                 </Link>
               </li>
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/courses"
@@ -118,7 +118,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                 >
                   Courses
                 </Link>
-              </li> */}
+              </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${

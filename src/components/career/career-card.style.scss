@@ -1,0 +1,101 @@
+/* Listings Styles */
+.listing-style1 {
+    background-color: #ffffff;
+    border-radius: 12px;
+    -webkit-box-shadow: 0px 1px 4px rgba(24, 26, 32, 0.07);
+    -o-box-shadow: 0px 1px 4px rgba(24, 26, 32, 0.07);
+    box-shadow: 0px 1px 4px rgba(24, 26, 32, 0.07);
+    margin-bottom: 30px;
+    overflow: hidden;
+    position: relative;
+}
+.listing-style1 .list-thumb {
+    overflow: hidden;
+    position: relative;
+}
+.listing-style1 img {
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+.listing-style1 .list-tag {
+    background-color: #eb6753;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: var(--title-font-family);
+    font-weight: 600;
+    opacity: 1;
+    padding: 2px 12px;
+    -webkit-transform: translateY(0px);
+    -ms-transform: translateY(0px);
+    transform: translateY(0px);
+    visibility: visible;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+.listing-style1 .list-content {
+    padding: 20px;
+    position: relative;
+}
+.listing-style1 .list-title {
+    margin-bottom: 2px;
+}
+.listing-style1 .list-title a {
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.listing-style1 .list-title a:hover {
+    color: var(--headings-color);
+}
+.listing-style1 .list-text {
+    color: #717171;
+    margin-bottom: 10px;
+}
+.listing-style1 .list-meta2 a {
+    background-color: #ffffff;
+    border-radius: 6px;
+    height: 35px;
+    line-height: 40px;
+    text-align: center;
+    width: 35px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    margin-right: 2px;
+}
+.listing-style1 .list-meta2 a:hover {
+    background-color: #f7f7f7;
+    color: var(--headings-color);
+}
+.listing-style1 .for-what {
+    font-size: 13px;
+    color: var(--headings-color);
+    font-family: var(--title-font-family);
+    font-weight: 400;
+}
+.listing-style1 hr {
+    background-color: #dddddd;
+    opacity: 1;
+}
+.listing-style1:hover .list-title {
+    text-decoration: underline;
+}
+.listing-style1:hover .list-tag {
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transform: translateY(50px);
+    -ms-transform: translateY(50px);
+    transform: translateY(50px);
+}
+.listing-style1:hover .list-thumb img {
+    -webkit-transform: scale(1.1) rotate(-1deg);
+    -ms-transform: scale(1.1) rotate(-1deg);
+    transform: scale(1.1) rotate(-1deg);
+}

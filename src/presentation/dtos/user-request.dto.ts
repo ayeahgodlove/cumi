@@ -15,6 +15,10 @@ export class UserRequestDto {
 
   @IsNotEmpty()
   @IsString()
+  fullname: string;
+
+  @IsNotEmpty()
+  @IsString()
   @Length(8)
   password: string;
 
@@ -22,6 +26,7 @@ export class UserRequestDto {
     this.username = data.username;
     this.email = data.email;
     this.password = data.password;
+    this.fullname = data.fullname;
   }
 
   toData(): IUser {
@@ -31,6 +36,7 @@ export class UserRequestDto {
       username: this.username,
       email: this.email,
       password: this.password,
+      fullname: this.fullname,
     };
   }
 

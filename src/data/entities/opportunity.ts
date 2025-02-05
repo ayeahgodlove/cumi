@@ -36,7 +36,7 @@ Opportunity.init(
       unique: true,
     },
     opp_type: {
-      type: DataTypes.ENUM("job", "scholarship"),
+      type: DataTypes.ENUM("job", "scholarships"),
       allowNull: false,
       comment: "Defines if the opportunity is a job or a scholarship",
     },

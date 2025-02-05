@@ -14,7 +14,6 @@ import {
   emptyOpportunity,
   IOpportunity,
 } from "@domain/models/opportunity.model";
-
 export class OpportunityRequestDto {
   @IsNotEmpty()
   @IsString()

@@ -99,7 +99,7 @@ export default function BlogPostCreate() {
                   defaultValue={"Jobs"}
                   options={[
                     { value: "job", label: "Jobs" },
-                    { value: "scholarship", label: "Scholarships" },
+                    { value: "scholarships", label: "Scholarships" },
                   ]}
                   size="large"
                 />

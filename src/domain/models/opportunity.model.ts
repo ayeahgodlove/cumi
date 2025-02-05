@@ -32,7 +32,7 @@ export const emptyOpportunity: IOpportunity = {
 };
 
 export interface IOpportunityState extends IBaseState {
-  readonly oppoIOpportunitys: IOpportunity[];
+  readonly oppoIOpportunities: IOpportunity[];
   readonly oppoIOpportunity: IOpportunity;
 }
 export interface IOpportunityResponse extends IResponseBase {
