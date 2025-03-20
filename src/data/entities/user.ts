@@ -18,36 +18,40 @@ class User extends Model {
   public verified!: boolean;
   public createdAt!: Date;
   public updatedAt!: Date;
+  public role!: string;
 }
 
 User.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(20),
       primaryKey: true,
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(128),
       unique: true,
       allowNull: false,
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
     fullname: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     authStrategy: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
+    },
+    role: {
+      type: DataTypes.STRING(50),
     },
     verified: {
       type: DataTypes.BOOLEAN,
@@ -82,7 +86,6 @@ Service.belongsTo(User, { foreignKey: "userId" });
 
 User.hasMany(Project, { foreignKey: "userId" });
 Project.belongsTo(User, { foreignKey: "userId" });
-
 
 User.hasMany(Event, { foreignKey: "userId" });
 Event.belongsTo(User, { foreignKey: "userId" });

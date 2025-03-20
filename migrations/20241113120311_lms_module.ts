@@ -43,12 +43,12 @@ export async function up(knex: Knex): Promise<void> {
       table.integer("duration").notNullable();
       table.string("difficulty", 128).notNullable();
       table.string("url", 255).notNullable();
-      table.specificType("prerequisites", "TEXT[]").notNullable();
-      table.specificType("objectives", "TEXT[]").notNullable();
-      table.specificType("keywords", "TEXT[]").notNullable();
+      table.json("prerequisites").notNullable();
+      table.json("objectives").notNullable();
+      table.json("keywords").notNullable();
       table.string("author", 128).notNullable();
 
-      table.specificType("reviews", "TEXT[]").nullable();
+      table.json("reviews").nullable();
       table.string("language", 128).nullable();
       table.integer("rating").nullable();
 
@@ -57,7 +57,7 @@ export async function up(knex: Knex): Promise<void> {
     .createTable("quizes", function (table) {
       table.string("id", 10).primary();
       table.string("question", 500).unique().notNullable();
-      table.specificType("answers", "TEXT[]").notNullable();
+      table.json("answers").notNullable();
       table.string("slug", 500).unique().notNullable();
       table
         .string("lessonId", 10)

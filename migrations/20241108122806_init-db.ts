@@ -77,8 +77,8 @@ export async function up(knex: Knex): Promise<void> {
         .references("id")
         .inTable("users");
       table.string("slug", 500).unique().notNullable();
-      table.timestamp("createdAt");
-      table.timestamp("updatedAt");
+      
+      table.timestamps(true, true);
     })
 
     .createTable("services", function (table) {
@@ -93,7 +93,7 @@ export async function up(knex: Knex): Promise<void> {
         .inTable("users");
       table.string("slug", 500).unique().notNullable();
 
-      table.timestamps(true, true); //   table.timestamp("createdAt"); //   table.timestamp("updatedAt");
+      table.timestamps(true, true);
     })
     .createTable("events", function (table) {
       table.string("id", 10).primary();

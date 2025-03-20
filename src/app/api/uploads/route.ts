@@ -5,24 +5,32 @@ import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
 export const POST = async (request: NextRequest) => {
-  const file = await request.formData();
+  try {
+    const file = await request.formData();
 
-  const image: any = file.get("file");
+    const image: any = file.get("file");
 
-  const byteLength = await image.arrayBuffer();
+    const byteLength = await image.arrayBuffer();
 
-  const bufferData: any = await Buffer.from(byteLength);
+    const bufferData: any = await Buffer.from(byteLength);
 
-  const pathOfImage = `./public/uploads/media/${image.name}`;
+    const pathOfImage = `./public/uploads/media/${image.name}`;
 
-  writeFile(pathOfImage, bufferData);
+    writeFile(pathOfImage, bufferData);
 
-  return NextResponse.json(
-    {
-      message: "image upload successfully",
-      data: pathOfImage,
-      success: true,
-    },
-    { status: 200 }
-  );
+    return NextResponse.json(
+      {
+        message: "image upload successfully",
+        data: pathOfImage,
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Upload Error:", error);
+    return NextResponse.json(
+      { success: false, message: "File upload failed" },
+      { status: 500 }
+    );
+  }
 };

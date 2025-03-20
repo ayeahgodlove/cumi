@@ -7,7 +7,7 @@ const instance = axios.create({
 });
 
 export const authService = {
-  register: async (user: IUser): Promise<IUserResponse> =>
+  register: async (user: any): Promise<IUserResponse> =>
     await instance.post(`/api/users`, user),
   login: async (user: {
     email: string;
