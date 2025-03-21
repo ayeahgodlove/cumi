@@ -4,7 +4,7 @@ import { Breadcrumb, Col, Row } from "antd";
 import Link from "next/link";
 import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
-export default function PageContent(props) {
+export default function PageContent(props: any) {
   const { title, breadcrumb, desc, banner } = props;
 
   return (
@@ -37,7 +37,7 @@ export default function PageContent(props) {
                     </Link>
                   ),
                 },
-                ...breadcrumb.map((item) => {
+                ...breadcrumb.map((item: any) => {
                   return {
                     title: (
                       <Link

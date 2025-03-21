@@ -1,0 +1,109 @@
+{
+  "navigation": {
+    "home": "Bienvenue",
+    "about": "À propos de nous",
+    "services": "Services",
+    "projects": "Projets",
+    "posts": "Articles de blog",
+    "contact": "Nous contacter",
+    "careers": "Carrières"
+  },
+  "menus": {
+    "dashboard": "Tableau de bord",
+    "posts": "Articles",
+    "settings": "Paramètres",
+    "categories": "Catégories",
+    "tags": "Tags",
+    "banners": "Bannières",
+    "media": "Médias",
+    "events": "Événements",
+    "services": "Services",
+    "projects": "Projets",
+    "users": "Utilisateurs",
+    "opportunities": "Opportunités",
+    "lms": "LMS",
+    "courses": "Cours",
+    "lessons": "Leçons",
+    "quizes": "Quizzes",
+    "enrollments": "Inscriptions"
+  },
+  "buttons": {
+    "delete": "Delete",
+    "logout": "Logout",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "show": "Show",
+    "confirm": "Are you sure?",
+    "notAccessTitle": "You don't have permission to access",
+    "refresh": "Refresh"
+  },
+  "actions": {
+    "create": "Create",
+    "edit": "Edit",
+    "list": "List",
+    "show": "Show"
+  },
+  "notifications": {
+    "createError": "Transaction Failed!",
+    "createSuccess": "Transaction completed successfully!",
+    "success": "Success",
+    "error": "Error",
+    "deleteSuccess": "Successfully Deleted"
+  },
+  "pages": {
+    "error": {
+      "404": "Sorry, the page you visited does not exist.",
+      "backHome": "Back Home"
+    }
+  },
+  "services": {
+    "services": "Services",
+    "titles": {
+      "list": "Lister les services",
+      "create": "Créer un service",
+      "edit": "Modifier le service"
+    }
+  },
+  "posts": {
+    "posts": "Messages",
+    "titles": {
+      "list": "Lister les messages",
+      "create": "Créer un message",
+      "edit": "Modifier un message"
+    }
+  },
+  "events": {
+    "events": "Événements",
+    "titles": {
+      "list": "Lister les événements",
+      "create": "Créer un événement",
+      "edit": "Modifier un événement"
+    }
+  },
+  "projects": {
+    "projects": "Projets",
+    "titles": {
+      "list": "Lister les projets",
+      "create": "Créer un projet",
+      "edit": "Modifier un projet"
+    }
+  },
+  "careers": {
+    "careers": "Carrières",
+    "titres": {
+      "liste": "Liste des carrières",
+      "créer": "Créer une carrière",
+      "éditer": "Modifier une carrière"
+    }
+  },
+  "utilisateurs": {
+    "utilisateurs": "Utilisateurs",
+    "titres": {
+      "liste": "Liste des utilisateurs",
+      "créer": "Créer un utilisateur",
+      "éditer": "Modifier un utilisateur"
+    }
+  }
+}

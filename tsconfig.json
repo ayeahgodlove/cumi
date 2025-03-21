@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2022",
     "downlevelIteration": true,
     "lib": [
       "dom",
@@ -45,7 +45,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/components/banner/circle.jsx",
-    "src/components/dashboard/feature-card.component.jsx"
+    "src/components/dashboard/feature-card.component.tsx"
   ],
   "exclude": [
     "node_modules"

@@ -1,0 +1,109 @@
+{
+  "navigation": {
+    "home": "Welcome",
+    "about": "About Us",
+    "services": "Services",
+    "projects": "Projects",
+    "posts": "Blog Posts",
+    "contact": "Contact Us",
+    "careers": "Careers"
+  },
+  "menus": {
+    "dashboard": "Dashboard",
+    "posts": "Posts",
+    "settings": "Settings",
+    "categories": "Categories",
+    "tags": "Tags",
+    "banners": "Banners",
+    "media": "Media",
+    "events": "Events",
+    "services": "Services",
+    "projects": "Projects",
+    "users": "Users",
+    "opportunities": "Opportunities",
+    "lms": "LMS",
+    "courses": "Courses",
+    "lessons": "Lessons",
+    "quizes": "Quizes",
+    "enrollments": "Enrollments"
+  },
+  "buttons": {
+    "delete": "Delete",
+    "logout": "Logout",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "show": "Show",
+    "confirm": "Are you sure?",
+    "notAccessTitle": "You don't have permission to access",
+    "refresh": "Refresh"
+  },
+  "actions": {
+    "create": "Create",
+    "edit": "Edit",
+    "list": "List",
+    "show": "Show"
+  },
+  "notifications": {
+    "createError": "Transaction Failed!",
+    "createSuccess": "Transaction completed successfully!",
+    "success": "Success",
+    "error": "Error",
+    "deleteSuccess": "Successfully Deleted"
+  },
+  "pages": {
+    "error": {
+      "404": "Sorry, the page you visited does not exist.",
+      "backHome": "Back Home"
+    }
+  },
+  "services": {
+    "services": "Services",
+    "titles": {
+      "list": "List Services",
+      "create": "Create Service",
+      "edit": "Edit Service"
+    }
+  },
+  "posts": {
+    "posts": "Posts",
+    "titles": {
+      "list": "List Posts",
+      "create": "Create Post",
+      "edit": "Edit Post"
+    }
+  },
+  "events": {
+    "events": "Events",
+    "titles": {
+      "list": "List Events",
+      "create": "Create Event",
+      "edit": "Edit Event"
+    }
+  },
+  "projects": {
+    "projects": "Projects",
+    "titles": {
+      "list": "List Projects",
+      "create": "Create Project",
+      "edit": "Edit Project"
+    }
+  },
+  "careers": {
+    "careers": "Careers",
+    "titles": {
+      "list": "List Careers",
+      "create": "Create Career",
+      "edit": "Edit Career"
+    }
+  },
+  "users": {
+    "users": "Users",
+    "titles": {
+      "list": "List Users",
+      "create": "Create User",
+      "edit": "Edit User"
+    }
+  }
+}

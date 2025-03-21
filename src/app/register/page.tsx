@@ -11,6 +11,9 @@ import Link from "next/link";
 import { FaLock } from "react-icons/fa";
 import { authService } from "../../service/auth.service";
 import { useNotification } from "@refinedev/core";
+import { AppNav } from "@components/nav/nav.component";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
 
 export default function Register() {
   const router = useRouter();
@@ -46,11 +49,16 @@ export default function Register() {
   };
   return (
     <>
-      <div className="flex flex-1 justify-center items-center py-10 md:py-30">
+      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+        {/* navigation bar */}
+        <AppNav logoPath="/" />
+      </div>
+
+      <div className="d-flex flex-grow-1 justify-content-center align-items-center py-4 py-md-5">
         <Space
           direction="vertical"
           align="center"
-          className="bg-white p-8  shadow-lg rounded-lg"
+          className="bg-white p-4 shadow-lg rounded"
         >
           {/* App Title */}
           <ThemedTitleV2
@@ -63,13 +71,12 @@ export default function Register() {
             text={"Register"}
           />
 
-          {/* Login Form */}
+          {/* Register Form */}
           <Form
-            name="login"
+            name="register"
             layout="vertical"
             onFinish={onFinish}
-            // style={{ width: "320px" }}
-            className="w-xs sm:w-sm md:w-md lg:w-lg xl:w-xl"
+            className="w-100 w-sm-75 w-md-50 w-lg-40 w-xl-25"
             size="large"
           >
             {/* Full Name */}
@@ -138,28 +145,26 @@ export default function Register() {
             <Button
               type="primary"
               htmlType="submit"
-              style={{ width: "100%" }}
+              className="w-100"
               size="large"
               disabled={loading}
               loading={loading}
             >
               Sign up
             </Button>
-          </Form>
-          {/* Divider */}
-          <Divider>OR</Divider>
 
-          <Space className="flex flex-col items-center justify-center">
+            {/* Divider */}
+            <Divider>OR</Divider>
+
             <Button
               icon={<SiAuth0 color="#d8452e" />}
-              // style={{ display: "block", width: "100%" }}
-              className="w-xs sm:w-sm md:w-md lg:w-lg xl:w-xl"
+              className="w-100 w-sm-75 w-md-50 w-lg-40 w-xl-25"
               onClick={() => signIn("auth0")}
               size="large"
             >
               Auth0
             </Button>
-          </Space>
+          </Form>
 
           {/* Signup Link */}
           <Typography.Text>
@@ -170,6 +175,9 @@ export default function Register() {
           </Typography.Text>
         </Space>
       </div>
+
+      <AppFooter logoPath="/" />
+      <AppFootnote />
     </>
   );
 }

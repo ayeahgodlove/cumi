@@ -32,9 +32,11 @@
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
+    "buffer": "^6.0.3",
     "class-validator": "^0.14.1",
     "colors": "^1.4.0",
     "critters": "^0.0.25",
+    "crypto-browserify": "^3.12.1",
     "dayjs": "^1.11.10",
     "disqus-react": "^1.1.5",
     "formidable": "^3.5.2",
@@ -90,5 +92,8 @@
   },
   "refine": {
     "projectId": "njMZZm-fu7OWZ-sdebsw"
+  },
+  "browser": {
+    "crypto": "crypto-browserify"
   }
 }

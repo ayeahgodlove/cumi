@@ -2,7 +2,7 @@ import React from "react";
 
 import { Card } from "antd";
 
-export default function FeatureCard(props) {
+export default function FeatureCard(props: any) {
   return (
     <Card
       className="cursor-pointer"

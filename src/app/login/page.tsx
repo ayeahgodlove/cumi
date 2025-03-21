@@ -9,6 +9,9 @@ import { SiAuth0 } from "react-icons/si";
 import Link from "next/link";
 import { FaLock } from "react-icons/fa";
 import { useNotification } from "@refinedev/core";
+import { AppFooter } from "@components/footer/footer";
+import { AppFootnote } from "@components/footnote/footnote";
+import { AppNav } from "@components/nav/nav.component";
 
 export default function Login() {
   const router = useRouter();
@@ -42,11 +45,16 @@ export default function Login() {
   };
   return (
     <>
-      <div className="flex flex-1 justify-center items-center py-10 md:py-30">
+      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+        {/* navigation bar */}
+        <AppNav logoPath="/" />
+      </div>
+
+      <div className="d-flex flex-grow-1 justify-content-center align-items-center py-4 py-md-5 bg-light w-100">
         <Space
           direction="vertical"
           align="center"
-          className="bg-white p-8 shadow-lg rounded-lg"
+          className="bg-white p-4 shadow-lg rounded"
         >
           {/* App Title */}
           <ThemedTitleV2
@@ -64,7 +72,7 @@ export default function Login() {
             name="login"
             layout="vertical"
             onFinish={onFinish}
-            className="w-xs sm:w-sm md:w-md lg:w-lg xl:w-xl"
+            className="w-100 w-sm-75 w-md-50 w-lg-40 w-xl-25"
             size="large"
           >
             <Form.Item
@@ -100,25 +108,29 @@ export default function Login() {
             <Button
               type="primary"
               htmlType="submit"
-              style={{ width: "100%" }}
+              className="w-100"
               size="large"
               loading={loading}
               disabled={loading}
             >
               Sign in
             </Button>
-          </Form>
 
-          <Space className="flex flex-col items-center justify-center">
-            <Button
-              icon={<SiAuth0 color="#d8452e" />}
-              className="w-xs sm:w-sm md:w-md lg:w-lg xl:w-xl"
-              onClick={() => signIn("auth0")}
-              size="large"
-            >
-              Auth0
-            </Button>
-          </Space>
+            {/* Divider */}
+            <Divider>OR</Divider>
+            <div className="d-block w-100 mt-3">
+              <Button
+                icon={<SiAuth0 color="#d8452e" />}
+                className="w-100 d-block"
+                onClick={() => signIn("auth0")}
+                size="large"
+                style={{ width: "100%" }}
+                block
+              >
+                Auth0
+              </Button>
+            </div>
+          </Form>
 
           {/* Signup Link */}
           <Typography.Text>
@@ -129,6 +141,9 @@ export default function Login() {
           </Typography.Text>
         </Space>
       </div>
+
+      <AppFooter logoPath="/" />
+      <AppFootnote />
     </>
   );
 }

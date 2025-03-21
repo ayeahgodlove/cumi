@@ -1,32 +1,14 @@
 /** @type {import('next').NextConfig} */
-import bundleAnalyzer from "@next/bundle-analyzer";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+import createNextIntlPlugin from "next-intl/plugin";
+const withNextIntl = createNextIntlPlugin();
 
-const withBundleAnalyzer = bundleAnalyzer({
-  enabled: process.env.ANALYZE === "true", // Enables bundle analysis when ANALYZE=true
-});
-
-const nextConfig = withBundleAnalyzer({
+const nextConfig = withNextIntl({
+  trailingSlash: true,
   transpilePackages: ["@refinedev/antd"],
+  // output: "standalone",
   productionBrowserSourceMaps: false,
-  // headers: () => {
-  //   return [
-  //     {
-  //       source: "/api/:path*",
-  //       headers: [
-  //         {
-  //           key: "Access-Control-Allow-Origin",
-  //           value:
-  //             "http://localhost:3000, https://cumitech.com, https://www.cumitech.com",
-  //         },
-  //         { key: "Access-Control-Allow-Methods", value: "GET, POST, OPTIONS" },
-  //         {
-  //           key: "Access-Control-Allow-Headers",
-  //           value: "Content-Type, Authorization",
-  //         },
-  //       ],
-  //     },
-  //   ];
-  // },
   images: {
     domains: ["localhost"],
     remotePatterns: [
@@ -34,10 +16,11 @@ const nextConfig = withBundleAnalyzer({
         protocol: "http",
         hostname: "localhost",
         port: "3000",
-        pathname: "/uploads/**",
+        pathname: "/**",
       },
     ],
   },
+  crossOrigin: "anonymous",
   module: {
     rules: [
       {
@@ -60,6 +43,15 @@ const nextConfig = withBundleAnalyzer({
     config.optimization.splitChunks = {
       chunks: "all", // Improve code splitting
     };
+    // config.resolve.fallback = {
+    //   crypto: require.resolve("crypto-browserify"),
+    //   stream: require.resolve("stream-browserify"),
+    //   buffer: require.resolve("buffer"),
+    // };
+    // config.resolve.alias = {
+    //   ...config.resolve.alias,
+    //   crypto: require.resolve("crypto-browserify"),
+    // };
     return config;
   },
 });
