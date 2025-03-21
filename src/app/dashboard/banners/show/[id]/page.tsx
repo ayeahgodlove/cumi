@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import {  API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import {  BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ImageField, Show, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography } from "antd";
@@ -27,7 +27,7 @@ export default function CategoryShow() {
         <Title level={5}>{"Image"}</Title>
         <ImageField
           imageTitle={record?.title}
-          value={`${API_URL_UPLOADS_MEDIA}/${record?.image}`}
+          value={`${BASE_URL_UPLOADS_MEDIA}/${record?.image}`}
         />
       </Show>
     </>

@@ -1,12 +1,12 @@
 import User from "@data/entities/user";
 import { UserRepository } from "@data/repositories/impl/user.repository";
-import { emptyUser, IUser } from "@domain/models/user";
 import { UserUseCase } from "@domain/usecases/user.usecase";
+import authOptions from "@lib/options";
 import { UserRequestDto } from "@presentation/dtos/user-request.dto";
 import { UserMapper } from "@presentation/mappers/mapper";
-import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const userRepository = new UserRepository();
@@ -32,43 +32,55 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const dto = new UserRequestDto(body);
-  const validationErrors = await validate(dto);
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const userResponse = await userUseCase.createUser(dto.toData());
+  }
+  try {
+    const body = await request.json();
+    const dto = new UserRequestDto(body);
+    const validationErrors = await validate(dto);
 
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: userMapper.toDTO(userResponse),
-          message: "User created Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 201 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+    const userResponse = await userUseCase.createUser(dto.toData());
+
+    return NextResponse.json(
+      {
+        data: userMapper.toDTO(userResponse),
+        message: "User created Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }

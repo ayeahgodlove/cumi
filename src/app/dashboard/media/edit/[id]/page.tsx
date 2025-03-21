@@ -3,7 +3,7 @@
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { Edit, useForm, getValueFromEvent } from "@refinedev/antd";
 import { Form, Input, Upload } from "antd";
-import { API_URL } from "@constants/api-url";
+import { BASE_URL } from "@constants/api-url";
 
 export default function MediaEdit() {
   const { formProps, saveButtonProps } = useForm({});
@@ -33,7 +33,7 @@ export default function MediaEdit() {
           >
             <Upload.Dragger
               name="file"
-              action={`${API_URL}/api/uploads`}
+              action={`${BASE_URL}/api/uploads`}
               listType="picture"
               maxCount={1}
               multiple={false}

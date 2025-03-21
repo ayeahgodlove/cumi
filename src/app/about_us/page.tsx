@@ -1,5 +1,5 @@
 "use client";
-import { API_URL } from "@constants/api-url";
+import { BASE_URL } from "@constants/api-url";
 import Link from "next/link";
 import { Suspense } from "react"; 
 import { AppNav } from "@components/nav/nav.component";
@@ -25,7 +25,7 @@ export default function IndexPage() {
           <div className="rounded bg-light p-4 text-center">
             <img
               className="mx-auto mb-3 rounded"
-              src={`${API_URL}/img/avatar.png`}
+              src={`${BASE_URL}/img/avatar.png`}
               alt={"authors"}
               width={120}
               height={120}

@@ -2,7 +2,7 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { modules } from "@components/shared/react-quil-config";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { Edit, useForm } from "@refinedev/antd";
 import {
   Col,

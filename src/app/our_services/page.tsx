@@ -3,7 +3,7 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import { API_URL, API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL, BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { IService } from "@domain/models/service.model";
 import { serviceAPI } from "@store/api/service_api";
 import { Empty } from "antd";
@@ -56,7 +56,7 @@ export default function IndexPage() {
               <div className="mb-4 col-md-5 col-lg-4 order-md-2">
                 <img
                   className="w-100"
-                  src={`${API_URL}/img/design-3.jpg`}
+                  src={`${BASE_URL}/img/design-3.jpg`}
                   width={392}
                   height={390}
                   alt="cta-image"
@@ -112,7 +112,7 @@ export default function IndexPage() {
                     <SwiperSlide key={index}>
                       <div className="card rounded bg-light">
                         <img
-                          src={`${API_URL_UPLOADS_MEDIA}/${item.imageUrl}`}
+                          src={`${BASE_URL_UPLOADS_MEDIA}/${item.imageUrl}`}
                           alt={item.title}
                           className="card-img-top"
                           style={{ maxHeight: 250 }}

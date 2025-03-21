@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DateField,
   DeleteButton,
@@ -49,7 +49,7 @@ export default function BlogPostList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${API_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
+                src={`${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
                 alt={record?.title}
                 height={100}
                 width={100}

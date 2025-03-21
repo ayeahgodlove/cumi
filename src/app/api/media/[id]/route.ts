@@ -1,11 +1,13 @@
 import { MediaRepository } from "@data/repositories/impl/media.repository";
 import { emptyMedia, IMedia } from "@domain/models/media.model";
 import { MediaUseCase } from "@domain/usecases/media.usecase";
+import authOptions from "@lib/options";
 import { MediaRequestDto } from "@presentation/dtos/media-request.dto";
 import { MediaMapper } from "@presentation/mappers/mapper";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const mediaRepository = new MediaRepository();
@@ -16,53 +18,67 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const data = await req.json();
-  const imageUrl = data.imageUrl[0].name;
+  const session = await getServerSession(authOptions); //get session info
 
-  const dto = new MediaRequestDto(data.title, imageUrl);
-  const validationErrors = await validate(dto);
-
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const id = params.id;
-      const obj: IMedia = {
-        ...emptyMedia,
-        ...dto.toData(),
-        id: id,
-      };
-      const updatedMedia = await mediaUseCase.updateMedia(obj);
-      const mediaDto = mediaMapper.toDTO(updatedMedia);
+  }
 
+  try {
+    const data = await req.json();
+    const imageUrl = data.imageUrl[0].name;
+
+    const dto = new MediaRequestDto(data.title, imageUrl);
+    const validationErrors = await validate(dto);
+
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: mediaDto,
-          message: "Media Updated Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 200 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [error],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+
+    const id = params.id;
+    const obj: IMedia = {
+      ...emptyMedia,
+      ...dto.toData(),
+      id: id,
+    };
+    const updatedMedia = await mediaUseCase.updateMedia(obj);
+    const mediaDto = mediaMapper.toDTO(updatedMedia);
+
+    return NextResponse.json(
+      {
+        data: mediaDto,
+        message: "Media Updated Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { useToken } from "@hooks/shared/token.hook";
 // import { ICategory } from "@models/category.model";
 import {
@@ -39,7 +39,7 @@ export default function MediaList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${API_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
+                src={`${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
                 alt={record?.title}
                 height={50}
                 width={50}

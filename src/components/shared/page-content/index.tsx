@@ -2,7 +2,7 @@ import React from "react";
 
 import { Breadcrumb, Col, Row } from "antd";
 import Link from "next/link";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 export default function PageContent(props: any) {
   const { title, breadcrumb, desc, banner } = props;
@@ -13,7 +13,7 @@ export default function PageContent(props: any) {
       className="bg-dark p-5 overflow-hidden d-flex justify-content-center"
       style={{
         borderRadius: 32,
-        backgroundImage: `url('${API_URL_UPLOADS_MEDIA}/${banner}')`,
+        backgroundImage: `url('${BASE_URL_UPLOADS_MEDIA}/${banner}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

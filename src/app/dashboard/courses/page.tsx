@@ -2,8 +2,8 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import {
-  API_URL_UPLOADS_EVENTS,
-  API_URL_UPLOADS_MEDIA,
+  BASE_URL_UPLOADS_EVENTS,
+  BASE_URL_UPLOADS_MEDIA,
 } from "@constants/api-url";
 import {
   DeleteButton,
@@ -42,7 +42,7 @@ export default function CourseList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${API_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
+                src={`${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
                 alt={record?.title}
                 height={100}
                 width={100}

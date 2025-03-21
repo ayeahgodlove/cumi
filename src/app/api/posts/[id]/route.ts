@@ -1,12 +1,13 @@
-import Post from "@data/entities/post";
 import { PostRepository } from "@data/repositories/impl/post.repository";
 import { emptyPost, IPost } from "@domain/models/post.model";
 import { PostUseCase } from "@domain/usecases/post.usecase";
+import authOptions from "@lib/options";
 import { PostRequestDto } from "@presentation/dtos/post-request.dto";
 import { PostMapper } from "@presentation/mappers/mapper";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const postRepository = new PostRepository();
@@ -17,52 +18,66 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const dto = new PostRequestDto(await req.json());
-  const validationErrors = await validate(dto);
-  const userId = req.headers.get("X-User-Id") || "";
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const id = params.id;
-      const obj: IPost = {
-        ...emptyPost,
-        ...dto.toData(),
-        id: id,
-        authorId: userId,
-      };
-      const updatedPost = await postUseCase.updatePost(obj);
-      const postDto = postMapper.toDTO(updatedPost);
+  }
 
+  try {
+    const dto = new PostRequestDto(await req.json());
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
+
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: postDto,
-          message: "Post Updated Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 200 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [error],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+
+    const id = params.id;
+    const obj: IPost = {
+      ...emptyPost,
+      ...dto.toData(),
+      id: id,
+      authorId: userId,
+    };
+    const updatedPost = await postUseCase.updatePost(obj);
+    const postDto = postMapper.toDTO(updatedPost);
+
+    return NextResponse.json(
+      {
+        data: postDto,
+        message: "Post Updated Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }
 

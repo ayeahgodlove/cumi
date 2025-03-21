@@ -2,11 +2,13 @@ import Event from "@data/entities/event";
 import { EventRepository } from "@data/repositories/impl/event.repository";
 import { emptyEvent, IEvent } from "@domain/models/event.model";
 import { EventUseCase } from "@domain/usecases/event.usecase";
+import authOptions from "@lib/options";
 import { EventRequestDto } from "@presentation/dtos/event-request.dto";
 import { EventMapper } from "@presentation/mappers/mapper";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const eventRepository = new EventRepository();
@@ -17,52 +19,65 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const dto = new EventRequestDto(await req.json());
-  const validationErrors = await validate(dto);
-  const userId = req.headers.get("X-User-Id") || "";
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const id = params.id;
-      const obj: IEvent = {
-        ...emptyEvent,
-        ...dto.toData(),
-        id: id,
-        userId,
-      };
-      const updatedEvent = await eventUseCase.updateEvent(obj);
-      const eventDto = eventMapper.toDTO(updatedEvent);
+  }
 
+  try {
+    const dto = new EventRequestDto(await req.json());
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
+
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: eventDto,
-          message: "Event Updated Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 200 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [error],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+    const id = params.id;
+    const obj: IEvent = {
+      ...emptyEvent,
+      ...dto.toData(),
+      id: id,
+      userId,
+    };
+    const updatedEvent = await eventUseCase.updateEvent(obj);
+    const eventDto = eventMapper.toDTO(updatedEvent);
+
+    return NextResponse.json(
+      {
+        data: eventDto,
+        message: "Event Updated Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }
 

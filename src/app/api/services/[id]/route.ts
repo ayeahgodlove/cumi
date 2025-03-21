@@ -2,11 +2,13 @@ import Service from "@data/entities/service";
 import { ServiceRepository } from "@data/repositories/impl/service.repository";
 import { emptyService, IService } from "@domain/models/service.model";
 import { ServiceUseCase } from "@domain/usecases/service.usecase";
+import authOptions from "@lib/options";
 import { ServiceRequestDto } from "@presentation/dtos/service-request.dto";
 import { ServiceMapper } from "@presentation/mappers/mapper";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const serviceRepository = new ServiceRepository();
@@ -17,54 +19,68 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const dto = new ServiceRequestDto(await req.json());
-  const validationErrors = await validate(dto);
-  const userId = req.headers.get("X-User-Id") || "";
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const id = params.id;
+  }
 
-      const obj: IService = {
-        ...emptyService,
-        ...dto.toData(),
-        id: id,
-        userId
-      };
+  try {
+    const dto = new ServiceRequestDto(await req.json());
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
 
-      const updatedService = await serviceUseCase.updateService(obj);
-      const serviceDto = serviceMapper.toDTO(updatedService);
-
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: serviceDto,
-          message: "Service Updated Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 200 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [error],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+
+    const id = params.id;
+
+    const obj: IService = {
+      ...emptyService,
+      ...dto.toData(),
+      id: id,
+      userId,
+    };
+
+    const updatedService = await serviceUseCase.updateService(obj);
+    const serviceDto = serviceMapper.toDTO(updatedService);
+
+    return NextResponse.json(
+      {
+        data: serviceDto,
+        message: "Service Updated Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }
 

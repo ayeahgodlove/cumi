@@ -5,7 +5,7 @@ import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/disqus";
 import ImageFallback from "@components/shared/image-fallback";
 import Share from "@components/shared/share";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { emptyBanner } from "@domain/models/banner.model";
 import { bannerAPI } from "@store/api/banner_api";
 import { eventAPI } from "@store/api/event_api";
@@ -64,7 +64,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
                   {event && (
                     <div className="mb-5">
                       <ImageFallback
-                        src={`${API_URL_UPLOADS_MEDIA}/${event.imageUrl}`}
+                        src={`${BASE_URL_UPLOADS_MEDIA}/${event.imageUrl}`}
                         height={500}
                         width={1200}
                         quality={100}

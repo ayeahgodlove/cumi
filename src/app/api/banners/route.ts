@@ -1,10 +1,12 @@
 import Banner from "@data/entities/banner";
 import { BannerRepository } from "@data/repositories/impl/banner.repository";
 import { BannerUseCase } from "@domain/usecases/banner.usecase";
+import authOptions from "@lib/options";
 import { BannerRequestDto } from "@presentation/dtos/banner-request.dto";
 import { BannerMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 const bannerRepository = new BannerRepository();
@@ -30,25 +32,39 @@ export async function GET(request: any) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const dto = new BannerRequestDto(body);
-  const validationErrors = await validate(dto);
+  const session = await getServerSession(authOptions); //get session info
 
-  const userId = request.headers.get("X-User-Id") || "";
-
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors),
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
   }
 
   try {
+    const body = await request.json();
+    const dto = new BannerRequestDto(body);
+    const validationErrors = await validate(dto);
+
+    const userId = session.user.id;
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          validationErrors: displayValidationErrors(validationErrors),
+          success: false,
+          data: null,
+          message: "Attention!",
+        },
+        { status: 400 }
+      );
+    }
+
     const bannerResponse = await bannerUseCase.createBanner({
       ...dto.toData(),
       userId,

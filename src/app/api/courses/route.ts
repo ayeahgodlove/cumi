@@ -1,9 +1,11 @@
 import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { CourseUseCase } from "@domain/usecases/course.usecase";
+import authOptions from "@lib/options";
 import { CourseRequestDto } from "@presentation/dtos/course-request.dto";
 import { CourseMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 const courseRepository = new CourseRepository();
@@ -29,25 +31,39 @@ export async function GET(request: any) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const dto = new CourseRequestDto(body);
-  const validationErrors = await validate(dto);
-  const userId = request.headers.get("X-User-Id") || "";
-  // Begin transaction if needed
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors),
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
   }
 
   try {
+    const body = await request.json();
+    const dto = new CourseRequestDto(body);
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
+    // Begin transaction if needed
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          validationErrors: displayValidationErrors(validationErrors),
+          success: false,
+          data: null,
+          message: "Attention!",
+        },
+        { status: 400 }
+      );
+    }
+
     const courseResponse = await courseUseCase.createCourse({
       ...dto.toData(),
       userId: userId,

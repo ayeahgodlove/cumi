@@ -3,7 +3,7 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { modules } from "@components/shared/react-quil-config";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
 import { IMedia } from "@domain/models/media.model";
@@ -177,7 +177,7 @@ export default function LessonCreate() {
                             value: d.imageUrl,
                             emoji: (
                               <Image
-                                src={`${API_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
+                                src={`${BASE_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
                                 alt={d?.title}
                                 height={50}
                                 width={60}

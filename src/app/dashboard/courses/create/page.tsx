@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ICategory } from "@domain/models/category";
 import { IMedia } from "@domain/models/media.model";
 import { Create, useForm, useSelect } from "@refinedev/antd";
@@ -117,7 +117,7 @@ export default function CourseCreate() {
                         value: d.imageUrl,
                         emoji: (
                           <Image
-                            src={`${API_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
+                            src={`${BASE_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
                             alt={d?.title}
                             height={50}
                             width={60}

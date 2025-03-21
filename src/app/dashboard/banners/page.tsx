@@ -2,7 +2,7 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import {
-  API_URL_UPLOADS_MEDIA,
+  BASE_URL_UPLOADS_MEDIA,
 } from "@constants/api-url";
 // import { ICategory } from "@models/category.model";
 import {
@@ -40,7 +40,7 @@ export default function CategoryList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${API_URL_UPLOADS_MEDIA}/${value}`}
+                src={`${BASE_URL_UPLOADS_MEDIA}/${value}`}
                 alt={record?.title}
                 height={100}
                 width={100}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "antd";
 import { IProject } from "@domain/models/project.model";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
 import { FaHandPointRight } from "react-icons/fa6";
 import Image from "next/image";
@@ -19,7 +19,7 @@ const ProjectCard: React.FC<Prop> = ({ project }) => {
           height={500}
           width={1200}
           quality={100}
-          src={`${API_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
+          src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
           alt={project.title}
           style={{ maxWidth: "100%", height: "auto", objectFit: "cover" }}
         />

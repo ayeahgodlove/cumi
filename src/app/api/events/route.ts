@@ -1,10 +1,12 @@
 import Event from "@data/entities/event";
 import { EventRepository } from "@data/repositories/impl/event.repository";
 import { EventUseCase } from "@domain/usecases/event.usecase";
+import authOptions from "@lib/options";
 import { EventRequestDto } from "@presentation/dtos/event-request.dto";
 import { EventMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 const eventRepository = new EventRepository();
@@ -30,24 +32,38 @@ export async function GET(request: any) {
 }
 
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const dto = new EventRequestDto(body);
-  const validationErrors = await validate(dto);
-  const userId = request.headers.get("X-User-Id") || "";
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors),
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
   }
 
   try {
+    const body = await request.json();
+    const dto = new EventRequestDto(body);
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
+
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        {
+          validationErrors: displayValidationErrors(validationErrors),
+          success: false,
+          data: null,
+          message: "Attention!",
+        },
+        { status: 400 }
+      );
+    }
+
     const eventResponse = await eventUseCase.createEvent({
       ...dto.toData(),
       userId,

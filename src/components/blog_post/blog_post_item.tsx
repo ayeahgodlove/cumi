@@ -1,7 +1,7 @@
 import { Card, Space, Typography } from "antd";
 import React from "react";
 import { IPost } from "@domain/models/post.model";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
 import { ICategory } from "@domain/models/category";
 import { IUser } from "@domain/models/user";
@@ -34,7 +34,7 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
         cover={
           <Image
             alt={post.title}
-            src={`${API_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
+            src={`${BASE_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
             height={500}
             width={1200}
             quality={100}

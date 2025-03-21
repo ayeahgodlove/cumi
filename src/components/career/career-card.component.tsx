@@ -4,7 +4,7 @@ import { IOpportunity } from "@domain/models/opportunity.model";
 import Image from "next/image";
 import Link from "next/link";
 import "./career-card.style.scss";
-import { API_URL } from "@constants/api-url";
+import { BASE_URL } from "@constants/api-url";
 
 interface Props {
   data: IOpportunity[];
@@ -21,7 +21,7 @@ const CareerCard: React.FC<Props> = ({ data }) => {
                 height={248}
                 style={{ height: "230px" }}
                 className="w-100  cover"
-                src={`${API_URL}/img/christopher-gower-m_HRfLhgABo-unsplash.jpg`}
+                src={`${BASE_URL}/img/christopher-gower-m_HRfLhgABo-unsplash.jpg`}
                 alt="listings"
               />
               <div className="sale-sticker-wrap">

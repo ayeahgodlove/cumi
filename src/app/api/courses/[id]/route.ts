@@ -1,11 +1,13 @@
 import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { emptyCourse, ICourse } from "@domain/models/course";
 import { CourseUseCase } from "@domain/usecases/course.usecase";
+import authOptions from "@lib/options";
 import { CourseRequestDto } from "@presentation/dtos/course-request.dto";
 import { CourseMapper } from "@presentation/mappers/mapper";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
 
 const courseRepository = new CourseRepository();
@@ -16,52 +18,65 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const dto = new CourseRequestDto(await req.json());
-  const validationErrors = await validate(dto);
-  const userId = req.headers.get("X-User-Id") || "";
+  const session = await getServerSession(authOptions); //get session info
 
-  if (validationErrors.length > 0) {
+  if (!session || !session.user) {
     return NextResponse.json(
       {
-        validationErrors: displayValidationErrors(validationErrors) as any,
+        message: "Unauthorized: Please log in to access this resource.",
         success: false,
         data: null,
-        message: "Attention!",
+        validationErrors: [],
       },
-      { status: 400 }
+      { status: 401 }
     );
-  } else {
-    try {
-      const id = params.id;
-      const obj: ICourse = {
-        ...emptyCourse,
-        ...dto.toData(),
-        id: id,
-        userId,
-      };
-      const updatedCourse = await courseUseCase.updateCourse(obj);
-      const courseDto = courseMapper.toDTO(updatedCourse);
+  }
+  try {
+    const dto = new CourseRequestDto(await req.json());
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
 
+    if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          data: courseDto,
-          message: "Course Updated Successfully!",
-          validationErrors: [],
-          success: true,
-        },
-        { status: 200 }
-      );
-    } catch (error: any) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: error.message,
-          validationErrors: [error],
+          validationErrors: displayValidationErrors(validationErrors) as any,
           success: false,
+          data: null,
+          message: "Attention!",
         },
         { status: 400 }
       );
     }
+
+    const id = params.id;
+    const obj: ICourse = {
+      ...emptyCourse,
+      ...dto.toData(),
+      id: id,
+      userId,
+    };
+    const updatedCourse = await courseUseCase.updateCourse(obj);
+    const courseDto = courseMapper.toDTO(updatedCourse);
+
+    return NextResponse.json(
+      {
+        data: courseDto,
+        message: "Course Updated Successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
+    );
   }
 }
 

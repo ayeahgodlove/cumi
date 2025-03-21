@@ -5,7 +5,7 @@ import { AppNav } from "@components/nav/nav.component";
 import Disqus from "@components/shared/disqus";
 import ImageFallback from "@components/shared/image-fallback";
 import Share from "@components/shared/share";
-import { API_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { projectAPI } from "@store/api/project_api";
 import { userAPI } from "@store/api/user_api";
 import { Layout, Spin } from "antd";
@@ -43,7 +43,7 @@ export default function IndexPage({ params }: { params: { id: string } }) {
                   {project && (
                     <div className="mb-5">
                       <ImageFallback
-                        src={`${API_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
+                        src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
                         height={500}
                         width={1200}
                         alt={project?.title}
