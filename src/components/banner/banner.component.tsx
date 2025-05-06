@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, Breadcrumb, Typography } from "antd";
 import Link from "next/link";
 import React from "react";

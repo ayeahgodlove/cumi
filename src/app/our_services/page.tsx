@@ -6,8 +6,8 @@ import { AppNav } from "@components/nav/nav.component";
 import { serviceAPI } from "@store/api/service_api";
 import { Spin } from "antd";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+// import { usePathname, useRouter } from "next/navigation";
+// import { useEffect } from "react";
 import "swiper/css";
 import ServiceList from "@components/service/service-list.component";
 
@@ -18,19 +18,19 @@ export default function IndexPage() {
     isFetching: isFetchService,
   } = serviceAPI.useFetchAllServicesQuery(1);
 
-  const pathname = usePathname();
-  const router = useRouter();
+  // const pathname = usePathname();
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (services && services.length > 0) {
-      // Example: Navigate to the first service's detail page
-      const firstService = services[0];
-      const newPath = `our_services/${firstService.slug}#service-details`;
+  // useEffect(() => {
+  //   if (services && services.length > 0) {
+  //     // Example: Navigate to the first service's detail page
+  //     const firstService = services[0];
+  //     const newPath = `our_services/${firstService.slug}#service-details`;
 
-      // Programmatically navigate to the new path
-      router.push(newPath);
-    }
-  }, [services, pathname, router]);
+  //     // Programmatically navigate to the new path
+  //     router.push(newPath);
+  //   }
+  // }, [services, pathname, router]);
 
   if (isLoadingService || isFetchService) {
     return (
@@ -67,7 +67,7 @@ export default function IndexPage() {
             <div className="row align-items-center justify-content-between">
               <div className="mb-4 col-md-5 col-lg-4 order-md-2">
                 <img
-                  className="w-100 img-fluid rounded-3 shadow-lg"
+                  className="w-100 img-fluid rounded-3"
                   style={{ maxHeight: 300 }}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   src={`/img/christopher-gower-m_HRfLhgABo-unsplash.jpg`}

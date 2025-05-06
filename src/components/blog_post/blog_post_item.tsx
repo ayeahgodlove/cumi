@@ -31,6 +31,7 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
         style={{ width: "100%" }}
         styles={{ header: { overflow: "hidden" } }}
         key={post.id}
+        className="bg-white border-0 shadow"
         cover={
           <Image
             alt={post.title}

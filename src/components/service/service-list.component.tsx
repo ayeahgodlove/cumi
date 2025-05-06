@@ -37,7 +37,7 @@ const ServiceList: React.FC<IServiceListProps> = ({ services }) => {
               {services && services.length > 0 ? (
                 services.map((item: IService, index: number) => (
                   <SwiperSlide key={index}>
-                    <div className="card rounded bg-light">
+                    <div className="card rounded bg-light shadow border-0">
                       <img
                         src={`${BASE_URL_UPLOADS_MEDIA}/${item.imageUrl}`}
                         alt={item.title}

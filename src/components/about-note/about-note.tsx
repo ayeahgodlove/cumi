@@ -25,7 +25,7 @@ const AboutNote = () => {
             <Card
               bordered={false}
               hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
+              className="shadow d-flex flex-column align-items-center justify-content-center bg-white"
             >
               <p className="fw-bold text-center">Expertise</p>
               <GrUserExpert
@@ -48,7 +48,7 @@ const AboutNote = () => {
             <Card
               bordered={false}
               hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
+              className="shadow d-flex flex-column align-items-center justify-content-center bg-white"
             >
               <p className="fw-bold text-center">Innovation</p>
               <MdLightbulbOutline
@@ -68,7 +68,7 @@ const AboutNote = () => {
             <Card
               bordered={false}
               hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
+              className="shadow d-flex flex-column align-items-center justify-content-center bg-white"
             >
               <p className="fw-bold text-center">Collaboration</p>
               <IoPeopleOutline
@@ -87,7 +87,7 @@ const AboutNote = () => {
             <Card
               bordered={false}
               hoverable
-              className="shadow d-flex flex-column align-items-center justify-content-center"
+              className="shadow d-flex flex-column align-items-center justify-content-center bg-white"
             >
               <p className="fw-bold text-center">Commitment to Excellence</p>
               <IoMedalOutline
