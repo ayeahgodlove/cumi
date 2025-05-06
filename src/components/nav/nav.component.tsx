@@ -1,13 +1,15 @@
+"use client";
+
 import { Affix, Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-type Props  = {
-  logoPath: string
-}
-export const AppNav: React.FC<Props> = ({ logoPath}) => {
+type Props = {
+  logoPath: string;
+};
+export const AppNav: React.FC<Props> = ({ logoPath }) => {
   const pathname = usePathname();
   return (
     <Affix offsetTop={0}>
@@ -59,6 +61,19 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                   Services
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link
+                  className={`nav-link  ${
+                    pathname === "/projects"
+                      ? " active fw-bold text-secondary"
+                      : ""
+                  }`}
+                  href="/projects"
+                >
+                  Projects
+                </Link>
+              </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
@@ -83,7 +98,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                   Careers
                 </Link>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/events"
@@ -94,20 +109,8 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                 >
                   Events
                 </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={`nav-link  ${
-                    pathname === "/projects"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
-                  href="/projects"
-                >
-                  Projects
-                </Link>
-              </li>
-              <li className="nav-item">
+              </li> */}
+              {/* <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/courses"
@@ -118,7 +121,7 @@ export const AppNav: React.FC<Props> = ({ logoPath}) => {
                 >
                   Courses
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${

@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { emptyUser } from "../domain/models/user";
 import { nanoid } from "nanoid";
 import bcrypt from "bcryptjs";
-import User from "../data/entities/user";
+import { User } from "../data/entities/index";
 import { AuthOptions } from "next-auth";
 
 const authOptions: AuthOptions = {
@@ -30,7 +30,6 @@ const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials");
           return null;
         }
 
@@ -38,21 +37,18 @@ const authOptions: AuthOptions = {
           where: { email: credentials.email },
         });
         if (!currentUser) {
-          console.log("Login failed. Invalud Credentials.");
           return null;
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials?.password,
-          currentUser.password
+          "currentUser.password"
         );
         if (!isPasswordValid) {
-          console.log("Login failed. Invalid credentials");
           return null;
         }
 
         const { password, ...userWithoutPassword } = currentUser.toJSON();
-        console.log("userWithoutPassword: ", userWithoutPassword);
         return userWithoutPassword; // User must contain { id, name, email, image }.
       },
     }),
@@ -61,13 +57,14 @@ const authOptions: AuthOptions = {
     async jwt({ token, user, account, profile }) {
       if (user) {
         const userItem = await User.findOne({
-          where: { email: user.email },
+          where: { email: user?.email ?? "" },
         });
-        token.id = userItem?.id;
-        token.name = userItem?.username;
-        token.email = userItem?.email;
+        const data = userItem?.toJSON();
+        token.id = data?.id;
+        token.name = data?.username;
+        token.email = data?.email;
         token.provider = account?.provider;
-        token.role = userItem?.role || "user";
+        token.role = data?.role || "user";
       }
       return token;
     },
@@ -85,28 +82,28 @@ const authOptions: AuthOptions = {
     },
 
     async signIn({ user, account, profile }) {
-      console.log("callback: ", account, profile);
       if (account?.provider !== "credentials") {
         try {
           // find user by email
           const existingUser = await User.findOne({
-            where: { email: user.email },
+            where: { email: user?.email ?? "" },
           });
           if (!existingUser) {
-            console.log("Creating new user...");
             await User.create({
               ...emptyUser,
               id: nanoid(20),
-              username: user.name,
-              email: user.email,
-              image: user.image,
-              provider: account?.provider,
+              username: `${user.name}`,
+              email: `${user.email}`,
+              // image: `${user.image}`,
+              authStrategy: account?.provider,
               role: "user",
               verified: true,
+              fullname: `${user.name}`,
+              createdAt: new Date(),
+              updatedAt: new Date(),
             });
           }
         } catch (error: any) {
-          console.log("Error: ", error.message);
           return false;
         }
       }

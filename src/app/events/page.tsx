@@ -8,7 +8,6 @@ import SpinnerList from "@components/shared/spinner-list";
 import { eventAPI } from "@store/api/event_api";
 import { Col, Empty, Layout, Row, Spin } from "antd";
 import { motion } from "framer-motion";
-import { Suspense } from "react";
 
 const { Content } = Layout;
 export default function IndexPage() {
@@ -19,7 +18,7 @@ export default function IndexPage() {
   } = eventAPI.useFetchAllEventsQuery(1);
 
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -78,6 +77,6 @@ export default function IndexPage() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

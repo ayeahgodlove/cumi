@@ -1,4 +1,4 @@
-import User from "@data/entities/user";
+import { User } from "@data/entities/index";
 import { IUserRepository } from "@data/repositories/contracts/repository.base";
 import { IUser } from "@domain/models/user";
 
@@ -8,7 +8,7 @@ export class UserUseCase {
    */
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async createUser(user: IUser): Promise<User> {
+  async createUser(user: IUser): Promise<InstanceType<typeof User>> {
     const existingUser = await this.userRepository.findByName(user.username);
 
     if (existingUser) {
@@ -20,15 +20,15 @@ export class UserUseCase {
     return this.userRepository.create(user);
   }
 
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<InstanceType<typeof User>[]> {
     return this.userRepository.getAll();
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUserById(id: string): Promise<InstanceType<typeof User> | null> {
     return this.userRepository.findById(id);
   }
 
-  async updateUser(user: IUser): Promise<User> {
+  async updateUser(user: IUser): Promise<InstanceType<typeof User>> {
     const obj: IUser = {
       ...user,
     };

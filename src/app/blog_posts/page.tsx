@@ -1,14 +1,12 @@
 "use client";
 import { AppNav } from "@components/nav/nav.component";
 import SpinnerList from "@components/shared/spinner-list";
-import { Button, Col, Divider, Empty, Layout, Row, Spin } from "antd";
-import { Suspense, useState, useTransition } from "react";
+import { Col, Empty, Layout, Row, Spin } from "antd";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { postAPI } from "@store/api/post_api";
 import { SortPostsType } from "@domain/models/shared/sort.model";
 import BlogPostItem from "@components/blog_post/blog_post_item";
-import SearchPosts from "@components/blog_post/containers/SearchPosts";
-import SortPosts from "@components/blog_post/containers/SortPosts";
 import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
@@ -21,8 +19,6 @@ const { Content } = Layout;
 export default function IndexPage() {
   const [searchTitle, setSearchTitle] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<SortPostsType>();
-  const [isPending, startTransition] = useTransition();
-  const [openFilter, setOpenFilter] = useState<boolean>(false);
 
   const {
     data: posts,
@@ -52,21 +48,29 @@ export default function IndexPage() {
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  const onChangeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    startTransition(() => {
-      // Mark updates as transitions
-      setSearchTitle(event.target.value);
-    });
-  };
-
-  const handleSortOrderChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSortOrder(event.target.value as SortPostsType);
-  };
-
+  if (
+    isLoadingCategory ||
+    isFetchCategory ||
+    isLoadingTag ||
+    isFetchTag ||
+    isLoadingUser ||
+    isFetchUser
+  ) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
+  }
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -78,20 +82,7 @@ export default function IndexPage() {
         pageTitle="Blog Posts"
       />
 
-      <div className="container mb-5">
-        <Row justify="space-between">
-          <Col span={12} style={{ alignSelf: "center" }}>
-            <SortPosts
-              sortOrderValue={sortOrder}
-              sortOrderChange={handleSortOrderChange}
-            />
-          </Col>
-          <Col span={12} style={{ textAlign: "right" }}>
-            <SearchPosts search={onChangeSearch} />
-          </Col>
-        </Row>
-        <Divider />
-
+      <div className="container py-5 mb-5">
         {error && <h1>Something wrong...</h1>}
 
         <Content>
@@ -161,6 +152,6 @@ export default function IndexPage() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

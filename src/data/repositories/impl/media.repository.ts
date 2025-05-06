@@ -1,7 +1,7 @@
 import { IMedia } from "@domain/models/media.model";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IMediaRepository } from "../contracts/repository.base";
-import Media from "@data/entities/media";
+import { Media } from "../../entities/index";
 export class MediaRepository implements IMediaRepository {
   constructor() {}
 
@@ -10,9 +10,9 @@ export class MediaRepository implements IMediaRepository {
    * @media
    * returns void
    */
-  async create(media: IMedia): Promise<Media> {
+  async create(media: IMedia): Promise<InstanceType<typeof Media>> {
     try {
-      return await Media.create<Media>({ ...media });
+      return await Media.create<InstanceType<typeof Media>>({ ...media });
     } catch (error) {
       throw error;
     }
@@ -23,7 +23,7 @@ export class MediaRepository implements IMediaRepository {
    * @id
    * returns Media
    */
-  async findById(id: string): Promise<Media | null> {
+  async findById(id: string): Promise<InstanceType<typeof Media> | null> {
     try {
       const mediaItem = await Media.findByPk(id);
 
@@ -41,7 +41,7 @@ export class MediaRepository implements IMediaRepository {
    * @title
    * returns Media
    */
-  async findByTitle(title: string): Promise<Media | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Media> | null> {
     try {
       const mediaItem = await Media.findOne({ where: { title } });
       return mediaItem;
@@ -50,7 +50,7 @@ export class MediaRepository implements IMediaRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Media | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Media> | null> {
     try {
       const mediaItem = await Media.findOne({ where: { slug } });
       return mediaItem;
@@ -62,7 +62,7 @@ export class MediaRepository implements IMediaRepository {
   /*
    * Returns an array of Media
    */
-  async getAll(): Promise<Media[]> {
+  async getAll(): Promise<InstanceType<typeof Media>[]> {
     try {
       const mediaItems = await Media.findAll();
       return mediaItems;
@@ -76,7 +76,7 @@ export class MediaRepository implements IMediaRepository {
    * @media
    * returns void
    */
-  async update(media: IMedia): Promise<Media> {
+  async update(media: IMedia): Promise<InstanceType<typeof Media>> {
     const { id } = media;
     try {
       const mediaItem: any = await Media.findByPk(id);

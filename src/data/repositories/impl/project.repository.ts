@@ -1,7 +1,7 @@
 import { IProject } from "@domain/models/project.model";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IProjectRepository } from "../contracts/repository.base";
-import Project from "@data/entities/project";
+import { Project } from "../../entities/index";
 export class ProjectRepository implements IProjectRepository {
   constructor() {}
 
@@ -10,9 +10,9 @@ export class ProjectRepository implements IProjectRepository {
    * @project
    * returns void
    */
-  async create(project: IProject): Promise<Project> {
+  async create(project: IProject): Promise<InstanceType<typeof Project>> {
     try {
-      return await Project.create<Project>({ ...project });
+      return await Project.create<InstanceType<typeof Project>>({ ...project });
     } catch (error) {
       throw error;
     }
@@ -23,7 +23,7 @@ export class ProjectRepository implements IProjectRepository {
    * @id
    * returns Project
    */
-  async findById(id: string): Promise<Project | null> {
+  async findById(id: string): Promise<InstanceType<typeof Project> | null> {
     try {
       const projectItem = await Project.findByPk(id);
 
@@ -41,7 +41,7 @@ export class ProjectRepository implements IProjectRepository {
    * @title
    * returns Project
    */
-  async findByTitle(title: string): Promise<Project | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Project> | null> {
     try {
       const projectItem = await Project.findOne({ where: { title } });
       return projectItem;
@@ -50,7 +50,7 @@ export class ProjectRepository implements IProjectRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Project | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Project> | null> {
     try {
       const project = await Project.findOne({ where: { slug } });
       return project;
@@ -62,10 +62,10 @@ export class ProjectRepository implements IProjectRepository {
   /*
    * Returns an array of Project
    */
-  async getAll(): Promise<Project[]> {
+  async getAll(): Promise<InstanceType<typeof Project>[]> {
     try {
-      const categories = await Project.findAll();
-      return categories;
+      const projects = await Project.findAll();
+      return projects;
     } catch (error) {
       throw error;
     }
@@ -76,7 +76,7 @@ export class ProjectRepository implements IProjectRepository {
    * @project
    * returns void
    */
-  async update(project: IProject): Promise<Project> {
+  async update(project: IProject): Promise<InstanceType<typeof Project>> {
     const { id } = project;
     try {
       const projectItem: any = await Project.findByPk(id);

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Button, ConfigProvider, Input } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";

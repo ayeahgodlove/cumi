@@ -1,7 +1,6 @@
 import { PostRepository } from "@data/repositories/impl/post.repository";
 import { PostUseCase } from "@domain/usecases/post.usecase";
 import { PostMapper } from "@presentation/mappers/mapper";
-import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { NextResponse, NextRequest } from "next/server";
 
 const postRepository = new PostRepository();

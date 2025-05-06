@@ -1,4 +1,4 @@
-import Event from "@data/entities/event";
+import { Event } from "@data/entities/index";
 import { IEventRepository } from "@data/repositories/contracts/repository.base";
 import { IEvent } from "@domain/models/event.model";
 
@@ -8,7 +8,7 @@ export class EventUseCase {
    */ 
   constructor(private readonly eventRepository: IEventRepository) {}
 
-  async createEvent(event: IEvent): Promise<Event> {
+  async createEvent(event: IEvent): Promise<InstanceType<typeof Event>> {
     const existingEvent = await this.eventRepository.findByTitle(
       event.title
     );
@@ -22,19 +22,19 @@ export class EventUseCase {
     return this.eventRepository.create(event);
   }
 
-  async getAll(): Promise<Event[]> {
+  async getAll(): Promise<InstanceType<typeof Event>[]> {
     return this.eventRepository.getAll();
   }
 
-  async getEventById(id: string): Promise<Event | null> {
+  async getEventById(id: string): Promise<InstanceType<typeof Event> | null> {
     return this.eventRepository.findById(id);
   }
 
-  async getEventBySlug(slug: string): Promise<Event | null> {
+  async getEventBySlug(slug: string): Promise<InstanceType<typeof Event> | null> {
     return this.eventRepository.findBySlug(slug);
   }
 
-  async updateEvent(event: IEvent): Promise<Event> {
+  async updateEvent(event: IEvent): Promise<InstanceType<typeof Event>> {
     return this.eventRepository.update(event);
   }
 

@@ -6,7 +6,7 @@ import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
-import { Suspense } from "react";
+import { Spin } from "antd";
 
 export default function IndexPage() {
   const {
@@ -20,8 +20,23 @@ export default function IndexPage() {
     isLoading: isLoadingCategory,
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
+
+  if (isLoadingCategory || isFetchCategory || isLoading || isFetching) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
+  }
   return (
-    <Suspense>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -39,6 +54,6 @@ export default function IndexPage() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

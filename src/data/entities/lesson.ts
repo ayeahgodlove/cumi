@@ -1,127 +1,107 @@
-// models/Category.ts
-import sequelize from "@database/db-sequelize.config";
-import { DataTypes, Model } from "sequelize";
+// models/Category.t
 
-class Lesson extends Model {
-  id!: string;
-  title!: string;
-  url!: string; 
-  slug!: string;
-  description!: string;
-  userId!: string;
-  content!: string;
-  duration!: number;
-  difficulty!: string;
-  author!: string;
-  courseId!: string;
-  imageUrl!: string;
-  // dependencies
-  prerequisites!: string[];
-  objectives!: string[];
-  keywords!: string[];
+import { Sequelize } from "sequelize";
 
-  // Additional properties
-  language?: string;
-  rating?: number;
-}
-
-Lesson.init(
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    url: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    imageUrl: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: "User",
-        key: "id",
+const Lesson = (sequelize: Sequelize, DataTypes: any) => {
+  const LessonModel = sequelize.define(
+    "Lesson",
+    {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      url: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
+      courseId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        references: {
+          model: "courses",
+          key: "id",
+        },
+      },
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      duration: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      difficulty: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+      },
+      prerequisites: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+      },
+      objectives: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+      },
+      keywords: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+      },
+      author: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      language: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+      },
+      rating: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "updated_at",
       },
     },
-    courseId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: "Course",
-        key: "id",
-      },
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    duration: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    difficulty: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    prerequisites: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-    },
-    objectives: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-    },
-    keywords: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-    },
-    author: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    language: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
-    },
-    rating: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    {
+      tableName: "lessons",
+      timestamps: true,
+    }
+  );
 
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: "created_at",
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: "updated_at",
-    },
-  },
-  {
-    sequelize,
-    tableName: "lessons",
-    timestamps: true,
-  }
-);
+  return LessonModel;
+};
 
 export default Lesson;

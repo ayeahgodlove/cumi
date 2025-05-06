@@ -1,4 +1,3 @@
-import Event from "@data/entities/event";
 import { EventRepository } from "@data/repositories/impl/event.repository";
 import { emptyEvent, IEvent } from "@domain/models/event.model";
 import { EventUseCase } from "@domain/usecases/event.usecase";

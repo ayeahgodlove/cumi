@@ -39,7 +39,8 @@ const FeatureSection = () => {
                 className="primary-btn"
                 shape="round"
                 style={{ background: "darkslategray" }}
-                href="/contact-us"
+                href="https://wa.me/237681289411"
+                target="_blank"
                 size="large"
               >
                 Hire our expertise
@@ -61,7 +62,8 @@ const FeatureSection = () => {
                 className="primary-btn"
                 shape="round"
                 style={{ background: "darkslategray" }}
-                href="/contact-us"
+                href="https://wa.me/237681289411"
+                target="_blank"
                 size="large"
               >
                 Hire our expertise

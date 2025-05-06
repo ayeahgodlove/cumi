@@ -28,18 +28,6 @@ export const postAPI = createApi({
     }),
     fetchAllPosts: build.query<IPost[], number | ISort>({
       query: (page = 1) => `/posts?page=${page}`,
-      // query: ({ searchTitle, sortBy, }) => {
-      //   let queryString = `posts?q=${searchTitle}`;
-      //   if (sortBy === "date") {
-      //     queryString += "&_sort=date&_order=desc";
-      //   } else if (sortBy === "title") {
-      //     queryString += "&_sort=title&_order=asc";
-      //   } else if (sortBy === "author") {
-      //     queryString += "&_sort=author&_order=desc";
-      //   }
-
-      //   return queryString;
-      // },
       providesTags: (result) => ["Post"],
     }),
   }),

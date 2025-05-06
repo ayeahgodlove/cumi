@@ -35,12 +35,6 @@ export const emptyUser: IUser = {
   address: "",
   authStrategy: "",
   verified: false,
-  roles: [],
-  banners: [],
-  posts: [],
-  projects: [],
-  services: [],
-  events: [],
 };
 
 export interface IUserState extends IBaseState {

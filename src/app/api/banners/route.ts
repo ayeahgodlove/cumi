@@ -1,9 +1,7 @@
-import Banner from "@data/entities/banner";
 import { BannerRepository } from "@data/repositories/impl/banner.repository";
 import { BannerUseCase } from "@domain/usecases/banner.usecase";
 import authOptions from "@lib/options";
 import { BannerRequestDto } from "@presentation/dtos/banner-request.dto";
-import { BannerMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -11,11 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const bannerRepository = new BannerRepository();
 const bannerUseCase = new BannerUseCase(bannerRepository);
-const bannerMapper = new BannerMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Banner.findAll();
+    const categories = await bannerUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

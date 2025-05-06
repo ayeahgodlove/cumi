@@ -8,7 +8,6 @@ import SpinnerList from "@components/shared/spinner-list";
 import { opportunityAPI } from "@store/api/opportunity_api";
 import { Col, Empty, Layout } from "antd";
 import { motion } from "framer-motion";
-import { Suspense } from "react";
 
 const { Content } = Layout;
 export default function IndexPage() {
@@ -20,7 +19,7 @@ export default function IndexPage() {
   } = opportunityAPI.useFetchAllOpportunitiesQuery();
 
   return (
-    <Suspense>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -60,6 +59,6 @@ export default function IndexPage() {
       </div>
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

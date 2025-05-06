@@ -1,0 +1,35 @@
+.projectCard {
+    transition: all 0.3s ease;
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+.projectCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+.projectImage {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+
+.projectTitle {
+    color: #310606;
+    margin-bottom: 10px;
+}
+
+
+.projectTitleLink {
+    color: #121111 !important;
+}
+
+.projectTitleLink:hover {
+    color: #03c786 !important;
+}
+
+.glow {
+    text-shadow: 0 0 5px #09a44f, 0 0 10px #09a44f, 0 0 20px #6bff8b;
+}

@@ -1,7 +1,7 @@
 import { ITag } from "@domain/models/tag";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { ITagRepository } from "../contracts/repository.base";
-import Tag from "@data/entities/tag";
+import { Tag } from "../../entities/index";
 
 export class TagRepository implements ITagRepository {
   /**
@@ -14,9 +14,9 @@ export class TagRepository implements ITagRepository {
    * @tag
    * returns void
    */
-  async create(tag: ITag): Promise<Tag> {
+  async create(tag: ITag): Promise<InstanceType<typeof Tag>> {
     try {
-      return await Tag.create<Tag>({ ...tag });
+      return await Tag.create<InstanceType<typeof Tag>>({ ...tag });
     } catch (error) {
       throw error;
     }
@@ -27,7 +27,7 @@ export class TagRepository implements ITagRepository {
    * @id
    * returns Tag
    */
-  async findById(id: string): Promise<Tag | null> {
+  async findById(id: string): Promise<InstanceType<typeof Tag> | null> {
     try {
       const tagItem = await Tag.findByPk(id);
 
@@ -45,7 +45,7 @@ export class TagRepository implements ITagRepository {
    * @name
    * returns Category
    */
-  async findByName(name: string): Promise<Tag | null> {
+  async findByName(name: string): Promise<InstanceType<typeof Tag> | null> {
     try {
       const tag = await Tag.findOne({ where: { name } });
       return tag;
@@ -57,7 +57,7 @@ export class TagRepository implements ITagRepository {
   /*
    * Returns an array of Tag
    */
-  async getAll(): Promise<Tag[]> {
+  async getAll(): Promise<InstanceType<typeof Tag>[]> {
     try {
       const categories = await Tag.findAll();
       return categories;
@@ -71,7 +71,7 @@ export class TagRepository implements ITagRepository {
    * @tag
    * returns void
    */
-  async update(tag: ITag): Promise<Tag> {
+  async update(tag: ITag): Promise<InstanceType<typeof Tag>> {
     const { id } = tag;
     try {
       const tagItem: any = await Tag.findByPk(id);

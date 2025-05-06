@@ -1,60 +1,50 @@
 // models/Banner.ts
-import sequelize from '@database/db-sequelize.config';
-import { DataTypes, Model } from 'sequelize';
+import { Sequelize } from "sequelize";
 
-class Banner extends Model {
-  public id!: string;
-  public title!: string;
-  public subTitle!: string;
-  public image!: string;
-  public userId!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
-}
+const Banner = (sequelizeInstance: Sequelize, DataTypes: any) => {
+  const BannerModel = sequelizeInstance.define(
+    "Banner",
+    {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      subTitle: {
+        type: DataTypes.STRING,
+      },
+      image: {
+        type: DataTypes.STRING,
+      },
+      userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      tableName: "banners",
+      timestamps: true,
+    }
+  );
 
-Banner.init(
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    subTitle: {
-      type: DataTypes.STRING,
-    },
-    image: {
-      type: DataTypes.STRING,
-    },
-    userId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'created_at',
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'updated_at',
-    },
-  },
-  {
-    sequelize,
-    tableName: 'banners',
-    timestamps: true,
-  }
-);
+  return BannerModel;
+};
 
 export default Banner;

@@ -1,66 +1,57 @@
 // models/Project.ts
-import sequelize from "@database/db-sequelize.config";
-import { DataTypes, Model } from "sequelize";
+import { Model, Sequelize } from "sequelize";
 
-class Project extends Model {
-  public id!: string;
-  public title!: string;
-  public description!: string;
-  public imageUrl!: string;
-  public githubUrl!: string;
-  public deployUrl!: string;
-  public userId!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
-}
+const Project = (sequelize: Sequelize, DataTypes: any) => {
+  const ProjectModel = sequelize.define(
+    "Project",
+    {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      description: {
+        type: DataTypes.STRING,
+      },
+      imageUrl: {
+        type: DataTypes.STRING,
+      },
+      githubUrl: {
+        type: DataTypes.STRING,
+      },
+      deployUrl: {
+        type: DataTypes.STRING,
+      },
+      userId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "updated_at",
+      },
+    },
+    {
+      tableName: "projects",
+      timestamps: true,
+    }
+  );
 
-Project.init(
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    description: {
-      type: DataTypes.STRING,
-    },
-    imageUrl: {
-      type: DataTypes.STRING,
-    },
-    githubUrl: {
-      type: DataTypes.STRING,
-    },
-    deployUrl: {
-      type: DataTypes.STRING,
-    },
-    userId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-  },
-  {
-    sequelize,
-    tableName: "projects",
-    timestamps: true,
-  }
-);
-
+  return ProjectModel;
+};
 export default Project;

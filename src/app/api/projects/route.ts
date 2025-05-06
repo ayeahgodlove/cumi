@@ -1,4 +1,3 @@
-import Project from "@data/entities/project";
 import { ProjectRepository } from "@data/repositories/impl/project.repository";
 import { ProjectUseCase } from "@domain/usecases/project.usecase";
 import authOptions from "@lib/options";
@@ -11,13 +10,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const projectRepository = new ProjectRepository();
 const projectUseCase = new ProjectUseCase(projectRepository);
-const projectMapper = new ProjectMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Project.findAll();
+    const projects = await projectRepository.getAll();
 
-    return NextResponse.json(categories);
+    return NextResponse.json(projects);
   } catch (error: any) {
     return NextResponse.json(
       {

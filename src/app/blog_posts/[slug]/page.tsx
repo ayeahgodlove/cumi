@@ -15,9 +15,8 @@ import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
 import { userAPI } from "@store/api/user_api";
 import { format } from "@utils/format";
-import { Col, Layout, Spin } from "antd";
+import {Layout, Spin } from "antd";
 import Link from "next/link";
-import { Suspense } from "react";
 import { FaRegClock, FaRegFolder, FaRegUserCircle } from "react-icons/fa";
 import slugify from "slugify";
 
@@ -29,7 +28,11 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
     isFetching,
   } = postAPI.useGetSinglePostBySlugQuery(params.slug);
 
-  const { data: posts } = postAPI.useFetchAllPostsQuery({
+  const {
+    data: posts,
+    isLoading: isLoadingPosts,
+    isFetching: isFetchingPosts,
+  } = postAPI.useFetchAllPostsQuery({
     searchTitle: "",
   });
   const {
@@ -52,21 +55,49 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
     isFetching: isFetchUser,
   } = userAPI.useGetSingleUserQuery(post ? post.authorId : "");
 
-  const { data: tags } = tagAPI.useFetchAllTagsQuery(1);
+  const {
+    data: tags,
+    isLoading: isLoadingTag,
+    isFetching: isFetchingTag,
+  } = tagAPI.useFetchAllTagsQuery(1);
   const similarPosts = post
     ? posts?.filter((p) => p.categoryId === post.categoryId)
     : [];
 
   const category = categories?.find((c) => c.id === post?.categoryId);
 
-  if (isLoading || isFetching) {
-    <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
+  if (
+    isLoadingCategory ||
+    isFetchCategory ||
+    isLoading ||
+    isFetching ||
+    isLoadingUser ||
+    isFetchUser ||
+    isFetchBaner ||
+    isLoadingBaner ||
+    isLoadingPosts ||
+    isFetchingPosts ||
+    isLoadingTag ||
+    isFetchingTag
+  ) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
   }
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/../" />
+        <AppNav logoPath="/" />
         <PageContent
           title={post?.title}
           banner={banners ? (banners.length > 0 ? banners[0].image : "") : []}
@@ -132,7 +163,7 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
                       <h5 className="me-3">Tags :</h5>
                       <ul className="nav">
                         {tags?.map((tag: ITag) => (
-                          <li key={tag.id} className="inline-block">
+                          <li key={tag.id} className="inline-block mb-2">
                             <Link
                               className="m-1 block rounded bg-light px-3 py-1"
                               href={`/tags/${slugify(tag.name)}`}
@@ -178,8 +209,8 @@ export default function IndexPage({ params }: { params: { slug: string } }) {
           </section>
         </Content>
       </div>
-      <AppFooter logoPath="/../" />
+      <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

@@ -17,7 +17,8 @@ const PostSidebar = ({
   const pathname = usePathname();
   const allCategories: string[] =
     posts && posts.length > 0 ? posts.map((p) => p.categoryId) : [];
-  const [allTags] = posts && posts.length > 0 ? posts.map((p) => p.Tags) : [];
+  const [allTags] = posts && posts.length > 0 ? posts.map((p) => p.tags) : [];
+
 
   return (
     <>

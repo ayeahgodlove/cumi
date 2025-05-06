@@ -1,4 +1,3 @@
-import Media from "@data/entities/media";
 import { MediaRepository } from "@data/repositories/impl/media.repository";
 import { MediaUseCase } from "@domain/usecases/media.usecase";
 import authOptions from "@lib/options";
@@ -14,7 +13,7 @@ const mediaMapper = new MediaMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Media.findAll();
+    const categories = await mediaUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

@@ -1,7 +1,8 @@
 import { IBanner } from "@domain/models/banner.model";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IBannerRepository } from "../contracts/repository.base";
-import Banner from "@data/entities/banner";
+import { Banner } from "../../entities/index";
+
 export class BannerRepository implements IBannerRepository {
   constructor() {}
 
@@ -10,9 +11,9 @@ export class BannerRepository implements IBannerRepository {
    * @banner
    * returns void
    */
-  async create(banner: IBanner): Promise<Banner> {
+  async create(banner: IBanner): Promise<InstanceType<typeof Banner>> {
     try {
-      return await Banner.create<Banner>({ ...banner });
+      return await Banner.create<InstanceType<typeof Banner>>({ ...banner });
     } catch (error) {
       throw error;
     }
@@ -23,7 +24,7 @@ export class BannerRepository implements IBannerRepository {
    * @id
    * returns Banner
    */
-  async findById(id: string): Promise<Banner | null> {
+  async findById(id: string): Promise<InstanceType<typeof Banner> | null> {
     try {
       const bannerItem = await Banner.findByPk(id);
 
@@ -41,7 +42,7 @@ export class BannerRepository implements IBannerRepository {
    * @title
    * returns Banner
    */
-  async findByTitle(title: string): Promise<Banner | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Banner> | null> {
     try {
       const bannerItem = await Banner.findOne({ where: { title } });
       return bannerItem;
@@ -53,7 +54,7 @@ export class BannerRepository implements IBannerRepository {
   /*
    * Returns an array of Banner
    */
-  async getAll(): Promise<Banner[]> {
+  async getAll(): Promise<InstanceType<typeof Banner>[]> {
     try {
       const categories = await Banner.findAll();
       return categories;
@@ -67,7 +68,7 @@ export class BannerRepository implements IBannerRepository {
    * @banner
    * returns void
    */
-  async update(banner: IBanner): Promise<Banner> {
+  async update(banner: IBanner): Promise<InstanceType<typeof Banner>> {
     const { id } = banner;
     try {
       const bannerItem: any = await Banner.findByPk(id);

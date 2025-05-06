@@ -98,6 +98,18 @@
       "edit": "Edit Career"
     }
   },
+  "opportunities": {
+    "opportunities": "Opportunities",
+    "titles": {
+      "list": "List Opportunities",
+      "create": "Create Opportunitie",
+      "edit": "Edit Opportunitie"
+    }
+  },
+  "lms": {
+    "lms": "LMS"
+  },
+  
   "users": {
     "users": "Users",
     "titles": {

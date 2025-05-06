@@ -5,6 +5,7 @@ export interface IService {
   id: string;
   title: string;
   description: string;
+  items: string[];
   userId: string;
   slug: string;
   imageUrl: string
@@ -16,7 +17,8 @@ export const emptyService: IService = {
   description: "",
   userId: "",
   slug: "",
-  imageUrl: ""
+  imageUrl: "",
+  items: []
 };
 
 export interface IServiceState extends IBaseState {

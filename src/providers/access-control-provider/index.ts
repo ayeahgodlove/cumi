@@ -9,7 +9,6 @@ export const accessControlProvider: AccessControlProvider = {
     const user: User | undefined = params?.user; // Ensure type safety
 
     if (!user) {
-      console.log("User not found in params");
       return { can: false };
     }
 

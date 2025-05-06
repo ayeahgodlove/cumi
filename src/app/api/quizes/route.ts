@@ -1,4 +1,3 @@
-import Quiz from "@data/entities/quiz";
 import { QuizRepository } from "@data/repositories/impl/quiz.repository";
 import { QuizUseCase } from "@domain/usecases/quiz.usecase";
 import authOptions from "@lib/options";
@@ -13,7 +12,7 @@ const quizUseCase = new QuizUseCase(quizRepository);
 
 export async function GET(request: any) {
   try {
-    const quizes = await Quiz.findAll();
+    const quizes = await quizUseCase.getAll();
 
     return NextResponse.json(quizes);
   } catch (error: any) {

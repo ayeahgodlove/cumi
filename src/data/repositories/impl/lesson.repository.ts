@@ -1,7 +1,7 @@
 import { ILesson } from "@domain/models/lesson";
 import { ILessonRepository } from "../contracts/repository.base";
-import Lesson from "@data/entities/lesson";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
+import { Lesson } from "../../entities/index";
 
 export class LessonRepository implements ILessonRepository {
   /**
@@ -14,9 +14,9 @@ export class LessonRepository implements ILessonRepository {
    * @lesson
    * returns void
    */
-  async create(lesson: ILesson): Promise<Lesson> {
+  async create(lesson: ILesson): Promise<InstanceType<typeof Lesson>> {
     try {
-      return await Lesson.create<Lesson>({ ...lesson });
+      return await Lesson.create<InstanceType<typeof Lesson>>({ ...lesson });
     } catch (error) {
       throw error;
     }
@@ -27,7 +27,7 @@ export class LessonRepository implements ILessonRepository {
    * @id
    * returns Lesson
    */
-  async findById(id: string): Promise<Lesson | null> {
+  async findById(id: string): Promise<InstanceType<typeof Lesson> | null> {
     try {
       const lessonItem = await Lesson.findByPk(id);
 
@@ -45,7 +45,7 @@ export class LessonRepository implements ILessonRepository {
    * @name
    * returns Lesson
    */
-  async findByTitle(title: string): Promise<Lesson | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Lesson> | null> {
     try {
       const lessonItem = await Lesson.findOne({ where: { title } });
       return lessonItem;
@@ -54,7 +54,7 @@ export class LessonRepository implements ILessonRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Lesson | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Lesson> | null> {
     try {
       const lesson = await Lesson.findOne({
         where: { slug },
@@ -68,7 +68,7 @@ export class LessonRepository implements ILessonRepository {
   /*
    * Returns an array of Lesson
    */
-  async getAll(): Promise<Lesson[]> {
+  async getAll(): Promise<InstanceType<typeof Lesson>[]> {
     try {
       const categories = await Lesson.findAll();
       return categories;
@@ -82,7 +82,7 @@ export class LessonRepository implements ILessonRepository {
    * @lesson
    * returns void
    */
-  async update(lesson: ILesson): Promise<Lesson> {
+  async update(lesson: ILesson): Promise<InstanceType<typeof Lesson>> {
     const { id } = lesson;
     try {
       const lessonItem: any = await Lesson.findByPk(id);

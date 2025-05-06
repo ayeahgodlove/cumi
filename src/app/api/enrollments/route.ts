@@ -1,4 +1,3 @@
-import Enrollment from "@data/entities/enrollment";
 import { EnrollmentRepository } from "@data/repositories/impl/enrollment.repository";
 import { EnrollmentUseCase } from "@domain/usecases/enrollment.usecase";
 import authOptions from "@lib/options";
@@ -15,7 +14,7 @@ const enrollmentMapper = new EnrollmentMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Enrollment.findAll();
+    const categories = await enrollmentUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

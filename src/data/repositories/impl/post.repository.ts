@@ -1,14 +1,10 @@
-import Post from "@data/entities/post";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IPostRepository } from "../contracts/repository.base";
 import { IPost } from "@domain/models/post.model";
-import Tag from "@data/entities/tag";
-import PostTag from "@data/entities/post_tag";
 import sequelize from "@database/db-sequelize.config";
-import Category from "@data/entities/category";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
-
+import { Category, PostTag, Tag, Post } from "../../entities/index";
 export class PostRepository implements IPostRepository {
   /**
    *
@@ -20,28 +16,60 @@ export class PostRepository implements IPostRepository {
    * @title
    * returns Category
    */
-  async findByTitle(title: string): Promise<Post | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Post> | null> {
     try {
-      const post = await Post.findOne({ where: { title }, include: Tag });
+      const post = await Post.findOne({
+        where: { title },
+        include: [
+          {
+            model: Category,
+            as: "category", // Use the alias defined in associations
+          },
+          {
+            model: Tag,
+            as: "tags",
+          },
+        ],
+      });
       return post;
     } catch (error) {
       throw error;
     }
   }
 
-  async findBySlug(slug: string): Promise<Post | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Post> | null> {
     try {
-      const post = await Post.findOne({ where: { slug }, include: Tag });
+      const post = await Post.findOne({
+        where: { slug },
+        include: [
+          {
+            model: Category,
+            as: "category", // Use the alias defined in associations
+          },
+          {
+            model: Tag,
+            as: "tags",
+          },
+        ],
+      });
       return post;
     } catch (error) {
       throw error;
     }
   }
 
-  async findByCategory(category: string): Promise<Post[] | null> {
+  async findByCategory(
+    category: string
+  ): Promise<InstanceType<typeof Post>[] | null> {
     try {
       const categoryItem = await Category.findOne({
         where: { slug: category },
+        include: [
+          {
+            model: Post,
+            as: "posts", // Use the alias defined in associations
+          },
+        ],
       });
 
       if (!categoryItem) {
@@ -51,7 +79,16 @@ export class PostRepository implements IPostRepository {
 
       const posts = await Post.findAll({
         where: { categoryId: item.id },
-        include: Category,
+        include: [
+          {
+            model: Category,
+            as: "category", // Use the alias defined in associations
+          },
+          {
+            model: Tag,
+            as: "tags",
+          },
+        ],
       });
       return posts;
     } catch (error) {
@@ -61,7 +98,7 @@ export class PostRepository implements IPostRepository {
 
   // findByTag
 
-  async findByTag(tag: string): Promise<Post[] | null> {
+  async findByTag(tag: string): Promise<InstanceType<typeof Post>[] | null> {
     try {
       const tagItem = await Tag.findOne({
         where: { slug: tag },
@@ -74,7 +111,16 @@ export class PostRepository implements IPostRepository {
 
       const posts = await Post.findAll({
         where: { tagId: item.id },
-        include: Tag,
+        include: [
+          {
+            model: Category,
+            as: "category", // Use the alias defined in associations
+          },
+          {
+            model: Tag,
+            as: "tags",
+          },
+        ],
       });
       return posts;
     } catch (error) {
@@ -87,13 +133,16 @@ export class PostRepository implements IPostRepository {
    * @post
    * returns void
    */
-  async create(post: IPost): Promise<Post> {
+  async create(post: IPost): Promise<InstanceType<typeof Post>> {
     // Begin transaction if needed
     const transaction = await sequelize.transaction();
     try {
       const { tags, ...rest } = post;
 
-      const postItem = await Post.create<Post>({ ...rest }, { transaction });
+      const postItem = await Post.create<InstanceType<typeof Post>>(
+        { ...rest },
+        { transaction }
+      );
 
       await Promise.all(
         post.tags.map((tagId) =>
@@ -122,7 +171,7 @@ export class PostRepository implements IPostRepository {
    * @id
    * returns Post
    */
-  async findById(id: string): Promise<Post | null> {
+  async findById(id: string): Promise<InstanceType<typeof Post> | null> {
     try {
       const postItem = await Post.findByPk(id, {
         include: Tag,
@@ -140,7 +189,7 @@ export class PostRepository implements IPostRepository {
   /*
    * Returns an array of Post
    */
-  async getAll(): Promise<Post[]> {
+  async getAll(): Promise<InstanceType<typeof Post>[]> {
     try {
       const posts = await Post.findAll({
         include: [
@@ -159,7 +208,7 @@ export class PostRepository implements IPostRepository {
    * @post
    * returns void
    */
-  async update(post: IPost): Promise<Post> {
+  async update(post: IPost): Promise<InstanceType<typeof Post>> {
     const { id } = post;
     try {
       const postItem: any = await Post.findByPk(id);

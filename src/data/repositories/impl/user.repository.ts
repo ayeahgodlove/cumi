@@ -2,7 +2,8 @@ import { IUser } from "@domain/models/user";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IUserRepository } from "../contracts/repository.base";
 import bcrypt from "bcrypt";
-import User from "@data/entities/user";
+import { User } from "../../entities/index";
+
 export class UserRepository implements IUserRepository {
   /**
    *
@@ -14,14 +15,14 @@ export class UserRepository implements IUserRepository {
    * @user
    * returns void
    */
-  async create(user: IUser): Promise<User> {
+  async create(user: IUser): Promise<InstanceType<typeof User>> {
     const hashedPassword = await bcrypt.hash(user.password, 10);
     user.password = hashedPassword;
     user.authStrategy = "local-auth";
     // user.phoneNumber = user.whatsappNumber
 
     try {
-      return await User.create<User>(user as any);
+      return await User.create<InstanceType<typeof User>>(user as any);
     } catch (error) {
       throw error;
     }
@@ -32,7 +33,7 @@ export class UserRepository implements IUserRepository {
    * @id
    * returns User
    */
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<InstanceType<typeof User> | null> {
     try {
       const userItem = await User.findByPk(id);
 
@@ -50,7 +51,7 @@ export class UserRepository implements IUserRepository {
    * @name
    * returns User
    */
-  async findByName(name: string): Promise<User | null> {
+  async findByName(name: string): Promise<InstanceType<typeof User> | null> {
     try {
       const userItem = await User.findOne({ where: { username: name } });
       return userItem;
@@ -62,7 +63,7 @@ export class UserRepository implements IUserRepository {
   /*
    * Returns an array of User
    */
-  async getAll(): Promise<User[]> {
+  async getAll(): Promise<InstanceType<typeof User>[]> {
     try {
       const users = await User.findAll();
       return users;
@@ -76,7 +77,7 @@ export class UserRepository implements IUserRepository {
    * @user
    * returns void
    */
-  async update(user: IUser): Promise<User> {
+  async update(user: IUser): Promise<InstanceType<typeof User>> {
     const { id } = user;
     try {
       const userItem: any = await User.findByPk(id);

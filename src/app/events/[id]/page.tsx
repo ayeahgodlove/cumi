@@ -6,14 +6,11 @@ import Disqus from "@components/shared/disqus";
 import ImageFallback from "@components/shared/image-fallback";
 import Share from "@components/shared/share";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
-import { emptyBanner } from "@domain/models/banner.model";
-import { bannerAPI } from "@store/api/banner_api";
 import { eventAPI } from "@store/api/event_api";
 import { userAPI } from "@store/api/user_api";
 import { format } from "@utils/format";
 import { Layout, Spin } from "antd";
 import Link from "next/link";
-import { Suspense } from "react";
 import { FaRegClock, FaRegUserCircle } from "react-icons/fa";
 import slugify from "slugify";
 
@@ -25,12 +22,6 @@ export default function IndexPage({ params }: { params: { id: string } }) {
     isFetching,
   } = eventAPI.useGetSingleEventQuery(params.id);
 
-  const {
-    data: banners,
-    isLoading: isLoadingBaner,
-    isFetching: isFetchBaner,
-  } = bannerAPI.useFetchAllBannersQuery(1);
-
   const { data: user } = userAPI.useGetSingleUserQuery(
     event ? event?.userId : ""
   );
@@ -39,10 +30,10 @@ export default function IndexPage({ params }: { params: { id: string } }) {
     <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
   }
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/../" />
+        <AppNav logoPath="/" />
 
         {/* <BannerDetailComponent
           banner={
@@ -121,8 +112,8 @@ export default function IndexPage({ params }: { params: { id: string } }) {
           </section>
         </Content>
       </div>
-      <AppFooter logoPath="/../" />
+      <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

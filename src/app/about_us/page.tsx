@@ -1,67 +1,69 @@
 "use client";
-import { BASE_URL } from "@constants/api-url";
-import Link from "next/link";
-import { Suspense } from "react"; 
+import { Suspense } from "react";
 import { AppNav } from "@components/nav/nav.component";
 import BannerComponent from "@components/banner/banner.component";
-import Social from "@components/shared/social";
+import { Typography, Row, Col, Card, Button, Divider } from "antd";
+import { RocketOutlined, CodeOutlined } from "@ant-design/icons";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
+import styles from "./about-page.module.css";
+import YouTubePlayerFrame from "@components/shared/youtube.component";
 
-export default function IndexPage() {
+const { Title, Paragraph } = Typography;
+
+export default function AboutPage() {
   return (
     <Suspense>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
-      {/* banner */}
+
       <BannerComponent
         breadcrumbs={[{ label: "About Us", uri: "about_us" }]}
         pageTitle="About Us"
+        // description="We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations."
       />
-      <div className="container">
-        <div className="d-flex justify-content-center">
-          <div className="rounded bg-light p-4 text-center">
-            <img
-              className="mx-auto mb-3 rounded"
-              src={`${BASE_URL}/img/avatar.png`}
-              alt={"authors"}
-              width={120}
-              height={120}
-            />
-            <h4 className="mb-2">
-              <Link href={`/authors/john-doe`}>John Doe</Link>
-            </h4>
-            <p className="mb-3">this is meta description</p>
-            <Social
-              source={[
-                {
-                  name: "facebook",
-                  icon: "FaFacebook",
-                  link: "https://www.facebook.com/",
-                },
-                {
-                  name: "twitter",
-                  icon: "FaTwitter",
-                  link: "https://twitter.com/",
-                },
-                {
-                  name: "github",
-                  icon: "FaGithub",
-                  link: "https://www.github.com/",
-                },
-                {
-                  name: "linkedin",
-                  icon: "FaLinkedin",
-                  link: "https://www.linkedin.com/",
-                },
-              ]}
-              className="nav d-flex justify-content-center social-icons"
-            />
-          </div>
+
+      <div className="container py-5">
+        {/* What We Offer */}
+        {/* Optional Vision Section */}
+        <section className="my-5 text-center">
+          <Title level={2} className={styles.sectionTitle}>
+            Our Vision
+          </Title>
+          <Paragraph className="text-muted">
+            We envision a digital world where innovation is accessible to
+            everyone—where businesses and individuals thrive using cutting-edge
+            technology and skills.
+          </Paragraph>
+        </section>
+
+        {/* Call to Action */}
+        <section className="text-center my-5">
+          <Title level={3} className="mb-3">
+            Ready to innovate with us?
+          </Title>
+          <Button
+            size="large"
+            type="primary"
+            href="https://wa.me/237681289411"
+            target="_blank"
+          >
+            Let&apos;s Build Together
+          </Button>
+        </section>
+        <div className={`my-4 ${styles.screenshotBox}`}>
+          <YouTubePlayerFrame
+            videoId="Y5Hu_UZ93bc"
+            title="RISE UP - Jordan Peterson | Powerful Motivational Speech"
+            channel="INSPIRED NATION"
+            views="968K views"
+            uploadDate="2 years ago"
+            description="Jordan Peterson, professor of psychology, clinical psychologist, author and YouTube personality, shares why you need to discipline yourself, pursue meaning not happiness and don't waste your life."
+          />
         </div>
       </div>
+
       <AppFooter logoPath="/" />
       <AppFootnote />
     </Suspense>

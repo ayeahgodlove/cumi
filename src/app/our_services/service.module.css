@@ -1,0 +1,61 @@
+.mainTitle {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.serviceCard {
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.serviceCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.cardIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    background-color: #f8f9fa;
+}
+
+.serviceList {
+    padding-left: 1rem;
+}
+
+.serviceList li {
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.serviceAccordion {
+    background: none;
+}
+
+.serviceAccordion .ant-collapse-item {
+    border-bottom: none !important;
+}
+
+.serviceAccordion .ant-collapse-header {
+    padding-left: 0 !important;
+    color: #1890ff !important;
+}
+
+.featureBox {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    height: 100%;
+}
+
+.featureTitle {
+    color: #2c3e50;
+    border-bottom: 2px solid #1890ff;
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}

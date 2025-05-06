@@ -1,4 +1,3 @@
-import Category from "@data/entities/category";
 import { CategoryRepository } from "@data/repositories/impl/category.repository";
 import { emptyCategory, ICategory } from "@domain/models/category";
 import { CategoryUseCase } from "@domain/usecases/category.usecase";

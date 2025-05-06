@@ -15,8 +15,9 @@ export const serviceAPI = createApi({
     getServiceBySlug: build.query<IService, string>({
       query: (slug) => `/services/slugs/${slug}`,
     }),
-    fetchAllServices: build.query<IService[], number | void>({
+    fetchAllServices: build.query({
       query: (page = 1) => `/services?page=${page}`,
+      providesTags: ["Service"],
     }),
   }),
 });

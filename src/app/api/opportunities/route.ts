@@ -14,9 +14,9 @@ const opportunityMapper = new OpportunityMapper();
 
 export async function GET(request: any) {
   try {
-    const opportunitys = await opportunityUseCase.getAll();
-    const opportunitysDto = opportunityMapper.toDTOs(opportunitys);
-    return NextResponse.json(opportunitysDto);
+    const opportunities = await opportunityUseCase.getAll();
+    const opportunitiesDto = opportunityMapper.toDTOs(opportunities);
+    return NextResponse.json(opportunitiesDto);
   } catch (error: any) {
     return NextResponse.json(
       {

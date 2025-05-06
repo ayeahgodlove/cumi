@@ -1,7 +1,6 @@
-import Service from "@data/entities/service";
+import { Service } from "@data/entities/index";
 import { IServiceRepository } from "@data/repositories/contracts/repository.base";
 import { IService } from "@domain/models/service.model";
-
 
 export class ServiceUseCase {
   /**
@@ -9,7 +8,9 @@ export class ServiceUseCase {
    */
   constructor(private readonly serviceRepository: IServiceRepository) {}
 
-  async createService(service: IService): Promise<Service> {
+  async createService(
+    service: IService
+  ): Promise<InstanceType<typeof Service>> {
     const existingService = await this.serviceRepository.findByTitle(
       service.title
     );
@@ -23,20 +24,25 @@ export class ServiceUseCase {
     return this.serviceRepository.create(service);
   }
 
-  async getAll(): Promise<Service[]> {
+  async getAll(): Promise<InstanceType<typeof Service>[]> {
     return this.serviceRepository.getAll();
   }
 
-  async getServiceById(id: string): Promise<Service | null> {
+  async getServiceById(
+    id: string
+  ): Promise<InstanceType<typeof Service> | null> {
     return this.serviceRepository.findById(id);
   }
 
-  async getServiceBySlug(slug: string): Promise<Service | null> {
+  async getServiceBySlug(
+    slug: string
+  ): Promise<InstanceType<typeof Service> | null> {
     return this.serviceRepository.findBySlug(slug);
   }
 
-
-  async updateService(service: IService): Promise<Service> {
+  async updateService(
+    service: IService
+  ): Promise<InstanceType<typeof Service>> {
     return this.serviceRepository.update(service);
   }
 

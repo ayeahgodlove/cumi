@@ -1,4 +1,3 @@
-import Role from "@data/entities/role";
 import { RoleRepository } from "@data/repositories/impl/role.repository";
 import { RoleUseCase } from "@domain/usecases/role.usecase";
 import authOptions from "@lib/options";
@@ -13,7 +12,7 @@ const roleUseCase = new RoleUseCase(roleRepository);
 
 export async function GET(request: any) {
   try {
-    const categories = await Role.findAll();
+    const categories = await roleUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

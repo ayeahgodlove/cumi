@@ -1,7 +1,6 @@
-import Quiz from "@data/entities/quiz";
+import { Quiz } from "@data/entities/index";
 import { IQuizRepository } from "@data/repositories/contracts/repository.base";
 import { IQuiz } from "@domain/models/quiz";
-
 
 export class QuizUseCase {
   /**
@@ -11,7 +10,7 @@ export class QuizUseCase {
     private readonly quizRepository: IQuizRepository
   ) {}
 
-  async createQuiz(quiz: IQuiz): Promise<Quiz> {
+  async createQuiz(quiz: IQuiz): Promise<InstanceType<typeof Quiz>> {
     const existingQuiz = await this.quizRepository.findByQuestion(quiz.question);
 
     if (existingQuiz) {
@@ -23,19 +22,19 @@ export class QuizUseCase {
     return this.quizRepository.create(quiz);
   }
  
-  async getAll(): Promise<Quiz[]> {
+  async getAll(): Promise<InstanceType<typeof Quiz>[]> {
     return this.quizRepository.getAll();
   }
 
-  async getQuizById(id: string): Promise<Quiz | null> {
+  async getQuizById(id: string): Promise<InstanceType<typeof Quiz> | null> {
     return this.quizRepository.findById(id);
   }
 
-  async getQuizBySlug(slug: string): Promise<Quiz | null> {
+  async getQuizBySlug(slug: string): Promise<InstanceType<typeof Quiz> | null> {
     return this.quizRepository.findBySlug(slug);
   }
 
-  async updateQuiz(quiz: IQuiz): Promise<Quiz> {
+  async updateQuiz(quiz: IQuiz): Promise<InstanceType<typeof Quiz>> {
     return this.quizRepository.update(quiz);
   }
 

@@ -1,10 +1,11 @@
 import { IEnrollment } from "@domain/models/enrollment";
 import { IRepository } from "../contracts/repository.base";
-import Enrollment from "@data/entities/enrollment";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
+import { Enrollment } from "../../entities/index";
 
-
-export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment> {
+export class EnrollmentRepository
+  implements IRepository<IEnrollment, InstanceType<typeof Enrollment>>
+{
   /**
    *
    */
@@ -15,9 +16,13 @@ export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment
    * @enrollment
    * returns void
    */
-  async create(enrollment: IEnrollment): Promise<Enrollment> {
+  async create(
+    enrollment: IEnrollment
+  ): Promise<InstanceType<typeof Enrollment>> {
     try {
-      return await Enrollment.create<Enrollment>({ ...enrollment });
+      return await Enrollment.create<InstanceType<typeof Enrollment>>({
+        ...enrollment,
+      });
     } catch (error) {
       throw error;
     }
@@ -28,7 +33,7 @@ export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment
    * @id
    * returns Enrollment
    */
-  async findById(id: string): Promise<Enrollment | null> {
+  async findById(id: string): Promise<InstanceType<typeof Enrollment> | null> {
     try {
       const enrollmentItem = await Enrollment.findByPk(id);
 
@@ -46,9 +51,13 @@ export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment
    * @name
    * returns Enrollment
    */
-  async findByName(queryId: string): Promise<Enrollment | null> {
+  async findByName(
+    queryId: string
+  ): Promise<InstanceType<typeof Enrollment> | null> {
     try {
-      const enrollmentItem = await Enrollment.findOne({ where: { userId: queryId } });
+      const enrollmentItem = await Enrollment.findOne({
+        where: { userId: queryId },
+      });
       return enrollmentItem;
     } catch (error) {
       throw error;
@@ -58,7 +67,7 @@ export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment
   /*
    * Returns an array of Enrollment
    */
-  async getAll(): Promise<Enrollment[]> {
+  async getAll(): Promise<InstanceType<typeof Enrollment>[]> {
     try {
       const categories = await Enrollment.findAll();
       return categories;
@@ -72,7 +81,9 @@ export class EnrollmentRepository implements IRepository<IEnrollment, Enrollment
    * @enrollment
    * returns void
    */
-  async update(enrollment: IEnrollment): Promise<Enrollment> {
+  async update(
+    enrollment: IEnrollment
+  ): Promise<InstanceType<typeof Enrollment>> {
     const { id } = enrollment;
     try {
       const enrollmentItem: any = await Enrollment.findByPk(id);

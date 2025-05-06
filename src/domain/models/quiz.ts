@@ -27,7 +27,7 @@ export const emptyQuiz: IQuiz = {
 };
 
 export interface IQuizState extends IBaseState {
-  readonly quizs: IQuiz[];
+  readonly quizes: IQuiz[];
   readonly quiz: IQuiz;
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import { GithubOutlined, GlobalOutlined } from "@ant-design/icons";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
@@ -8,10 +9,8 @@ import Share from "@components/shared/share";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { projectAPI } from "@store/api/project_api";
 import { userAPI } from "@store/api/user_api";
-import { Layout, Spin } from "antd";
+import { Layout, Spin, Tooltip } from "antd";
 import Link from "next/link";
-import { Suspense } from "react";
-import { FaRegUserCircle } from "react-icons/fa";
 import slugify from "slugify";
 
 const { Content } = Layout;
@@ -26,14 +25,25 @@ export default function IndexPage({ params }: { params: { id: string } }) {
     project ? project?.userId : ""
   );
 
-  if (isLoading || isFetching) {
-    <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
+  if (isLoading || isFetching || !project) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
   }
   return (
-    <Suspense fallback={<Spin size="large" />}>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
-        <AppNav logoPath="/../" />
+        <AppNav logoPath="/" />
 
         <Content>
           <section className="section pt-4">
@@ -52,30 +62,40 @@ export default function IndexPage({ params }: { params: { id: string } }) {
                     </div>
                   )}
                   <h1 className="mb-2">{project?.title}</h1>
-                  <ul className="nav mb-2">
-                    <li className="me-3 inline-block">
-                      <Link href={`${project?.deployUrl}`}>
-                        <FaRegUserCircle
-                          className={"-mt-n1 me-2 inline-block"}
-                        />
-                        Visit Website
+                  <div className="d-flex justify-content-start my-3">
+                    <Tooltip title="GitHub">
+                      <Link
+                        href={project?.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="d-flex align-items-center"
+                      >
+                        <GithubOutlined
+                          style={{ fontSize: "22px", color: "#555" }}
+                        />{" "}
+                        <span style={{ marginLeft: 3 }}>View Source Code</span>
                       </Link>
-                    </li>
-
-                    <li className="me-3 inline-block">
-                      <Link href={`${project?.githubUrl}`}>
-                        <FaRegUserCircle
-                          className={"-mt-n1 me-2 inline-block"}
-                        />
-                        View Source Code
+                    </Tooltip>
+                    <Tooltip title="Live Demo">
+                      <Link
+                        href={project?.deployUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="d-flex align-items-center"
+                        style={{ marginLeft: 30 }}
+                      >
+                        <GlobalOutlined
+                          style={{ fontSize: "22px", color: "#555" }}
+                        />{" "}
+                        <span style={{ marginLeft: 3 }}>Visit Live Website</span>
                       </Link>
-                    </li>
-                  </ul>
+                    </Tooltip>
+                  </div>
                   <div className="content mb-3">
                     <div
                       style={{
                         padding: 10,
-                        background: "#f2f2f2",
+                        background: "#f1f1f1",
                         fontSize: 18,
                       }}
                       dangerouslySetInnerHTML={{
@@ -101,8 +121,8 @@ export default function IndexPage({ params }: { params: { id: string } }) {
           </section>
         </Content>
       </div>
-      <AppFooter  logoPath="/../"/>
+      <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

@@ -18,10 +18,13 @@ export class ServiceRequestDto {
   @IsString()
   imageUrl: string;
 
+  items: string[];
+
   constructor(data: IService) {
     this.title = data.title;
     this.description = data.description;
     this.imageUrl = data.imageUrl;
+    this.items = data.items;
   }
 
   toData(): IService {
@@ -31,6 +34,7 @@ export class ServiceRequestDto {
       title: this.title,
       description: this.description,
       slug: slugify(this.title, { lower: true, replacement: "-" }),
+      items: this.items,
       imageUrl: this.imageUrl,
     };
   }
@@ -43,6 +47,7 @@ export class ServiceRequestDto {
       userId: data.userId,
       slug: data.slug,
       imageUrl: data.imageUrl,
+      items: data.items,
     };
   }
 }

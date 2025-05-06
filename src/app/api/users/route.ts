@@ -1,4 +1,3 @@
-import User from "@data/entities/user";
 import { UserRepository } from "@data/repositories/impl/user.repository";
 import { UserUseCase } from "@domain/usecases/user.usecase";
 import authOptions from "@lib/options";
@@ -15,7 +14,7 @@ const userMapper = new UserMapper();
 
 export async function GET(request: NextRequest) {
   try {
-    const users = await User.findAll({ order: [["createdAt", "DESC"]] });
+    const users = await userUseCase.getAll();
 
     return NextResponse.json(users);
   } catch (error: any) {

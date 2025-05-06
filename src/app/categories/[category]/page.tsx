@@ -2,7 +2,6 @@
 import BannerComponent from "@components/banner/banner.component";
 import BlogPostItem from "@components/blog_post/blog_post_item";
 import PostSidebar from "@components/blog_post/containers/PostSidebar";
-import SearchPosts from "@components/blog_post/containers/SearchPosts";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
@@ -11,9 +10,8 @@ import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
 import { userAPI } from "@store/api/user_api";
-import { Row, Col, Divider, Layout, Empty } from "antd";
+import { Row, Col, Layout, Empty, Spin } from "antd";
 import { motion } from "framer-motion";
-import { Suspense, useState, useTransition } from "react";
 const { Content } = Layout;
 
 export default function IndexPage({
@@ -21,8 +19,6 @@ export default function IndexPage({
 }: {
   params: { category: string };
 }) {
-  const [searchTitle, setSearchTitle] = useState<string>("");
-  const [isPending, startTransition] = useTransition();
   const {
     data: posts,
     error,
@@ -48,15 +44,32 @@ export default function IndexPage({
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  const onChangeSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    startTransition(() => {
-      // Mark updates as transitions
-      setSearchTitle(event.target.value);
-    });
-  };
+  if (
+    isLoadingCategory ||
+    isFetchCategory ||
+    isLoading ||
+    isFetching ||
+    isLoadingUser ||
+    isFetchUser ||
+    isLoadingTag ||
+    isFetchTag
+  ) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
+  }
 
   return (
-    <Suspense>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -71,13 +84,6 @@ export default function IndexPage({
       />
 
       <div className="container mb-5">
-        <Row justify="end">
-          <Col span={12} style={{ textAlign: "right" }}>
-            <SearchPosts search={onChangeSearch} />
-          </Col>
-        </Row>
-        <Divider />
-
         {error && <h1>Something wrong...</h1>}
 
         <Content>
@@ -146,6 +152,6 @@ export default function IndexPage({
 
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

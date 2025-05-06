@@ -1,47 +1,42 @@
 // models/Category.ts
-import sequelize from "@database/db-sequelize.config";
-import { DataTypes, Model } from "sequelize";
+import { Sequelize } from "sequelize";
 
-class Category extends Model {
-  public id!: string;
-  public name!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
-}
+const Category = (sequelize: Sequelize, DataTypes: any) => {
+  const CategoryModel = sequelize.define(
+    "Category",
+    {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "updated_at",
+      },
+    },
+    {
+      tableName: "categories",
+      timestamps: true,
+    }
+  );
 
-Category.init(
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: "created_at",
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: "updated_at",
-    },
-  },
-  {
-    sequelize,
-    tableName: "categories",
-    timestamps: true,
-  }
-);
+  return CategoryModel;
+};
 
 export default Category;

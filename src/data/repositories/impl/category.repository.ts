@@ -1,7 +1,7 @@
 import { ICategory } from "@domain/models/category";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { ICategoryRepository } from "../contracts/repository.base";
-import Category from "@data/entities/category";
+import { Category, Post } from "../../entities/index";
 export class CategoryRepository implements ICategoryRepository {
   constructor() {}
 
@@ -10,9 +10,9 @@ export class CategoryRepository implements ICategoryRepository {
    * @category
    * returns void
    */
-  async create(category: ICategory): Promise<Category> {
+  async create(category: ICategory): Promise<InstanceType<typeof Category>> {
     try {
-      return await Category.create<Category>({ ...category });
+      return await Category.create<InstanceType<typeof Category>>({ ...category });
     } catch (error) {
       throw error;
     }
@@ -23,9 +23,16 @@ export class CategoryRepository implements ICategoryRepository {
    * @id
    * returns Category
    */
-  async findById(id: string): Promise<Category | null> {
+  async findById(id: string): Promise<InstanceType<typeof Category> | null> {
     try {
-      const categoryItem = await Category.findByPk(id);
+      const categoryItem = await Category.findByPk(id, {
+        include: [
+          {
+            model: Post,
+            as: "posts", // Use the alias defined in associations
+          },
+        ],
+      });
 
       if (!categoryItem) {
         throw new NotFoundException("Category", id);
@@ -41,9 +48,17 @@ export class CategoryRepository implements ICategoryRepository {
    * @name
    * returns Category
    */
-  async findByName(name: string): Promise<Category | null> {
+  async findByName(name: string): Promise<InstanceType<typeof Category> | null> {
     try {
-      const categoryItem = await Category.findOne({ where: { name } });
+      const categoryItem = await Category.findOne({
+        where: { name },
+        include: [
+          {
+            model: Post,
+            as: "posts", // Use the alias defined in associations
+          },
+        ],
+      });
       return categoryItem;
     } catch (error) {
       throw error;
@@ -53,9 +68,16 @@ export class CategoryRepository implements ICategoryRepository {
   /*
    * Returns an array of Category
    */
-  async getAll(): Promise<Category[]> {
+  async getAll(): Promise<InstanceType<typeof Category>[]> {
     try {
-      const categories = await Category.findAll();
+      const categories = await Category.findAll({
+        include: [
+          {
+            model: Post,
+            as: "posts", // Use the alias defined in associations
+          },
+        ],
+      });
       return categories;
     } catch (error) {
       throw error;
@@ -67,7 +89,7 @@ export class CategoryRepository implements ICategoryRepository {
    * @category
    * returns void
    */
-  async update(category: ICategory): Promise<Category> {
+  async update(category: ICategory): Promise<InstanceType<typeof Category>> {
     const { id } = category;
     try {
       const categoryItem: any = await Category.findByPk(id);

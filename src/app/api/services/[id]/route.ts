@@ -1,4 +1,3 @@
-import Service from "@data/entities/service";
 import { ServiceRepository } from "@data/repositories/impl/service.repository";
 import { emptyService, IService } from "@domain/models/service.model";
 import { ServiceUseCase } from "@domain/usecases/service.usecase";

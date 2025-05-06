@@ -1,13 +1,11 @@
 /** @type {import('next').NextConfig} */
 import { createRequire } from "module";
-const require = createRequire(import.meta.url);
 import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig = withNextIntl({
-  trailingSlash: true,
+  trailingSlash: false,
   transpilePackages: ["@refinedev/antd"],
-  // output: "standalone",
   productionBrowserSourceMaps: false,
   images: {
     domains: ["localhost"],
@@ -30,28 +28,19 @@ const nextConfig = withNextIntl({
       },
     ],
   },
-  ignoreWarnings: [
-    {
-      message:
-        /Critical dependency: the request of a dependency is an expression/,
-    },
-  ],
   experimental: {
     optimizeCss: true, // Enable CSS optimization
   },
-  webpack(config) {
-    config.optimization.splitChunks = {
-      chunks: "all", // Improve code splitting
-    };
-    // config.resolve.fallback = {
-    //   crypto: require.resolve("crypto-browserify"),
-    //   stream: require.resolve("stream-browserify"),
-    //   buffer: require.resolve("buffer"),
-    // };
-    // config.resolve.alias = {
-    //   ...config.resolve.alias,
-    //   crypto: require.resolve("crypto-browserify"),
-    // };
+  swcMinify: true,
+  compress: true,
+  optimizeFonts: true,
+  webpack(config, { isServer, dev }) {
+    if (!dev) {
+      config.optimization.minimize = true;
+      config.optimization.splitChunks = {
+        chunks: "all",
+      };
+    }
     return config;
   },
 });

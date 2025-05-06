@@ -1,7 +1,7 @@
 import { IService } from "@domain/models/service.model";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IServiceRepository } from "../contracts/repository.base";
-import Service from "@data/entities/service";
+import { Service } from "../../entities/index";
 export class ServiceRepository implements IServiceRepository {
   constructor() {}
 
@@ -10,9 +10,9 @@ export class ServiceRepository implements IServiceRepository {
    * @service
    * returns void
    */
-  async create(service: IService): Promise<Service> {
+  async create(service: IService): Promise<InstanceType<typeof Service>> {
     try {
-      return await Service.create<Service>({ ...service });
+      return await Service.create<InstanceType<typeof Service>>({ ...service });
     } catch (error) {
       throw error;
     }
@@ -23,10 +23,9 @@ export class ServiceRepository implements IServiceRepository {
    * @id
    * returns Service
    */
-  async findById(id: string): Promise<Service | null> {
+  async findById(id: string): Promise<InstanceType<typeof Service> | null> {
     try {
       const serviceItem = await Service.findByPk(id);
-
       if (!serviceItem) {
         throw new NotFoundException("Service", id);
       }
@@ -41,18 +40,25 @@ export class ServiceRepository implements IServiceRepository {
    * @title
    * returns Service
    */
-  async findByTitle(title: string): Promise<Service | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Service> | null> {
     try {
       const serviceItem = await Service.findOne({ where: { title } });
+      if (!serviceItem) {
+        throw new NotFoundException("Service", title);
+      }
       return serviceItem;
     } catch (error) {
       throw error;
     }
   }
 
-  async findBySlug(slug: string): Promise<Service | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Service> | null> {
     try {
       const service = await Service.findOne({ where: { slug } });
+      if (!service) {
+        throw new NotFoundException("Service", slug);
+      }
+
       return service;
     } catch (error) {
       throw error;
@@ -62,10 +68,10 @@ export class ServiceRepository implements IServiceRepository {
   /*
    * Returns an array of Service
    */
-  async getAll(): Promise<Service[]> {
+  async getAll(): Promise<InstanceType<typeof Service>[]> {
     try {
-      const categories = await Service.findAll();
-      return categories;
+      const services = await Service.findAll();
+      return services;
     } catch (error) {
       throw error;
     }
@@ -76,7 +82,7 @@ export class ServiceRepository implements IServiceRepository {
    * @service
    * returns void
    */
-  async update(service: IService): Promise<Service> {
+  async update(service: IService): Promise<InstanceType<typeof Service>> {
     const { id } = service;
     try {
       const serviceItem: any = await Service.findByPk(id);

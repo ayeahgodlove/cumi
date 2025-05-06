@@ -42,7 +42,6 @@ export const App = (props: any) => {
 
   const i18nProvider = {
     translate: (key: any, options: any) => {
-      console.log("key | option: ", key, options);
       return t(key, options);
     },
     getLocale: useLocale,
@@ -133,7 +132,6 @@ export const App = (props: any) => {
               accessControlProvider={{
                 can: async ({ resource, action }) => {
                   const user = await authProvider.getPermissions();
-                  console.log("user: ", user);
                   return accessControlProvider.can({
                     resource,
                     action,

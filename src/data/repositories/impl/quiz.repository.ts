@@ -1,7 +1,7 @@
 import { IQuiz } from "@domain/models/quiz";
 import { IQuizRepository } from "../contracts/repository.base";
-import Quiz from "@data/entities/quiz";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
+import { Quiz } from "../../entities/index";
 
 
 export class QuizRepository implements IQuizRepository {
@@ -15,9 +15,9 @@ export class QuizRepository implements IQuizRepository {
    * @quiz
    * returns void
    */
-  async create(quiz: IQuiz): Promise<Quiz> {
+  async create(quiz: IQuiz): Promise<InstanceType<typeof Quiz>> {
     try {
-      return await Quiz.create<Quiz>({ ...quiz });
+      return await Quiz.create<InstanceType<typeof Quiz>>({ ...quiz });
     } catch (error) {
       throw error;
     }
@@ -28,7 +28,7 @@ export class QuizRepository implements IQuizRepository {
    * @id
    * returns Quiz
    */
-  async findById(id: string): Promise<Quiz | null> {
+  async findById(id: string): Promise<InstanceType<typeof Quiz> | null> {
     try {
       const quizItem = await Quiz.findByPk(id);
 
@@ -46,7 +46,7 @@ export class QuizRepository implements IQuizRepository {
    * @name
    * returns Quiz
    */
-  async findByQuestion(question: string): Promise<Quiz | null> {
+  async findByQuestion(question: string): Promise<InstanceType<typeof Quiz> | null> {
     try {
       const quizItem = await Quiz.findOne({ where: { question } });
       return quizItem;
@@ -55,7 +55,7 @@ export class QuizRepository implements IQuizRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Quiz | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Quiz> | null> {
     try {
       const quiz = await Quiz.findOne({
         where: { slug },
@@ -68,7 +68,7 @@ export class QuizRepository implements IQuizRepository {
   /*
    * Returns an array of Quiz
    */
-  async getAll(): Promise<Quiz[]> {
+  async getAll(): Promise<InstanceType<typeof Quiz>[]> {
     try {
       const categories = await Quiz.findAll();
       return categories;
@@ -82,7 +82,7 @@ export class QuizRepository implements IQuizRepository {
    * @quiz
    * returns void
    */
-  async update(quiz: IQuiz): Promise<Quiz> {
+  async update(quiz: IQuiz): Promise<InstanceType<typeof Quiz>> {
     const { id } = quiz;
     try {
       const quizItem: any = await Quiz.findByPk(id);

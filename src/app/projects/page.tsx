@@ -6,11 +6,12 @@ import { AppNav } from "@components/nav/nav.component";
 import ProjectCard from "@components/project/ProjectCard";
 import SpinnerList from "@components/shared/spinner-list";
 import { projectAPI } from "@store/api/project_api";
-import { Col, Empty, Layout, Row } from "antd";
+import { Col, Empty, Layout, Row, Spin, Typography } from "antd";
 import { motion } from "framer-motion";
-import { Suspense } from "react";
+import styles from "./project-card.module.css";
 
 const { Content } = Layout;
+const { Title } = Typography;
 
 export default function IndexPage() {
   const {
@@ -19,8 +20,22 @@ export default function IndexPage() {
     isFetching: isFetchEvent,
   } = projectAPI.useFetchAllProjectsQuery(1);
 
+  if (isLoadingEvent || isFetchEvent) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
+  }
   return (
-    <Suspense>
+    <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -42,11 +57,19 @@ export default function IndexPage() {
             <SpinnerList />
           </motion.div>
         )}
-        {projects && projects.length ? (
-          <div className="row justify-content-center align-items-start">
+        {projects && projects.length > 0 ? (
+          <div className="row justify-content-center align-items-start py-5">
+            <div className="col-12">
+              <Title
+                level={2}
+                className="text-center mb-5"
+              >
+                <span className={styles.glow}>Our Projects</span>
+              </Title>
+            </div>
             <div className="col-12 col-md-12">
               <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                {projects?.map((project) => (
+                {projects?.map((project, index) => (
                   <Col
                     className="gutter-row"
                     xs={{ span: 24, offset: 0 }}
@@ -61,7 +84,11 @@ export default function IndexPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
                     >
-                      <ProjectCard project={project} />
+                      <ProjectCard
+                        project={project}
+                        index={index}
+                        styles={styles}
+                      />
                     </motion.div>
                   </Col>
                 ))}
@@ -79,6 +106,6 @@ export default function IndexPage() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
-    </Suspense>
+    </>
   );
 }

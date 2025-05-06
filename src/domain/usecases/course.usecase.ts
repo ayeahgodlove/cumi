@@ -1,7 +1,6 @@
-import Course from "@data/entities/course";
 import { ICourseRepository } from "@data/repositories/contracts/repository.base";
 import { ICourse } from "@domain/models/course";
-
+import { Course } from "@data/entities/index";
 export class CourseUseCase {
   /**
    *
@@ -10,7 +9,7 @@ export class CourseUseCase {
     private readonly courseRepository: ICourseRepository
   ) {}
 
-  async createCourse(course: ICourse): Promise<Course> {
+  async createCourse(course: ICourse): Promise<InstanceType<typeof Course>> {
     const existingCourse = await this.courseRepository.findByTitle(course.title);
 
     if (existingCourse) {
@@ -22,23 +21,23 @@ export class CourseUseCase {
     return this.courseRepository.create(course);
   }
 
-  async getCourseBySlug(slug: string): Promise<Course | null> {
+  async getCourseBySlug(slug: string): Promise<InstanceType<typeof Course> | null> {
     return this.courseRepository.findBySlug(slug);
   }
-  async getCourseByCategory(category: string): Promise<Course[] | null> {
+  async getCourseByCategory(category: string): Promise<InstanceType<typeof Course>[] | null> {
     return this.courseRepository.findByCategory(category);
   }
 
 
-  async getAll(): Promise<Course[]> {
+  async getAll(): Promise<InstanceType<typeof Course>[]> {
     return this.courseRepository.getAll();
   }
 
-  async getCourseById(id: string): Promise<Course | null> {
+  async getCourseById(id: string): Promise<InstanceType<typeof Course> | null> {
     return this.courseRepository.findById(id);
   }
 
-  async updateCourse(course: ICourse): Promise<Course> {
+  async updateCourse(course: ICourse): Promise<InstanceType<typeof Course>> {
     return this.courseRepository.update(course);
   }
 

@@ -1,10 +1,8 @@
 import { IEvent } from "@domain/models/event.model";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IEventRepository } from "../contracts/repository.base";
-import Event from "@data/entities/event";
-import EventTag from "@data/entities/event_tag";
-import Tag from "@data/entities/tag";
 import sequelize from "@database/db-sequelize.config";
+import { Event, EventTag, Tag } from "../../entities/index";
 export class EventRepository implements IEventRepository {
   constructor() {}
 
@@ -13,12 +11,12 @@ export class EventRepository implements IEventRepository {
    * @event
    * returns void
    */
-  async create(event: IEvent): Promise<Event> {
+  async create(event: IEvent): Promise<InstanceType<typeof Event>> {
     // Begin transaction if needed
     const transaction = await sequelize.transaction();
     try {
       const { tags, ...rest } = event;
-      const eventItem = await Event.create<Event>({ ...rest }, { transaction });
+      const eventItem = await Event.create<InstanceType<typeof Event>>({ ...rest }, { transaction });
 
       await Promise.all(
         tags.map((tagId) =>
@@ -46,7 +44,7 @@ export class EventRepository implements IEventRepository {
    * @id
    * returns Event
    */
-  async findById(id: string): Promise<Event | null> {
+  async findById(id: string): Promise<InstanceType<typeof Event> | null> {
     try {
       const eventItem = await Event.findByPk(id, { include: Tag });
 
@@ -64,7 +62,7 @@ export class EventRepository implements IEventRepository {
    * @title
    * returns Event
    */
-  async findByTitle(title: string): Promise<Event | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Event> | null> {
     try {
       const eventItem = await Event.findOne({ where: { title }, include: Tag });
       return eventItem;
@@ -73,7 +71,7 @@ export class EventRepository implements IEventRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Event | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Event> | null> {
     try {
       const event = await Event.findOne({ where: { slug }, include: Tag });
       return event;
@@ -85,7 +83,7 @@ export class EventRepository implements IEventRepository {
   /*
    * Returns an array of Event
    */
-  async getAll(): Promise<Event[]> {
+  async getAll(): Promise<InstanceType<typeof Event>[]> {
     try {
       const categories = await Event.findAll({ include: Tag });
       return categories;
@@ -99,7 +97,7 @@ export class EventRepository implements IEventRepository {
    * @event
    * returns void
    */
-  async update(event: IEvent): Promise<Event> {
+  async update(event: IEvent): Promise<InstanceType<typeof Event>> {
     const { id } = event;
     try {
       const eventItem: any = await Event.findByPk(id);

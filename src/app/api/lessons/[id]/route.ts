@@ -1,4 +1,3 @@
-import Lesson from "@data/entities/lesson";
 import { LessonRepository } from "@data/repositories/impl/lesson.repository";
 import { emptyLesson, ILesson } from "@domain/models/lesson";
 import { LessonUseCase } from "@domain/usecases/lesson.usecase";

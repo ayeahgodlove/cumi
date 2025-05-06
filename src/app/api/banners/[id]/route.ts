@@ -1,4 +1,3 @@
-import Banner from "@data/entities/banner";
 import { BannerRepository } from "@data/repositories/impl/banner.repository";
 import { emptyBanner, IBanner } from "@domain/models/banner.model";
 import { BannerUseCase } from "@domain/usecases/banner.usecase";

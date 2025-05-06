@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Button, Space } from "antd";
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
@@ -22,14 +24,14 @@ export const AppHero = () => {
             <Button
               className="primary-btn shadow-sm"
               shape="round"
-              href="/contact-us"
+              href="/our_services"
               size="large"
             >
               Hire our services
             </Button>
             <Button
               size="large"
-              href="/about#mission"
+              href="/about_us"
               className="default-btn fw-bold"
               shape="round"
             >
@@ -40,7 +42,7 @@ export const AppHero = () => {
       </div>
       <div className="d-sm-none ms-auto d-md-inline col-md-6" style={{ marginTop: width < 767 ? 40 : 0 }}>
         <Image
-          src={"/img/rectangle.png"}
+          src={"/img/IMG_4491-min.jpeg"}
           alt="Software engineering"
           height={500}
           width={1200}

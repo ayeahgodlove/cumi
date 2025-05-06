@@ -1,54 +1,44 @@
 // models/Media.ts
-import sequelize from '@database/db-sequelize.config';
-import { DataTypes, Model } from 'sequelize';
+import { Model, Sequelize } from "sequelize";
 
-class Media extends Model {
-  public id!: string;
-  public title!: string;
-  public slug!: string;
-  public imageUrl!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
-}
+const Media = (sequelize: Sequelize, DataTypes: any) => {
+  const MediaModel = sequelize.define(
+    "Media",
+    {
+      id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      imageUrl: {
+        type: DataTypes.STRING,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "created_at",
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        field: "updated_at",
+      },
+    },
+    {
+      tableName: "media_tbl",
+      timestamps: true,
+    }
+  );
 
-Media.init(
-  {
-    id: {
-      type: DataTypes.STRING,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    title: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
-    slug: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
-    },
- 
-    imageUrl: {
-      type: DataTypes.STRING,
-    },
- 
-    createdAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'created_at',
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-      field: 'updated_at',
-    },
-  },
-  {
-    sequelize,
-    tableName: 'media_tbl',
-    timestamps: true,
-  }
-);
-
+  return MediaModel;
+};
 export default Media;

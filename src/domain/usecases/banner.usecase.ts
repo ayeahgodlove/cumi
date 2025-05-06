@@ -1,4 +1,4 @@
-import Banner from "@data/entities/banner";
+import { Banner } from "@data/entities/index";
 import { IBannerRepository } from "@data/repositories/contracts/repository.base";
 import { IBanner } from "@domain/models/banner.model";
 
@@ -8,7 +8,7 @@ export class BannerUseCase {
    */
   constructor(private readonly bannerRepository: IBannerRepository) {}
 
-  async createBanner(banner: IBanner): Promise<Banner> {
+  async createBanner(banner: IBanner): Promise<InstanceType<typeof Banner>> {
     const existingBanner = await this.bannerRepository.findByTitle(
       banner.title
     );
@@ -22,15 +22,15 @@ export class BannerUseCase {
     return this.bannerRepository.create(banner);
   }
 
-  async getAll(): Promise<Banner[]> {
+  async getAll(): Promise<InstanceType<typeof Banner>[]> {
     return this.bannerRepository.getAll();
   }
 
-  async getBannerById(id: string): Promise<Banner | null> {
+  async getBannerById(id: string): Promise<InstanceType<typeof Banner> | null> {
     return this.bannerRepository.findById(id);
   }
 
-  async updateBanner(banner: IBanner): Promise<Banner> {
+  async updateBanner(banner: IBanner): Promise<InstanceType<typeof Banner>> {
     return this.bannerRepository.update(banner);
   }
 

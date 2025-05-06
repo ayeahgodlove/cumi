@@ -1,9 +1,7 @@
-import Tag from "@data/entities/tag";
 import { TagRepository } from "@data/repositories/impl/tag.repository";
 import { TagUseCase } from "@domain/usecases/tag.usecase";
 import authOptions from "@lib/options";
 import { TagRequestDto } from "@presentation/dtos/tag-request.dto";
-import { TagMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -11,11 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const tagRepository = new TagRepository();
 const tagUseCase = new TagUseCase(tagRepository);
-const tagMapper = new TagMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Tag.findAll();
+    const categories = await tagUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

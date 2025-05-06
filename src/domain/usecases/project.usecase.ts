@@ -1,4 +1,4 @@
-import Project from "@data/entities/project";
+import { Project } from "@data/entities/index";
 import { IProjectRepository } from "@data/repositories/contracts/repository.base";
 import { IProject } from "@domain/models/project.model";
 
@@ -8,7 +8,7 @@ export class ProjectUseCase {
    */
   constructor(private readonly projectRepository: IProjectRepository) {}
 
-  async createProject(project: IProject): Promise<Project> {
+  async createProject(project: IProject): Promise<InstanceType<typeof Project>> {
     const existingProject = await this.projectRepository.findByTitle(
       project.title
     );
@@ -22,20 +22,20 @@ export class ProjectUseCase {
     return this.projectRepository.create(project);
   }
 
-  async getAll(): Promise<Project[]> {
+  async getAll(): Promise<InstanceType<typeof Project>[]> {
     return this.projectRepository.getAll();
   }
 
-  async getProjectById(id: string): Promise<Project | null> {
+  async getProjectById(id: string): Promise<InstanceType<typeof Project> | null> {
     return this.projectRepository.findById(id);
   }
 
-  async getProjectBySlug(slug: string): Promise<Project | null> {
+  async getProjectBySlug(slug: string): Promise<InstanceType<typeof Project> | null> {
     return this.projectRepository.findBySlug(slug);
   }
 
 
-  async updateProject(project: IProject): Promise<Project> {
+  async updateProject(project: IProject): Promise<InstanceType<typeof Project>> {
     return this.projectRepository.update(project);
   }
 

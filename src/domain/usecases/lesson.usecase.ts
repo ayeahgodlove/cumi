@@ -1,4 +1,4 @@
-import Lesson from "@data/entities/lesson";
+import { Lesson } from "@data/entities/index";
 import { ILessonRepository } from "@data/repositories/contracts/repository.base";
 import { ILesson } from "@domain/models/lesson";
 
@@ -10,7 +10,7 @@ export class LessonUseCase {
     private readonly lessonRepository: ILessonRepository
   ) {}
 
-  async createLesson(lesson: ILesson): Promise<Lesson> {
+  async createLesson(lesson: ILesson): Promise<InstanceType<typeof Lesson>> {
     const existingLesson = await this.lessonRepository.findByTitle(lesson.title);
 
     if (existingLesson) {
@@ -22,19 +22,19 @@ export class LessonUseCase {
     return this.lessonRepository.create(lesson);
   }
 
-  async getAll(): Promise<Lesson[]> {
+  async getAll(): Promise<InstanceType<typeof Lesson>[]> {
     return this.lessonRepository.getAll();
   }
 
-  async getLessonById(id: string): Promise<Lesson | null> {
+  async getLessonById(id: string): Promise<InstanceType<typeof Lesson> | null> {
     return this.lessonRepository.findById(id);
   } 
 
-  async getLessonBySlug(slug: string): Promise<Lesson | null> {
+  async getLessonBySlug(slug: string): Promise<InstanceType<typeof Lesson> | null> {
     return this.lessonRepository.findBySlug(slug);
   }
 
-  async updateLesson(lesson: ILesson): Promise<Lesson> {
+  async updateLesson(lesson: ILesson): Promise<InstanceType<typeof Lesson>> {
     return this.lessonRepository.update(lesson);
   }
 

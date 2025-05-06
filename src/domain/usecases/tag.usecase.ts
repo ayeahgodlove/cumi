@@ -1,5 +1,5 @@
 
-import Tag from "@data/entities/tag";
+import { Tag } from "@data/entities/index";
 import { ITagRepository } from "@data/repositories/contracts/repository.base";
 import { ITag } from "@domain/models/tag";
 import slugify from "slugify";
@@ -9,7 +9,7 @@ export class TagUseCase {
    */
   constructor(private readonly tagRepository: ITagRepository) {}
 
-  async createTag(tag: ITag): Promise<Tag> {
+  async createTag(tag: ITag): Promise<InstanceType<typeof Tag>> {
     const existingTag = await this.tagRepository.findByName(tag.name);
 
     if (existingTag) {
@@ -21,15 +21,15 @@ export class TagUseCase {
     return this.tagRepository.create(tag);
   }
 
-  async getAll(): Promise<Tag[]> {
+  async getAll(): Promise<InstanceType<typeof Tag>[]> {
     return this.tagRepository.getAll();
   }
 
-  async getTagById(id: string): Promise<Tag | null> {
+  async getTagById(id: string): Promise<InstanceType<typeof Tag> | null> {
     return this.tagRepository.findById(id);
   }
 
-  async updateTag(tag: ITag): Promise<Tag> {
+  async updateTag(tag: ITag): Promise<InstanceType<typeof Tag>> {
     const obj: ITag = {
       ...tag,
       slug: slugify(tag.name, { lower: true, replacement: "-" }),

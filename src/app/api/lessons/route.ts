@@ -1,9 +1,7 @@
-import Lesson from "@data/entities/lesson";
 import { LessonRepository } from "@data/repositories/impl/lesson.repository";
 import { LessonUseCase } from "@domain/usecases/lesson.usecase";
 import authOptions from "@lib/options";
 import { LessonRequestDto } from "@presentation/dtos/lesson-request.dto";
-import { LessonMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -11,11 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const lessonRepository = new LessonRepository();
 const lessonUseCase = new LessonUseCase(lessonRepository);
-const lessonMapper = new LessonMapper();
 
 export async function GET(request: any) {
   try {
-    const lessons = await Lesson.findAll();
+    const lessons = await lessonUseCase.getAll();
 
     return NextResponse.json(lessons);
   } catch (error: any) {

@@ -1,4 +1,4 @@
-import Category from "@data/entities/category";
+import { Category } from "@data/entities/index";
 import slugify from "slugify";
 import { ICategory } from "@domain/models/category";
 import { ICategoryRepository } from "@data/repositories/contracts/repository.base";
@@ -9,7 +9,7 @@ export class CategoryUseCase {
    */
   constructor(private readonly categoryRepository: ICategoryRepository) {}
 
-  async createCategory(category: ICategory): Promise<Category> {
+  async createCategory(category: ICategory): Promise<InstanceType<typeof Category>> {
     const existingCategory = await this.categoryRepository.findByName(
       category.name
     );
@@ -23,15 +23,15 @@ export class CategoryUseCase {
     return this.categoryRepository.create(category);
   }
 
-  async getAll(): Promise<Category[]> {
+  async getAll(): Promise<InstanceType<typeof Category>[]> {
     return this.categoryRepository.getAll();
   }
 
-  async getCategoryById(id: string): Promise<Category | null> {
+  async getCategoryById(id: string): Promise<InstanceType<typeof Category> | null> {
     return this.categoryRepository.findById(id);
   }
 
-  async updateCategory(category: ICategory): Promise<Category> {
+  async updateCategory(category: ICategory): Promise<InstanceType<typeof Category>> {
     const { id, name } = category;
     const obj: ICategory = {
       id,

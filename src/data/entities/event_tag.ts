@@ -1,40 +1,30 @@
 // models/EventTag.ts
-import { DataTypes, Model } from "sequelize";
-import sequelize from "@database/db-sequelize.config";
-import Tag from "./tag";
-import Event from "./event";
+import { Sequelize } from "sequelize";
 
-class EventTag extends Model {
-  public eventId!: string;
-  public tagId!: string;
-}
+const EventTag = (sequelize: Sequelize, DataTypes: any) => {
+  const EventTagModel = sequelize.define(
+    "EventTag",
+    {
+      eventId: {
+        type: DataTypes.STRING,
+        references: { model: "events", key: "id" },
+        allowNull: false,
+        onDelete: "CASCADE",
+      },
+      tagId: {
+        type: DataTypes.STRING,
+        references: { model: "tags", key: "id" },
+        allowNull: false,
+        onDelete: "CASCADE",
+      },
+    },
+    {
+      tableName: "event_tags",
+      timestamps: false,
+    }
+  );
 
-EventTag.init(
-  {
-    eventId: {
-      type: DataTypes.STRING,
-      references: {
-        model: Event,
-        key: "id",
-      },
-      onDelete: "CASCADE",
-      allowNull: false,
-    },
-    tagId: {
-      type: DataTypes.STRING,
-      references: {
-        model: Tag,
-        key: "id",
-      },
-      onDelete: "CASCADE",
-      allowNull: false,
-    },
-  },
-  {
-    sequelize,
-    tableName: "event_tags",
-    timestamps: false, // Enable if you want to track creation or update timestamps
-  }
-);
+  return EventTagModel;
+};
 
 export default EventTag;

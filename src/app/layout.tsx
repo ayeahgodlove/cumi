@@ -73,7 +73,7 @@ export default async function RootLayout({
             />
           }
         >
-          <NextIntlClientProvider locale={locale} messages={messages}>
+          <NextIntlClientProvider locale={locale} messages={messages}> 
             <RefineContext defaultMode={defaultMode}>{children}</RefineContext>
           </NextIntlClientProvider>
         </Suspense>

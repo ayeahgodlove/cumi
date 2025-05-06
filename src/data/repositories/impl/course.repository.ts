@@ -1,10 +1,8 @@
 import { ICourse } from "@domain/models/course";
 import { ICourseRepository } from "../contracts/repository.base";
-import Course from "@data/entities/course";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
-import Category from "@data/entities/category";
 import { ICategory } from "@domain/models/category";
-
+import { Course, Category} from "../../entities/index";
 export class CourseRepository implements ICourseRepository {
   /**
    *
@@ -16,9 +14,9 @@ export class CourseRepository implements ICourseRepository {
    * @course
    * returns void
    */
-  async create(course: ICourse): Promise<Course> {
+  async create(course: ICourse): Promise<InstanceType<typeof Course>> {
     try {
-      return await Course.create<Course>({ ...course });
+      return await Course.create<InstanceType<typeof Course>>({ ...course });
     } catch (error) {
       throw error;
     }
@@ -29,7 +27,7 @@ export class CourseRepository implements ICourseRepository {
    * @id
    * returns Course
    */
-  async findById(id: string): Promise<Course | null> {
+  async findById(id: string): Promise<InstanceType<typeof Course> | null> {
     try {
       const courseItem = await Course.findByPk(id);
 
@@ -47,7 +45,7 @@ export class CourseRepository implements ICourseRepository {
    * @name
    * returns Course
    */
-  async findByTitle(title: string): Promise<Course | null> {
+  async findByTitle(title: string): Promise<InstanceType<typeof Course> | null> {
     try {
       const courseItem = await Course.findOne({ where: { title } });
       return courseItem;
@@ -56,7 +54,7 @@ export class CourseRepository implements ICourseRepository {
     }
   }
 
-  async findBySlug(slug: string): Promise<Course | null> {
+  async findBySlug(slug: string): Promise<InstanceType<typeof Course> | null> {
     try {
       const course = await Course.findOne({
         where: { slug },
@@ -68,7 +66,7 @@ export class CourseRepository implements ICourseRepository {
     }
   }
 
-  async findByCategory(category: string): Promise<Course[] | null> {
+  async findByCategory(category: string): Promise<InstanceType<typeof Course>[] | null> {
     try {
       const categoryItem = await Category.findOne({
         where: { slug: category },
@@ -92,7 +90,7 @@ export class CourseRepository implements ICourseRepository {
   /*
    * Returns an array of Course
    */
-  async getAll(): Promise<Course[]> {
+  async getAll(): Promise<InstanceType<typeof Course>[]> {
     try {
       const categories = await Course.findAll();
       return categories;
@@ -106,7 +104,7 @@ export class CourseRepository implements ICourseRepository {
    * @course
    * returns void
    */
-  async update(course: ICourse): Promise<Course> {
+  async update(course: ICourse): Promise<InstanceType<typeof Course>> {
     const { id } = course;
     try {
       const courseItem: any = await Course.findByPk(id);

@@ -1,8 +1,7 @@
-import Role from "@data/entities/role";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { IRoleRepository } from "../contracts/repository.base";
 import { IRole } from "@domain/models/role.model";
-
+import { Role } from "../../entities/index";
 export class RoleRepository implements IRoleRepository {
   /**
    *
@@ -14,9 +13,9 @@ export class RoleRepository implements IRoleRepository {
    * @role
    * returns void
    */
-  async create(role: IRole): Promise<Role> {
+  async create(role: IRole): Promise<InstanceType<typeof Role>> {
     try {
-      return await Role.create<Role>({ ...role });
+      return await Role.create<InstanceType<typeof Role>>({ ...role });
     } catch (error) {
       throw error;
     }
@@ -27,7 +26,7 @@ export class RoleRepository implements IRoleRepository {
    * @id
    * returns Role
    */
-  async findById(id: string): Promise<Role | null> {
+  async findById(id: string): Promise<InstanceType<typeof Role> | null> {
     try {
       const roleItem = await Role.findByPk(id);
 
@@ -45,7 +44,7 @@ export class RoleRepository implements IRoleRepository {
    * @name
    * returns Role
    */
-  async findByName(name: string): Promise<Role | null> {
+  async findByName(name: string): Promise<InstanceType<typeof Role> | null> {
     try {
       const roleItem = await Role.findOne({ where: { name } });
       return roleItem;
@@ -57,7 +56,7 @@ export class RoleRepository implements IRoleRepository {
   /*
    * Returns an array of Role
    */
-  async getAll(): Promise<Role[]> {
+  async getAll(): Promise<InstanceType<typeof Role>[]> {
     try {
       const roles = await Role.findAll();
       return roles;
@@ -71,7 +70,7 @@ export class RoleRepository implements IRoleRepository {
    * @role
    * returns void
    */
-  async update(role: IRole): Promise<Role> {
+  async update(role: IRole): Promise<InstanceType<typeof Role>> {
     const { id } = role;
     try {
       const roleItem: any = await Role.findByPk(id);

@@ -1,9 +1,7 @@
-import Event from "@data/entities/event";
 import { EventRepository } from "@data/repositories/impl/event.repository";
 import { EventUseCase } from "@domain/usecases/event.usecase";
 import authOptions from "@lib/options";
 import { EventRequestDto } from "@presentation/dtos/event-request.dto";
-import { EventMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -11,11 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const eventRepository = new EventRepository();
 const eventUseCase = new EventUseCase(eventRepository);
-const eventMapper = new EventMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Event.findAll();
+    const categories = await eventUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {

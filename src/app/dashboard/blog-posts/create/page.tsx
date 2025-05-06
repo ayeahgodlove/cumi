@@ -1,14 +1,15 @@
 "use client";
 
+import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { modules } from "@components/shared/react-quil-config";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL, BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ICategory } from "@domain/models/category";
-import { IMedia } from "@domain/models/media.model";
 import { ITag } from "@domain/models/tag";
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Col, Form, Image, Input, Row, Select, Space, Typography } from "antd";
+import { Col, Form, Input, message, Row, Select, Upload } from "antd";
 import dynamic from "next/dynamic";
+import { useState } from "react";
 
 // import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -16,12 +17,8 @@ import "react-quill/dist/quill.snow.css";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function BlogPostCreate() {
+  const [fileList, setFileList] = useState([]);
   const { formProps, saveButtonProps } = useForm({});
-
-  const { queryResult: mediaData, selectProps: mediaSelectProps } =
-    useSelect<IMedia>({
-      resource: "media",
-    });
 
   const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
     resource: "categories",
@@ -32,7 +29,44 @@ export default function BlogPostCreate() {
 
   const categories = categoryData.data;
   const tags = tagData.data;
-  const media = mediaData.data;
+
+  const handleUploadChange = ({
+    file,
+    fileList,
+  }: {
+    file: any;
+    fileList: any;
+  }) => {
+    // Update the file list to include only valid statuses
+    const filteredList = fileList.filter(
+      (f: any) => f.status === "uploading" || f.status === "done"
+    );
+
+    if (file.status === "done") {
+      message.success(`${file.name} uploaded successfully.`);
+
+      const uploadedUrl = file.response?.url;
+      if (uploadedUrl) {
+        const updatedList = filteredList.map((f: any) => {
+          if (f.uid === file.uid) {
+            return {
+              ...f,
+              url: uploadedUrl,
+              name: file.name,
+              response: { url: uploadedUrl },
+            };
+          }
+          return f;
+        });
+
+        setFileList(updatedList);
+      }
+    } else if (file.status === "error") {
+      message.error(`${file.name} upload failed.`);
+    }
+
+    setFileList(filteredList);
+  };
 
   return (
     <>
@@ -166,55 +200,23 @@ export default function BlogPostCreate() {
             />
           </Form.Item>
 
-          <Form.Item
-            name={"imageUrl"}
-            label="Image"
-            required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-            ]}
-            style={{ marginBottom: 10 }}
-          >
-            <Select
-              {...mediaSelectProps}
-              showSearch
-              options={
-                media
-                  ? media.data.map((d) => {
-                      return {
-                        label: d.title,
-                        value: d.imageUrl,
-                        emoji: (
-                          <Image
-                            src={`${BASE_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
-                            alt={d?.title}
-                            height={50}
-                            width={60}
-                          />
-                        ),
-                        desc: (
-                          <Typography.Title level={5}>
-                            {d.title}
-                          </Typography.Title>
-                        ),
-                      };
-                    })
-                  : []
-              }
-              optionRender={(option) => (
-                <Space>
-                  <span role="img" aria-label={option.data.label}>
-                    {option.data.emoji}
-                  </span>
-                  {option.data.desc}
-                </Space>
+          <Form.Item name="imageUrl" label="Upload Image">
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              beforeUpload={() => true}
+              onChange={handleUploadChange}
+              action={`${BASE_URL}${BASE_URL_UPLOADS_MEDIA}`}
+              multiple
+              showUploadList={{ showPreviewIcon: true }}
+            >
+              {fileList.length < 1 && (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
               )}
-              filterOption={(input: any, option: any) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
-              placeholder="Select image"
-              size="large"
-            />
+            </Upload>
           </Form.Item>
         </Form>
       </Create>

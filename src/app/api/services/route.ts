@@ -1,4 +1,3 @@
-import Service from "@data/entities/service";
 import { ServiceRepository } from "@data/repositories/impl/service.repository";
 import { ServiceUseCase } from "@domain/usecases/service.usecase";
 import authOptions from "@lib/options";
@@ -12,12 +11,12 @@ import { NextRequest, NextResponse } from "next/server";
 const serviceRepository = new ServiceRepository();
 const serviceUseCase = new ServiceUseCase(serviceRepository);
 const serviceMapper = new ServiceMapper();
-
 export async function GET(request: any) {
   try {
-    const categories = await Service.findAll();
-
-    return NextResponse.json(categories);
+    const services = await serviceRepository.getAll();
+    const servicesMapped = serviceMapper.toDTOs(services);
+    
+    return NextResponse.json(servicesMapped);
   } catch (error: any) {
     return NextResponse.json(
       {

@@ -1,9 +1,7 @@
-import Category from "@data/entities/category";
 import { CategoryRepository } from "@data/repositories/impl/category.repository";
 import { CategoryUseCase } from "@domain/usecases/category.usecase";
 import authOptions from "@lib/options";
 import { CategoryRequestDto } from "@presentation/dtos/category-request.dto";
-import { CategoryMapper } from "@presentation/mappers/mapper";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -11,11 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 const categoryRepository = new CategoryRepository();
 const categoryUseCase = new CategoryUseCase(categoryRepository);
-const categoryMapper = new CategoryMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await Category.findAll();
+    const categories = await categoryUseCase.getAll()
 
     return NextResponse.json(categories);
   } catch (error: any) {
