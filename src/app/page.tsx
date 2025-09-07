@@ -1,36 +1,23 @@
-import { Suspense } from "react";
+import { Metadata } from "next";
+import HomePageComponent from "@components/page-components/home-page.component";
 
-import { AppFooter } from "@components/footer/footer";
-import { AppFootnote } from "@components/footnote/footnote";
-
-import FeatureSection from "@components/feature-section/feature-section";
-import AboutNote from "@components/about-note/about-note";
-import { AppNav } from "@components/nav/nav.component";
-import { AppHero } from "@components/hero/hero.component";
-import { AppService } from "@components/service/service.component";
+export const metadata: Metadata = {
+  title: "Cumi - Digital Innovation & Web Development Solutions",
+  description: "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
+  keywords: ["web development", "digital innovation", "technology solutions", "startup", "enterprise"],
+  openGraph: {
+    title: "Cumi - Digital Innovation & Web Development Solutions",
+    description: "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cumi - Digital Innovation & Web Development Solutions",
+    description: "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
+  },
+};
 
 export default function IndexPage() {
-  return (
-    <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        {/* navigation bar */}
-        <AppNav logoPath="/" />
-
-        {/* hero section */}
-        <AppHero />
-      </div>
-
-      {/* why us */}
-      <AboutNote />
-
-      {/* feature section */}
-      <FeatureSection />
-
-      {/* service section */}
-      <AppService />
-
-      <AppFooter logoPath="/" />
-      <AppFootnote />
-    </>
-  );
+  return <HomePageComponent />;
 }

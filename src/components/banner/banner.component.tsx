@@ -1,10 +1,13 @@
 "use client";
-import { Avatar, Breadcrumb, Typography } from "antd";
+import { Avatar, Breadcrumb, Button, Typography } from "antd";
 import Link from "next/link";
 import React from "react";
 import "./banner.scss";
 import { BASE_URL } from "@constants/api-url";
+import { MailOutlined, WhatsAppOutlined } from "@ant-design/icons";
+import { motion } from "framer-motion";
 
+const { Title, Paragraph, Text } = Typography;
 interface IBreadcrumb {
   label: string;
   uri: string;
@@ -25,7 +28,18 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             position: "relative",
           }}
         >
-          <Typography.Title level={1}>{pageTitle}</Typography.Title>
+          <motion.div
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Title level={1}>{pageTitle}</Title>
+            <Paragraph className="text-black-50 fs-5 mb-4">
+              Professional solutions tailored to your
+              business needs
+            </Paragraph>
+          </motion.div>
+
           <Breadcrumb
             style={{ display: "flex", justifyContent: "center" }}
             items={[
@@ -47,6 +61,27 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
               }),
             ]}
           />
+
+          <div className="d-flex justify-content-center gap-3 mt-5">
+            <Button
+              type="primary"
+              size="large"
+              className="cumi-button-primary"
+              icon={<WhatsAppOutlined />}
+              href="https://wa.me/237681289411"
+              target="_blank"
+            >
+              Get Started
+            </Button>
+            <Button
+              size="large"
+              className="cumi-gradient-border text-black"
+              icon={<MailOutlined />}
+              href="mailto:info@cumitech.com"
+            >
+              Contact Us
+            </Button>
+          </div>
         </div>
         <div className="banner-theme">
           <Avatar

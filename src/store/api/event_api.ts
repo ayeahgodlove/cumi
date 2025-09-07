@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
 import { IEvent } from "@domain/models/event.model";
+import { BASE_URL } from "@constants/api-url";
+
+interface ISort {
+  searchTitle: string;
+  sortBy?: "date" | "title" | "category";
+}
 
 export const eventAPI = createApi({
   reducerPath: "eventAPI",
@@ -12,8 +17,15 @@ export const eventAPI = createApi({
     getSingleEvent: build.query<IEvent, string>({
       query: (eventId) => `/events/${eventId}`,
     }),
-    fetchAllEvents: build.query<IEvent[], number | void>({
+    getSingleEventBySlug: build.query<IEvent, string>({
+      query: (slug) => `/events/slugs/${slug}`,
+    }),
+    getEventsByCategory: build.query<IEvent[], string>({
+      query: (category) => `/events/categories/${category}`,
+    }),
+    fetchAllEvents: build.query<IEvent[], number | ISort>({
       query: (page = 1) => `/events?page=${page}`,
+      providesTags: (result) => ["Event"],
     }),
   }),
 });

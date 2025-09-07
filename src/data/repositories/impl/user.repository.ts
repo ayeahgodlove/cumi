@@ -51,7 +51,9 @@ export class UserRepository implements IUserRepository {
    * @name
    * returns User
    */
-  async findByName(name: string): Promise<InstanceType<typeof User> | null> {
+  async findByUsername(
+    name: string
+  ): Promise<InstanceType<typeof User> | null> {
     try {
       const userItem = await User.findOne({ where: { username: name } });
       return userItem;

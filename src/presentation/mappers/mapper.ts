@@ -15,6 +15,7 @@ import {
   Service,
   Tag,
   User,
+  Professional,
 } from "@data/entities/index";
 
 import { IBanner } from "@domain/models/banner.model";
@@ -26,6 +27,7 @@ import { ILesson } from "@domain/models/lesson";
 import { IMedia } from "@domain/models/media.model";
 import { IOpportunity } from "@domain/models/opportunity.model";
 import { IPost } from "@domain/models/post.model";
+import { IProfessional } from "@domain/models/professional.model";
 import { IProject } from "@domain/models/project.model";
 import { IQuiz } from "@domain/models/quiz";
 import { IRole } from "@domain/models/role.model";
@@ -162,7 +164,7 @@ export class ServiceMapper {
     const entity = service.toJSON<IService>();
     return {
       ...entity,
-      items: JSON.parse(service.items as any),
+      items: JSON.parse((service as any).items as any),
     };
   }
   toDTOs(services: InstanceType<typeof Service>[]): IService[] {
@@ -170,7 +172,7 @@ export class ServiceMapper {
       const entity = service.toJSON<IService>();
       return {
         ...entity,
-        items: JSON.parse(service.items as any),
+        items: JSON.parse((service as any).items as any),
       };
     });
     return _services;
@@ -244,5 +246,19 @@ export class QuizMapper {
       return entity;
     });
     return _quizes;
+  }
+}
+
+export class ProfessionalMapper {
+  toDTO(professional: InstanceType<typeof Professional>): IProfessional {
+    const entity = professional.toJSON<IProfessional>();
+    return entity;
+  }
+  toDTOs(professionals: InstanceType<typeof Professional>[]): IProfessional[] {
+    const _professionals = professionals.map((professional) => {
+      const entity = professional.toJSON<IProfessional>();
+      return entity;
+    });
+    return _professionals;
   }
 }

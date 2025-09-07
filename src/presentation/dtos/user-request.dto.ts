@@ -15,7 +15,7 @@ export class UserRequestDto {
 
   @IsNotEmpty()
   @IsString()
-  fullname: string;
+  fullName: string;
 
   @IsNotEmpty()
   @IsString()
@@ -26,7 +26,7 @@ export class UserRequestDto {
     this.username = data.username;
     this.email = data.email;
     this.password = data.password;
-    this.fullname = data.fullname;
+    this.fullName = data.fullName;
   }
 
   toData(): IUser {
@@ -36,7 +36,7 @@ export class UserRequestDto {
       username: this.username,
       email: this.email,
       password: this.password,
-      fullname: this.fullname,
+      fullName: this.fullName,
     };
   }
 
@@ -50,7 +50,7 @@ export class UserRequestDto {
       authStrategy: data.authStrategy,
       roles: data.roles,
       verified: data.verified,
-      fullname: data.fullname,
+      fullName: data.fullName,
     };
   }
 }

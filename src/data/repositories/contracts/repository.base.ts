@@ -89,7 +89,7 @@ export interface ICategoryRepository
 
 export interface IUserRepository
   extends IRepository<IUser, InstanceType<typeof User>> {
-  findByName(name: string): Promise<InstanceType<typeof User> | null>;
+  findByUsername(username: string): Promise<InstanceType<typeof User> | null>;
 }
 export interface IRoleRepository
   extends IRepository<IRole, InstanceType<typeof Role>> {

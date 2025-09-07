@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { modules } from "@components/shared/react-quil-config";
+import RichTextEditor from "@components/shared/rich-text-editor";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { Edit, useForm } from "@refinedev/antd";
 import {
@@ -15,10 +15,6 @@ import {
   Space,
   Typography,
 } from "antd";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function OpportunityEdit() {
   const { formProps, saveButtonProps } = useForm({});
@@ -63,13 +59,13 @@ export default function OpportunityEdit() {
               },
             ]}
           >
-            <ReactQuill
-              modules={modules}
-              theme="snow"
+            <RichTextEditor
+              value={formProps.form?.getFieldValue("requirements")}
               onChange={(html) =>
                 formProps.form?.setFieldValue("requirements", html)
               }
               placeholder="Enter requirements..."
+              height={300}
             />
           </Form.Item>
           <Row gutter={[8, 16]}>

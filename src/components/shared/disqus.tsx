@@ -4,25 +4,32 @@ import React from "react";
 import { DiscussionEmbed } from "disqus-react";
 import { useTheme } from "next-themes";
 
-const Disqus= ({ className }: { className?: string }) => {
-  const config = {
-    disqus: {
-      enable: true,
-      shortname: "themefisher-template",
-      settings: {},
-    },
+interface DisqusProps {
+  identifier: string;
+  title: string;
+  url: string;
+  className?: string;
+}
+
+const Disqus: React.FC<DisqusProps> = ({
+  identifier,
+  title,
+  url,
+  className,
+}) => {
+  const disqusShortname = "cumi-1"; // your Disqus shortname
+  const disqusConfig = {
+    url,
+    identifier,
+    title,
+    language: "en", // or your preferred language
   };
-  const { disqus } = config;
+
   const { theme } = useTheme();
 
   return (
     <div className={className} key={theme}>
-      {disqus.enable && (
-        <DiscussionEmbed
-          shortname={disqus.shortname}
-          config={disqus.settings}
-        />
-      )}
+      <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
     </div>
   );
 };

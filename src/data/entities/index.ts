@@ -13,6 +13,7 @@ import defineMedia from "./media";
 import defineOpportunity from "./opportunity";
 import definePost from "./post";
 import definePostTag from "./post_tag";
+import defineProfessional from "./professional";
 import defineProject from "./project";
 import defineQuiz from "./quiz";
 import defineRole from "./role";
@@ -31,6 +32,7 @@ const Lesson = defineLesson(sequelize, DataTypes);
 const Media = defineMedia(sequelize, DataTypes);
 const Opportunity = defineOpportunity(sequelize, DataTypes);
 const PostTag = definePostTag(sequelize, DataTypes);
+const Professional = defineProfessional(sequelize, DataTypes);
 const Project = defineProject(sequelize, DataTypes);
 const Quiz = defineQuiz(sequelize, DataTypes);
 const Role = defineRole(sequelize, DataTypes);
@@ -107,6 +109,7 @@ export {
   Opportunity,
   PostTag,
   Post,
+  Professional,
   Project,
   Quiz,
   Role,

@@ -13,10 +13,20 @@ const PageBreadCrumbs: React.FunctionComponent<Props> = ({
   style,
   className,
 }) => {
-  // const { t } = useTranslation()
+  // Convert items to the new format
+  const breadcrumbItems = [
+    {
+      title: <FiHome />,
+    },
+    ...items.map((breadCrumb: string, index: number) => ({
+      title: breadCrumb,
+    })),
+  ];
+
   return (
     <>
       <Breadcrumb
+        items={breadcrumbItems}
         style={{
           marginBottom: ".5rem",
           fontSize: ".85rem",
@@ -24,14 +34,7 @@ const PageBreadCrumbs: React.FunctionComponent<Props> = ({
           ...style,
         }}
         className={`mt-0 mb-md ${className}`}
-      >
-        <Breadcrumb.Item key="default-key">
-          <FiHome />
-        </Breadcrumb.Item>
-        {items.map((breadCrumb: string, index: number) => (
-          <Breadcrumb.Item key={index.toString()}>{breadCrumb}</Breadcrumb.Item>
-        ))}
-      </Breadcrumb>
+      />
     </>
   );
 };

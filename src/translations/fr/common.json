@@ -5,8 +5,7 @@
     "services": "Services",
     "projects": "Projets",
     "posts": "Articles de blog",
-    "contact": "Nous contacter",
-    "careers": "Carrières"
+    "contact": "Nous contacter"
   },
   "menus": {
     "dashboard": "Tableau de bord",
@@ -88,14 +87,6 @@
       "list": "Lister les projets",
       "create": "Créer un projet",
       "edit": "Modifier un projet"
-    }
-  },
-  "careers": {
-    "careers": "Carrières",
-    "titres": {
-      "liste": "Liste des carrières",
-      "créer": "Créer une carrière",
-      "éditer": "Modifier une carrière"
     }
   },
   "utilisateurs": {

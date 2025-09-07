@@ -4,6 +4,7 @@ import { categoryAPI } from "./api/category_api";
 import { tagAPI } from "./api/tag_api";
 import { userAPI } from "./api/user_api";
 import { eventAPI } from "./api/event_api";
+import { courseAPI } from "./api/course_api";
 import { projectAPI } from "./api/project_api";
 import { bannerAPI } from "./api/banner_api";
 import { serviceAPI } from "./api/service_api";
@@ -16,6 +17,7 @@ export const store = configureStore({
     [tagAPI.reducerPath]: tagAPI.reducer,
     [userAPI.reducerPath]: userAPI.reducer,
     [eventAPI.reducerPath]: eventAPI.reducer,
+    [courseAPI.reducerPath]: courseAPI.reducer,
     [projectAPI.reducerPath]: projectAPI.reducer,
     [bannerAPI.reducerPath]: bannerAPI.reducer,
     [serviceAPI.reducerPath]: serviceAPI.reducer,
@@ -28,6 +30,7 @@ export const store = configureStore({
       tagAPI.middleware,
       userAPI.middleware,
       eventAPI.middleware,
+      courseAPI.middleware,
       projectAPI.middleware,
       bannerAPI.middleware,
       serviceAPI.middleware,

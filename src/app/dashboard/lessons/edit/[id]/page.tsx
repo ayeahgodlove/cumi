@@ -2,7 +2,7 @@
 
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { modules } from "@components/shared/react-quil-config";
+import RichTextEditor from "@components/shared/rich-text-editor";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
@@ -20,12 +20,6 @@ import {
   Space,
   Typography,
 } from "antd";
-import dynamic from "next/dynamic";
-// import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function CourseEdit() {
   const { formProps, saveButtonProps, form } = useForm({});
@@ -226,13 +220,13 @@ export default function CourseEdit() {
               },
             ]}
           >
-            <ReactQuill
-              modules={modules}
-              theme="snow"
+            <RichTextEditor
+              value={formProps.form?.getFieldValue("content")}
               onChange={(html) =>
                 formProps.form?.setFieldValue("content", html)
               }
               placeholder="Enter content..."
+              height={400}
             />
           </Form.Item>
 

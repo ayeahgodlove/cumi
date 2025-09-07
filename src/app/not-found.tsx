@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 import Link from "next/link";
 
-const NotFound = async () => {
+const NotFound = () => {
   return (
     <Suspense>
       <section className="py-5 text-center">

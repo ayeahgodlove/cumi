@@ -1,28 +1,121 @@
 "use client";
 
-import { Affix, Button } from "antd";
+import { Affix, Button, Dropdown, Avatar, Space } from "antd";
+import {
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+  DashboardOutlined,
+} from "@ant-design/icons";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import { useSession, signOut } from "next-auth/react";
+import React, { useState, useCallback } from "react";
 
 type Props = {
   logoPath: string;
 };
 export const AppNav: React.FC<Props> = ({ logoPath }) => {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  const handleLogout = useCallback(async () => {
+    setIsNavigating(true);
+    try {
+      await signOut({ callbackUrl: "/" });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setIsNavigating(false);
+    }
+  }, []);
+
+  const handleNavigation = useCallback((href: string) => {
+    setIsNavigating(true);
+    setTimeout(() => setIsNavigating(false), 1000);
+  }, []);
+
+  const userMenuItems = [
+    {
+      key: "username",
+      label: (
+        <div
+          style={{
+            padding: "8px 12px",
+            fontWeight: "bold",
+            color: "#1890ff",
+            borderBottom: "1px solid #f0f0f0",
+            marginBottom: "4px",
+          }}
+        >
+          <div style={{ fontSize: "14px", fontWeight: "bold" }}>
+            {session?.user?.name || session?.user?.email || "User"}
+          </div>
+          {session?.user?.role && (
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#666",
+                fontWeight: "normal",
+                textTransform: "capitalize",
+              }}
+            >
+              {session.user.role}
+            </div>
+          )}
+        </div>
+      ),
+      disabled: true,
+    },
+    {
+      type: "divider" as const,
+    },
+    {
+      key: "dashboard",
+      icon: <DashboardOutlined />,
+      label: <Link href="/dashboard">Dashboard</Link>,
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: <Link href="/dashboard/settings">Settings</Link>,
+    },
+    {
+      type: "divider" as const,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      onClick: handleLogout,
+    },
+  ];
   return (
     <Affix offsetTop={0}>
       <nav className="navbar bg-white navbar-expand-lg">
         <div className="container-fluid">
           <Link href={"/"}>
             <Image
-              src={`${logoPath}cumi-green.jpeg`}
-              height={50}
-              width={100}
+              src={`${logoPath || '/'}cumi-green.jpg`}
+              height={70}
+              width={140}
               quality={100}
-              alt="Cumi logo"
-              style={{ marginRight: 15 }}
+              alt="CumiTech Logo"
+              priority
+              style={{ 
+                marginRight: 15,
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'transform 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
             />
           </Link>
           <button
@@ -89,16 +182,16 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
-                    pathname === "/careers"
+                    pathname === "/opportunities"
                       ? " active fw-bold text-secondary"
                       : ""
                   }`}
-                  href="/careers"
+                  href="/opportunities"
                 >
-                  Careers
+                  Opportunities
                 </Link>
               </li>
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/events"
@@ -109,8 +202,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                 >
                   Events
                 </Link>
-              </li> */}
-              {/* <li className="nav-item">
+              </li>
+              <li className="nav-item">
                 <Link
                   className={`nav-link  ${
                     pathname === "/courses"
@@ -121,7 +214,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                 >
                   Courses
                 </Link>
-              </li> */}
+              </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
@@ -149,15 +242,36 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                 </Link>
               </li>
             </ul>
-            <div className="d-flex flex-sm-column flex-md-row">
-              <Button
-                className="primary-btn"
-                shape="round"
-                href="/login"
-                size="large"
-              >
-                Log in
-              </Button>
+            <div className="d-flex flex-sm-column flex-md-row align-items-center">
+              {status === "loading" ? (
+                <Button loading size="large" shape="round">
+                  Loading...
+                </Button>
+              ) : session ? (
+                <Dropdown
+                  menu={{ items: userMenuItems }}
+                  placement="bottomRight"
+                  arrow
+                >
+                  <Space className="cursor-pointer">
+                    <Avatar
+                      size="large"
+                      src={session.user?.image}
+                      icon={<UserOutlined />}
+                      style={{ backgroundColor: "#1890ff" }}
+                    />
+                  </Space>
+                </Dropdown>
+              ) : (
+                <Button
+                  className="primary-btn"
+                  shape="round"
+                  href="/login"
+                  size="large"
+                >
+                  Log in
+                </Button>
+              )}
             </div>
           </div>
         </div>

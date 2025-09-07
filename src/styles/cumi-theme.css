@@ -1,0 +1,181 @@
+/* CUMI Brand Color System - Green to Blue Gradient */
+:root {
+  /* Primary Brand Colors */
+  --cumi-green: #22C55E;
+  --cumi-green-alt: #10B981;
+  --cumi-teal: #14B8A6;
+  --cumi-teal-alt: #06B6D4;
+  --cumi-blue: #0EA5E9;
+  --cumi-blue-alt: #3B82F6;
+  --cumi-blue-dark: #2563EB;
+  --cumi-blue-darker: #1D4ED8;
+
+  /* Gradient Definitions */
+  --cumi-gradient-primary: linear-gradient(135deg, var(--cumi-green) 0%, var(--cumi-teal) 50%, var(--cumi-blue) 100%);
+  --cumi-gradient-secondary: linear-gradient(90deg, var(--cumi-green) 0%, var(--cumi-teal) 25%, var(--cumi-blue) 50%, var(--cumi-blue-dark) 100%);
+  --cumi-gradient-hover: linear-gradient(135deg, var(--cumi-green-alt) 0%, var(--cumi-teal-alt) 50%, var(--cumi-blue-alt) 100%);
+
+  /* Semantic Colors */
+  --cumi-primary: var(--cumi-green);
+  --cumi-secondary: var(--cumi-blue);
+  --cumi-accent: var(--cumi-teal);
+  --cumi-success: var(--cumi-green);
+  --cumi-info: var(--cumi-blue);
+  --cumi-warning: #F59E0B;
+  --cumi-error: #EF4444;
+
+  /* Text Colors */
+  --cumi-text-primary: #1F2937;
+  --cumi-text-secondary: #6B7280;
+  --cumi-text-muted: #9CA3AF;
+  --cumi-text-white: #FFFFFF;
+
+  /* Background Colors */
+  --cumi-bg-primary: #FFFFFF;
+  --cumi-bg-secondary: #F9FAFB;
+  --cumi-bg-tertiary: #F3F4F6;
+  --cumi-bg-gradient: var(--cumi-gradient-primary);
+
+  /* Border Colors */
+  --cumi-border-light: #E5E7EB;
+  --cumi-border-medium: #D1D5DB;
+  --cumi-border-dark: #9CA3AF;
+
+  /* Shadow Colors */
+  --cumi-shadow-sm: 0 1px 2px 0 rgba(34, 197, 94, 0.05);
+  --cumi-shadow-md: 0 4px 6px -1px rgba(34, 197, 94, 0.1), 0 2px 4px -1px rgba(34, 197, 94, 0.06);
+  --cumi-shadow-lg: 0 10px 15px -3px rgba(34, 197, 94, 0.1), 0 4px 6px -2px rgba(34, 197, 94, 0.05);
+  --cumi-shadow-xl: 0 20px 25px -5px rgba(34, 197, 94, 0.1), 0 10px 10px -5px rgba(34, 197, 94, 0.04);
+
+  /* Component Specific */
+  --cumi-button-primary: var(--cumi-gradient-primary);
+  --cumi-button-hover: var(--cumi-gradient-hover);
+  --cumi-link-color: var(--cumi-blue);
+  --cumi-link-hover: var(--cumi-blue-dark);
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] {
+  --cumi-text-primary: #F9FAFB;
+  --cumi-text-secondary: #D1D5DB;
+  --cumi-text-muted: #9CA3AF;
+  --cumi-bg-primary: #111827;
+  --cumi-bg-secondary: #1F2937;
+  --cumi-bg-tertiary: #374151;
+  --cumi-border-light: #374151;
+  --cumi-border-medium: #4B5563;
+  --cumi-border-dark: #6B7280;
+}
+
+/* Utility Classes */
+.cumi-gradient-text {
+  background: var(--cumi-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cumi-gradient-bg {
+  background: var(--cumi-gradient-primary);
+}
+
+.cumi-gradient-border {
+  border: 2px solid transparent;
+  background: linear-gradient(var(--cumi-bg-primary), var(--cumi-bg-primary)) padding-box,
+              var(--cumi-gradient-primary) border-box;
+}
+
+.cumi-shadow-brand {
+  box-shadow: var(--cumi-shadow-lg);
+}
+
+.cumi-button-primary {
+  background: var(--cumi-gradient-primary);
+  border: none;
+  color: var(--cumi-text-white);
+  transition: all 0.3s ease;
+}
+
+.cumi-button-primary:hover {
+  background: var(--cumi-gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--cumi-shadow-xl);
+}
+
+.cumi-card {
+  background: var(--cumi-bg-primary);
+  border: 1px solid var(--cumi-border-light);
+  border-radius: 12px;
+  box-shadow: var(--cumi-shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.cumi-card:hover {
+  box-shadow: var(--cumi-shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Override Bootstrap/ANTD Colors */
+.btn-primary {
+  background: var(--cumi-gradient-primary) !important;
+  border: none !important;
+}
+
+.btn-primary:hover {
+  background: var(--cumi-gradient-hover) !important;
+}
+
+.text-primary {
+  color: var(--cumi-primary) !important;
+}
+
+.bg-primary {
+  background: var(--cumi-gradient-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--cumi-primary) !important;
+}
+
+/* Custom Components */
+.cumi-hero {
+  background: var(--cumi-gradient-primary);
+  color: var(--cumi-text-white);
+}
+
+.cumi-section {
+  padding: 4rem 0;
+}
+
+.cumi-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Animation Classes */
+@keyframes cumi-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cumi-fade-in {
+  animation: cumi-fade-in 0.6s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cumi-section {
+    padding: 2rem 0;
+  }
+  
+  .cumi-container {
+    padding: 0 0.5rem;
+  }
+}

@@ -9,7 +9,7 @@ export class UserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 
   async createUser(user: IUser): Promise<InstanceType<typeof User>> {
-    const existingUser = await this.userRepository.findByName(user.username);
+    const existingUser = await this.userRepository.findByUsername(user.username);
 
     if (existingUser) {
       throw new Error("User already exists");
@@ -26,6 +26,10 @@ export class UserUseCase {
 
   async getUserById(id: string): Promise<InstanceType<typeof User> | null> {
     return this.userRepository.findById(id);
+  }
+
+  async getUserByUsername(username: string): Promise<InstanceType<typeof User> | null> {
+    return this.userRepository.findByUsername(username);
   }
 
   async updateUser(user: IUser): Promise<InstanceType<typeof User>> {

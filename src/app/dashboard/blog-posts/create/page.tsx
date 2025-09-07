@@ -2,19 +2,13 @@
 
 import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { modules } from "@components/shared/react-quil-config";
+import RichTextEditor from "@components/shared/rich-text-editor";
 import { BASE_URL, BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
 import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Col, Form, Input, message, Row, Select, Upload } from "antd";
-import dynamic from "next/dynamic";
 import { useState } from "react";
-
-// import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function BlogPostCreate() {
   const [fileList, setFileList] = useState([]);
@@ -108,14 +102,13 @@ export default function BlogPostCreate() {
               },
             ]}
           >
-            {/* <Input.TextArea rows={5} /> */}
-            <ReactQuill
-              modules={modules}
-              theme="snow"
+            <RichTextEditor
+              value={formProps.form?.getFieldValue("content")}
               onChange={(html) =>
                 formProps.form?.setFieldValue("content", html)
               }
               placeholder="Enter content..."
+              height={400}
             />
           </Form.Item>
           <Row gutter={[8, 16]}>

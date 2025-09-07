@@ -1,0 +1,26 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://cumi.dev/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow admin and dashboard areas
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /
+Allow: /about_us
+Allow: /our_services
+Allow: /contact_us
+Allow: /blog_posts
+Allow: /projects
+Allow: /events
+Allow: /courses
+Allow: /categories
+Allow: /tags

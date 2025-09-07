@@ -147,7 +147,6 @@ export const useMenu = () => {
       },
       icon: <IoSchoolOutline />,
     },
-
     {
       name: "opportunities",
       list: "/dashboard/opportunities",
@@ -219,6 +218,48 @@ export const useMenu = () => {
       meta: {
         canAccess: ["admin"],
         label: "Enrollments",
+        parent: "lms",
+      },
+      icon: <FaFireExtinguisher />,
+    },
+    {
+      name: "professionals",
+      list: "/dashboard/professionals",
+      create: "/dashboard/professionals/create",
+      edit: "/dashboard/professionals/edit/:id",
+      show: "/dashboard/professionals/show/:id",
+      parentName: "lms",
+      meta: {
+        canAccess: ["admin"],
+        label: "professionals",
+        parent: "lms",
+      },
+      icon: <FaFireExtinguisher />,
+    },
+    {
+      name: "subscribe",
+      list: "/dashboard/subscribe",
+      create: "/dashboard/subscribe/create",
+      edit: "/dashboard/subscribe/edit/:id",
+      show: "/dashboard/subscribe/show/:id",
+      parentName: "lms",
+      meta: {
+        canAccess: ["admin"],
+        label: "subscribe",
+        parent: "lms",
+      },
+      icon: <FaFireExtinguisher />,
+    },
+    {
+      name: "contact-messages",
+      list: "/dashboard/contact-messages",
+      create: "/dashboard/contact-messages/create",
+      edit: "/dashboard/contact-messages/edit/:id",
+      show: "/dashboard/contact-messages/show/:id",
+      parentName: "lms",
+      meta: {
+        canAccess: ["admin"],
+        label: "contact-messages",
         parent: "lms",
       },
       icon: <FaFireExtinguisher />,

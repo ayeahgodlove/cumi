@@ -7,6 +7,8 @@ const nextConfig = withNextIntl({
   trailingSlash: false,
   transpilePackages: ["@refinedev/antd"],
   productionBrowserSourceMaps: false,
+  
+  // Image optimization
   images: {
     domains: ["localhost"],
     remotePatterns: [
@@ -17,8 +19,17 @@ const nextConfig = withNextIntl({
         pathname: "/**",
       },
     ],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+  
+  // Performance optimizations
   crossOrigin: "anonymous",
+  poweredByHeader: false,
+  
+  // Module configuration
   module: {
     rules: [
       {
@@ -28,19 +39,53 @@ const nextConfig = withNextIntl({
       },
     ],
   },
+  
+  // Experimental features for performance
   experimental: {
-    optimizeCss: true, // Enable CSS optimization
+    optimizeCss: true,
+    optimizePackageImports: ['@ant-design/icons', 'antd'],
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
+  
+  // Build optimizations
   swcMinify: true,
   compress: true,
   optimizeFonts: true,
+  
+  // Webpack optimizations
   webpack(config, { isServer, dev }) {
     if (!dev) {
       config.optimization.minimize = true;
       config.optimization.splitChunks = {
         chunks: "all",
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+          antd: {
+            test: /[\\/]node_modules[\\/](antd|@ant-design)[\\/]/,
+            name: 'antd',
+            chunks: 'all',
+          },
+        },
       };
     }
+    
+    // Bundle analyzer (uncomment for analysis)
+    // if (process.env.ANALYZE === 'true') {
+    //   const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+    //   config.plugins.push(new BundleAnalyzerPlugin());
+    // }
+    
     return config;
   },
 });

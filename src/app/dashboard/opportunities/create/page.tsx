@@ -1,15 +1,9 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { modules } from "@components/shared/react-quil-config";
+import RichTextEditor from "@components/shared/rich-text-editor";
 import { Create, useForm } from "@refinedev/antd";
 import { Col, DatePicker, Form, Input, Row, Select } from "antd";
-import dynamic from "next/dynamic";
-
-// import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -54,13 +48,13 @@ export default function BlogPostCreate() {
               },
             ]}
           >
-            <ReactQuill
-              modules={modules}
-              theme="snow"
+            <RichTextEditor
+              value={formProps.form?.getFieldValue("requirements")}
               onChange={(html) =>
                 formProps.form?.setFieldValue("requirements", html)
               }
               placeholder="Enter requirements..."
+              height={300}
             />
           </Form.Item>
           <Row gutter={[8, 16]}>

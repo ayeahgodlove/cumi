@@ -11,7 +11,7 @@ export interface IUser {
   id: string;
   email: string;
   username: string;
-  fullname: string;
+  fullName: string;
   password: string;
   authStrategy: string;
   address: string;
@@ -29,7 +29,7 @@ export interface IUser {
 export const emptyUser: IUser = {
   id: "",
   username: "",
-  fullname: "",
+  fullName: "",
   email: "",
   password: "",
   address: "",

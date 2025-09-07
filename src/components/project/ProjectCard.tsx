@@ -1,68 +1,155 @@
 import React from "react";
-import { Card, Tag, Tooltip, Typography } from "antd";
+import { Card, Tag, Tooltip, Typography, Button, Space, Avatar } from "antd";
 import { IProject } from "@domain/models/project.model";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
-import { GithubOutlined, GlobalOutlined } from "@ant-design/icons";
+import { 
+  GithubOutlined, 
+  GlobalOutlined, 
+  EyeOutlined,
+  CalendarOutlined,
+  TagOutlined
+} from "@ant-design/icons";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 type Prop = {
   project: IProject;
   index: number;
   styles: any;
 };
 
-const colors = ["magenta", "purple", "volcano", "geekblue", "cyan", "gold"];
+const colors = ["#1890ff", "#52c41a", "#faad14", "#f5222d", "#722ed1", "#13c2c2"];
 const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
-  //each project card will display the title, a button, date, location, and description
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short' 
+    });
+  };
+
   return (
-    <Card
-      hoverable
-      cover={
-        <img
-          alt={project.title}
-          src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
-          className={`card-img-top ${styles.projectImage}`}
-        />
-      }
-      className={`shadow-lg border-0 ${styles.projectCard}`}
-      styles={{ body: { padding: "1.2rem" } }}
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.3 }}
     >
-      <Title level={4} className={styles.projectTitle}>
-        <Link href={`/projects/${project.id}`} className={styles.projectTitleLink}>
-          {project.title}
-        </Link>
-      </Title>
-      <Paragraph ellipsis={{ rows: 3 }}>{project.description}</Paragraph>
-      <div className="d-flex justify-content-between mt-3">
-        <Tooltip title="GitHub">
-          <Link
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="d-flex align-items-center"
-          >
-            <GithubOutlined style={{ fontSize: "20px", color: "#555" }} />{" "}
-            <span style={{ marginLeft: 3}}>Code</span>
+      <Card
+        hoverable
+        cover={
+          <div className="position-relative overflow-hidden">
+            <img
+              alt={project.title}
+              src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
+              className={`card-img-top ${styles.projectImage}`}
+            />
+            <div className="position-absolute top-0 end-0 m-3">
+              <Tag 
+                color={colors[index % colors.length]} 
+                className="text-uppercase fw-bold px-3 py-1"
+                style={{ borderRadius: '15px' }}
+              >
+                {project.slug}
+              </Tag>
+            </div>
+            <div className="position-absolute top-0 start-0 m-3">
+              <Avatar 
+                size="small" 
+                style={{ 
+                  backgroundColor: colors[index % colors.length],
+                  color: 'white'
+                }}
+              >
+                <TagOutlined />
+              </Avatar>
+            </div>
+          </div>
+        }
+        className={`shadow-lg border-0 ${styles.projectCard}`}
+        styles={{ 
+          body: { padding: "1.5rem" },
+          cover: { borderRadius: "16px 16px 0 0" }
+        }}
+        actions={[
+          <Tooltip title="View Project Details" key="view">
+            <Link href={`/projects/${project.id}`}>
+              <Button 
+                type="text" 
+                icon={<EyeOutlined />}
+                className="text-primary"
+              >
+                View
+              </Button>
+            </Link>
+          </Tooltip>,
+          <Tooltip title="GitHub Repository" key="github">
+            <Link
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button 
+                type="text" 
+                icon={<GithubOutlined />}
+                className="text-dark"
+              >
+                Code
+              </Button>
+            </Link>
+          </Tooltip>,
+          <Tooltip title="Live Demo" key="demo">
+            <Link
+              href={project.deployUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button 
+                type="text" 
+                icon={<GlobalOutlined />}
+                className="text-success"
+              >
+                Live
+              </Button>
+            </Link>
+          </Tooltip>
+        ]}
+      >
+        <div className="mb-3">
+          <Title level={4} className={`${styles.projectTitle} mb-2`}>
+            <Link href={`/projects/${project.id}`} className={styles.projectTitleLink}>
+              {project.title}
+            </Link>
+          </Title>
+        </div>
+        
+        <Paragraph 
+          ellipsis={{ rows: 3 }}
+          className="text-muted mb-4"
+        >
+          {project.description}
+        </Paragraph>
+
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center text-muted">
+            <CalendarOutlined className="me-2" />
+            <Text type="secondary" className="small">
+              {formatDate(project.createdAt)}
+            </Text>
+          </div>
+          
+          <Link href={`/projects/${project.id}`}>
+            <Button 
+              type="primary" 
+              size="small"
+              className="rounded-pill px-3"
+            >
+              Learn More
+            </Button>
           </Link>
-        </Tooltip>
-        <Tooltip title="Live Demo">
-          <Link
-            href={project.deployUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="d-flex align-items-center"
-          >
-            <GlobalOutlined style={{ fontSize: "20px", color: "#555" }} />{" "}
-            <span style={{ marginLeft: 3}}>Live</span>
-          </Link>
-        </Tooltip>
-        <Tag color={colors[index % colors.length]} className="text-uppercase">
-          {project.slug}
-        </Tag>
-      </div>
-    </Card>
+        </div>
+      </Card>
+    </motion.div>
   );
 };
 
