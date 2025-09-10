@@ -1,157 +1,123 @@
-"use client";
-import BannerComponent from "@components/banner/banner.component";
-import BlogPostItem from "@components/blog_post/blog_post_item";
-import PostSidebar from "@components/blog_post/containers/PostSidebar";
-import { AppFooter } from "@components/footer/footer";
-import { AppFootnote } from "@components/footnote/footnote";
-import { AppNav } from "@components/nav/nav.component";
-import SpinnerList from "@components/shared/spinner-list";
-import { categoryAPI } from "@store/api/category_api";
-import { postAPI } from "@store/api/post_api";
-import { tagAPI } from "@store/api/tag_api";
-import { userAPI } from "@store/api/user_api";
-import { Row, Col, Layout, Empty, Spin } from "antd";
-import { motion } from "framer-motion";
-const { Content } = Layout;
+import { Metadata } from "next";
+import CategoryDetailPageComponent from "@components/page-components/category-detail-page.component";
+import { generatePageMetadata, generateStructuredData, fetchApiData, defaultImages } from "../../../lib/seo";
 
-export default function IndexPage({
-  params,
-}: {
+interface CategoryPageProps {
   params: { category: string };
-}) {
-  const {
-    data: posts,
-    error,
-    isLoading,
-    isFetching,
-  } = postAPI.useGetPostsByCategoryQuery(params.category);
+}
 
-  const {
-    data: categories,
-    isLoading: isLoadingCategory,
-    isFetching: isFetchCategory,
-  } = categoryAPI.useFetchAllCategoriesQuery(1);
+// Fetch category details for SEO
+const fetchCategoryDetails = async (category: string) => {
+  try {
+    const response = await fetchApiData(`/api/categories/slugs/${category}`);
+    return response;
+  } catch (error) {
+    console.error(`Error fetching category ${category}:`, error);
+    return null;
+  }
+};
 
-  const {
-    data: tags,
-    isLoading: isLoadingTag,
-    isFetching: isFetchTag,
-  } = tagAPI.useFetchAllTagsQuery(1);
-
-  const {
-    data: users,
-    isLoading: isLoadingUser,
-    isFetching: isFetchUser,
-  } = userAPI.useFetchAllUsersQuery(1);
-
-  if (
-    isLoadingCategory ||
-    isFetchCategory ||
-    isLoading ||
-    isFetching ||
-    isLoadingUser ||
-    isFetchUser ||
-    isLoadingTag ||
-    isFetchTag
-  ) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+  if (!params?.category) {
+    return generatePageMetadata({
+      title: "Category - CUMI Technology Blog",
+      description: "Explore technology blog posts by category.",
+      url: "https://cumi.dev/categories"
+    });
   }
 
-  return (
-    <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        {/* navigation bar */}
-        <AppNav logoPath="/" />
-      </div>
-      {/* banner */}
-      <BannerComponent
-        breadcrumbs={[
-          { label: "Categories", uri: "categories" },
-          { label: params.category, uri: "#" },
-        ]}
-        pageTitle="Blog Posts"
-      />
+  const category = await fetchCategoryDetails(params.category);
+  
+  if (!category) {
+    return generatePageMetadata({
+      title: "Category - CUMI Technology Blog",
+      description: "Explore technology blog posts by category.",
+      url: "https://cumi.dev/categories"
+    });
+  }
 
-      <div className="container mb-5">
-        {error && <h1>Something wrong...</h1>}
+  return generatePageMetadata({
+    title: `${category.name} Content | CUMI Technology Blog`,
+    description: category.description || `Discover ${category.posts?.length || ""} articles in the ${category.name} category`,
+    keywords: [
+      "technology blog",
+      "software development",
+      "web development",
+      "programming",
+      "digital transformation",
+      "tech articles",
+      "programming tutorials",
+      "software engineering",
+      "API development",
+      "database design",
+      "user experience design",
+      "responsive web design",
+      "e-commerce development",
+      "cloud solutions",
+      "DevOps",
+      "business automation",
+      "tech industry insights",
+      "development best practices",
+      "coding tutorials",
+      category.name,
+      ...(category.posts?.slice(0, 3).map((post: any) => post.title.split(" ")) || []).flat(),
+      `${category.name} articles`,
+      `${category.name} blog posts`,
+      `posts about ${category.name}`
+    ].filter(Boolean),
+    url: `https://cumi.dev/categories/${params.category}`,
+    alternates: {
+      canonical: `https://cumi.dev/categories/${params.category}`,
+    },
+    images: category.posts?.slice(0, 3).map((post: any) => ({
+      url: post.imageUrl ? `https://cumi.dev/uploads/posts/${post.imageUrl}` : defaultImages[0],
+      width: 800,
+      height: 600,
+      alt: post.title,
+    })) || [defaultImages[0]],
+    publishedTime: new Date(category.createdAt).toISOString(),
+    modifiedTime: new Date(category.updatedAt).toISOString(),
+    // OpenGraph
+    openGraph: {
+      type: "website",
+      title: `${category.name} Content Collection`,
+      description: `${category.posts?.length || ""} articles in the ${category.name} category`,
+      images: [defaultImages[0], defaultImages[1]],
+      siteName: "CUMI",
+      locale: "en_US",
+      url: "https://cumi.dev",
+    },
+    // Twitter
+    twitter: {
+      card: "summary_large_image",
+      title: `#${category.name} Articles`,
+      description: `Explore ${category.posts?.length || ""} posts in the ${category.name} category`,
+      images: [defaultImages[0]],
+      creator: "@cumi_dev",
+    },
+    // Structured data
+    schema: {
+      collectionPage: {
+        name: `${category.name} Articles`,
+        about: category.name,
+        description: `Collection of content in the ${category.name} category`,
+        hasPart: category.posts?.map((post: any) => ({
+          "@type": "BlogPosting",
+          name: post.title,
+          url: `https://cumi.dev/blog_posts/${post.slug}`,
+          keywords: category.name,
+        })) || [],
+      },
+      // Add category schema for better topic recognition
+      category: {
+        "@type": "Thing",
+        name: category.name,
+        url: `https://cumi.dev/categories/${params.category}`,
+      },
+    },
+  });
+}
 
-        <Content>
-          {(isLoading || isFetching) && (
-            <motion.div
-              className="box"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SpinnerList />
-            </motion.div>
-          )}
-          {posts && posts.length ? (
-            <div className="row justify-content-center align-items-start">
-              <div className="col-12 col-md-8">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                  {posts?.map((post) => (
-                    <Col
-                      className="gutter-row"
-                      xs={{ span: 24, offset: 0 }}
-                      sm={{ span: 12, offset: 0 }}
-                      lg={{ span: 12, offset: 0 }}
-                      key={post.id}
-                      style={{ marginBottom: 20 }}
-                    >
-                      <motion.div
-                        className="box"
-                        initial={{ opacity: 0, y: "-5%" }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <BlogPostItem
-                          users={isFetchUser || isLoadingUser ? [] : users}
-                          categories={
-                            isFetchCategory || isLoadingCategory
-                              ? []
-                              : categories
-                          }
-                          post={post}
-                        />
-                      </motion.div>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-              <div className="col-12 col-md-4">
-                <PostSidebar
-                  tags={isFetchTag || isLoadingTag ? [] : tags}
-                  posts={isLoading || isFetching ? [] : posts}
-                  categories={
-                    isFetchCategory || isLoadingCategory ? [] : categories
-                  }
-                />
-              </div>
-            </div>
-          ) : (
-            <Col span={24}>
-              <div className="empty-wrap">
-                <Empty />
-              </div>
-            </Col>
-          )}
-        </Content>
-      </div>
-
-      <AppFooter logoPath="/" />
-      <AppFootnote />
-    </>
-  );
+export default function CategoryPage({ params }: CategoryPageProps) {
+  return <CategoryDetailPageComponent category={params.category} />;
 }

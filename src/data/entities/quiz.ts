@@ -14,6 +14,15 @@ const Quiz = (sequelize: Sequelize, DataTypes: any) => {
         allowNull: false,
         unique: true,
       },
+      answers: {
+        type: DataTypes.JSON,
+        allowNull: false,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
       userId: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -32,7 +41,7 @@ const Quiz = (sequelize: Sequelize, DataTypes: any) => {
       },
       correctAnswerIndex: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
       },
       createdAt: {
         type: DataTypes.DATE,

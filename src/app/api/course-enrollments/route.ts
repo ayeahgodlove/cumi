@@ -1,78 +1,88 @@
+import { CourseEnrollmentRepository } from "@data/repositories/impl/course-enrollment.repository";
+import { CourseEnrollmentUseCase } from "@domain/usecases/course-enrollment.usecase";
+import authOptions from "@lib/options";
+import { CourseEnrollmentRequestDto } from "@presentation/dtos/course-enrollment-request.dto";
+import { displayValidationErrors } from "@utils/displayValidationErrors";
+import { validate } from "class-validator";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import CourseEnrollmentUsecase from "@domain/usecases/course-enrollment.usecase";
-import { CourseEnrollmentMapper } from "@presentation/mappers/course-enrollment.mapper";
-import { CreateCourseEnrollmentDto } from "@presentation/dtos/course-enrollment.dto";
 
-const courseEnrollmentUsecase = new CourseEnrollmentUsecase();
+const courseEnrollmentRepository = new CourseEnrollmentRepository();
+const courseEnrollmentUseCase = new CourseEnrollmentUseCase(courseEnrollmentRepository);
 
-export async function GET(request: NextRequest) {
+export async function GET(request: any) {
   try {
-    const { searchParams } = new URL(request.url);
-    const courseId = searchParams.get('courseId');
-    const userId = searchParams.get('userId');
-    const status = searchParams.get('status');
-
-    let courseEnrollments;
-
-    if (courseId) {
-      courseEnrollments = await courseEnrollmentUsecase.getCourseEnrollmentsByCourseId(courseId);
-    } else if (userId) {
-      if (status === 'active') {
-        courseEnrollments = await courseEnrollmentUsecase.getUserActiveEnrollments(userId);
-      } else if (status === 'completed') {
-        courseEnrollments = await courseEnrollmentUsecase.getUserCompletedEnrollments(userId);
-      } else {
-        courseEnrollments = await courseEnrollmentUsecase.getCourseEnrollmentsByUserId(userId);
-      }
-    } else {
-      courseEnrollments = await courseEnrollmentUsecase.getAllCourseEnrollments();
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: courseEnrollments.map(enrollment => CourseEnrollmentMapper.toDto(enrollment)),
-    });
-  } catch (error) {
-    console.error('Error fetching course enrollments:', error);
+    const enrollments = await courseEnrollmentUseCase.getAll();
+    return NextResponse.json(enrollments);
+  } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch course enrollments' },
-      { status: 500 }
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [error],
+        success: false,
+      },
+      { status: 400 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Please log in to access this resource.",
+        success: false,
+        data: null,
+        validationErrors: [],
+      },
+      { status: 401 }
+    );
+  }
+
   try {
-    const body: CreateCourseEnrollmentDto = await request.json();
-    
-    // Validate required fields
-    if (!body.courseId || !body.userId) {
+    const body = await request.json();
+    const dto = new CourseEnrollmentRequestDto(body);
+    const validationErrors = await validate(dto);
+    const userId = session.user.id;
+
+    if (validationErrors.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        {
+          validationErrors: displayValidationErrors(validationErrors),
+          success: false,
+          data: null,
+          message: "Attention!",
+        },
         { status: 400 }
       );
     }
 
-    const courseEnrollment = await courseEnrollmentUsecase.createCourseEnrollment(body);
-
-    return NextResponse.json({
-      success: true,
-      data: CourseEnrollmentMapper.toDto(courseEnrollment),
-      message: 'Course enrollment created successfully',
-    }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating course enrollment:', error);
-    
-    if (error instanceof Error && error.message.includes('already enrolled')) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 409 }
-      );
-    }
+    const enrollmentResponse = await courseEnrollmentUseCase.createEnrollment({
+      ...dto.toData(),
+      userId,
+    });
 
     return NextResponse.json(
-      { success: false, error: 'Failed to create course enrollment' },
-      { status: 500 }
+      {
+        data: enrollmentResponse.toJSON(),
+        message: "Enrollment created successfully!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        validationErrors: [],
+        success: false,
+      },
+      { status: 400 }
     );
   }
 }

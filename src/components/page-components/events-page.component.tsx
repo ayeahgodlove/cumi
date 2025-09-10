@@ -28,9 +28,12 @@ import { useSession } from "next-auth/react";
 import { AppNav } from "@components/nav/nav.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
+import BannerComponent from "@components/banner/banner.component";
 import { eventAPI } from "@store/api/event_api";
 import { motion } from "framer-motion";
 import { IEvent } from "@domain/models/event.model";
+import { useTranslation } from "@contexts/translation.context";
+import { useRouter } from "next/navigation";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -38,6 +41,8 @@ const { Option } = Select;
 
 export default function EventsPageComponent() {
   const { data: session } = useSession();
+  const { t } = useTranslation();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [registrationModalVisible, setRegistrationModalVisible] =
@@ -143,62 +148,69 @@ export default function EventsPageComponent() {
   return (
     <>
       <div
-        className="container-fluid mt-3"
-        style={{ width: "100%", backgroundColor: "white", minHeight: "100vh" }}
+        className="container-fluid"
+        style={{ width: "100%", backgroundColor: "white" }}
       >
         <AppNav logoPath="/" />
+      </div>
 
-        <div
-          className="container pb-5"
-          style={{ marginTop: 24, backgroundColor: "white" }}
+      {/* Banner */}
+      <BannerComponent
+        breadcrumbs={[{ label: t('nav.events'), uri: "events" }]}
+        pageTitle={t('nav.events')}
+      />
+
+      <div
+        className="container pb-5"
+        style={{ marginTop: 24, backgroundColor: "white" }}
+      >
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+          <Card
+            style={{
+              backgroundColor: "white",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: 24,
+            }}
           >
-            <Card
-              style={{
-                backgroundColor: "white",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                borderRadius: "12px",
-                overflow: "hidden",
-                marginBottom: 24,
-              }}
-            >
             <Row justify="space-between" align="middle">
               <Col>
                 <Title level={2} style={{ margin: 0 }}>
-                  Events & Workshops 📅
+                  {t('events.title')}
                 </Title>
                 <Text type="secondary">
-                  Discover upcoming events, workshops, and conferences
+                  {t('events.subtitle')}
                 </Text>
               </Col>
             </Row>
           </Card>
-          </motion.div>
+        </motion.div>
 
-          {/* Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        >
+          <Card
+            style={{
+              backgroundColor: "white",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: 24,
+            }}
           >
-            <Card
-              style={{
-                backgroundColor: "white",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                borderRadius: "12px",
-                overflow: "hidden",
-                marginBottom: 24,
-              }}
-            >
             <Row gutter={[16, 16]} align="middle">
               <Col xs={24} sm={12} md={6}>
                 <Search
-                  placeholder="Search events..."
+                  placeholder={t('events.search_placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   prefix={<SearchOutlined />}
@@ -206,16 +218,16 @@ export default function EventsPageComponent() {
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Select
-                  placeholder="Category"
+                  placeholder={t('events.category_placeholder')}
                   value={filterCategory}
                   onChange={setFilterCategory}
                   style={{ width: "100%" }}
                 >
-                  <Option value="all">All Categories</Option>
-                  <Option value="Web Development">Web Development</Option>
-                  <Option value="Artificial Intelligence">AI & ML</Option>
-                  <Option value="Data Science">Data Science</Option>
-                  <Option value="Mobile Development">Mobile Dev</Option>
+                  <Option value="all">{t('events.all_categories')}</Option>
+                  <Option value="Web Development">{t('events.web_dev')}</Option>
+                  <Option value="Artificial Intelligence">{t('events.ai_ml')}</Option>
+                  <Option value="Data Science">{t('events.data_science')}</Option>
+                  <Option value="Mobile Development">{t('events.mobile_dev')}</Option>
                 </Select>
               </Col>
               <Col xs={24} sm={12} md={4}>
@@ -226,40 +238,40 @@ export default function EventsPageComponent() {
                     setFilterCategory("all");
                   }}
                 >
-                  Clear Filters
+                  {t('events.clear_filters')}
                 </Button>
               </Col>
             </Row>
           </Card>
-          </motion.div>
+        </motion.div>
 
-          {/* Events Grid */}
-          {filteredEvents.length === 0 ? (
-            <Card>
-              <Empty
-                description="No events found matching your criteria"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-              />
-            </Card>
-          ) : (
-            <Row gutter={[16, 16]}>
-              {filteredEvents.map((event, index) => (
-                <Col xs={24} md={12} lg={8} key={event.id}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.5, 
-                      delay: index * 0.1,
-                      ease: "easeOut"
-                    }}
-                    whileHover={{ 
-                      y: -5,
-                      transition: { duration: 0.2 }
-                    }}
-                    style={{ height: '100%' }}
-                  >
-                    <Card
+        {/* Events Grid */}
+        {filteredEvents.length === 0 ? (
+          <Card>
+            <Empty
+              description="No events found matching your criteria"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            />
+          </Card>
+        ) : (
+          <Row gutter={[16, 16]}>
+            {filteredEvents.map((event, index) => (
+              <Col xs={24} md={12} lg={8} key={event.id}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    delay: index * 0.1,
+                    ease: "easeOut"
+                  }}
+                  whileHover={{ 
+                    y: -5,
+                    transition: { duration: 0.2 }
+                  }}
+                  style={{ height: '100%' }}
+                >
+                  <Card
                     hoverable
                     style={{
                       backgroundColor: "white",
@@ -310,6 +322,7 @@ export default function EventsPageComponent() {
                     }
                     actions={[
                       <Button
+                        key="register"
                         type="primary"
                         icon={<CalendarOutlined />}
                         onClick={() => handleRegisterEvent(event)}
@@ -317,9 +330,10 @@ export default function EventsPageComponent() {
                         Register
                       </Button>,
                       <Button
+                        key="view"
                         icon={<EyeOutlined />}
                         onClick={() => {
-                          /* Navigate to event detail */
+                          router.push(`/events/${event.slug}`);
                         }}
                       >
                         View Details
@@ -352,12 +366,11 @@ export default function EventsPageComponent() {
                       }
                     />
                   </Card>
-                  </motion.div>
-                </Col>
-              ))}
-            </Row>
-          )}
-        </div>
+                </motion.div>
+              </Col>
+            ))}
+          </Row>
+        )}
       </div>
 
       {/* Registration Modal */}

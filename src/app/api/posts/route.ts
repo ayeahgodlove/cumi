@@ -12,20 +12,36 @@ const postRepository = new PostRepository();
 const postUseCase = new PostUseCase(postRepository);
 const postMapper = new PostMapper();
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized: Please log in to access this resource.",
+          success: false,
+          data: null,
+          validationErrors: [],
+        },
+        { status: 401 }
+      );
+    }
+
     const posts = await postUseCase.getAll();
     const postsDto = postMapper.toDTOs(posts);
+    
     return NextResponse.json(postsDto);
   } catch (error: any) {
+    console.error('Error fetching posts:', error);
     return NextResponse.json(
       {
         data: null,
-        message: error.message,
-        validationErrors: [error],
+        message: error.message || "Failed to fetch posts",
+        validationErrors: [],
         success: false,
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

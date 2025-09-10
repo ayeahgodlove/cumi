@@ -16,7 +16,7 @@ export const generatePageMetadata = ({
   openGraph: {
     title,
     description,
-    url: `https://cumitech.com/${slug}`,
+    url: `https://cumi.dev/${slug}`,
     images: [
       {
         url: image,
@@ -31,6 +31,6 @@ export const generatePageMetadata = ({
     images: [image],
   },
   alternates: {
-    canonical: `https://cumitech.com/${slug}`,
+    canonical: `https://cumi.dev/${slug}`,
   },
 });

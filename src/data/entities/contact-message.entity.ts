@@ -1,4 +1,4 @@
-import { IContactMessage } from "./contact-message.model";
+import { IContactMessage } from "@domain/models/contact-message.model";
 
 export class ContactMessageEntity {
   constructor(

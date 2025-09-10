@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import React, { useState, useCallback } from "react";
+import { LanguageSelector, useTranslation } from "@contexts/translation.context";
 
 type Props = {
   logoPath: string;
@@ -20,6 +21,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isNavigating, setIsNavigating] = useState(false);
+  const { t } = useTranslation();
 
   const handleLogout = useCallback(async () => {
     setIsNavigating(true);
@@ -75,12 +77,12 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     {
       key: "dashboard",
       icon: <DashboardOutlined />,
-      label: <Link href="/dashboard">Dashboard</Link>,
+      label: <Link href="/dashboard">{t('nav.dashboard')}</Link>,
     },
     {
       key: "settings",
       icon: <SettingOutlined />,
-      label: <Link href="/dashboard/settings">Settings</Link>,
+      label: <Link href="/dashboard/settings">{t('nav.settings')}</Link>,
     },
     {
       type: "divider" as const,
@@ -88,7 +90,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: t('nav.logout'),
       onClick: handleLogout,
     },
   ];
@@ -139,7 +141,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   aria-current="page"
                   href="/"
                 >
-                  Welcome
+                  {t('nav.welcome')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -151,7 +153,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/our_services"
                 >
-                  Services
+                  {t('nav.services')}
                 </Link>
               </li>
 
@@ -164,7 +166,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/projects"
                 >
-                  Projects
+                  {t('nav.projects')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -176,7 +178,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/blog_posts"
                 >
-                  Blog Posts
+                  {t('nav.blog_posts')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -188,7 +190,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/opportunities"
                 >
-                  Opportunities
+                  {t('nav.opportunities')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -200,7 +202,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/events"
                 >
-                  Events
+                  {t('nav.events')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -212,7 +214,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   href="/courses"
                 >
-                  Courses
+                  {t('nav.courses')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -225,7 +227,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   aria-disabled="true"
                   href="/about_us"
                 >
-                  About Us
+                  {t('nav.about_us')}
                 </Link>
               </li>
               <li className="nav-item">
@@ -238,40 +240,43 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   aria-disabled="true"
                   href="/contact_us"
                 >
-                  Contact Us
+                  {t('nav.contact_us')}
                 </Link>
               </li>
             </ul>
             <div className="d-flex flex-sm-column flex-md-row align-items-center">
-              {status === "loading" ? (
-                <Button loading size="large" shape="round">
-                  Loading...
-                </Button>
-              ) : session ? (
-                <Dropdown
-                  menu={{ items: userMenuItems }}
-                  placement="bottomRight"
-                  arrow
-                >
-                  <Space className="cursor-pointer">
-                    <Avatar
-                      size="large"
-                      src={session.user?.image}
-                      icon={<UserOutlined />}
-                      style={{ backgroundColor: "#1890ff" }}
-                    />
-                  </Space>
-                </Dropdown>
-              ) : (
-                <Button
-                  className="primary-btn"
-                  shape="round"
-                  href="/login"
-                  size="large"
-                >
-                  Log in
-                </Button>
-              )}
+              <Space size="middle">
+                <LanguageSelector />
+                {status === "loading" ? (
+                  <Button loading size="large" shape="round">
+                    {t('common.loading')}
+                  </Button>
+                ) : session ? (
+                  <Dropdown
+                    menu={{ items: userMenuItems }}
+                    placement="bottomRight"
+                    arrow
+                  >
+                    <Space className="cursor-pointer">
+                      <Avatar
+                        size="large"
+                        src={session.user?.image}
+                        icon={<UserOutlined />}
+                        style={{ backgroundColor: "#1890ff" }}
+                      />
+                    </Space>
+                  </Dropdown>
+                ) : (
+                  <Button
+                    className="primary-btn"
+                    shape="round"
+                    href="/login"
+                    size="large"
+                  >
+                    {t('nav.login')}
+                  </Button>
+                )}
+              </Space>
             </div>
           </div>
         </div>

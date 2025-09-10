@@ -1,115 +1,228 @@
 "use client";
+
+import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import Disqus from "@components/shared/disqus";
-import ImageFallback from "@components/shared/image-fallback";
-import Share from "@components/shared/share";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import SpinnerList from "@components/shared/spinner-list";
 import { eventAPI } from "@store/api/event_api";
-import { userAPI } from "@store/api/user_api";
-import { format } from "@utils/format";
-import { Layout, Spin } from "antd";
-import Link from "next/link";
-import { FaRegClock, FaRegUserCircle } from "react-icons/fa";
-import slugify from "slugify";
+import { Row, Col, Layout, Empty, Spin, Card, Typography, Button, Tag, Space, Divider } from "antd";
+import { motion } from "framer-motion";
+import { CalendarOutlined, EnvironmentOutlined, DollarOutlined, UserOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { message } from "antd";
 
 const { Content } = Layout;
+const { Title, Paragraph, Text } = Typography;
 
 interface EventDetailPageComponentProps {
-  id: string;
+  eventSlug: string;
 }
 
-export default function EventDetailPageComponent({ id }: EventDetailPageComponentProps) {
+export default function EventDetailPageComponent({ eventSlug }: EventDetailPageComponentProps) {
+  const [isRegistering, setIsRegistering] = useState(false);
+  
   const {
     data: event,
+    error,
     isLoading,
     isFetching,
-  } = eventAPI.useGetSingleEventQuery(id);
+  } = eventAPI.useGetSingleEventBySlugQuery(eventSlug);
 
-  const { data: user } = userAPI.useGetSingleUserQuery(
-    event ? event?.userId : ""
-  );
+  const handleRegister = async () => {
+    if (!event) return;
+    
+    setIsRegistering(true);
+    try {
+      const response = await fetch('/api/event-registrations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          eventId: event.id,
+          // Add user info if available
+        }),
+      });
+
+      if (response.ok) {
+        message.success('Successfully registered for the event!');
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || 'Registration failed');
+      }
+    } catch (error) {
+      message.error('Registration failed. Please try again.');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   if (isLoading || isFetching) {
-    <Spin size="large" style={{ height: "65vh", width: "100%" }} />;
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spin size="large" tip="Loading..." fullscreen spinning />
+      </div>
+    );
   }
+
+  if (error || !event) {
+    return (
+      <div
+        style={{
+          minHeight: "65vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Empty description="Event not found" />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        {/* navigation bar */}
         <AppNav logoPath="/" />
+      </div>
 
+      <BannerComponent
+        breadcrumbs={[
+          { label: "Events", uri: "events" },
+          { label: event.title, uri: "#" },
+        ]}
+        pageTitle="Event Details"
+      />
+
+      <div className="container mb-5">
         <Content>
-          <section className="section pt-4">
-            <div className="container">
-              <div className="row justify-content-center">
-                <article className="col-lg-10">
-                  {event && (
-                    <div className="mb-5">
-                      <ImageFallback
-                        src={`${BASE_URL_UPLOADS_MEDIA}/${event.imageUrl}`}
-                        height={500}
-                        width={1200}
-                        quality={100}
-                        alt={event?.title}
-                        className="w-full rounded"
+          <Row gutter={[24, 24]}>
+            <Col xs={24} lg={16}>
+              <motion.div
+                className="box"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Card>
+                  <div className="mb-4">
+                    <Title level={1}>{event.title}</Title>
+                    <Space wrap>
+                      <Tag color="blue">Event</Tag>
+                      <Tag color="green">Online Event</Tag>
+                    </Space>
+                  </div>
+
+                  {event.imageUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={`/uploads/events/${event.imageUrl}`}
+                        alt={event.title}
+                        style={{
+                          width: "100%",
+                          height: "400px",
+                          objectFit: "cover",
+                          borderRadius: "8px",
+                        }}
                       />
                     </div>
                   )}
-                  <h1 className="mb-2">{event?.title}</h1>
-                  <ul className="nav mb-2">
-                    <li className="me-3 inline-block">
-                      <Link href={`/authors/${slugify(`${user?.username}`)}`}>
-                        <FaRegUserCircle
-                          className={"-mt-n1 me-2 inline-block"}
-                        />
-                        {user?.username}
-                      </Link>
-                    </li>
 
-                    {event && (
-                      <li className="me-3 inline-block">
-                        <FaRegClock className="-mt-n1 me-2 inline-block" />
-                        {format.date(event.eventDate)}
-                      </li>
-                    )}
-                  </ul>
-                  <div className="content mb-3">
-                    <div
-                      style={{
-                        padding: 10,
-                        background: "#fff",
-                        fontSize: 18,
-                      }}
-                      dangerouslySetInnerHTML={{
-                        __html: event?.description as any,
-                      }}
-                    />
+                  <div className="mb-4">
+                    <Title level={3}>About This Event</Title>
+                    <Paragraph className="fs-5">{event.description}</Paragraph>
                   </div>
-                  <div className="row justify-items-start justify-content-between">
-                    <div className="flex justify-items-center col-lg-6">
-                      <h5 className="mr-1">Share :</h5>
-                      <Share
-                        className="nav social-icons"
-                        title={event?.title as any}
-                        description={event?.description}
-                        slug={slugify(`${event?.title}`, "_")!}
-                      />
+
+                </Card>
+              </motion.div>
+            </Col>
+
+            <Col xs={24} lg={8}>
+              <motion.div
+                className="box"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              >
+                <Card>
+                  <Title level={3}>Event Information</Title>
+                  
+                  <Space direction="vertical" size="large" style={{ width: "100%" }}>
+                    <div>
+                      <Text strong>
+                        <CalendarOutlined className="me-2" />
+                        Date & Time
+                      </Text>
+                      <div className="mt-1">
+                        <Text>
+                          {new Date(event.eventDate).toLocaleDateString()}
+                        </Text>
+                      </div>
                     </div>
-                  </div>
-                  <Disqus
-                    className="mt-20"
-                    identifier={`${event?.slug}`}
-                    title={`${event?.title}`}
-                    url={`${window.location.origin}/events/${event?.slug}`}
-                  />
-                </article>
-              </div>
-            </div>
-          </section>
+
+                    <div>
+                      <Text strong>
+                        <EnvironmentOutlined className="me-2" />
+                        Location
+                      </Text>
+                      <div className="mt-1">
+                        <Text>{event.location || "TBA"}</Text>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Text strong>
+                        <DollarOutlined className="me-2" />
+                        Price
+                      </Text>
+                      <div className="mt-1">
+                        <Text>
+                          Free
+                        </Text>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Text strong>
+                        <UserOutlined className="me-2" />
+                        Capacity
+                      </Text>
+                      <div className="mt-1">
+                        <Text>
+                          Unlimited
+                        </Text>
+                      </div>
+                    </div>
+                  </Space>
+
+                  <Divider />
+
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    loading={isRegistering}
+                    onClick={handleRegister}
+                    disabled={false}
+                  >
+                    Register for Event
+                  </Button>
+
+                </Card>
+              </motion.div>
+            </Col>
+          </Row>
         </Content>
       </div>
+
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

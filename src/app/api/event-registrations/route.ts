@@ -46,7 +46,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const eventRegistration = await eventRegistrationUsecase.createEventRegistration(body);
+    const eventRegistrationData = {
+      eventId: body.eventId,
+      userId: body.userId,
+      name: body.name,
+      email: body.email,
+      phone: body.phone,
+      company: body.company,
+      dietaryRequirements: body.dietaryRequirements,
+      additionalNotes: body.additionalNotes,
+      registrationDate: new Date(),
+      status: 'pending' as const,
+      paymentStatus: 'pending' as const,
+      paymentAmount: body.paymentAmount,
+      paymentMethod: body.paymentMethod,
+    };
+
+    const eventRegistration = await eventRegistrationUsecase.createEventRegistration(eventRegistrationData);
 
     return NextResponse.json({
       success: true,

@@ -19,6 +19,10 @@ import defineQuiz from "./quiz";
 import defineRole from "./role";
 import defineService from "./service";
 import defineUser from "./user";
+import defineSubscriber from "./subscriber";
+import defineContactMessage from "./contact-message";
+import definePartner from "./partner";
+import defineCourseEnrollment from "./course-enrollment";
 
 const Banner = defineBanner(sequelize, DataTypes);
 const Category = defineCategory(sequelize, DataTypes);
@@ -38,6 +42,10 @@ const Quiz = defineQuiz(sequelize, DataTypes);
 const Role = defineRole(sequelize, DataTypes);
 const Service = defineService(sequelize, DataTypes);
 const User = defineUser(sequelize, DataTypes);
+const Subscriber = defineSubscriber(sequelize, DataTypes);
+const ContactMessage = defineContactMessage(sequelize, DataTypes);
+const Partner = definePartner(sequelize, DataTypes);
+const CourseEnrollment = defineCourseEnrollment(sequelize, DataTypes);
 
 Event.belongsToMany(Tag, {
   through: {
@@ -115,5 +123,9 @@ export {
   Role,
   Service,
   User,
-  Tag
+  Tag,
+  Subscriber,
+  ContactMessage,
+  Partner,
+  CourseEnrollment
 };

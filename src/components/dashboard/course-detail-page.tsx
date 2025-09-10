@@ -402,7 +402,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                   </div>
 
                   <div>
-                    <Title level={4}>What You'll Learn</Title>
+                    <Title level={4}>What You&apos;ll Learn</Title>
                     <ul>
                       {course.whatYouWillLearn.map((item, index) => (
                         <li key={index}>
@@ -544,7 +544,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                               <Space>
                                 <Avatar size="small" src={review.user.avatar} icon={<UserOutlined />} />
                                 <Text strong>{review.user.name}</Text>
-                                <Rate disabled defaultValue={review.rating} size="small" />
+                                <Rate disabled defaultValue={review.rating} />
                               </Space>
                             </Col>
                             <Col>
@@ -604,7 +604,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                     renderItem={(resource) => (
                       <List.Item
                         actions={[
-                          <Button type="primary" size="small" icon={<DownloadOutlined />}>
+                          <Button key="download" type="primary" size="small" icon={<DownloadOutlined />}>
                             Download
                           </Button>
                         ]}

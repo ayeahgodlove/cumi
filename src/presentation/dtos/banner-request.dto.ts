@@ -32,6 +32,7 @@ export class BannerRequestDto {
       subTitle: this.subTitle,
       image: this.image,
       slug: slugify(this.title, { lower: true, replacement: "-" }),
+      // userId will be set by the API route
     };
   }
 

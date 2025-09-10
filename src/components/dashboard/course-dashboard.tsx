@@ -378,6 +378,7 @@ export default function CourseDashboard() {
                 }
                 actions={[
                   <Button 
+                    key="continue"
                     type="primary" 
                     icon={<PlayCircleOutlined />}
                     onClick={() => {
@@ -387,7 +388,7 @@ export default function CourseDashboard() {
                   >
                     Continue Learning
                   </Button>,
-                  <Button icon={<EyeOutlined />}>
+                  <Button key="view" icon={<EyeOutlined />}>
                     View Details
                   </Button>
                 ]}
@@ -457,12 +458,13 @@ export default function CourseDashboard() {
                 }
                 actions={[
                   <Button 
+                    key="enroll"
                     type="primary"
                     onClick={() => handleEnrollCourse(course.id)}
                   >
                     Enroll Now
                   </Button>,
-                  <Button icon={<EyeOutlined />}>
+                  <Button key="preview" icon={<EyeOutlined />}>
                     Preview
                   </Button>
                 ]}

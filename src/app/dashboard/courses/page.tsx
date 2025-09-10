@@ -1,10 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import {
-  BASE_URL_UPLOADS_EVENTS,
-  BASE_URL_UPLOADS_MEDIA,
-} from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -14,7 +11,7 @@ import {
 } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
-import { Image, Space, Table } from "antd";
+import { Image, Space, Table, Tag, Badge } from "antd";
 
 export default function CourseList() {
   const { tableProps, tableQueryResult } = useTable({
@@ -34,9 +31,79 @@ export default function CourseList() {
             }
           />
           <Table.Column dataIndex="title" title={"Title"} />
-          {/* <Table.Column dataIndex="description" title={"Description"} /> */}
           <Table.Column dataIndex="authorName" title={"Author Name"} />
           <Table.Column dataIndex="categoryId" title={"Category"} />
+          
+          {/* New Course Fields */}
+          <Table.Column
+            dataIndex="price"
+            title={"Price"}
+            render={(value, record: any) => (
+              <span>
+                {record.isFree ? (
+                  <Tag color="green">Free</Tag>
+                ) : (
+                  `${value || 0} ${record.currency || 'XAF'}`
+                )}
+              </span>
+            )}
+          />
+          
+          <Table.Column
+            dataIndex="status"
+            title={"Status"}
+            render={(value) => {
+              const colorMap = {
+                draft: 'orange',
+                published: 'green',
+                archived: 'gray',
+                suspended: 'red'
+              };
+              return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+            }}
+          />
+          
+          <Table.Column
+            dataIndex="level"
+            title={"Level"}
+            render={(value) => {
+              const colorMap = {
+                beginner: 'blue',
+                intermediate: 'orange',
+                advanced: 'red'
+              };
+              return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+            }}
+          />
+          
+          <Table.Column
+            dataIndex="language"
+            title={"Language"}
+            render={(value) => <Tag>{value}</Tag>}
+          />
+          
+          <Table.Column
+            dataIndex="currentStudents"
+            title={"Students"}
+            render={(value, record: any) => (
+              <Badge 
+                count={value || 0} 
+                style={{ backgroundColor: "#1890ff" }}
+                overflowCount={999}
+              />
+            )}
+          />
+          
+          <Table.Column
+            dataIndex="certificateAvailable"
+            title={"Certificate"}
+            render={(value) => (
+              <Tag color={value ? "green" : "default"}>
+                {value ? "Yes" : "No"}
+              </Tag>
+            )}
+          />
+          
           <Table.Column
             dataIndex="imageUrl"
             title={"Image"}

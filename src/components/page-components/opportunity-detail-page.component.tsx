@@ -4,81 +4,89 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import { Col, Layout, Alert, Card, Tag, Button, Row, Typography, Space, Divider } from "antd";
+import {
+  Col,
+  Layout,
+  Alert,
+  Card,
+  Tag,
+  Button,
+  Row,
+  Typography,
+  Space,
+  Divider,
+  Spin,
+} from "antd";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 import { IOpportunity } from "@domain/models/opportunity.model";
-import { 
-  CalendarOutlined, 
-  EnvironmentOutlined, 
-  DollarOutlined, 
-  UserOutlined, 
+import {
+  CalendarOutlined,
+  EnvironmentOutlined,
+  DollarOutlined,
+  UserOutlined,
   BookOutlined,
   MailOutlined,
   LinkOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
 } from "@ant-design/icons";
-import { useParams } from "next/navigation";
+import { opportunityAPI } from "@store/api/opportunity_api";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
-export default function OpportunityDetailPageComponent() {
-  const params = useParams();
-  const [opportunity, setOpportunity] = useState<IOpportunity | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface OpportunityDetailPageComponentProps {
+  opportunitySlug: string;
+}
 
-  useEffect(() => {
-    const fetchOpportunity = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`/api/opportunities/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Opportunity not found');
-        }
-        const data = await response.json();
-        setOpportunity(data.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
+export default function OpportunityDetailPageComponent({ opportunitySlug }: OpportunityDetailPageComponentProps) {
 
-    if (params.id) {
-      fetchOpportunity();
-    }
-  }, [params.id]);
+  const {
+    data: opportunity,
+    error,
+    isLoading,
+    isFetching,
+  } = opportunityAPI.useGetSingleOpportunityBySlugQuery(opportunitySlug);
 
   const getOpportunityTypeColor = (type: string) => {
     switch (type) {
-      case 'scholarship': return 'green';
-      case 'job': return 'blue';
-      case 'internship': return 'orange';
-      case 'fellowship': return 'purple';
-      case 'grant': return 'cyan';
-      default: return 'default';
+      case "scholarship":
+        return "green";
+      case "job":
+        return "blue";
+      case "internship":
+        return "orange";
+      case "fellowship":
+        return "purple";
+      case "grant":
+        return "cyan";
+      default:
+        return "default";
     }
   };
 
   const getOpportunityTypeIcon = (type: string) => {
     switch (type) {
-      case 'scholarship': return <BookOutlined />;
-      case 'job': return <UserOutlined />;
-      case 'internship': return <UserOutlined />;
-      case 'fellowship': return <UserOutlined />;
-      case 'grant': return <DollarOutlined />;
-      default: return <UserOutlined />;
+      case "scholarship":
+        return <BookOutlined />;
+      case "job":
+        return <UserOutlined />;
+      case "internship":
+        return <UserOutlined />;
+      case "fellowship":
+        return <UserOutlined />;
+      case "grant":
+        return <DollarOutlined />;
+      default:
+        return <UserOutlined />;
     }
   };
 
   const formatDeadline = (deadline: string | Date) => {
     const date = new Date(deadline);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -90,15 +98,16 @@ export default function OpportunityDetailPageComponent() {
     return diffDays <= 30 && diffDays > 0;
   };
 
-  if (loading) {
+  if (isLoading || isFetching) {
     return (
-      <Layout className="min-h-screen">
+      <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
         <AppNav logoPath="/" />
-        <Content className="d-flex align-items-center justify-content-center">
+        <Content
+          className="d-flex align-items-center justify-content-center"
+          style={{ backgroundColor: "white" }}
+        >
           <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+            <Spin size="large" />
             <p className="mt-3">Loading opportunity details...</p>
           </div>
         </Content>
@@ -108,19 +117,26 @@ export default function OpportunityDetailPageComponent() {
 
   if (error || !opportunity) {
     return (
-      <Layout className="min-h-screen">
+      <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
         <AppNav logoPath="/" />
-        <Content>
-          <BannerComponent 
-            pageTitle="Opportunity Not Found" 
-            breadcrumbs={[{ label: "Opportunities", uri: "opportunities" }, { label: "Not Found", uri: "" }]}
+        <Content style={{ backgroundColor: "white" }}>
+          <BannerComponent
+            pageTitle="Opportunity Not Found"
+            breadcrumbs={[
+              { label: "Opportunities", uri: "opportunities" },
+              { label: "Not Found", uri: "" },
+            ]}
           />
-          <div className="container py-5">
+          <div className="container py-5" style={{ backgroundColor: "white" }}>
             <Row justify="center">
               <Col xs={24} lg={18}>
                 <Alert
                   message="Error"
-                  description={error || "Opportunity not found"}
+                  description={
+                    error
+                      ? "Failed to load opportunity"
+                      : "Opportunity not found"
+                  }
                   type="error"
                   showIcon
                 />
@@ -128,21 +144,24 @@ export default function OpportunityDetailPageComponent() {
             </Row>
           </div>
         </Content>
-        <AppFooter />
+        <AppFooter logoPath="/" />
       </Layout>
     );
   }
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
       <AppNav logoPath="/" />
-      <Content>
-        <BannerComponent 
-          pageTitle={opportunity.title} 
-          breadcrumbs={[{ label: "Opportunities", uri: "opportunities" }, { label: opportunity.title, uri: "" }]}
+      <Content style={{ backgroundColor: "white" }}>
+        <BannerComponent
+          pageTitle={opportunity.title}
+          breadcrumbs={[
+            { label: "Opportunities", uri: "opportunities" },
+            { label: opportunity.title, uri: "" },
+          ]}
         />
-        
-        <div className="container py-5">
+
+        <div className="container py-5" style={{ backgroundColor: "white" }}>
           <Row justify="center">
             <Col xs={24} lg={18}>
               <motion.div
@@ -150,14 +169,23 @@ export default function OpportunityDetailPageComponent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Card className="cumi-card mb-4">
+                <Card
+                  className="cumi-card mb-4"
+                  style={{
+                    backgroundColor: "white",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    borderRadius: "12px",
+                    overflow: "hidden",
+                  }}
+                >
                   <div className="d-flex justify-content-between align-items-start mb-4">
-                    <Tag 
+                    <Tag
                       color={getOpportunityTypeColor(opportunity.opp_type)}
                       icon={getOpportunityTypeIcon(opportunity.opp_type)}
                       className="mb-2"
                     >
-                      {opportunity.opp_type.charAt(0).toUpperCase() + opportunity.opp_type.slice(1)}
+                      {opportunity.opp_type.charAt(0).toUpperCase() +
+                        opportunity.opp_type.slice(1)}
                     </Tag>
                     {isDeadlineNear(opportunity.deadline) && (
                       <Tag color="red" icon={<ClockCircleOutlined />}>
@@ -166,8 +194,10 @@ export default function OpportunityDetailPageComponent() {
                     )}
                   </div>
 
-                  <Title level={2} className="mb-3">{opportunity.title}</Title>
-                  
+                  <Title level={2} className="mb-3">
+                    {opportunity.title}
+                  </Title>
+
                   <Paragraph className="fs-5 text-muted mb-4">
                     {opportunity.companyOrInstitution}
                   </Paragraph>
@@ -199,10 +229,14 @@ export default function OpportunityDetailPageComponent() {
                           <DollarOutlined className="me-2 text-primary" />
                           <div>
                             <Text strong>
-                              {opportunity.opp_type === 'scholarship' ? 'Amount' : 'Salary'}
+                              {opportunity.opp_type === "scholarship"
+                                ? "Amount"
+                                : "Salary"}
                             </Text>
                             <br />
-                            <Text>{opportunity.amount || opportunity.salaryRange}</Text>
+                            <Text>
+                              {opportunity.amount || opportunity.salaryRange}
+                            </Text>
                           </div>
                         </div>
                       </Col>
@@ -238,48 +272,60 @@ export default function OpportunityDetailPageComponent() {
                   </div>
 
                   {/* Scholarship-specific fields */}
-                  {opportunity.opp_type === 'scholarship' && (
+                  {opportunity.opp_type === "scholarship" && (
                     <>
                       {opportunity.academicLevel && (
                         <div className="mb-4">
                           <Title level={4}>Academic Level</Title>
-                          <Text className="fs-6">{opportunity.academicLevel}</Text>
+                          <Text className="fs-6">
+                            {opportunity.academicLevel}
+                          </Text>
                         </div>
                       )}
                       {opportunity.fieldOfStudy && (
                         <div className="mb-4">
                           <Title level={4}>Field of Study</Title>
-                          <Text className="fs-6">{opportunity.fieldOfStudy}</Text>
+                          <Text className="fs-6">
+                            {opportunity.fieldOfStudy}
+                          </Text>
                         </div>
                       )}
                       {opportunity.nationality && (
                         <div className="mb-4">
                           <Title level={4}>Nationality Requirements</Title>
-                          <Text className="fs-6">{opportunity.nationality}</Text>
+                          <Text className="fs-6">
+                            {opportunity.nationality}
+                          </Text>
                         </div>
                       )}
                       {opportunity.ageLimit && (
                         <div className="mb-4">
                           <Title level={4}>Age Limit</Title>
-                          <Text className="fs-6">{opportunity.ageLimit} years</Text>
+                          <Text className="fs-6">
+                            {opportunity.ageLimit} years
+                          </Text>
                         </div>
                       )}
                     </>
                   )}
 
                   {/* Job-specific fields */}
-                  {opportunity.opp_type === 'job' && (
+                  {opportunity.opp_type === "job" && (
                     <>
                       {opportunity.employmentType && (
                         <div className="mb-4">
                           <Title level={4}>Employment Type</Title>
-                          <Text className="fs-6">{opportunity.employmentType}</Text>
+                          <Text className="fs-6">
+                            {opportunity.employmentType}
+                          </Text>
                         </div>
                       )}
                       {opportunity.experienceLevel && (
                         <div className="mb-4">
                           <Title level={4}>Experience Level</Title>
-                          <Text className="fs-6">{opportunity.experienceLevel}</Text>
+                          <Text className="fs-6">
+                            {opportunity.experienceLevel}
+                          </Text>
                         </div>
                       )}
                       {opportunity.department && (
@@ -292,7 +338,7 @@ export default function OpportunityDetailPageComponent() {
                         <div className="mb-4">
                           <Title level={4}>Remote Work</Title>
                           <Text className="fs-6">
-                            {opportunity.isRemote ? 'Yes' : 'No'}
+                            {opportunity.isRemote ? "Yes" : "No"}
                           </Text>
                         </div>
                       )}
@@ -304,7 +350,9 @@ export default function OpportunityDetailPageComponent() {
                       <Title level={4}>Required Skills</Title>
                       <Space wrap>
                         {opportunity.skills.map((skill, index) => (
-                          <Tag key={index} color="blue">{skill}</Tag>
+                          <Tag key={index} color="blue">
+                            {skill}
+                          </Tag>
                         ))}
                       </Space>
                     </div>
@@ -314,8 +362,8 @@ export default function OpportunityDetailPageComponent() {
 
                   <div className="text-center">
                     <Space size="large">
-                      <Button 
-                        type="primary" 
+                      <Button
+                        type="primary"
                         size="large"
                         icon={<LinkOutlined />}
                         href={opportunity.applicationLink}
@@ -324,7 +372,7 @@ export default function OpportunityDetailPageComponent() {
                       >
                         Apply Now
                       </Button>
-                      <Button 
+                      <Button
                         size="large"
                         icon={<MailOutlined />}
                         href={`mailto:${opportunity.contactEmail}`}
@@ -339,8 +387,8 @@ export default function OpportunityDetailPageComponent() {
           </Row>
         </div>
       </Content>
+      <AppFooter logoPath="/" />
       <AppFootnote />
-      <AppFooter />
     </Layout>
   );
 }

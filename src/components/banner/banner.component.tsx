@@ -6,6 +6,7 @@ import "./banner.scss";
 import { BASE_URL } from "@constants/api-url";
 import { MailOutlined, WhatsAppOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
+import { useTranslation } from "@contexts/translation.context";
 
 const { Title, Paragraph, Text } = Typography;
 interface IBreadcrumb {
@@ -17,6 +18,8 @@ type Props = {
   breadcrumbs: IBreadcrumb[];
 };
 const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
+  const { t } = useTranslation();
+  
   return (
     <>
       <div className="container-fluid mx-auto px-3 position-relative custom__banner">
@@ -35,8 +38,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
           >
             <Title level={1}>{pageTitle}</Title>
             <Paragraph className="text-black-50 fs-5 mb-4">
-              Professional solutions tailored to your
-              business needs
+              {t('banner.subtitle')}
             </Paragraph>
           </motion.div>
 
@@ -44,7 +46,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             style={{ display: "flex", justifyContent: "center" }}
             items={[
               {
-                title: <Link href="/">Home</Link>,
+                title: <Link href="/">{t('banner.home')}</Link>,
               },
               ...breadcrumbs.map((b, index) => {
                 return {
@@ -71,15 +73,15 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
               href="https://wa.me/237681289411"
               target="_blank"
             >
-              Get Started
+              {t('banner.get_started')}
             </Button>
             <Button
               size="large"
               className="cumi-gradient-border text-black"
               icon={<MailOutlined />}
-              href="mailto:info@cumitech.com"
+              href="mailto:info@cumi.dev"
             >
-              Contact Us
+              {t('banner.contact_us')}
             </Button>
           </div>
         </div>

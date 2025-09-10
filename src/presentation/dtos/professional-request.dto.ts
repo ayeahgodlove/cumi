@@ -1,5 +1,6 @@
 import { IProfessional } from "@domain/models/professional.model";
 import { IsArray, IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min } from "class-validator";
+import { nanoid } from "nanoid";
 
 export class ProfessionalRequestDto {
   @IsNotEmpty()
@@ -129,7 +130,7 @@ export class ProfessionalRequestDto {
 
   toData(): IProfessional {
     return {
-      id: "",
+      id: nanoid(10),
       title: this.title,
       position: this.position,
       yearsOfExperience: this.yearsOfExperience,

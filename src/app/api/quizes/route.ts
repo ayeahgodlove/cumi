@@ -12,10 +12,12 @@ const quizUseCase = new QuizUseCase(quizRepository);
 
 export async function GET(request: any) {
   try {
+    console.log("Fetching quizes...");
     const quizes = await quizUseCase.getAll();
-
+    console.log("Quizes fetched successfully:", quizes);
     return NextResponse.json(quizes);
   } catch (error: any) {
+    console.error("Error fetching quizes:", error);
     return NextResponse.json(
       {
         data: null,
@@ -63,6 +65,7 @@ export async function POST(request: NextRequest) {
 
     const quizResponse = await quizUseCase.createQuiz({
       ...dto.toData(),
+      userId,
     });
     return NextResponse.json(
       {

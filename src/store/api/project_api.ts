@@ -12,6 +12,9 @@ export const projectAPI = createApi({
     getSingleProject: build.query<IProject, string>({
       query: (projectId) => `/projects/${projectId}`,
     }),
+    getSingleProjectBySlug: build.query<IProject, string>({
+      query: (slug) => `/projects/slugs/${slug}`,
+    }),
     fetchAllProjects: build.query<IProject[], number | void>({
       query: (page = 1) => `/projects?page=${page}`,
     }),

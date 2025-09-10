@@ -3,9 +3,12 @@ import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 import { Button } from "antd";
 import Image from "next/image";
 import React from "react";
+import { useTranslation } from "@contexts/translation.context";
 
 export const AppService = () => {
   const { width } = useWindowSize();
+  const { t } = useTranslation();
+  
   return (
     <div
       id="work-with-us"
@@ -32,14 +35,9 @@ export const AppService = () => {
             borderBottomRightRadius: 0,
           }}
         >
-          <h3 className="text-center mb-4">Ready to work with Cumi?</h3>
+          <h3 className="text-center mb-4">{t('service.ready_to_work')}</h3>
           <p className="text-center">
-            {` Reach out to us today to learn more about our services and training
-          programs.`}
-            {/* ${
-            width > 767 &&
-            "Let's collaborate to turn your vision into reality and shape the future of technology together."
-          } */}
+            {t('service.description')}
           </p>
           <Button
             className="primary-btn mt-3 mx-auto"
@@ -51,7 +49,7 @@ export const AppService = () => {
             }}
             shape="round"
           >
-            Get In Touch
+            {t('service.get_in_touch')}
           </Button>
         </div>
         <div className="col-md-6 px-5 p-md-0 ms-auto">

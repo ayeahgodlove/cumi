@@ -4,44 +4,74 @@ import { IResponseBase } from "./response-base.model";
 export interface ILesson {
   id: string;
   title: string;
+  slug: string;
   description: string;
-  userId: string;
   content: string;
+  imageUrl: string;
+  userId: string;
+  courseId: string;
+  authorName: string;
   duration: number;
   difficulty: string;
-  courseId: string;
   url: string;
-  slug: string
-  // dependencies
-  imageUrl: string;
   prerequisites: string[];
   objectives: string[];
   keywords: string[];
-
-   // Additional properties
-   author: string;
-   language?: string;
-   targetAudience?: string;
-   rating?: number;
-   reviews?: string[];
+  author: string;
+  reviews?: string[];
+  language?: string;
+  rating?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  // New fields from database schema
+  durationMinutes?: number;
+  lessonOrder: number;
+  status: 'draft' | 'published' | 'archived';
+  lessonType: 'video' | 'text' | 'audio' | 'practical' | 'discussion' | 'assignment';
+  videoUrl?: string;
+  audioUrl?: string;
+  downloadMaterials?: string;
+  isFreePreview: boolean;
+  requiresCompletion: boolean;
+  estimatedCompletionTime?: number;
+  practicalExamples?: string;
+  resourcesNeeded?: string;
 }
 
 export const emptyLesson: ILesson = {
   id: "",
   title: "",
+  slug: "",
   description: "",
-  userId: "",
   content: "",
+  imageUrl: "",
+  userId: "",
+  courseId: "",
+  authorName: "",
   duration: 0,
   difficulty: "",
+  url: "",
   prerequisites: [],
   objectives: [],
   keywords: [],
   author: "",
-  courseId: "",
-  url: "",
-  slug: "",
-  imageUrl: ""
+  reviews: [],
+  language: "",
+  rating: 0,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  durationMinutes: 0,
+  lessonOrder: 1,
+  status: 'draft',
+  lessonType: 'text',
+  videoUrl: "",
+  audioUrl: "",
+  downloadMaterials: "",
+  isFreePreview: false,
+  requiresCompletion: true,
+  estimatedCompletionTime: 0,
+  practicalExamples: "",
+  resourcesNeeded: "",
 };
 
 export interface ILessonState extends IBaseState {

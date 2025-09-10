@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "@database/db-sequelize.config";
+import { IBaseState } from "./base-state.model";
+import { IResponseBase } from "./response-base.model";
 
 export interface ICourseEnrollment {
   id: string;
@@ -7,7 +7,7 @@ export interface ICourseEnrollment {
   userId: string;
   enrollmentDate: Date;
   status: 'active' | 'completed' | 'dropped' | 'suspended';
-  progress: number; // 0-100 percentage
+  progress: number; // 0-100
   lastAccessedAt?: Date;
   completedAt?: Date;
   certificateIssued: boolean;
@@ -15,112 +15,70 @@ export interface ICourseEnrollment {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
+  // New fields from database schema
+  paymentStatus: 'pending' | 'paid' | 'partial' | 'free' | 'scholarship';
+  paymentMethod?: 'mobile_money' | 'bank_transfer' | 'cash' | 'scholarship' | 'free';
+  amountPaid: number;
+  paymentReference?: string;
+  studentPhone?: string;
+  emergencyContact?: string;
+  educationLevel?: 'primary' | 'secondary' | 'university' | 'professional' | 'other';
+  motivation?: string;
+  offlineProgress?: string;
+  studyGroup?: string;
+  mentorAssigned?: string;
+  completionTargetDate?: Date;
+  internetAccess?: 'high_speed' | 'mobile_data' | 'limited' | 'cybercafe';
+  preferredContact: 'whatsapp' | 'sms' | 'call' | 'email';
+  studySchedule?: 'morning' | 'afternoon' | 'evening' | 'weekend' | 'flexible';
+  certificateName?: string;
+  certificateLanguage: 'french' | 'english' | 'both';
+  skillsGained?: string;
 }
 
-export interface CourseEnrollmentCreationAttributes extends Optional<ICourseEnrollment, 'id' | 'createdAt' | 'updatedAt'> {}
-
-export class CourseEnrollment extends Model<ICourseEnrollment, CourseEnrollmentCreationAttributes> implements ICourseEnrollment {
-  public id!: string;
-  public courseId!: string;
-  public userId!: string;
-  public enrollmentDate!: Date;
-  public status!: 'active' | 'completed' | 'dropped' | 'suspended';
-  public progress!: number;
-  public lastAccessedAt?: Date;
-  public completedAt?: Date;
-  public certificateIssued!: boolean;
-  public certificateUrl?: string;
-  public notes?: string;
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-}
-
-CourseEnrollment.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    courseId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'courses',
-        key: 'id',
-      },
-    },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'users',
-        key: 'id',
-      },
-    },
-    enrollmentDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    status: {
-      type: DataTypes.ENUM('active', 'completed', 'dropped', 'suspended'),
-      allowNull: false,
-      defaultValue: 'active',
-    },
-    progress: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0,
-      validate: {
-        min: 0,
-        max: 100,
-      },
-    },
-    lastAccessedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    completedAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    certificateIssued: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    certificateUrl: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    notes: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-  },
-  {
-    sequelize,
-    tableName: 'course_enrollments',
-    timestamps: true,
-  }
-);
-
-export const emptyCourseEnrollment: Partial<ICourseEnrollment> = {
-  courseId: '',
-  userId: '',
+export const emptyCourseEnrollment: ICourseEnrollment = {
+  id: "",
+  courseId: "",
+  userId: "",
   enrollmentDate: new Date(),
   status: 'active',
   progress: 0,
+  lastAccessedAt: undefined,
+  completedAt: undefined,
   certificateIssued: false,
+  certificateUrl: "",
+  notes: "",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  paymentStatus: 'free',
+  paymentMethod: 'free',
+  amountPaid: 0,
+  paymentReference: "",
+  studentPhone: "",
+  emergencyContact: "",
+  educationLevel: undefined,
+  motivation: "",
+  offlineProgress: "",
+  studyGroup: "",
+  mentorAssigned: "",
+  completionTargetDate: undefined,
+  internetAccess: undefined,
+  preferredContact: 'whatsapp',
+  studySchedule: undefined,
+  certificateName: "",
+  certificateLanguage: 'both',
+  skillsGained: "",
 };
+
+export interface ICourseEnrollmentState extends IBaseState {
+  readonly enrollments: ICourseEnrollment[];
+  readonly enrollment: ICourseEnrollment;
+}
+
+export interface ICourseEnrollmentResponse extends IResponseBase {
+  data: ICourseEnrollment;
+}
+
+export interface ICourseEnrollmentResponses extends IResponseBase {
+  data: ICourseEnrollment[];
+}

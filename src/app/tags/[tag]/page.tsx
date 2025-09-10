@@ -1,152 +1,123 @@
-"use client";
-import BannerComponent from "@components/banner/banner.component";
-import { AppFooter } from "@components/footer/footer";
-import { AppFootnote } from "@components/footnote/footnote";
-import { AppNav } from "@components/nav/nav.component";
-import BlogPostItem from "@components/blog_post/blog_post_item";
-import PostSidebar from "@components/blog_post/containers/PostSidebar";
+import { Metadata } from "next";
+import TagDetailPageComponent from "@components/page-components/tag-detail-page.component";
+import { generatePageMetadata, generateStructuredData, fetchApiData, defaultImages } from "../../../lib/seo";
 
-import SpinnerList from "@components/shared/spinner-list";
-import { categoryAPI } from "@store/api/category_api";
-import { postAPI } from "@store/api/post_api";
-import { tagAPI } from "@store/api/tag_api";
-import { userAPI } from "@store/api/user_api";
-import { Row, Col, Layout, Empty, Spin } from "antd";
-import { motion } from "framer-motion";
-const { Content } = Layout;
+interface TagPageProps {
+  params: { tag: string };
+}
 
-export default function IndexPage({ params }: { params: { tag: string } }) {
-  const {
-    data: posts,
-    error,
-    isLoading,
-    isFetching,
-  } = postAPI.useGetPostsByTagQuery(params.tag);
+// Fetch tag details for SEO
+const fetchTagDetails = async (tag: string) => {
+  try {
+    const response = await fetchApiData(`/api/tags/slugs/${tag}`);
+    return response;
+  } catch (error) {
+    console.error(`Error fetching tag ${tag}:`, error);
+    return null;
+  }
+};
 
-  const {
-    data: categories,
-    isLoading: isLoadingCategory,
-    isFetching: isFetchCategory,
-  } = categoryAPI.useFetchAllCategoriesQuery(1);
-
-  const {
-    data: tags,
-    isLoading: isLoadingTag,
-    isFetching: isFetchTag,
-  } = tagAPI.useFetchAllTagsQuery(1);
-
-  const {
-    data: users,
-    isLoading: isLoadingUser,
-    isFetching: isFetchUser,
-  } = userAPI.useFetchAllUsersQuery(1);
-
-  if (
-    isLoading ||
-    isFetching ||
-    isLoadingTag ||
-    isFetchTag ||
-    isLoadingCategory ||
-    isFetchCategory ||
-    isLoadingUser ||
-    isFetchUser
-  ) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
+export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
+  if (!params?.tag) {
+    return generatePageMetadata({
+      title: "Tag - CUMI Technology Blog",
+      description: "Explore technology blog posts by tag.",
+      url: "https://cumi.dev/tags"
+    });
   }
 
-  return (
-    <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        {/* navigation bar */}
-        <AppNav logoPath="/" />
-      </div>
-      {/* banner */}
-      <BannerComponent
-        breadcrumbs={[
-          { label: "Tags", uri: "tags" },
-          { label: params.tag, uri: "#" },
-        ]}
-        pageTitle="Blog Posts"
-      />
-      <div className="container mb-5">
-        {error && <h1>Something wrong...</h1>}
+  const tag = await fetchTagDetails(params.tag);
+  
+  if (!tag) {
+    return generatePageMetadata({
+      title: "Tag - CUMI Technology Blog",
+      description: "Explore technology blog posts by tag.",
+      url: "https://cumi.dev/tags"
+    });
+  }
 
-        <Content>
-          {(isLoading || isFetching) && (
-            <motion.div
-              className="box"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <SpinnerList />
-            </motion.div>
-          )}
-          {posts && posts.length ? (
-            <div className="row justify-content-center align-items-start">
-              <div className="col-12 col-md-8">
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                  {posts?.map((post) => (
-                    <Col
-                      className="gutter-row"
-                      xs={{ span: 24, offset: 0 }}
-                      sm={{ span: 12, offset: 0 }}
-                      lg={{ span: 12, offset: 0 }}
-                      key={post.id}
-                      style={{ marginBottom: 20 }}
-                    >
-                      <motion.div
-                        className="box"
-                        initial={{ opacity: 0, y: "-5%" }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <BlogPostItem
-                          users={isFetchUser || isLoadingUser ? [] : users}
-                          categories={
-                            isFetchCategory || isLoadingCategory
-                              ? []
-                              : categories
-                          }
-                          post={post}
-                        />
-                      </motion.div>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
-              <div className="col-12 col-md-4">
-                <PostSidebar
-                  tags={isFetchTag || isLoadingTag ? [] : tags}
-                  posts={isLoading || isFetching ? [] : posts}
-                  categories={
-                    isFetchCategory || isLoadingCategory ? [] : categories
-                  }
-                />
-              </div>
-            </div>
-          ) : (
-            <Col span={24}>
-              <div className="empty-wrap">
-                <Empty />
-              </div>
-            </Col>
-          )}
-        </Content>
-      </div>
-      <AppFooter logoPath="/" />
-      <AppFootnote />
-    </>
-  );
+  return generatePageMetadata({
+    title: `${tag.name} Content | CUMI Technology Blog`,
+    description: tag.description || `Discover ${tag.posts?.length || ""} articles tagged with ${tag.name}`,
+    keywords: [
+      "technology blog",
+      "software development",
+      "web development",
+      "programming",
+      "digital transformation",
+      "tech articles",
+      "programming tutorials",
+      "software engineering",
+      "API development",
+      "database design",
+      "user experience design",
+      "responsive web design",
+      "e-commerce development",
+      "cloud solutions",
+      "DevOps",
+      "business automation",
+      "tech industry insights",
+      "development best practices",
+      "coding tutorials",
+      tag.name,
+      ...(tag.posts?.slice(0, 3).map((post: any) => post.title.split(" ")) || []).flat(),
+      `${tag.name} articles`,
+      `${tag.name} blog posts`,
+      `posts about ${tag.name}`
+    ].filter(Boolean),
+    url: `https://cumi.dev/tags/${params.tag}`,
+    alternates: {
+      canonical: `https://cumi.dev/tags/${params.tag}`,
+    },
+    images: tag.posts?.slice(0, 3).map((post: any) => ({
+      url: post.imageUrl ? `https://cumi.dev/uploads/posts/${post.imageUrl}` : defaultImages[0],
+      width: 800,
+      height: 600,
+      alt: post.title,
+    })) || [defaultImages[0]],
+    publishedTime: new Date(tag.createdAt).toISOString(),
+    modifiedTime: new Date(tag.updatedAt).toISOString(),
+    // OpenGraph
+    openGraph: {
+      type: "website",
+      title: `${tag.name} Content Collection`,
+      description: `${tag.posts?.length || ""} articles tagged with ${tag.name}`,
+      images: [defaultImages[0], defaultImages[1]],
+      siteName: "CUMI",
+      locale: "en_US",
+      url: "https://cumi.dev",
+    },
+    // Twitter
+    twitter: {
+      card: "summary_large_image",
+      title: `#${tag.name} Articles`,
+      description: `Explore ${tag.posts?.length || ""} posts about ${tag.name}`,
+      images: [defaultImages[0]],
+      creator: "@cumi_dev",
+    },
+    // Structured data
+    schema: {
+      collectionPage: {
+        name: `${tag.name} Articles`,
+        about: tag.name,
+        description: `Collection of content tagged with ${tag.name}`,
+        hasPart: tag.posts?.map((post: any) => ({
+          "@type": "BlogPosting",
+          name: post.title,
+          url: `https://cumi.dev/blog_posts/${post.slug}`,
+          keywords: tag.name,
+        })) || [],
+      },
+      // Add hashtag schema for better topic recognition
+      hashtag: {
+        "@type": "Thing",
+        name: tag.name,
+        url: `https://cumi.dev/tags/${params.tag}`,
+      },
+    },
+  });
+}
+
+export default function TagPage({ params }: TagPageProps) {
+  return <TagDetailPageComponent tag={params.tag} />;
 }

@@ -9,18 +9,22 @@ import Link from "next/link";
 import "swiper/css";
 import ServiceList from "@components/service/service-list.component";
 import { motion } from "framer-motion";
-import { 
-  RocketOutlined, 
-  BulbOutlined, 
+import {
+  RocketOutlined,
+  BulbOutlined,
   ThunderboltOutlined,
   HeartOutlined,
   CheckCircleOutlined,
-  ArrowRightOutlined
+  ArrowRightOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "@contexts/translation.context";
+import { AppCTA } from "@components/CTA.component";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function OurServicesPageComponent() {
+  const { t } = useTranslation();
+
   const {
     data: services,
     isLoading: isLoadingService,
@@ -45,33 +49,33 @@ export default function OurServicesPageComponent() {
   const features = [
     {
       icon: <RocketOutlined />,
-      title: "Fast Delivery",
-      description: "We deliver projects on time with exceptional quality"
+      title: t("services.fast_delivery"),
+      description: t("services.fast_description"),
     },
     {
       icon: <BulbOutlined />,
-      title: "Innovative Solutions",
-      description: "Cutting-edge technology and creative problem solving"
+      title: t("services.innovative_solutions"),
+      description: t("services.innovative_description"),
     },
     {
       icon: <ThunderboltOutlined />,
-      title: "Performance Focused",
-      description: "Optimized solutions for maximum efficiency and speed"
+      title: t("services.performance_focused"),
+      description: t("services.performance_description"),
     },
     {
       icon: <HeartOutlined />,
-      title: "Client Centric",
-      description: "Your success is our priority in every project"
-    }
+      title: t("services.client_centric"),
+      description: t("services.client_description"),
+    },
   ];
 
   const benefits = [
-    "24/7 Technical Support",
-    "Scalable Solutions",
-    "Modern Technology Stack",
-    "SEO Optimized",
-    "Mobile Responsive",
-    "Security First Approach"
+    t("services.support_24_7"),
+    t("services.scalable_solutions"),
+    t("services.modern_tech"),
+    t("services.seo_optimized"),
+    t("services.mobile_responsive"),
+    t("services.security_first"),
   ];
 
   return (
@@ -81,15 +85,15 @@ export default function OurServicesPageComponent() {
       </div>
 
       <BannerComponent
-        breadcrumbs={[{ label: "Services", uri: "our_services" }]}
-        pageTitle="Our Services"
+        breadcrumbs={[{ label: t("nav.services"), uri: "our_services" }]}
+        pageTitle={t("nav.services")}
       />
 
       {/* Hero Section */}
-      <section 
+      <section
         className="py-5"
         style={{
-          background: 'linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)'
+          background: "linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)",
         }}
       >
         <div className="container">
@@ -101,25 +105,23 @@ export default function OurServicesPageComponent() {
                 transition={{ duration: 0.6 }}
               >
                 <Title level={1} className="mb-4">
-                  Transform Your Digital Vision Into Reality
+                  {t("services.transform_vision")}
                 </Title>
                 <Paragraph className="fs-5 text-muted mb-4">
-                  We provide comprehensive digital solutions that drive growth, 
-                  enhance user experience, and deliver measurable results for 
-                  businesses of all sizes.
+                  {t("services.transform_description")}
                 </Paragraph>
                 <Space size="large">
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     size="large"
                     icon={<ArrowRightOutlined />}
                     href="https://wa.me/237681289411"
                     target="_blank"
                   >
-                    Get Started
+                    {t("services.get_started")}
                   </Button>
                   <Button size="large" href="/contact_us">
-                    Learn More
+                    {t("services.learn_more")}
                   </Button>
                 </Space>
               </motion.div>
@@ -148,10 +150,11 @@ export default function OurServicesPageComponent() {
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3">Why Choose Cumi Digital?</Title>
+              <Title level={2} className="mb-3">
+                {t("services.why_choose")}
+              </Title>
               <Paragraph className="fs-5 text-muted">
-                We combine technical expertise with creative innovation to deliver 
-                solutions that exceed expectations.
+                {t("services.why_description")}
               </Paragraph>
             </Col>
           </Row>
@@ -163,24 +166,31 @@ export default function OurServicesPageComponent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Card 
+                  <Card
                     className="h-100 text-center border-0 shadow-sm"
                     hoverable
                     style={{
-                      transition: 'all 0.3s ease',
-                      borderRadius: '12px'
+                      transition: "all 0.3s ease",
+                      borderRadius: "12px",
                     }}
                     styles={{
                       body: {
-                        padding: '2rem 1.5rem'
-                      }
+                        padding: "2rem 1.5rem",
+                      },
                     }}
                   >
-                    <div className="text-primary mb-3" style={{ fontSize: '2.5rem' }}>
+                    <div
+                      className="text-primary mb-3"
+                      style={{ fontSize: "2.5rem" }}
+                    >
                       {feature.icon}
                     </div>
-                    <Title level={4} className="mb-3">{feature.title}</Title>
-                    <Paragraph className="text-muted">{feature.description}</Paragraph>
+                    <Title level={4} className="mb-3">
+                      {feature.title}
+                    </Title>
+                    <Paragraph className="text-muted">
+                      {feature.description}
+                    </Paragraph>
                   </Card>
                 </motion.div>
               </Col>
@@ -203,17 +213,19 @@ export default function OurServicesPageComponent() {
                 transition={{ duration: 0.6 }}
               >
                 <Title level={2} className="mb-4">
-                  What You Get With Our Services
+                  {t("services.what_you_get")}
                 </Title>
                 <Paragraph className="fs-5 text-muted mb-4">
-                  Every project comes with comprehensive support and cutting-edge 
-                  features designed to give you a competitive advantage.
+                  {t("services.benefits_description")}
                 </Paragraph>
                 <Row gutter={[16, 16]}>
                   {benefits.map((benefit, index) => (
                     <Col xs={24} sm={12} key={index}>
                       <div className="d-flex align-items-center">
-                        <CheckCircleOutlined className="text-success me-3" style={{ fontSize: '1.2rem' }} />
+                        <CheckCircleOutlined
+                          className="text-success me-3"
+                          style={{ fontSize: "1.2rem" }}
+                        />
                         <Text strong>{benefit}</Text>
                       </div>
                     </Col>
@@ -241,61 +253,7 @@ export default function OurServicesPageComponent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-5">
-        <div className="container">
-          <Card 
-            className="text-center border-0 shadow-lg"
-            style={{
-              background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
-              color: 'white'
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Title level={2} style={{ color: 'white' }} className="mb-3">
-                Ready to Build Your Next Project?
-              </Title>
-              <Paragraph 
-                className="fs-5 mb-4"
-                style={{ color: 'rgba(255, 255, 255, 0.8)' }}
-              >
-                Let&apos;s discuss your project requirements and create something amazing together.
-              </Paragraph>
-              <Space size="large">
-                <Button 
-                  type="primary" 
-                  size="large"
-                  style={{
-                    backgroundColor: 'white',
-                    color: '#1890ff',
-                    borderColor: 'white',
-                    fontWeight: 'bold'
-                  }}
-                  href="https://wa.me/237681289411"
-                  target="_blank"
-                >
-                  Start Your Project
-                </Button>
-                <Button 
-                  size="large"
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: 'white',
-                    borderColor: 'white',
-                    fontWeight: 'bold'
-                  }}
-                  href="/contact_us"
-                >
-                  Contact Us
-                </Button>
-              </Space>
-            </motion.div>
-          </Card>
-        </div>
-      </section>
+      <AppCTA />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

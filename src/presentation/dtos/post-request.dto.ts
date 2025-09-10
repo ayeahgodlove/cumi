@@ -56,6 +56,7 @@ export class PostRequestDto {
       status: this.status,
       imageUrl: this.imageUrl,
       tags: this.tags,
+      // authorId will be set by the API route
     };
   }
 

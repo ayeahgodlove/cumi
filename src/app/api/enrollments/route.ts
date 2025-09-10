@@ -14,9 +14,9 @@ const enrollmentMapper = new EnrollmentMapper();
 
 export async function GET(request: any) {
   try {
-    const categories = await enrollmentUseCase.getAll();
+    const enrollments = await enrollmentUseCase.getAll();
 
-    return NextResponse.json(categories);
+    return NextResponse.json(enrollments);
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -65,6 +65,7 @@ export async function POST(request: NextRequest) {
 
     const enrollmentResponse = await enrollmentUseCase.createEnrollment({
       ...dto.toData(),
+      userId,
     });
     return NextResponse.json(
       {

@@ -5,8 +5,10 @@ import { Button, Spin } from "antd";
 import Image from "next/image";
 import ServiceList from "@components/service/service-list.component";
 import { serviceAPI } from "@store/api/service_api";
+import { useTranslation } from "@contexts/translation.context";
 
 const FeatureSection = () => {
+  const { t } = useTranslation();
   const {
     data: services,
     isLoading: isLoadingService,
@@ -23,7 +25,7 @@ const FeatureSection = () => {
           alignItems: "center",
         }}
       >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
+        <Spin size="large" tip={t('common.loading')} fullscreen spinning />
       </div>
     );
   }
@@ -32,10 +34,9 @@ const FeatureSection = () => {
       <section className={`section ${styles.section}`}>
         <div className="container">
           <div className={`titleHolder ${styles.headerCp}`}>
-            <h1 className={styles.heading}>What we offer</h1>
+            <h1 className={styles.heading}>{t('features.title')}</h1>
             <p>
-              {`Whether you're an individual entrepreneur or a multinational
-            corporation, Cumi has got you covered.`}
+              {t('features.subtitle')}
             </p>
           </div>
 
@@ -51,13 +52,10 @@ const FeatureSection = () => {
               />
               <div className={styles.content_group_1_text}>
                 <h1 className={styles.content_group_heading}>
-                  Custom Digital Solutions
+                  {t('features.custom_solutions.title')}
                 </h1>
                 <p className={styles.content_group_subheading}>
-                  {` Cumi offers custom digital solutions for individuals and
-                corporations, tailored to your unique needs. We collaborate
-                closely with clients from concept to execution, delivering
-                innovative solutions that yield tangible results.`}
+                  {t('features.custom_solutions.description')}
                 </p>
                 <Button
                   className="primary-btn"
@@ -67,7 +65,7 @@ const FeatureSection = () => {
                   target="_blank"
                   size="large"
                 >
-                  Hire our expertise
+                  {t('features.hire_expertise')}
                 </Button>
               </div>
             </div>
@@ -75,13 +73,10 @@ const FeatureSection = () => {
             <div className={styles.content_group}>
               <div className={styles.content_group_2_text}>
                 <h1 className={styles.content_group_heading}>
-                  Software Development Training
+                  {t('features.training.title')}
                 </h1>
                 <p className={styles.content_group_subheading}>
-                  {` Cumi equips tech enthusiasts with expertise in JavaScript,
-                Python, PHP, React, Laravel, Django, and React-Native. Our
-                hands-on training empowers aspiring developers for success in
-                the competitive tech industry.`}
+                  {t('features.training.description')}
                 </p>
                 <Button
                   className="primary-btn"
@@ -91,7 +86,7 @@ const FeatureSection = () => {
                   target="_blank"
                   size="large"
                 >
-                  Hire our expertise
+                  {t('features.hire_expertise')}
                 </Button>
               </div>
               <Image

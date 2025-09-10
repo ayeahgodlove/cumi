@@ -2,50 +2,37 @@
 
 import { SessionProvider } from "next-auth/react";
 import { App } from "../../app/_refine_context";
-import { FloatButton } from "antd";
-import {
-  MessageOutlined,
-  PhoneOutlined,
-  WhatsAppOutlined,
-} from "@ant-design/icons";
 import { ColorModeContextProvider } from "../color-mode";
+import { TranslationProvider } from "../translation.context";
+import { LiveSupportButton } from "../../components/shared/live-support-button";
 
 export const RefineContext = (props: any) => {
   const defaultMode = props?.defaultMode;
 
+  const aiConfig = {
+    provider: "openai" as const,
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY!,
+    model: "gpt-3.5-turbo", // or 'gpt-4'
+    maxTokens: 150,
+    temperature: 0.7,
+    maxRetries: 3,        // Number of retry attempts (default: 3)
+    retryDelay: 1000, 
+  };
+
   return (
     <SessionProvider>
-      <ColorModeContextProvider defaultMode={defaultMode}>
-        <App {...props} />
-        <FloatButton.Group
-          shape="circle"
-          style={{
-            insetInlineEnd: 24,
-          }}
-        >
-          <FloatButton
-            icon={<WhatsAppOutlined />}
-            href="https://wa.me/237681289411"
-            target="_blank"
-            tooltip="WhatsApp"
-            type="primary"
+      <TranslationProvider>
+        <ColorModeContextProvider defaultMode={defaultMode}>
+          <App {...props} />
+          <LiveSupportButton
+            aiConfig={aiConfig}
+            companyName="CumiTech"
+            supportEmail="info@cumi.dev"
+            supportPhone="+237-673-687-549"
+            whatsappNumber="+237681289411"
           />
-          <FloatButton
-            icon={<PhoneOutlined />}
-            href="tel:+237673687549"
-            target="_blank"
-            tooltip="Call Us"
-            className="call-us bg-warning"
-
-          />
-          <FloatButton
-            icon={<MessageOutlined />}
-            tooltip="Contact Us"
-            href="/contact"
-            className="contact-us"
-          />
-        </FloatButton.Group>
-      </ColorModeContextProvider>
+        </ColorModeContextProvider>
+      </TranslationProvider>
     </SessionProvider>
   );
 };

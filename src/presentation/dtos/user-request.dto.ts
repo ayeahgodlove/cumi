@@ -1,7 +1,7 @@
 // src/presentation/dtos/user-request.dto.ts
 
 import { emptyUser, IUser } from "@domain/models/user";
-import { IsNotEmpty, IsString, Length } from "class-validator";
+import { IsNotEmpty, IsString, Length, IsOptional, IsEnum, IsBoolean, IsDateString } from "class-validator";
 import { nanoid } from "nanoid";
 export class UserRequestDto {
   @IsNotEmpty()
@@ -22,21 +22,106 @@ export class UserRequestDto {
   @Length(8)
   password: string;
 
+  // New fields from database schema
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  countryCode?: string;
+
+  @IsOptional()
+  @IsString()
+  profileImage?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @IsOptional()
+  @IsDateString()
+  dateOfBirth?: string;
+
+  @IsOptional()
+  @IsEnum(['male', 'female', 'other', 'prefer_not_to_say'])
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+
+  @IsOptional()
+  @IsEnum(['active', 'inactive', 'suspended', 'banned', 'pending'])
+  accountStatus?: 'active' | 'inactive' | 'suspended' | 'banned' | 'pending';
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  role?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
+
+  @IsOptional()
+  @IsString()
+  timezone?: string;
+
+  @IsOptional()
+  @IsString()
+  locale?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  emailNotifications?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  smsNotifications?: boolean;
+
   constructor(data: IUser) {
     this.username = data.username;
     this.email = data.email;
     this.password = data.password;
     this.fullName = data.fullName;
+    this.phoneNumber = data.phoneNumber;
+    this.countryCode = data.countryCode;
+    this.profileImage = data.profileImage;
+    this.bio = data.bio;
+    this.dateOfBirth = data.dateOfBirth?.toISOString();
+    this.gender = data.gender;
+    this.accountStatus = data.accountStatus;
+    this.address = data.address;
+    this.role = data.role;
+    this.verified = data.verified;
+    this.timezone = data.timezone;
+    this.locale = data.locale;
+    this.emailNotifications = data.emailNotifications;
+    this.smsNotifications = data.smsNotifications;
   }
 
   toData(): IUser {
     return {
       ...emptyUser,
-      id: nanoid(10),
+      id: nanoid(20),
       username: this.username,
       email: this.email,
       password: this.password,
       fullName: this.fullName,
+      phoneNumber: this.phoneNumber,
+      countryCode: this.countryCode,
+      profileImage: this.profileImage,
+      bio: this.bio,
+      dateOfBirth: this.dateOfBirth ? new Date(this.dateOfBirth) : undefined,
+      gender: this.gender,
+      accountStatus: this.accountStatus ?? 'pending',
+      address: this.address ?? "",
+      role: this.role ?? "",
+      verified: this.verified ?? false,
+      timezone: this.timezone ?? 'UTC',
+      locale: this.locale ?? 'en',
+      emailNotifications: this.emailNotifications ?? true,
+      smsNotifications: this.smsNotifications ?? false,
     };
   }
 
@@ -51,6 +136,37 @@ export class UserRequestDto {
       roles: data.roles,
       verified: data.verified,
       fullName: data.fullName,
+      role: data.role,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      phoneNumber: data.phoneNumber,
+      countryCode: data.countryCode,
+      profileImage: data.profileImage,
+      bio: data.bio,
+      dateOfBirth: data.dateOfBirth,
+      gender: data.gender,
+      accountStatus: data.accountStatus,
+      emailVerifiedAt: data.emailVerifiedAt,
+      emailVerificationToken: data.emailVerificationToken,
+      passwordResetToken: data.passwordResetToken,
+      passwordResetExpiresAt: data.passwordResetExpiresAt,
+      twoFactorEnabled: data.twoFactorEnabled,
+      twoFactorSecret: data.twoFactorSecret,
+      lastLoginAt: data.lastLoginAt,
+      lastActiveAt: data.lastActiveAt,
+      loginAttempts: data.loginAttempts,
+      lockedUntil: data.lockedUntil,
+      timezone: data.timezone,
+      locale: data.locale,
+      notificationPreferences: data.notificationPreferences,
+      deletedAt: data.deletedAt,
+      deletedBy: data.deletedBy,
+      lastPasswordChange: data.lastPasswordChange,
+      referralCode: data.referralCode,
+      referredBy: data.referredBy,
+      registrationIp: data.registrationIp,
+      emailNotifications: data.emailNotifications,
+      smsNotifications: data.smsNotifications,
     };
   }
 }

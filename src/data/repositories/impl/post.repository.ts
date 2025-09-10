@@ -174,7 +174,10 @@ export class PostRepository implements IPostRepository {
   async findById(id: string): Promise<InstanceType<typeof Post> | null> {
     try {
       const postItem = await Post.findByPk(id, {
-        include: Tag,
+        include: [
+          { model: Tag, as: "tags" },
+          { model: Category, as: "category" },
+        ],
       });
 
       if (!postItem) {

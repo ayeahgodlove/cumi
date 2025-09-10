@@ -1,11 +1,49 @@
 import React, { useState, useRef } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, message, Form } from "antd";
 import styles from "./subscribe.module.css";
 import Image from "next/image";
 
 export const Subscribe = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
   const ref = useRef(null);
+
+  const handleSubscribe = async () => {
+    if (!email) {
+      message.error("Please enter your email address");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to subscribe");
+      }
+
+      message.success("Successfully subscribed to our newsletter!");
+      setEmail("");
+      form.resetFields();
+    } catch (error) {
+      console.error("Subscription error:", error);
+      message.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to subscribe. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section id="subscribe" ref={ref} className={`section ${styles.section}`}>
@@ -15,7 +53,11 @@ export const Subscribe = () => {
           <p className={styles.subheading}>
             Sign up for our marketing notifications.
           </p>
-          <form className={styles.form}>
+          <Form
+            form={form}
+            onFinish={handleSubscribe}
+            className={styles.form}
+          >
             <Input
               placeholder="Your email address"
               size="large"
@@ -25,17 +67,20 @@ export const Subscribe = () => {
               style={{
                 borderRadius: 30,
               }}
+              type="email"
+              required
             />
             <Button
-              //   type="primary"
               size="large"
               className={styles.button}
               shape="round"
               style={{ backgroundColor: "#32CD32", color: "#fff" }}
+              htmlType="submit"
+              loading={loading}
             >
               Subscribe
             </Button>
-          </form>
+          </Form>
           <Image
             height={250}
             width={100}

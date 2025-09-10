@@ -4,20 +4,21 @@ import React from "react";
 import { Button, Space } from "antd";
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 import Image from "next/image";
+import { useTranslation } from "@contexts/translation.context";
 
 export const AppHero = () => {
   const { width } = useWindowSize()
+  const { t } = useTranslation()
+  
   return (
     <div
       className="mx-auto row align-items-center"
       style={{ marginTop: "4rem", width: "90%", minHeight: "23rem" }}
     >
       <div className="col-12 d-flex flex-column col-md-5">
-        <h1 className="gradient-title">Empowering Your Digital Journey</h1>
+        <h1 className="gradient-title">{t('hero.title')}</h1>
         <p className="text-wrap">
-         {` We're committed to revolutionizing the digital landscape, offering
-          cutting-edge solutions tailored to individuals, startups, enterprises,
-          and organizations.`}
+          {t('hero.description')}
         </p>
         <div className="mt-3">
           <Space>
@@ -27,7 +28,7 @@ export const AppHero = () => {
               href="/our_services"
               size="large"
             >
-              Hire our services
+              {t('hero.hire_services')}
             </Button>
             <Button
               size="large"
@@ -35,7 +36,7 @@ export const AppHero = () => {
               className="default-btn fw-bold"
               shape="round"
             >
-              Our Mission
+              {t('hero.our_mission')}
             </Button>
           </Space>
         </div>

@@ -8,83 +8,64 @@ import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { RefineContext } from "@contexts/refine-context";
 import { getLocale, getMessages } from "next-intl/server";
+import {
+  generatePageMetadata,
+  generateStructuredData,
+  defaultImages,
+} from "../lib/seo";
+import Script from "next/script";
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://cumi.dev"), // Replace with your actual domain
-  title: {
-    default: "Cumi - Digital Innovation & Web Development Solutions",
-    template: "%s | Cumi Digital Solutions",
-  },
+export const metadata: Metadata = generatePageMetadata({
+  title: "CUMI - Leading Software Development & Digital Solutions Company",
   description:
-    "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
+    "Transform your business with CUMI's cutting-edge software development, web applications, mobile apps, and digital solutions. Expert team delivering innovative technology solutions for startups to enterprises.",
   keywords: [
-    "web development",
-    "digital innovation",
-    "technology solutions",
-    "mobile apps",
-    "web applications",
-    "programming",
-    "tech consulting",
+    "software development company",
+    "web development services",
+    "mobile app development",
+    "digital transformation",
+    "custom software solutions",
+    "technology consulting",
+    "full-stack development",
+    "cloud solutions",
+    "API development",
+    "database design",
+    "user experience design",
+    "responsive web design",
+    "e-commerce development",
+    "content management systems",
+    "progressive web apps",
+    "business automation",
+    "IT consulting services",
   ],
-  authors: [{ name: "Cumi Digital Solutions" }],
-  creator: "Cumi Digital Solutions",
-  publisher: "Cumi Digital Solutions",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
+  url: "https://cumi.dev",
+  image: defaultImages[0],
+  images: defaultImages.map((img) => ({
+    url: img,
+    width: 1200,
+    height: 630,
+    alt: "CUMI - Software Development & Digital Solutions",
+  })),
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://cumi.dev", // Replace with your actual domain
-    siteName: "Cumi Digital Solutions",
-    title: "Cumi - Digital Innovation & Web Development Solutions",
+    title: "CUMI - Leading Software Development & Digital Solutions",
     description:
-      "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
-    images: [
-      {
-        url: "/desola-lanre-ologun-IgUR1iX0mqM-unsplash.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Cumi Digital Solutions - Web Development and Technology Innovation",
-      },
-    ],
+      "Transform your business with CUMI's cutting-edge software development, web applications, mobile apps, and digital solutions.",
+    images: defaultImages,
+    siteName: "CUMI",
+    locale: "en_US",
+    url: "https://cumi.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cumi - Digital Innovation & Web Development Solutions",
+    title: "CUMI - Software Development & Digital Solutions",
     description:
-      "We're committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.",
-    images: ["/desola-lanre-ologun-IgUR1iX0mqM-unsplash.jpg"],
+      "Transform your business with CUMI's cutting-edge software development and digital solutions.",
+    images: defaultImages,
+    creator: "@cumi_dev",
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  icons: {
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-    ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  manifest: "/site.webmanifest",
-  verification: {
-    google: "your-google-verification-code", // Replace with your actual Google verification code
-    // yandex: "your-yandex-verification-code",
-    // yahoo: "your-yahoo-verification-code",
-  },
-};
+  schema: generateStructuredData("organization", {}),
+});
 
 export default async function RootLayout({
   children,
@@ -101,6 +82,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        {/* SEO metadata */}
+        <meta name="robots" content="index, follow" />
+        <meta name="theme-color" content="#15b9a1" />
+        <meta
+          name="google-site-verification"
+          content="EwAFsxtAXhVOAGglKgaihgaEa3YiI9yB7cOzQc4qBw4"
+        />
         {/* Apple Touch Icons */}
         <link
           rel="apple-touch-icon"
@@ -178,15 +168,33 @@ export default async function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="msapplication-TileColor" content="#ffffff" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
-        <meta name="theme-color" content="#ffffff" />
         <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
           crossOrigin="anonymous"
         />
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-N98JPQ8F');
+        `}
+        </Script>
       </head>
       <body cz-shortcut-listen="false">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N98JPQ8F"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
+        </noscript>
         <Suspense
           fallback={
             <Spin

@@ -10,6 +10,8 @@ export interface IProject {
   deployUrl: string;
   userId: string;
   slug: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const emptyProject: IProject = {
@@ -20,7 +22,9 @@ export const emptyProject: IProject = {
   githubUrl: "",
   deployUrl: "",
   userId: "",
-  slug: ""
+  slug: "",
+  createdAt: new Date(),
+  updatedAt: new Date()
 };
 
 export interface IProjectState extends IBaseState {

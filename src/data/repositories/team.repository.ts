@@ -22,7 +22,7 @@ export class TeamRepository implements ITeamRepository {
         position: "Creative Designer",
         bio: "At Cumi, I combined my skills as a software engineer and creative designer to empower startup businesses through innovative web solutions. I developed scalable websites and applications using technologies like React and Laravel, while also managing client relationships and project timelines.",
         avatar: "/img/avatar.png",
-        email: "ayukgodlove@cumitech.com",
+        email: "ayukgodlove@cumi.dev",
         phone: "+237681289411",
         linkedin: "https://linkedin.com/in/ayukgodlove",
         github: "https://github.com/ayukgodlove",

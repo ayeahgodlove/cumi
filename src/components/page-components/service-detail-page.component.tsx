@@ -173,7 +173,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                             size="large"
                             className="cumi-gradient-border text-black"
                             icon={<MailOutlined />}
-                            href="mailto:info@cumitech.com"
+                            href="mailto:info@cumi.dev"
                           >
                             Contact Us
                           </Button>
@@ -242,7 +242,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                         <Button 
                           className="cumi-gradient-border text-black w-100"
                           icon={<MailOutlined />}
-                          href="mailto:info@cumitech.com"
+                          href="mailto:info@cumi.dev"
                         >
                           Email Us
                         </Button>
@@ -346,7 +346,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                           size="large"
                           className="cumi-gradient-border text-black"
                           icon={<MailOutlined />}
-                          href="mailto:info@cumitech.com"
+                          href="mailto:info@cumi.dev"
                         >
                           Get Quote
                         </Button>

@@ -16,6 +16,7 @@ import {
   Tag,
   User,
   Professional,
+  Partner,
 } from "@data/entities/index";
 
 import { IBanner } from "@domain/models/banner.model";
@@ -34,6 +35,7 @@ import { IRole } from "@domain/models/role.model";
 import { IService } from "@domain/models/service.model";
 import { ITag } from "@domain/models/tag";
 import { IUser } from "@domain/models/user";
+import { IPartner } from "@domain/models/partner.model";
 
 export class CategoryMapper {
   toDTO(category: InstanceType<typeof Category>): ICategory {
@@ -164,7 +166,7 @@ export class ServiceMapper {
     const entity = service.toJSON<IService>();
     return {
       ...entity,
-      items: JSON.parse((service as any).items as any),
+      items: JSON.parse(JSON.stringify((service as any).items as any)),
     };
   }
   toDTOs(services: InstanceType<typeof Service>[]): IService[] {
@@ -172,8 +174,8 @@ export class ServiceMapper {
       const entity = service.toJSON<IService>();
       return {
         ...entity,
-        items: JSON.parse((service as any).items as any),
-      };
+        items: JSON.parse(JSON.stringify((service as any).items as any)),
+      }
     });
     return _services;
   }
@@ -260,5 +262,19 @@ export class ProfessionalMapper {
       return entity;
     });
     return _professionals;
+  }
+}
+
+export class PartnerMapper {
+  toDTO(partner: InstanceType<typeof Partner>): IPartner {
+    const entity = partner.toJSON<IPartner>();
+    return entity;
+  }
+  toDTOs(partners: InstanceType<typeof Partner>[]): IPartner[] {
+    const _partners = partners.map((partner) => {
+      const entity = partner.toJSON<IPartner>();
+      return entity;
+    });
+    return _partners;
   }
 }

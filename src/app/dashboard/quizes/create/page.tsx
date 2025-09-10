@@ -4,15 +4,42 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { Create, useForm } from "@refinedev/antd";
 import { Button, Form, Input, InputNumber } from "antd";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function QuizCreate() {
   const { formProps, saveButtonProps } = useForm({});
+  const searchParams = useSearchParams();
+  const lessonId = searchParams.get('lessonId');
+
+  // Pre-populate lessonId if provided in URL
+  useEffect(() => {
+    if (lessonId && formProps.form) {
+      formProps.form.setFieldsValue({
+        lessonId: lessonId
+      });
+    }
+  }, [lessonId, formProps.form]);
 
   return (
     <>
       <PageBreadCrumbs items={["Quizes", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical">
+        <Form {...formProps} layout="vertical" form={formProps.form}>
+          <Form.Item
+            name="lessonId"
+            label="Lesson ID"
+            style={{ marginBottom: 3 }}
+            rules={[
+              {
+                required: true,
+                message: "Lesson ID is required",
+              },
+            ]}
+          >
+            <Input size="large" placeholder="Lesson ID" />
+          </Form.Item>
+
           <Form.Item
             name="question"
             label="Question"

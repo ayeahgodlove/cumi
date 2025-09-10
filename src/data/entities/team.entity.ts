@@ -1,4 +1,4 @@
-import { ITeam } from "./team.model";
+import { ITeam } from "@domain/models/team.model";
 
 export class TeamEntity {
   constructor(

@@ -23,12 +23,47 @@ import {
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import CourseDashboard from "@components/dashboard/course-dashboard";
 
 const { Title, Text } = Typography;
 
 export default function UserDashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  // Show loading state while session is loading
+  if (status === "loading") {
+    return (
+      <div style={{ 
+        minHeight: "65vh", 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center",
+        backgroundColor: 'white'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', marginBottom: '16px' }}>🔄</div>
+          <div>Loading your dashboard...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if no session
+  if (!session) {
+    return (
+      <div style={{ 
+        minHeight: "65vh", 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center",
+        backgroundColor: 'white'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', marginBottom: '16px' }}>⚠️</div>
+          <div>Please log in to access your dashboard.</div>
+        </div>
+      </div>
+    );
+  }
 
   const userStats = [
     {
@@ -109,7 +144,7 @@ export default function UserDashboard() {
                 Welcome back, {session?.user?.name || "User"}! 👋
               </Title>
               <Text type="secondary">
-                Here's your learning progress and upcoming activities
+                Here&apos;s your learning progress and upcoming activities
               </Text>
             </Col>
           </Row>
@@ -182,7 +217,7 @@ export default function UserDashboard() {
             >
               <Space>
                 <BookOutlined style={{ color: "#1890ff" }} />
-                <Text>Completed lesson: "Introduction to React"</Text>
+                <Text>Completed lesson: &quot;Introduction to React&quot;</Text>
                 <Text type="secondary">2 hours ago</Text>
               </Space>
             </div>
@@ -191,7 +226,7 @@ export default function UserDashboard() {
             >
               <Space>
                 <CalendarOutlined style={{ color: "#52c41a" }} />
-                <Text>Registered for "Web Development Workshop"</Text>
+                <Text>Registered for &quot;Web Development Workshop&quot;</Text>
                 <Text type="secondary">1 day ago</Text>
               </Space>
             </div>
@@ -200,7 +235,7 @@ export default function UserDashboard() {
             >
               <Space>
                 <TrophyOutlined style={{ color: "#faad14" }} />
-                <Text>Earned certificate: "JavaScript Fundamentals"</Text>
+                <Text>Earned certificate: &quot;JavaScript Fundamentals&quot;</Text>
                 <Text type="secondary">3 days ago</Text>
               </Space>
             </div>
@@ -208,9 +243,39 @@ export default function UserDashboard() {
         </Card>
       </Col>
 
-      {/* Course Dashboard */}
+      {/* Additional Content */}
       <Col span={24} style={{ marginTop: 24 }}>
-        <CourseDashboard />
+        <Card title="Learning Resources" style={{ backgroundColor: 'white' }}>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8}>
+              <Card hoverable style={{ textAlign: 'center' }}>
+                <Space direction="vertical">
+                  <BookOutlined style={{ fontSize: 32, color: '#1890ff' }} />
+                  <Text strong>Free Courses</Text>
+                  <Text type="secondary">Access our collection of free courses</Text>
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Card hoverable style={{ textAlign: 'center' }}>
+                <Space direction="vertical">
+                  <CalendarOutlined style={{ fontSize: 32, color: '#52c41a' }} />
+                  <Text strong>Events</Text>
+                  <Text type="secondary">Join our upcoming events and workshops</Text>
+                </Space>
+              </Card>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Card hoverable style={{ textAlign: 'center' }}>
+                <Space direction="vertical">
+                  <MessageOutlined style={{ fontSize: 32, color: '#faad14' }} />
+                  <Text strong>Community</Text>
+                  <Text type="secondary">Connect with other learners</Text>
+                </Space>
+              </Card>
+            </Col>
+          </Row>
+        </Card>
       </Col>
 
       <Authenticated key="user-dashboard">

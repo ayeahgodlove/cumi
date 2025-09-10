@@ -75,7 +75,7 @@ export default function TeamEdit() {
                   { type: "email", message: "Please enter a valid email" }
                 ]}
               >
-                <Input placeholder="team@cumitech.com" />
+                <Input placeholder="team@cumi.dev" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>

@@ -14,14 +14,26 @@ const professionalMapper = new ProfessionalMapper();
 
 export async function GET(request: any) {
   try {
-    const professionals = await professionalUseCase.getVerifiedProfessionals();
-    const professionalsMapped = professionalMapper.toDTOs(professionals as any);
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json(
+        {
+          data: [],
+          message: "Unauthorized",
+          validationErrors: [],
+          success: false,
+        },
+        { status: 401 }
+      );
+    }
+
+    const professionals = await professionalUseCase.getAll();
     
-    return NextResponse.json(professionalsMapped);
+    return NextResponse.json(professionals);
   } catch (error: any) {
     return NextResponse.json(
       {
-        data: null,
+        data: [],
         message: error.message,
         validationErrors: [error],
         success: false,
@@ -64,11 +76,10 @@ export async function POST(request: NextRequest) {
 
     const professionalData = professionalRequestDto.toData();
     const professional = await professionalUseCase.create(professionalData);
-    const professionalDTO = professionalMapper.toDTO(professional as any);
 
     return NextResponse.json(
       {
-        data: professionalDTO,
+        data: professional,
         message: "Professional profile created successfully",
         validationErrors: [],
         success: true,

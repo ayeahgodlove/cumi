@@ -16,15 +16,15 @@ import slugify from "slugify";
 const { Content } = Layout;
 
 interface ProjectDetailPageComponentProps {
-  id: string;
+  slug: string;
 }
 
-export default function ProjectDetailPageComponent({ id }: ProjectDetailPageComponentProps) {
+export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageComponentProps) {
   const {
     data: project,
     isLoading,
     isFetching,
-  } = projectAPI.useGetSingleProjectQuery(id);
+  } = projectAPI.useGetSingleProjectBySlugQuery(slug);
 
   const { data: user } = userAPI.useGetSingleUserQuery(
     project ? project?.userId : ""

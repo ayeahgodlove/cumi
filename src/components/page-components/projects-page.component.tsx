@@ -30,11 +30,15 @@ import {
   FilterOutlined,
   MailOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "@contexts/translation.context";
+import { AppCTA } from "@components/CTA.component";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
 
 export default function ProjectsPageComponent() {
+  const { t } = useTranslation();
+  
   const {
     data: projects,
     isLoading: isLoadingEvent,
@@ -58,13 +62,13 @@ export default function ProjectsPageComponent() {
 
   const stats = [
     {
-      title: "Projects Completed",
+      title: t('about.projects_completed'),
       value: projects?.length || 0,
       icon: <TrophyOutlined />,
     },
-    { title: "Technologies Used", value: "15+", icon: <CodeOutlined /> },
-    { title: "Happy Clients", value: "50+", icon: <RocketOutlined /> },
-    { title: "Years Experience", value: "5+", icon: <GlobalOutlined /> },
+    { title: t('projects.technologies_master'), value: "15+", icon: <CodeOutlined /> },
+    { title: t('about.happy_clients'), value: "50+", icon: <RocketOutlined /> },
+    { title: t('about.years_experience'), value: "5+", icon: <GlobalOutlined /> },
   ];
 
   const technologies = [
@@ -90,8 +94,8 @@ export default function ProjectsPageComponent() {
       </div>
 
       <BannerComponent
-        breadcrumbs={[{ label: "Projects", uri: "projects" }]}
-        pageTitle="Our Projects"
+        breadcrumbs={[{ label: t('nav.projects'), uri: "projects" }]}
+        pageTitle={t('nav.projects')}
       />
 
       {/* Hero Section */}
@@ -110,12 +114,10 @@ export default function ProjectsPageComponent() {
                 transition={{ duration: 0.6 }}
               >
                 <Title level={1} className="mb-4">
-                  Innovative Projects That Drive Success
+                  {t('projects.innovative_projects')}
                 </Title>
                 <Paragraph className="fs-5 text-muted mb-4">
-                  Explore our portfolio of cutting-edge digital solutions that
-                  have transformed businesses and delivered exceptional results
-                  across various industries.
+                  {t('projects.innovative_description')}
                 </Paragraph>
                 <Space size="large">
                   <Button
@@ -124,10 +126,10 @@ export default function ProjectsPageComponent() {
                     icon={<ArrowRightOutlined />}
                     href="/contact_us"
                   >
-                    Start Your Project
+                    {t('projects.start_project')}
                   </Button>
                   <Button size="large" href="/our_services">
-                    View Services
+                    {t('projects.view_services')}
                   </Button>
                 </Space>
               </motion.div>
@@ -192,11 +194,10 @@ export default function ProjectsPageComponent() {
           <Row justify="center" className="mb-4">
             <Col xs={24} lg={16} className="text-center">
               <Title level={2} className="mb-3">
-                Technologies We Master
+                {t('projects.technologies_master')}
               </Title>
               <Paragraph className="fs-5 text-muted">
-                We work with cutting-edge technologies to build robust,
-                scalable, and high-performance applications.
+                {t('projects.tech_description')}
               </Paragraph>
             </Col>
           </Row>
@@ -232,11 +233,10 @@ export default function ProjectsPageComponent() {
         <Row justify="center" className="mb-5">
           <Col xs={24} lg={16} className="text-center">
             <Title level={2} className="mb-3">
-              <span className={styles.glow}>Featured Projects</span>
+              <span className={styles.glow}>{t('projects.featured_projects')}</span>
             </Title>
             <Paragraph className="fs-5 text-muted">
-              Each project represents our commitment to excellence, innovation,
-              and delivering solutions that exceed expectations.
+              {t('projects.featured_description')}
             </Paragraph>
           </Col>
         </Row>
@@ -264,7 +264,7 @@ export default function ProjectsPageComponent() {
             <Col span={24}>
               <Card className="text-center border-0 shadow-sm">
                 <Empty
-                  description="No projects available at the moment"
+                  description={t('projects.no_projects')}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               </Card>
@@ -273,38 +273,7 @@ export default function ProjectsPageComponent() {
         )}
       </Content>
 
-      {/* CTA Section */}
-      <Card className="cumi-card">
-        <div className="text-center p-4">
-          <Title level={3} className="mb-3">
-            Ready to Get Started?
-          </Title>
-          <Paragraph className="fs-6 mb-4">
-            Let&apos;s discuss your project and bring your vision to life with
-            our professional services.
-          </Paragraph>
-          <Space size="large">
-            <Button
-              type="primary"
-              size="large"
-              className="cumi-button-primary"
-              icon={<ArrowRightOutlined />}
-              href="https://wa.me/237681289411"
-              target="_blank"
-            >
-              Start Your Project
-            </Button>
-            <Button
-              size="large"
-              className="cumi-gradient-border text-black"
-              icon={<MailOutlined />}
-              href="mailto:info@cumitech.com"
-            >
-              Get Quote
-            </Button>
-          </Space>
-        </div>
-      </Card>
+      <AppCTA />
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

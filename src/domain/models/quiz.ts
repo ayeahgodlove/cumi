@@ -15,6 +15,7 @@ export interface IQuiz {
   slug: string;
   correctAnswerIndex: number;
   lessonId: string;
+  userId: string;
 }
 
 export const emptyQuiz: IQuiz = {
@@ -23,7 +24,8 @@ export const emptyQuiz: IQuiz = {
   answers: [""],
   correctAnswerIndex: 0,
   lessonId: "",
-  slug: ""
+  slug: "",
+  userId: ""
 };
 
 export interface IQuizState extends IBaseState {

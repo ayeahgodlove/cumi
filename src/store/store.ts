@@ -9,6 +9,8 @@ import { projectAPI } from "./api/project_api";
 import { bannerAPI } from "./api/banner_api";
 import { serviceAPI } from "./api/service_api";
 import { opportunityAPI } from "./api/opportunity_api";
+import { statsAPI } from "./api/stats_api";
+import { publicStatsAPI } from "./api/public-stats_api";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +24,8 @@ export const store = configureStore({
     [bannerAPI.reducerPath]: bannerAPI.reducer,
     [serviceAPI.reducerPath]: serviceAPI.reducer,
     [opportunityAPI.reducerPath]: opportunityAPI.reducer,
+    [statsAPI.reducerPath]: statsAPI.reducer,
+    [publicStatsAPI.reducerPath]: publicStatsAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -35,6 +39,8 @@ export const store = configureStore({
       bannerAPI.middleware,
       serviceAPI.middleware,
       opportunityAPI.middleware,
+      statsAPI.middleware,
+      publicStatsAPI.middleware,
     ]),
 });
 

@@ -1,7 +1,7 @@
 // src/presentation/dtos/lesson-request.dto.ts
 
 import { emptyLesson, ILesson } from "@domain/models/lesson";
-import { IsNotEmpty, IsNumber, IsString, IsArray } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, IsArray, IsOptional, IsBoolean, IsEnum } from "class-validator";
 import { nanoid } from "nanoid";
 import slugify from "slugify";
 
@@ -52,6 +52,71 @@ export class LessonRequestDto {
 
   url: string;
 
+  // New fields from database schema
+  @IsOptional()
+  @IsString()
+  authorName?: string;
+
+  @IsOptional()
+  @IsNumber()
+  durationMinutes?: number;
+
+  @IsOptional()
+  @IsNumber()
+  lessonOrder?: number;
+
+  @IsOptional()
+  @IsEnum(['draft', 'published', 'archived'])
+  status?: 'draft' | 'published' | 'archived';
+
+  @IsOptional()
+  @IsEnum(['video', 'text', 'audio', 'practical', 'discussion', 'assignment'])
+  lessonType?: 'video' | 'text' | 'audio' | 'practical' | 'discussion' | 'assignment';
+
+  @IsOptional()
+  @IsString()
+  videoUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  audioUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  downloadMaterials?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isFreePreview?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  requiresCompletion?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedCompletionTime?: number;
+
+  @IsOptional()
+  @IsString()
+  practicalExamples?: string;
+
+  @IsOptional()
+  @IsString()
+  resourcesNeeded?: string;
+
+  @IsOptional()
+  @IsString()
+  language?: string;
+
+  @IsOptional()
+  @IsNumber()
+  rating?: number;
+
+  @IsOptional()
+  @IsArray()
+  reviews?: string[];
+
   constructor(data: ILesson) {
     this.title = data.title;
     this.description = data.description;
@@ -65,6 +130,22 @@ export class LessonRequestDto {
     this.author = data.author;
     this.courseId = data.courseId;
     this.url = data.url;
+    this.authorName = data.authorName;
+    this.durationMinutes = data.durationMinutes;
+    this.lessonOrder = data.lessonOrder;
+    this.status = data.status;
+    this.lessonType = data.lessonType;
+    this.videoUrl = data.videoUrl;
+    this.audioUrl = data.audioUrl;
+    this.downloadMaterials = data.downloadMaterials;
+    this.isFreePreview = data.isFreePreview;
+    this.requiresCompletion = data.requiresCompletion;
+    this.estimatedCompletionTime = data.estimatedCompletionTime;
+    this.practicalExamples = data.practicalExamples;
+    this.resourcesNeeded = data.resourcesNeeded;
+    this.language = data.language;
+    this.rating = data.rating;
+    this.reviews = data.reviews;
   }
 
   toData(): ILesson {
@@ -84,6 +165,23 @@ export class LessonRequestDto {
       courseId: this.courseId,
       url: this.url,
       slug: slugify(this.title, { lower: true, replacement: "-" }),
+      authorName: this.authorName ?? "",
+      durationMinutes: this.durationMinutes,
+      lessonOrder: this.lessonOrder ?? 1,
+      status: this.status ?? 'draft',
+      lessonType: this.lessonType ?? 'text',
+      videoUrl: this.videoUrl,
+      audioUrl: this.audioUrl,
+      downloadMaterials: this.downloadMaterials,
+      isFreePreview: this.isFreePreview ?? false,
+      requiresCompletion: this.requiresCompletion ?? true,
+      estimatedCompletionTime: this.estimatedCompletionTime,
+      practicalExamples: this.practicalExamples,
+      resourcesNeeded: this.resourcesNeeded,
+      language: this.language,
+      rating: this.rating,
+      reviews: this.reviews,
+      // userId will be set by the API route
     };
   }
 
@@ -104,6 +202,24 @@ export class LessonRequestDto {
       url: data.url,
       slug: data.slug,
       imageUrl: data.imageUrl,
+      authorName: data.authorName,
+      durationMinutes: data.durationMinutes,
+      lessonOrder: data.lessonOrder,
+      status: data.status,
+      lessonType: data.lessonType,
+      videoUrl: data.videoUrl,
+      audioUrl: data.audioUrl,
+      downloadMaterials: data.downloadMaterials,
+      isFreePreview: data.isFreePreview,
+      requiresCompletion: data.requiresCompletion,
+      estimatedCompletionTime: data.estimatedCompletionTime,
+      practicalExamples: data.practicalExamples,
+      resourcesNeeded: data.resourcesNeeded,
+      language: data.language,
+      rating: data.rating,
+      reviews: data.reviews,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     };
   }
 }

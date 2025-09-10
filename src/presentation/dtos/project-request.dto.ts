@@ -45,7 +45,8 @@ export class ProjectRequestDto {
       description: this.description,
       githubUrl: this.githubUrl,
       slug:  slugify(this.title, {lower: true, replacement: "-"}),
-      imageUrl: this.imageUrl
+      imageUrl: this.imageUrl,
+      // userId will be set by the API route
     };
   }
 
@@ -58,7 +59,9 @@ export class ProjectRequestDto {
       githubUrl: data.githubUrl,
       deployUrl: data.deployUrl,
       userId: data.userId,
-      slug: data.slug
+      slug: data.slug,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt
     }
   }
 }

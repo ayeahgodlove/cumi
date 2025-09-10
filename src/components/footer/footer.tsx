@@ -6,12 +6,14 @@ import styles from "./footer.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import { THEME } from "@constants/constant";
+import { useTranslation } from "@contexts/translation.context";
 
 type Props = {
   logoPath: string;
 };
 export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
   const [email, setEmail] = useState("");
+  const { t } = useTranslation();
 
   return (
     <footer className={`section ${styles.section}`}>
@@ -32,28 +34,39 @@ export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
                 transition: 'transform 0.2s ease'
               }}
             />
-            <p className={styles.subheading}>Empowering Your Digital Journey</p>
+            <p className={styles.subheading}>{t('footer.tagline')}</p>
           </div>
           <div className={styles.content_group}>
-            <h4>Discover</h4>
-            <Link href="/our_services">Services</Link>
-            <Link href="/about_us">About</Link>
+            <h4>{t('footer.discover')}</h4>
+            <Link href="/our_services">{t('nav.services')}</Link>
+            <Link href="/about_us">{t('nav.about_us')}</Link>
+            <Link href="/projects">Projects</Link>
+            <Link href="/authors">Authors</Link>
           </div>
           <div className={styles.content_group}>
-            <h4>Info</h4>
-            <Link href="/blog_posts">Blog Posts</Link>
-            <Link href="/contact_us">Contact us</Link>
+            <h4>{t('footer.info')}</h4>
+            <Link href="/blog_posts">{t('nav.blog_posts')}</Link>
+            <Link href="/contact_us">{t('nav.contact_us')}</Link>
             <Link href="/faqs">FAQs</Link>
+            <Link href="/events">Events</Link>
+            <Link href="/courses">Courses</Link>
+            <Link href="/opportunities">Opportunities</Link>
+          </div>
+          <div className={styles.content_group}>
+            <h4>Account</h4>
+            <Link href="/login">Login</Link>
+            <Link href="/register">Register</Link>
+            <Link href="/dashboard">Dashboard</Link>
           </div>
           <div className={styles.content_group_waitlist}>
-            <h4>Join Our Mailing List</h4>
+            <h4>{t('footer.join_mailing')}</h4>
             <p className={styles.subheading}>
-              Get notified and updated with our marketing emails.
+              {t('footer.mailing_description')}
             </p>
             <form>
               <ConfigProvider theme={THEME}>
                 <Input
-                  placeholder="Your Email"
+                  placeholder={t('footer.email_placeholder')}
                   size="large"
                   addonAfter={
                     <Button

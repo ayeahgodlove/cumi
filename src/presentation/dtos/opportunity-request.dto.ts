@@ -21,7 +21,7 @@ export class OpportunityRequestDto {
 
   @IsNotEmpty()
   @IsString()
-  opp_type: string;
+  opp_type: 'job' | 'scholarship' | 'internship' | 'fellowship' | 'grant' | 'other';
 
   @IsNotEmpty()
   @IsString()
@@ -98,6 +98,8 @@ export class OpportunityRequestDto {
       contactEmail: data.contactEmail,
       applicationLink: data.applicationLink,
       isActive: data.isActive,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     };
   }
 }

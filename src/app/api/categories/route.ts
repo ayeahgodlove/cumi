@@ -10,20 +10,35 @@ import { NextRequest, NextResponse } from "next/server";
 const categoryRepository = new CategoryRepository();
 const categoryUseCase = new CategoryUseCase(categoryRepository);
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
-    const categories = await categoryUseCase.getAll()
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        {
+          message: "Unauthorized: Please log in to access this resource.",
+          success: false,
+          data: null,
+          validationErrors: [],
+        },
+        { status: 401 }
+      );
+    }
+
+    const categories = await categoryUseCase.getAll();
 
     return NextResponse.json(categories);
   } catch (error: any) {
+    console.error('Error fetching categories:', error);
     return NextResponse.json(
       {
         data: null,
-        message: error.message,
-        validationErrors: [error],
+        message: error.message || "Failed to fetch categories",
+        validationErrors: [],
         success: false,
       },
-      { status: 400 }
+      { status: 500 }
     );
   }
 }

@@ -5,7 +5,7 @@ import { GrBlog, GrDashboard, GrServices } from "react-icons/gr";
 import { FaCircleQuestion, FaFireExtinguisher } from "react-icons/fa6";
 import { TbCategoryPlus } from "react-icons/tb";
 
-import { FiBook, FiGlobe, FiPaperclip, FiTag } from "react-icons/fi";
+import { FiBook, FiGlobe, FiPaperclip, FiTag, FiMail, FiUsers, FiEdit3, FiUser } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { IoSchoolOutline } from "react-icons/io5";
 import { AiOutlineFundProjectionScreen } from "react-icons/ai";
@@ -21,7 +21,7 @@ export const useMenu = () => {
       icon: <GrDashboard />,
       meta: {
         canAccess: ["admin"],
-        label: "Dashoard",
+        label: "Dashboard",
       },
     },
     {
@@ -31,7 +31,7 @@ export const useMenu = () => {
       edit: "/dashboard/blog-posts/edit/:id",
       show: "/dashboard/blog-posts/show/:id",
       meta: {
-        canAccess: ["admin"],
+        canAccess: ["admin", "creator"],
         label: "Posts",
       },
       icon: <GrBlog />,
@@ -106,7 +106,7 @@ export const useMenu = () => {
       edit: "/dashboard/events/edit/:id",
       show: "/dashboard/events/show/:id",
       meta: {
-        canAccess: ["admin"],
+        canAccess: ["admin", "creator"],
         label: "Events",
       },
       icon: <SlEvent />,
@@ -160,12 +160,46 @@ export const useMenu = () => {
       icon: <FiGlobe />,
     },
     {
-      name: "LMS",
+      name: "lms",
+      list: "/dashboard/lms",
       meta: {
-        canAccess: ["admin"],
+        canAccess: ["admin", "creator"],
         label: "LMS",
       },
+      icon: <IoSchoolOutline />,
     },
+    // Student Dashboard
+    {
+      name: "student",
+      list: "/dashboard/student",
+      meta: {
+        canAccess: ["student"],
+        label: "Student Dashboard",
+      },
+      icon: <FiUser />,
+    },
+    {
+      name: "student-courses",
+      list: "/dashboard/student/courses",
+      parentName: "student",
+      meta: {
+        canAccess: ["student"],
+        label: "Browse Courses",
+        parent: "student",
+      },
+      icon: <FiBook />,
+    },
+    // Content Creator Dashboard
+    {
+      name: "creator",
+      list: "/dashboard/creator",
+      meta: {
+        canAccess: ["creator", "admin"],
+        label: "Creator Dashboard",
+      },
+      icon: <FiEdit3 />,
+    },
+    // {
     {
       name: "courses",
       list: "/dashboard/courses",
@@ -174,7 +208,7 @@ export const useMenu = () => {
       show: "/dashboard/courses/show/:id",
       parentName: "lms",
       meta: {
-        canAccess: ["admin"],
+        canAccess: ["admin", "creator"],
         label: "Courses",
         parent: "lms",
       },
@@ -188,7 +222,7 @@ export const useMenu = () => {
       show: "/dashboard/lessons/show/:id",
       parentName: "lms",
       meta: {
-        canAccess: ["admin"],
+        canAccess: ["admin", "creator"],
         label: "Lessons",
         parent: "lms",
       },
@@ -202,8 +236,8 @@ export const useMenu = () => {
       show: "/dashboard/quizes/show/:id",
       parentName: "lms",
       meta: {
-        canAccess: ["admin"],
-        label: "Quizes",
+        canAccess: ["admin", "creator"],
+        label: "Quizzes",
         parent: "lms",
       },
       icon: <FaCircleQuestion />,
@@ -220,7 +254,7 @@ export const useMenu = () => {
         label: "Enrollments",
         parent: "lms",
       },
-      icon: <FaFireExtinguisher />,
+      icon: <FiUsers />,
     },
     {
       name: "professionals",
@@ -228,41 +262,35 @@ export const useMenu = () => {
       create: "/dashboard/professionals/create",
       edit: "/dashboard/professionals/edit/:id",
       show: "/dashboard/professionals/show/:id",
-      parentName: "lms",
       meta: {
         canAccess: ["admin"],
-        label: "professionals",
-        parent: "lms",
+        label: "Professionals",
       },
-      icon: <FaFireExtinguisher />,
+      icon: <FiUsers />,
     },
     {
-      name: "subscribe",
-      list: "/dashboard/subscribe",
-      create: "/dashboard/subscribe/create",
-      edit: "/dashboard/subscribe/edit/:id",
-      show: "/dashboard/subscribe/show/:id",
-      parentName: "lms",
+      name: "subscribers",
+      list: "/dashboard/subscribers",
+      create: "/dashboard/subscribers/create",
+      edit: "/dashboard/subscribers/edit/:id",
+      show: "/dashboard/subscribers/show/:id",
       meta: {
         canAccess: ["admin"],
-        label: "subscribe",
-        parent: "lms",
+        label: "Subscribers",
       },
-      icon: <FaFireExtinguisher />,
+      icon: <FiMail />,
     },
     {
-      name: "contact-messages",
-      list: "/dashboard/contact-messages",
-      create: "/dashboard/contact-messages/create",
-      edit: "/dashboard/contact-messages/edit/:id",
-      show: "/dashboard/contact-messages/show/:id",
-      parentName: "lms",
+      name: "partners",
+      list: "/dashboard/partners",
+      create: "/dashboard/partners/create",
+      edit: "/dashboard/partners/edit/:id",
+      show: "/dashboard/partners/show/:id",
       meta: {
         canAccess: ["admin"],
-        label: "contact-messages",
-        parent: "lms",
+        label: "Partners",
       },
-      icon: <FaFireExtinguisher />,
+      icon: <FiUsers />,
     },
   ];
 

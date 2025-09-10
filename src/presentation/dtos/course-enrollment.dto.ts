@@ -1,4 +1,4 @@
-import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
+import { ICourseEnrollment, CourseEnrollmentCreationAttributes } from "@domain/models/course-enrollment.model";
 
 export interface CourseEnrollmentDto {
   id: string;
@@ -48,10 +48,14 @@ export class CourseEnrollmentMapper {
     };
   }
 
-  static toModel(dto: CreateCourseEnrollmentDto): Partial<ICourseEnrollment> {
+  static toModel(dto: CreateCourseEnrollmentDto): CourseEnrollmentCreationAttributes {
     return {
       courseId: dto.courseId,
       userId: dto.userId,
+      enrollmentDate: new Date(),
+      status: 'active',
+      progress: 0,
+      certificateIssued: false,
       notes: dto.notes,
     };
   }

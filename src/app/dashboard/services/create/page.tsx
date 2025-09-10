@@ -1,24 +1,43 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
-import { IMedia } from "@domain/models/media.model";
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Image, Input, Select, Space, Typography } from "antd";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input, Upload, message, Select } from "antd";
+import { useUpload, getImageUrlFromEvent, getImageUrlString } from "@hooks/shared/upload.hook";
+import { useEffect } from "react";
 
-export default function CategoryCreate() {
+export default function ServiceCreate() {
   const { formProps, saveButtonProps } = useForm({});
-  const { queryResult: mediaData, selectProps: mediaSelectProps } =
-    useSelect<IMedia>({
-      resource: "media",
-    });
 
-  const media = mediaData.data;
+  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
+    maxSize: 1024 * 1024, // 1MB
+    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+    form: formProps.form,
+    fieldName: 'imageUrl',
+    onSuccess: (response) => {
+      // This will be handled in useEffect to prevent setState in render
+    },
+    onError: (error) => {
+      message.error(error);
+    }
+  });
+
+  // Handle form field updates in useEffect to prevent setState in render
+  useEffect(() => {
+    if (fileList && fileList.length > 0) {
+      const imageUrl = getImageUrlString(fileList);
+      if (imageUrl) {
+        formProps.form?.setFieldsValue({
+          imageUrl: imageUrl
+        });
+      }
+    }
+  }, [fileList, formProps.form]);
   return (
     <>
       <PageBreadCrumbs items={["Services", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical">
+        <Form {...formProps} layout="vertical" form={formProps.form}>
           <Form.Item
             name={"title"}
             label="Title"
@@ -43,55 +62,55 @@ export default function CategoryCreate() {
           </Form.Item>
 
           <Form.Item
-            name={"imageUrl"}
-            label="Image"
-            required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-            ]}
-            style={{ marginBottom: 10 }}
+            name={"items"}
+            label="Service Items"
+            tooltip="Add the specific services or features you offer. Press Enter to add each item."
+            style={{ marginBottom: 15 }}
           >
             <Select
-              {...mediaSelectProps}
-              showSearch
-              options={
-                media
-                  ? media.data.map((d) => {
-                      return {
-                        label: d.title,
-                        value: d.imageUrl,
-                        emoji: (
-                          <Image
-                            src={`${BASE_URL_UPLOADS_MEDIA}/${d.imageUrl}`}
-                            alt={d?.title}
-                            height={50}
-                            width={60}
-                          />
-                        ),
-                        desc: (
-                          <Typography.Title level={5}>
-                            {d.title}
-                          </Typography.Title>
-                        ),
-                      };
-                    })
-                  : []
-              }
-              optionRender={(option) => (
-                <Space>
-                  <span role="img" aria-label={option.data.label}>
-                    {option.data.emoji}
-                  </span>
-                  {option.data.desc}
-                </Space>
-              )}
-              filterOption={(input: any, option: any) =>
-                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              }
-              placeholder="Select image"
+              mode="tags"
               size="large"
+              placeholder="Add service items (e.g., Web Development, Mobile Apps)"
+              style={{ width: '100%' }}
+              tokenSeparators={[',']}
             />
           </Form.Item>
+
+            <Form.Item
+              name={"imageUrl"}
+              label="Image"
+              required={true}
+              rules={[
+                { required: true, message: "This field is a required field" },
+                {
+                  validator: (_, value) => {
+                    // Check if we have a valid URL string
+                    if (typeof value === 'string' && value.trim() !== '') {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Please upload an image'));
+                  }
+                }
+              ]}
+              style={{ marginBottom: 10 }}
+            >
+              <Upload.Dragger
+                name="file"
+                action="/api/uploads"
+                listType="picture"
+                maxCount={1}
+                multiple={false}
+                fileList={Array.isArray(fileList) ? fileList : []}
+                onChange={handleUploadChange}
+                beforeUpload={beforeUpload}
+                onRemove={handleRemove}
+              >
+                <p className="ant-upload-text">Drag & drop a service image here</p>
+                <p className="ant-upload-hint">
+                  Support for single upload. Maximum file size: 1MB
+                </p>
+              </Upload.Dragger>
+            </Form.Item>
         </Form>
       </Create>
     </>

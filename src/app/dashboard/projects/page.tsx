@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { APP_URL } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -37,7 +37,7 @@ export default function CategoryList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${BASE_URL_UPLOADS_MEDIA}/${value}`}
+                src={`${APP_URL}/${value}`}
                 alt={record?.title}
                 height={100}
                 width={100}

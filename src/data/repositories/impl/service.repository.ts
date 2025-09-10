@@ -43,9 +43,6 @@ export class ServiceRepository implements IServiceRepository {
   async findByTitle(title: string): Promise<InstanceType<typeof Service> | null> {
     try {
       const serviceItem = await Service.findOne({ where: { title } });
-      if (!serviceItem) {
-        throw new NotFoundException("Service", title);
-      }
       return serviceItem;
     } catch (error) {
       throw error;
@@ -55,10 +52,6 @@ export class ServiceRepository implements IServiceRepository {
   async findBySlug(slug: string): Promise<InstanceType<typeof Service> | null> {
     try {
       const service = await Service.findOne({ where: { slug } });
-      if (!service) {
-        throw new NotFoundException("Service", slug);
-      }
-
       return service;
     } catch (error) {
       throw error;

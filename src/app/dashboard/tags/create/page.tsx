@@ -12,7 +12,7 @@ export default function TagCreate() {
     <>
       <PageBreadCrumbs items={["Tags", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical">
+        <Form {...formProps} layout="vertical" form={formProps.form}>
           <Form.Item
             label={"Name"}
             name={["name"]}

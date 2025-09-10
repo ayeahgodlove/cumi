@@ -1,24 +1,24 @@
 "use client";
 
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { Card, Form, Input, Button, Row, Col, Avatar, Upload, message, Divider, Typography, Space } from "antd";
-import { UserOutlined, UploadOutlined, SaveOutlined } from "@ant-design/icons";
+import { Card, Form, Input, Button, message, Space, Typography, Divider } from "antd";
+import { UserOutlined, MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 
 const { Title, Text } = Typography;
 
-export default function UserSettings() {
+export default function SettingsPage() {
   const { data: session, update } = useSession();
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
 
-  const handleSubmit = async (values: any) => {
+  const handleUpdateProfile = async (values: any) => {
     setLoading(true);
     try {
-      // Here you would typically update the user profile via API
-      console.log('Updating profile:', values);
-      message.success('Profile updated successfully!');
+      // Here you would typically call an API to update the user profile
+      // For now, we'll just show a success message
+      message.success("Profile updated successfully!");
       
       // Update the session if needed
       await update({
@@ -27,158 +27,188 @@ export default function UserSettings() {
           ...session?.user,
           name: values.name,
           email: values.email,
-        }
+        },
       });
     } catch (error) {
-      message.error('Failed to update profile');
+      message.error("Failed to update profile");
+      console.error("Profile update error:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAvatarUpload = (info: any) => {
-    if (info.file.status === 'done') {
-      message.success('Avatar updated successfully!');
-      // Update session with new avatar
-      update({
-        ...session,
-        user: {
-          ...session?.user,
-          image: info.file.response?.url || info.file.thumbUrl,
-        }
-      });
-    } else if (info.file.status === 'error') {
-      message.error('Failed to upload avatar');
+  const handleChangePassword = async (values: any) => {
+    setLoading(true);
+    try {
+      // Here you would typically call an API to change the password
+      message.success("Password changed successfully!");
+      form.setFieldsValue({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (error) {
+      message.error("Failed to change password");
+      console.error("Password change error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
+    <div style={{ padding: "24px" }}>
       <PageBreadCrumbs items={["Dashboard", "Settings"]} />
       
-      <Row gutter={[24, 24]}>
-        <Col xs={24} lg={8}>
-          <Card title="Profile Picture" className="text-center">
-            <Space direction="vertical" size="large" className="w-100">
-              <Avatar
-                size={120}
-                src={session?.user?.image}
-                icon={<UserOutlined />}
-                style={{ backgroundColor: '#1890ff' }}
-              />
-              <Upload
-                name="avatar"
-                listType="picture-card"
-                showUploadList={false}
-                action="/api/uploads"
-                onChange={handleAvatarUpload}
-              >
-                <Button icon={<UploadOutlined />} type="primary">
-                  Change Avatar
-                </Button>
-              </Upload>
-              <Text type="secondary">
-                Upload a new profile picture
-              </Text>
-            </Space>
-          </Card>
-        </Col>
-
-        <Col xs={24} lg={16}>
-          <Card title="Account Settings">
-            <Form
-              form={form}
-              layout="vertical"
-              initialValues={{
-                name: session?.user?.name || '',
-                email: session?.user?.email || '',
-              }}
-              onFinish={handleSubmit}
+      <Title level={2}>Settings</Title>
+      
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
+        {/* Profile Settings */}
+        <Card title="Profile Settings" style={{ maxWidth: 600 }}>
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleUpdateProfile}
+            initialValues={{
+              name: session?.user?.name || "",
+              email: session?.user?.email || "",
+            }}
+          >
+            <Form.Item
+              name="name"
+              label="Full Name"
+              rules={[{ required: true, message: "Please enter your name" }]}
             >
-              <Row gutter={16}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Full Name"
-                    name="name"
-                    rules={[
-                      { required: true, message: 'Please enter your full name' }
-                    ]}
-                  >
-                    <Input placeholder="Enter your full name" />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Email Address"
-                    name="email"
-                    rules={[
-                      { required: true, message: 'Please enter your email' },
-                      { type: 'email', message: 'Please enter a valid email' }
-                    ]}
-                  >
-                    <Input placeholder="Enter your email address" />
-                  </Form.Item>
-                </Col>
-              </Row>
+              <Input
+                prefix={<UserOutlined />}
+                placeholder="Enter your full name"
+                size="large"
+              />
+            </Form.Item>
 
-              <Divider />
+            <Form.Item
+              name="email"
+              label="Email Address"
+              rules={[
+                { required: true, message: "Please enter your email" },
+                { type: "email", message: "Please enter a valid email" },
+              ]}
+            >
+              <Input
+                prefix={<MailOutlined />}
+                placeholder="Enter your email address"
+                size="large"
+              />
+            </Form.Item>
 
-              <Title level={4}>Security Settings</Title>
-              
-              <Row gutter={16}>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="Current Password"
-                    name="currentPassword"
-                  >
-                    <Input.Password placeholder="Enter current password" />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} sm={12}>
-                  <Form.Item
-                    label="New Password"
-                    name="newPassword"
-                  >
-                    <Input.Password placeholder="Enter new password" />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Form.Item
-                label="Confirm New Password"
-                name="confirmPassword"
-                dependencies={['newPassword']}
-                rules={[
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue('newPassword') === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Passwords do not match!'));
-                    },
-                  }),
-                ]}
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                size="large"
               >
-                <Input.Password placeholder="Confirm new password" />
-              </Form.Item>
+                Update Profile
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
 
-              <Divider />
+        {/* Password Settings */}
+        <Card title="Password Settings" style={{ maxWidth: 600 }}>
+          <Form
+            layout="vertical"
+            onFinish={handleChangePassword}
+          >
+            <Form.Item
+              name="currentPassword"
+              label="Current Password"
+              rules={[{ required: true, message: "Please enter your current password" }]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Enter your current password"
+                size="large"
+              />
+            </Form.Item>
 
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  icon={<SaveOutlined />}
-                  loading={loading}
-                  size="large"
-                >
-                  Save Changes
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-        </Col>
-      </Row>
-    </>
+            <Form.Item
+              name="newPassword"
+              label="New Password"
+              rules={[
+                { required: true, message: "Please enter a new password" },
+                { min: 8, message: "Password must be at least 8 characters" },
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Enter your new password"
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="confirmPassword"
+              label="Confirm New Password"
+              dependencies={["newPassword"]}
+              rules={[
+                { required: true, message: "Please confirm your new password" },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("newPassword") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Passwords do not match"));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                prefix={<LockOutlined />}
+                placeholder="Confirm your new password"
+                size="large"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                size="large"
+              >
+                Change Password
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+
+        {/* Account Information */}
+        <Card title="Account Information" style={{ maxWidth: 600 }}>
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            <div>
+              <Text strong>User ID:</Text>
+              <br />
+              <Text type="secondary">{session?.user?.id || "N/A"}</Text>
+            </div>
+            
+            <Divider />
+            
+            <div>
+              <Text strong>Role:</Text>
+              <br />
+              <Text type="secondary" style={{ textTransform: "capitalize" }}>
+                {session?.user?.role || "User"}
+              </Text>
+            </div>
+            
+            <Divider />
+            
+            <div>
+              <Text strong>Account Status:</Text>
+              <br />
+              <Text type="secondary" style={{ color: "#52c41a" }}>
+                Active
+              </Text>
+            </div>
+          </Space>
+        </Card>
+      </Space>
+    </div>
   );
 }

@@ -72,6 +72,7 @@ const authOptions: AuthOptions = {
     async session({ session, token }) {
       // Add user info from token to session
       if (session.user) {
+        session.user.id = token.id as string ?? "";
         session.user.name = token.name ?? "";
         session.user.email = token.email ?? "";
         session.user.image = token.picture ?? "";

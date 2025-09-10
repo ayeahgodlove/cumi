@@ -12,7 +12,7 @@ export default function QuizEdit() {
     <>
       <PageBreadCrumbs items={["Quizes", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical">
+        <Form {...formProps} layout="vertical" form={formProps.form}>
           <Form.Item
             name="question"
             label="Question"

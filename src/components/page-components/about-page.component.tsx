@@ -35,37 +35,57 @@ import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { motion } from "framer-motion";
 import styles from "@app/about_us/about-page.module.css";
+import { useTranslation } from "@contexts/translation.context";
+import { AppCTA } from "@components/CTA.component";
+import { publicStatsAPI } from "@store/api/public-stats_api";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function AboutPageComponent() {
-  const stats = [
-    { title: "Projects Completed", value: 25, icon: <TrophyOutlined /> },
-    { title: "Happy Clients", value: 15, icon: <HeartOutlined /> },
-    { title: "Years Experience", value: 1, icon: <GlobalOutlined /> },
-    { title: "Team Members", value: 1, icon: <TeamOutlined /> }
+  const { t } = useTranslation();
+  
+  // Fetch real stats data
+  const {
+    data: statsData,
+    isLoading: isLoadingStats,
+  } = publicStatsAPI.useGetPublicStatsQuery();
+
+  // Use real stats data or fallback to hardcoded values
+  const stats = statsData || {
+    totalProjects: 25,
+    totalServices: 8,
+    totalPosts: 12,
+    totalEvents: 5,
+    totalUsers: 1
+  };
+  
+  const statsDisplay = [
+    { title: t('about.projects_completed'), value: stats.totalProjects, icon: <TrophyOutlined /> },
+    { title: t('about.happy_clients'), value: Math.min(stats.totalUsers, 15), icon: <HeartOutlined /> },
+    { title: t('about.years_experience'), value: 1, icon: <GlobalOutlined /> },
+    { title: t('about.team_members'), value: Math.max(1, Math.floor(stats.totalUsers / 10)), icon: <TeamOutlined /> }
   ];
 
   const values = [
     {
       icon: <BulbOutlined />,
-      title: "Innovation",
-      description: "We constantly explore new technologies and methodologies to deliver cutting-edge solutions."
+      title: t('about.innovation'),
+      description: t('about.innovation_desc')
     },
     {
       icon: <HeartOutlined />,
-      title: "Passion",
-      description: "Our team is passionate about creating digital experiences that make a real difference."
+      title: t('about.passion'),
+      description: t('about.passion_desc')
     },
     {
       icon: <ThunderboltOutlined />,
-      title: "Excellence",
-      description: "We strive for excellence in every project, ensuring quality and attention to detail."
+      title: t('about.excellence'),
+      description: t('about.excellence_desc')
     },
     {
       icon: <TeamOutlined />,
-      title: "Collaboration",
-      description: "We believe in the power of teamwork and collaboration to achieve extraordinary results."
+      title: t('about.collaboration'),
+      description: t('about.collaboration_desc')
     }
   ];
 
@@ -107,7 +127,7 @@ export default function AboutPageComponent() {
       skills: ["React", "Laravel", "Node.js", "TypeScript", "PHP", "JavaScript", "UI/UX Design"],
       experience: "5+ years",
       location: "Bamenda, Northwest, Cameroon",
-      email: "ayukgodlove@cumitech.com",
+      email: "ayukgodlove@cumi.dev",
       phone: "+237681289411"
     }
   ];
@@ -140,15 +160,13 @@ export default function AboutPageComponent() {
                 transition={{ duration: 0.6 }}
               >
                 <Title level={1} style={{ color: 'white' }} className="mb-4">
-                  CumiTech - Empowering Startups Through Innovation
+                  {t('about.title')}
                 </Title>
                 <Paragraph 
                   className="fs-5 mb-4"
                   style={{ color: 'rgba(255, 255, 255, 0.9)' }}
                 >
-                  At CumiTech, we&apos;re passionate about empowering startup businesses 
-                  through innovative web solutions. We combine software engineering expertise 
-                  with creative design to deliver scalable websites and applications that drive success.
+                  {t('about.subtitle')}
                 </Paragraph>
                 <Space size="large">
                   <Button 
@@ -162,7 +180,7 @@ export default function AboutPageComponent() {
                     }}
                     href="/contact_us"
                   >
-                    Get In Touch
+                    {t('about.get_in_touch')}
                   </Button>
                   <Button 
                     size="large"
@@ -174,7 +192,7 @@ export default function AboutPageComponent() {
                     }}
                     href="/our_services"
                   >
-                    Our Services
+                    {t('about.our_services')}
                   </Button>
                 </Space>
               </motion.div>
@@ -202,7 +220,7 @@ export default function AboutPageComponent() {
       <section className="py-5">
         <div className="container">
           <Row gutter={[24, 24]} justify="center">
-            {stats.map((stat, index) => (
+            {statsDisplay.map((stat, index) => (
               <Col xs={12} sm={6} key={index}>
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -231,11 +249,9 @@ export default function AboutPageComponent() {
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3">Our Story</Title>
+              <Title level={2} className="mb-3">{t('about.our_story')}</Title>
               <Paragraph className="fs-5 text-muted">
-                Founded in June 2024, CumiTech began with a vision to empower startup businesses 
-                through innovative web solutions. Based in Bamenda, Northwest, Cameroon, we operate 
-                in a hybrid model, combining software engineering expertise with creative design.
+                {t('about.story_description')}
               </Paragraph>
             </Col>
           </Row>
@@ -259,29 +275,27 @@ export default function AboutPageComponent() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <Title level={3} className="mb-4">Our Mission</Title>
+                <Title level={3} className="mb-4">{t('about.our_mission')}</Title>
                 <Paragraph className="fs-6 mb-4">
-                  We are committed to empowering startup businesses through innovative web solutions. 
-                  Our mission is to combine software engineering expertise with creative design to 
-                  deliver scalable websites and applications that drive business success.
+                  {t('about.mission_description')}
                 </Paragraph>
                 <div className="mb-4">
                   <Space direction="vertical" size="middle">
                     <div className="d-flex align-items-center">
                       <CheckCircleOutlined className="text-success me-3" style={{ fontSize: '1.2rem' }} />
-                      <Text strong>Innovation-driven approach</Text>
+                      <Text strong>{t('about.innovation_driven')}</Text>
                     </div>
                     <div className="d-flex align-items-center">
                       <CheckCircleOutlined className="text-success me-3" style={{ fontSize: '1.2rem' }} />
-                      <Text strong>React & Laravel expertise</Text>
+                      <Text strong>{t('about.react_laravel')}</Text>
                     </div>
                     <div className="d-flex align-items-center">
                       <CheckCircleOutlined className="text-success me-3" style={{ fontSize: '1.2rem' }} />
-                      <Text strong>SEO & Digital Marketing</Text>
+                      <Text strong>{t('about.seo_marketing')}</Text>
                     </div>
                     <div className="d-flex align-items-center">
                       <CheckCircleOutlined className="text-success me-3" style={{ fontSize: '1.2rem' }} />
-                      <Text strong>Client relationship management</Text>
+                      <Text strong>{t('about.client_management')}</Text>
                     </div>
                   </Space>
                 </div>
@@ -296,9 +310,9 @@ export default function AboutPageComponent() {
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3">Our Core Values</Title>
+              <Title level={2} className="mb-3">{t('about.core_values')}</Title>
               <Paragraph className="fs-5 text-muted">
-                These values guide everything we do and shape our company culture.
+                {t('about.values_description')}
               </Paragraph>
             </Col>
           </Row>
@@ -336,9 +350,9 @@ export default function AboutPageComponent() {
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3">Our Journey</Title>
+              <Title level={2} className="mb-3">{t('about.our_journey')}</Title>
               <Paragraph className="fs-5 text-muted">
-                A timeline of our growth and achievements over the years.
+                {t('about.journey_description')}
               </Paragraph>
             </Col>
           </Row>
@@ -385,9 +399,9 @@ export default function AboutPageComponent() {
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3">Meet Our Team</Title>
+              <Title level={2} className="mb-3">{t('about.meet_team')}</Title>
               <Paragraph className="fs-5 text-muted">
-                The talented individuals who make Cumi Digital a success.
+                {t('about.team_description')}
               </Paragraph>
             </Col>
           </Row>
@@ -417,7 +431,7 @@ export default function AboutPageComponent() {
                     <Text strong className="mb-3 d-block text-primary">{member.position}</Text>
                     <Paragraph className="text-muted small mb-3">{member.description}</Paragraph>
                     <div className="mb-3">
-                      <Text strong className="small">Skills:</Text>
+                      <Text strong className="small">{t('about.skills')}</Text>
                       <div className="mt-1">
                         {member.skills?.slice(0, 3).map((skill: string, index: number) => (
                           <Tag key={index} color="blue" className="me-1 mb-1">
@@ -430,8 +444,8 @@ export default function AboutPageComponent() {
                       </div>
                     </div>
                     <div className="small text-muted">
-                      <div><strong>Experience:</strong> {member.experience}</div>
-                      <div><strong>Location:</strong> {member.location}</div>
+                      <div><strong>{t('about.experience')}</strong> {member.experience}</div>
+                      <div><strong>{t('about.location')}</strong> {member.location}</div>
                     </div>
                   </Card>
                 </motion.div>
@@ -442,61 +456,7 @@ export default function AboutPageComponent() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-5">
-        <div className="container">
-          <Card 
-            className="text-center border-0 shadow-lg"
-            style={{
-              background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
-              color: 'white'
-            }}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Title level={2} style={{ color: 'white' }} className="mb-3">
-                Ready to Work With Us?
-              </Title>
-              <Paragraph 
-                className="fs-5 mb-4"
-                style={{ color: 'rgba(255, 255, 255, 0.8)' }}
-              >
-                Let&apos;s discuss your project and create something amazing together.
-              </Paragraph>
-              <Space size="large">
-                <Button 
-                  type="primary" 
-                  size="large"
-                  style={{
-                    backgroundColor: 'white',
-                    color: '#1890ff',
-                    borderColor: 'white',
-                    fontWeight: 'bold'
-                  }}
-                  href="https://wa.me/237681289411"
-                  target="_blank"
-                >
-                  Start Your Project
-                </Button>
-                <Button 
-                  size="large"
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: 'white',
-                    borderColor: 'white',
-                    fontWeight: 'bold'
-                  }}
-                  href="/contact_us"
-                >
-                  Contact Us
-                </Button>
-              </Space>
-            </motion.div>
-          </Card>
-        </div>
-      </section>
+      <AppCTA />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

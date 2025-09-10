@@ -117,9 +117,34 @@ export const App = (props: any) => {
     },
   };
 
-  const filteredMenus = menus.filter((menu) =>
-    menu.meta?.canAccess?.includes(data ? data!.user.role : '')
-  );
+  const filteredMenus = menus.filter((menu) => {
+    // Ensure menu has all required properties
+    if (!menu || !menu.name || !menu.meta) {
+      return false;
+    }
+    
+    // Check access permissions
+    if (!menu.meta.canAccess?.includes(data ? data!.user.role : '')) {
+      return false;
+    }
+    
+    // Only include resources that have CRUD operations
+    if (!menu.list) {
+      return false;
+    }
+    
+    // Ensure the resource has a valid name
+    if (!menu.name || menu.name.trim() === '') {
+      return false;
+    }
+    
+    // Exclude hidden menu items
+    if ((menu.meta as any).hidden === true) {
+      return false;
+    }
+    
+    return true;
+  });
 
   return (
     <>

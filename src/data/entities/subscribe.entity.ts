@@ -1,4 +1,4 @@
-import { ISubscribe } from "./subscribe.model";
+import { ISubscriber } from "@domain/models/subscriber.model";
 
 export class SubscribeEntity {
   constructor(
@@ -11,7 +11,7 @@ export class SubscribeEntity {
     public updatedAt: Date = new Date()
   ) {}
 
-  static fromModel(model: ISubscribe): SubscribeEntity {
+  static fromModel(model: ISubscriber): SubscribeEntity {
     return new SubscribeEntity(
       model.id,
       model.email,
@@ -23,7 +23,7 @@ export class SubscribeEntity {
     );
   }
 
-  toModel(): ISubscribe {
+  toModel(): ISubscriber {
     return {
       id: this.id,
       email: this.email,

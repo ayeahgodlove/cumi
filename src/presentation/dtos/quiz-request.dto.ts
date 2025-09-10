@@ -38,6 +38,7 @@ export class QuizRequestDto {
       correctAnswerIndex: this.correctAnswerIndex,
       lessonId: this.lessonId,
       slug: slugify(this.question, { lower: true, replacement: "-" }),
+      // userId will be set by the API route
     };
   }
 

@@ -11,7 +11,7 @@ export default function CategoryEdit() {
     <>
       <PageBreadCrumbs items={["Categories", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical">
+        <Form {...formProps} layout="vertical" form={formProps.form}>
           <Form.Item
             label={"Name"}
             name={["name"]}

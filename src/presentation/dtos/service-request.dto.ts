@@ -36,6 +36,7 @@ export class ServiceRequestDto {
       slug: slugify(this.title, { lower: true, replacement: "-" }),
       items: this.items,
       imageUrl: this.imageUrl,
+      // userId will be set by the API route
     };
   }
 

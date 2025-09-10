@@ -6,22 +6,15 @@ import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
 import {
   Layout as AntdLayout,
-  Avatar,
   Space,
   Switch,
-  Typography,
   theme,
 } from "antd";
 import React, { useContext } from "react";
+import LanguageSwitcher from "../shared/language-switcher";
+import UserProfileDropdown from "../shared/user-profile-dropdown";
 
-const { Text } = Typography;
 const { useToken } = theme;
-
-// type IUser = {
-//   id: string;
-//   username: string;
-//   avatar: string;
-// };
 
 export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   sticky,
@@ -33,7 +26,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const headerStyles: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
     display: "flex",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     alignItems: "center",
     padding: "0px 24px",
     height: "64px",
@@ -47,19 +40,19 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
 
   return (
     <AntdLayout.Header style={headerStyles}>
-      <Space>
+      {/* Left side - could add logo or title here */}
+      <div></div>
+      
+      {/* Right side - controls */}
+      <Space size="middle">
+        <LanguageSwitcher />
         <Switch
           checkedChildren="🌛"
           unCheckedChildren="🔆"
           onChange={() => setMode(mode === "light" ? "dark" : "light")}
           defaultChecked={mode === "dark"}
         />
-        {/* {(user?.username || user?.avatar) && (
-          <Space style={{ marginLeft: "8px" }} size="middle">
-            {user?.username && <Text strong>{user.username}</Text>}
-            {user?.avatar && <Avatar src={user?.avatar} alt={user?.username} />}
-          </Space>
-        )} */}
+        <UserProfileDropdown />
       </Space>
     </AntdLayout.Header>
   );

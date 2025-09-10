@@ -1,7 +1,7 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_EVENTS, BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -11,7 +11,7 @@ import {
 } from "@refinedev/antd";
 import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
-import { Image, Space, Table } from "antd";
+import { Image, Space, Table, Tag, Badge } from "antd";
 
 export default function CategoryList() {
   const { tableProps, tableQueryResult } = useTable({
@@ -31,13 +31,88 @@ export default function CategoryList() {
             }
           />
           <Table.Column dataIndex="title" title={"Title"} />
-          {/* <Table.Column dataIndex="description" title={"Description"} /> */}
           <Table.Column
             dataIndex="eventDate"
             title={"Event Date"}
             render={(value) => format.date(value)}
           />
           <Table.Column dataIndex="location" title={"Location"} />
+          
+          {/* New Event Fields */}
+          <Table.Column
+            dataIndex="status"
+            title={"Status"}
+            render={(value) => {
+              const colorMap = {
+                draft: 'orange',
+                published: 'green',
+                cancelled: 'red',
+                completed: 'blue'
+              };
+              return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+            }}
+          />
+          
+          <Table.Column
+            dataIndex="category"
+            title={"Category"}
+            render={(value) => value ? <Tag>{value}</Tag> : '-'}
+          />
+          
+          <Table.Column
+            dataIndex="entryFee"
+            title={"Entry Fee"}
+            render={(value, record: any) => (
+              <span>
+                {record.isFree ? (
+                  <Tag color="green">Free</Tag>
+                ) : (
+                  `${value || 0} XAF`
+                )}
+              </span>
+            )}
+          />
+          
+          <Table.Column
+            dataIndex="maxAttendees"
+            title={"Max Attendees"}
+            render={(value, record: any) => (
+              <Badge 
+                count={record.currentAttendees || 0} 
+                style={{ backgroundColor: "#1890ff" }}
+                overflowCount={999}
+              />
+            )}
+          />
+          
+          <Table.Column
+            dataIndex="targetAudience"
+            title={"Target Audience"}
+            render={(value) => value ? <Tag>{value}</Tag> : '-'}
+          />
+          
+          <Table.Column
+            dataIndex="language"
+            title={"Language"}
+            render={(value) => <Tag>{value}</Tag>}
+          />
+          
+          <Table.Column
+            dataIndex="region"
+            title={"Region"}
+            render={(value) => value || '-'}
+          />
+          
+          <Table.Column
+            dataIndex="registrationRequired"
+            title={"Registration"}
+            render={(value) => (
+              <Tag color={value ? "blue" : "default"}>
+                {value ? "Required" : "Not Required"}
+              </Tag>
+            )}
+          />
+          
           <Table.Column
             dataIndex="imageUrl"
             title={"Image"}

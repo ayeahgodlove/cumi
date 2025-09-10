@@ -24,53 +24,143 @@
     "courses": "Cours",
     "lessons": "Leçons",
     "quizes": "Quizzes",
-    "enrollments": "Inscriptions"
+    "enrollments": "Inscriptions",
+    "subscribers": "Abonnés",
+    "contact-messages": "Messages de contact",
+    "professionals": "Professionnels",
+    "partners": "Partenaires"
   },
   "buttons": {
-    "delete": "Delete",
-    "logout": "Logout",
-    "save": "Save",
-    "create": "Create",
-    "edit": "Edit",
-    "cancel": "Cancel",
-    "show": "Show",
-    "confirm": "Are you sure?",
-    "notAccessTitle": "You don't have permission to access",
-    "refresh": "Refresh"
+    "delete": "Supprimer",
+    "logout": "Déconnexion",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "edit": "Modifier",
+    "cancel": "Annuler",
+    "show": "Afficher",
+    "confirm": "Êtes-vous sûr ?",
+    "notAccessTitle": "Vous n'avez pas la permission d'accéder",
+    "refresh": "Actualiser",
+    "upload": "Télécharger",
+    "remove": "Supprimer",
+    "view": "Voir",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "submit": "Soumettre",
+    "reset": "Réinitialiser",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "download": "Télécharger",
+    "copy": "Copier",
+    "paste": "Coller",
+    "cut": "Couper",
+    "undo": "Annuler",
+    "redo": "Refaire"
   },
   "actions": {
-    "create": "Create",
-    "edit": "Edit",
-    "list": "List",
-    "show": "Show"
+    "create": "Créer",
+    "edit": "Modifier",
+    "list": "Lister",
+    "show": "Afficher",
+    "delete": "Supprimer",
+    "view": "Voir",
+    "update": "Mettre à jour",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
   },
   "notifications": {
-    "createError": "Transaction Failed!",
-    "createSuccess": "Transaction completed successfully!",
-    "success": "Success",
-    "error": "Error",
-    "deleteSuccess": "Successfully Deleted"
+    "createError": "Transaction échouée !",
+    "createSuccess": "Transaction terminée avec succès !",
+    "success": "Succès",
+    "error": "Erreur",
+    "deleteSuccess": "Supprimé avec succès",
+    "updateSuccess": "Mis à jour avec succès",
+    "uploadSuccess": "Fichier téléchargé avec succès",
+    "uploadError": "Échec du téléchargement du fichier",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet élément ?",
+    "noData": "Aucune donnée disponible",
+    "loading": "Chargement...",
+    "saving": "Enregistrement...",
+    "processing": "Traitement..."
   },
   "pages": {
     "error": {
-      "404": "Sorry, the page you visited does not exist.",
-      "backHome": "Back Home"
+      "404": "Désolé, la page que vous avez visitée n'existe pas.",
+      "backHome": "Retour à l'accueil"
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "welcome": "Bienvenue sur le tableau de bord",
+      "overview": "Aperçu",
+      "statistics": "Statistiques",
+      "recentActivity": "Activité récente",
+      "quickActions": "Actions rapides"
     }
+  },
+  "forms": {
+    "required": "Ce champ est obligatoire",
+    "invalidEmail": "Veuillez saisir une adresse e-mail valide",
+    "invalidUrl": "Veuillez saisir une URL valide",
+    "invalidPhone": "Veuillez saisir un numéro de téléphone valide",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "fileTooLarge": "La taille du fichier dépasse la limite",
+    "invalidFileType": "Type de fichier invalide",
+    "uploading": "Téléchargement...",
+    "uploadComplete": "Téléchargement terminé",
+    "selectFile": "Sélectionner un fichier",
+    "dragDropFile": "Glisser-déposer un fichier ici"
+  },
+  "table": {
+    "noData": "Aucune donnée disponible",
+    "loading": "Chargement...",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "actions": "Actions",
+    "selectAll": "Tout sélectionner",
+    "selected": "Sélectionné",
+    "rowsPerPage": "Lignes par page",
+    "page": "Page",
+    "of": "de",
+    "total": "Total"
   },
   "services": {
     "services": "Services",
     "titles": {
       "list": "Lister les services",
       "create": "Créer un service",
-      "edit": "Modifier le service"
+      "edit": "Modifier le service",
+      "show": "Afficher le service"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "slug": "Slug"
     }
   },
   "posts": {
-    "posts": "Messages",
+    "posts": "Articles",
     "titles": {
-      "list": "Lister les messages",
-      "create": "Créer un message",
-      "edit": "Modifier un message"
+      "list": "Lister les articles",
+      "create": "Créer un article",
+      "edit": "Modifier l'article",
+      "show": "Afficher l'article"
+    },
+    "fields": {
+      "title": "Titre",
+      "content": "Contenu",
+      "excerpt": "Extrait",
+      "imageUrl": "Image en vedette",
+      "slug": "Slug",
+      "category": "Catégorie",
+      "tags": "Tags",
+      "published": "Publié",
+      "author": "Auteur"
     }
   },
   "events": {
@@ -78,7 +168,19 @@
     "titles": {
       "list": "Lister les événements",
       "create": "Créer un événement",
-      "edit": "Modifier un événement"
+      "edit": "Modifier l'événement",
+      "show": "Afficher l'événement"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "location": "Lieu",
+      "price": "Prix",
+      "capacity": "Capacité",
+      "tags": "Tags"
     }
   },
   "projects": {
@@ -86,15 +188,335 @@
     "titles": {
       "list": "Lister les projets",
       "create": "Créer un projet",
-      "edit": "Modifier un projet"
+      "edit": "Modifier le projet",
+      "show": "Afficher le projet"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "technologies": "Technologies",
+      "githubUrl": "URL GitHub",
+      "liveUrl": "URL en direct",
+      "status": "Statut"
     }
   },
-  "utilisateurs": {
-    "utilisateurs": "Utilisateurs",
-    "titres": {
-      "liste": "Liste des utilisateurs",
-      "créer": "Créer un utilisateur",
-      "éditer": "Modifier un utilisateur"
+  "opportunities": {
+    "opportunities": "Opportunités",
+    "titles": {
+      "list": "Lister les opportunités",
+      "create": "Créer une opportunité",
+      "edit": "Modifier l'opportunité",
+      "show": "Afficher l'opportunité"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "type": "Type",
+      "location": "Lieu",
+      "deadline": "Date limite",
+      "requirements": "Exigences",
+      "benefits": "Avantages"
+    }
+  },
+  "courses": {
+    "courses": "Cours",
+    "titles": {
+      "list": "Lister les cours",
+      "create": "Créer un cours",
+      "edit": "Modifier le cours",
+      "show": "Afficher le cours"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "category": "Catégorie",
+      "price": "Prix",
+      "duration": "Durée",
+      "level": "Niveau",
+      "instructor": "Instructeur"
+    }
+  },
+  "lessons": {
+    "lessons": "Leçons",
+    "titles": {
+      "list": "Lister les leçons",
+      "create": "Créer une leçon",
+      "edit": "Modifier la leçon",
+      "show": "Afficher la leçon"
+    },
+    "fields": {
+      "title": "Titre",
+      "content": "Contenu",
+      "videoUrl": "URL vidéo",
+      "duration": "Durée",
+      "order": "Ordre",
+      "course": "Cours"
+    }
+  },
+  "categories": {
+    "categories": "Catégories",
+    "titles": {
+      "list": "Lister les catégories",
+      "create": "Créer une catégorie",
+      "edit": "Modifier la catégorie",
+      "show": "Afficher la catégorie"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "slug": "Slug",
+      "color": "Couleur"
+    }
+  },
+  "tags": {
+    "tags": "Tags",
+    "titles": {
+      "list": "Lister les tags",
+      "create": "Créer un tag",
+      "edit": "Modifier le tag",
+      "show": "Afficher le tag"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "slug": "Slug",
+      "color": "Couleur"
+    }
+  },
+  "banners": {
+    "banners": "Bannières",
+    "titles": {
+      "list": "Lister les bannières",
+      "create": "Créer une bannière",
+      "edit": "Modifier la bannière",
+      "show": "Afficher la bannière"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "link": "Lien",
+      "position": "Position",
+      "active": "Actif"
+    }
+  },
+  "media": {
+    "media": "Médias",
+    "titles": {
+      "list": "Lister les médias",
+      "create": "Créer un média",
+      "edit": "Modifier le média",
+      "show": "Afficher le média"
+    },
+    "fields": {
+      "title": "Titre",
+      "imageUrl": "Image"
+    }
+  },
+  "users": {
+    "users": "Utilisateurs",
+    "titles": {
+      "list": "Lister les utilisateurs",
+      "create": "Créer un utilisateur",
+      "edit": "Modifier l'utilisateur",
+      "show": "Afficher l'utilisateur"
+    },
+    "fields": {
+      "name": "Nom",
+      "email": "E-mail",
+      "role": "Rôle",
+      "avatar": "Avatar",
+      "status": "Statut"
+    }
+  },
+  "subscribers": {
+    "subscribers": "Abonnés",
+    "titles": {
+      "list": "Lister les abonnés",
+      "create": "Créer un abonné",
+      "edit": "Modifier l'abonné",
+      "show": "Afficher l'abonné"
+    },
+    "fields": {
+      "email": "E-mail",
+      "name": "Nom",
+      "status": "Statut",
+      "subscribedAt": "Abonné le"
+    }
+  },
+  "contact-messages": {
+    "contact-messages": "Messages de contact",
+    "titles": {
+      "list": "Lister les messages",
+      "create": "Créer un message",
+      "edit": "Modifier le message",
+      "show": "Afficher le message"
+    },
+    "fields": {
+      "name": "Nom",
+      "email": "E-mail",
+      "subject": "Sujet",
+      "message": "Message",
+      "status": "Statut",
+      "createdAt": "Créé le"
+    }
+  },
+  "lms": {
+    "lms": "LMS"
+  },
+  "professionals": {
+    "professionals": "Professionnels",
+    "titles": {
+      "list": "Lister les professionnels",
+      "create": "Créer un professionnel",
+      "edit": "Modifier le professionnel",
+      "show": "Afficher le professionnel"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "imageUrl": "Image",
+      "location": "Lieu",
+      "contactPhone": "Téléphone de contact",
+      "websiteLink": "Lien du site web"
+    }
+  },
+  "partners": {
+    "partners": "Partenaires",
+    "titles": {
+      "list": "Lister les partenaires",
+      "create": "Créer un partenaire",
+      "edit": "Modifier le partenaire",
+      "show": "Afficher le partenaire"
+    },
+    "fields": {
+      "name": "Nom",
+      "description": "Description",
+      "logo": "Logo",
+      "location": "Lieu",
+      "contactPhone": "Téléphone de contact",
+      "websiteLink": "Lien du site web"
+    }
+  },
+  "quizes": {
+    "quizes": "Quiz",
+    "titles": {
+      "list": "Lister les quiz",
+      "create": "Créer un quiz",
+      "edit": "Modifier le quiz",
+      "show": "Afficher le quiz"
+    },
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "questions": "Questions",
+      "duration": "Durée",
+      "passingScore": "Score de passage",
+      "status": "Statut"
+    }
+  },
+  "enrollments": {
+    "enrollments": "Inscriptions",
+    "titles": {
+      "list": "Lister les inscriptions",
+      "create": "Créer une inscription",
+      "edit": "Modifier l'inscription",
+      "show": "Afficher l'inscription"
+    },
+    "fields": {
+      "userId": "Utilisateur",
+      "courseId": "Cours",
+      "enrollmentDate": "Date d'inscription",
+      "completionDate": "Date de completion",
+      "status": "Statut"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "info": "Information",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "ok": "OK",
+    "close": "Fermer",
+    "open": "Ouvrir",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "view": "Voir",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Actualiser",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "first": "Premier",
+    "last": "Dernier",
+    "page": "Page",
+    "of": "de",
+    "total": "Total",
+    "items": "éléments",
+    "noData": "Aucune donnée disponible",
+    "selectAll": "Tout sélectionner",
+    "selected": "Sélectionné",
+    "rowsPerPage": "Lignes par page",
+    "actions": "Actions",
+    "status": "Statut",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "published": "Publié",
+    "draft": "Brouillon",
+    "archived": "Archivé",
+    "pending": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "completed": "Terminé",
+    "inProgress": "En cours",
+    "notStarted": "Non commencé",
+    "cancelled": "Annulé",
+    "expired": "Expiré",
+    "upcoming": "À venir",
+    "ongoing": "En cours",
+    "finished": "Terminé"
+  },
+  "settings": {
+    "settings": "Paramètres",
+    "titles": {
+      "list": "Paramètres",
+      "create": "Paramètres",
+      "edit": "Paramètres",
+      "show": "Paramètres"
+    }
+  },
+  "lms": {
+    "lms": "LMS",
+    "titles": {
+      "list": "LMS",
+      "create": "LMS",
+      "edit": "LMS",
+      "show": "LMS"
+    }
+  },
+  "dashboard": {
+    "dashboard": "Tableau de bord",
+    "titles": {
+      "list": "Tableau de bord",
+      "create": "Tableau de bord",
+      "edit": "Tableau de bord",
+      "show": "Tableau de bord"
     }
   }
 }

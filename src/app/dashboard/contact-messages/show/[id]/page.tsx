@@ -1,7 +1,8 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { Show, useShow } from "@refinedev/antd";
+import { Show } from "@refinedev/antd";
+import { useShow } from "@refinedev/core";
 import { Typography, Row, Col, Card, Tag, Space, Divider, Button } from "antd";
 import { MailOutlined, PhoneOutlined, CalendarOutlined, UserOutlined, MessageOutlined } from "@ant-design/icons";
 

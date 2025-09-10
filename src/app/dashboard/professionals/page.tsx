@@ -31,20 +31,41 @@ export default function ProfessionalList() {
             }
           />
           <Table.Column
-            dataIndex="avatar"
+            dataIndex="profileImage"
             title={"Avatar"}
             render={(value, record: any) => (
               <Avatar
                 src={value ? `${BASE_URL_UPLOADS_MEDIA}/${value}` : "/img/avatar.png"}
-                alt={record?.name}
+                alt={record?.title}
                 size={40}
               />
             )}
           />
-          <Table.Column dataIndex="name" title={"Name"} />
           <Table.Column dataIndex="title" title={"Title"} />
-          <Table.Column dataIndex="company" title={"Company"} />
+          <Table.Column dataIndex="position" title={"Position"} />
+          <Table.Column dataIndex="email" title={"Email"} />
           <Table.Column dataIndex="location" title={"Location"} />
+          <Table.Column 
+            dataIndex="availability" 
+            title={"Availability"}
+            render={(value: string) => (
+              <Tag color={
+                value === "Available" ? "green" : 
+                value === "Busy" ? "orange" : "red"
+              }>
+                {value}
+              </Tag>
+            )}
+          />
+          <Table.Column 
+            dataIndex="isVerified" 
+            title={"Verified"}
+            render={(value: boolean) => (
+              <Tag color={value ? "blue" : "default"}>
+                {value ? "Verified" : "Unverified"}
+              </Tag>
+            )}
+          />
           <Table.Column 
             dataIndex="isActive" 
             title={"Status"}

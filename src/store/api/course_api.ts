@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ICourse } from "@domain/models/course.model";
+import { ICourse } from "@domain/models/course";
 import { BASE_URL } from "@constants/api-url";
 
 interface ISort {

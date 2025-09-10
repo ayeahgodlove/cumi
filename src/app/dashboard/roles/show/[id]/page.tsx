@@ -1,7 +1,8 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { Show, useShow } from "@refinedev/antd";
+import { Show } from "@refinedev/antd";
+import { useShow } from "@refinedev/core";
 import { Typography, Space, Tag, Card, Row, Col, Divider } from "antd";
 import { SafetyOutlined, InfoCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 

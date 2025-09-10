@@ -73,7 +73,7 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
         }}
         actions={[
           <Tooltip title="View Project Details" key="view">
-            <Link href={`/projects/${project.id}`}>
+            <Link href={`/projects/${project.slug}`}>
               <Button 
                 type="text" 
                 icon={<EyeOutlined />}
@@ -117,7 +117,7 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
       >
         <div className="mb-3">
           <Title level={4} className={`${styles.projectTitle} mb-2`}>
-            <Link href={`/projects/${project.id}`} className={styles.projectTitleLink}>
+            <Link href={`/projects/${project.slug}`} className={styles.projectTitleLink}>
               {project.title}
             </Link>
           </Title>
@@ -134,11 +134,11 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
           <div className="d-flex align-items-center text-muted">
             <CalendarOutlined className="me-2" />
             <Text type="secondary" className="small">
-              {formatDate(project.createdAt)}
+              {formatDate(project.createdAt.toISOString())}
             </Text>
           </div>
           
-          <Link href={`/projects/${project.id}`}>
+            <Link href={`/projects/${project.slug}`}>
             <Button 
               type="primary" 
               size="small"
