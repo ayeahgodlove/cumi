@@ -28,8 +28,12 @@ export class UserUseCase {
     return this.userRepository.findById(id);
   }
 
-  async getUserByUsername(username: string): Promise<InstanceType<typeof User> | null> {
-    return this.userRepository.findByUsername(username);
+  async getUserByEmail(email: string): Promise<InstanceType<typeof User> | null> {
+    return this.userRepository.findByEmail(email);
+  }
+
+  async getUserByResetToken(token: string): Promise<InstanceType<typeof User> | null> {
+    return this.userRepository.findByResetToken(token);
   }
 
   async updateUser(user: IUser): Promise<InstanceType<typeof User>> {

@@ -3,17 +3,43 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { ThemedTitleV2 } from "@refinedev/antd";
-import { Button, Space, Form, Input, Typography, Divider } from "antd";
-import { SiAuth0 } from "react-icons/si";
+import {
+  Button,
+  Form,
+  Input,
+  Typography,
+  Divider,
+  Card,
+  Row,
+  Col,
+  Space,
+} from "antd";
+import {
+  SiAuth0,
+  SiGoogle,
+  SiFacebook,
+  SiTwitter,
+  SiGithub,
+  SiLinkedin,
+  SiMicrosoft,
+  SiApple,
+} from "react-icons/si";
 import Link from "next/link";
-
-import { FaLock } from "react-icons/fa";
-import { authService } from "../../service/auth.service";
+import {
+  FaLock,
+  FaEnvelope,
+  FaEye,
+  FaEyeSlash,
+  FaUser,
+  FaUserPlus,
+} from "react-icons/fa";
 import { useNotification } from "@refinedev/core";
-import { AppNav } from "@components/nav/nav.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
+import { AppNav } from "@components/nav/nav.component";
+import { auth0SocialLogin } from "@utils/auth0-social-login";
+
+const { Title, Text } = Typography;
 
 export default function RegisterPageComponent() {
   const router = useRouter();
@@ -22,167 +48,511 @@ export default function RegisterPageComponent() {
 
   const onFinish = async (values: any) => {
     setLoading(true);
-    const response = await authService.register({
-      email: values.email,
-      username: values.username,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
-    });
 
-    if (response?.success) {
-      router.push("/"); // Redirect after successful login
-      open?.({
-        type: "success",
-        message: "Registration Successful!",
-        key: "notification-key-open",
+    try {
+      const response = await signIn("credentials", {
+        email: values.email,
+        username: values.username,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        action: "register",
+        redirect: false,
       });
-      setLoading(false);
-    } else {
+
+      if (response?.ok) {
+        router.push("/"); // Redirect after successful registration
+        open?.({
+          type: "success",
+          message: "Registration Successful!",
+          description: "Welcome to CUMI! Your account has been created successfully.",
+          key: "registration-success",
+        });
+      } else {
+        open?.({
+          type: "error",
+          message: "Registration Failed!",
+          description: response?.error || "Failed to create account. Please try again.",
+          key: "registration-error",
+        });
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
       open?.({
         type: "error",
         message: "Registration Failed!",
-        key: "notification-key-open",
+        description: "An error occurred during registration. Please try again.",
+        key: "registration-error",
       });
+    } finally {
       setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
     <>
-      <AppNav logoPath="/" />
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
-        <div className="row justify-content-center">
-          <div className="col-md-6 col-lg-4">
-            <div className="card shadow">
-              <div className="card-body p-4">
-                <div className="text-center mb-4">
-                  <ThemedTitleV2
-                    collapsed={false}
-                    text="Register"
-                    icon={<FaLock />}
-                  />
-                  <Typography.Text type="secondary">
-                    Create your account to get started
-                  </Typography.Text>
-                </div>
-
-                <Form
-                  name="register"
-                  onFinish={onFinish}
-                  layout="vertical"
-                  autoComplete="off"
-                >
-                  <Form.Item
-                    label="Username"
-                    name="username"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your username!",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Enter your username" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Email"
-                    name="email"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your email!",
-                      },
-                      {
-                        type: "email",
-                        message: "Please enter a valid email!",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Enter your email" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Password"
-                    name="password"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please input your password!",
-                      },
-                      {
-                        min: 6,
-                        message: "Password must be at least 6 characters!",
-                      },
-                    ]}
-                  >
-                    <Input.Password placeholder="Enter your password" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Confirm Password"
-                    name="confirmPassword"
-                    dependencies={["password"]}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please confirm your password!",
-                      },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          if (!value || getFieldValue("password") === value) {
-                            return Promise.resolve();
-                          }
-                          return Promise.reject(
-                            new Error("Passwords do not match!")
-                          );
-                        },
-                      }),
-                    ]}
-                  >
-                    <Input.Password placeholder="Confirm your password" />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      loading={loading}
-                      block
-                      size="large"
-                    >
-                      Register
-                    </Button>
-                  </Form.Item>
-                </Form>
-
-                <Divider>Or</Divider>
-
-                <Space direction="vertical" style={{ width: "100%" }}>
-                  <Button
-                    icon={<SiAuth0 />}
-                    block
-                    size="large"
-                    onClick={() => signIn("auth0")}
-                  >
-                    Register with Auth0
-                  </Button>
-                </Space>
-
-                <div className="text-center mt-3">
-                  <Typography.Text>
-                    Already have an account?{" "}
-                    <Link href="/login" className="text-primary">
-                      Login here
-                    </Link>
-                  </Typography.Text>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Navigation */}
+      <div className="container-fluid" style={{ width: "100%" }}>
+        <AppNav logoPath="/" />
       </div>
+
+      {/* Modern Register Section */}
+      <div
+        style={{
+          minHeight: "calc(100vh - 200px)",
+          background: "var(--cumi-gradient-primary)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "2rem 1rem",
+        }}
+      >
+        <Row justify="center" style={{ width: "100%", maxWidth: "1200px" }}>
+          <Col xs={24} sm={20} md={16} lg={12} xl={10}>
+            <Card
+              style={{
+                borderRadius: "20px",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+                border: "none",
+                overflow: "hidden",
+              }}
+              bodyStyle={{ padding: "3rem 2rem" }}
+            >
+              {/* Header Section */}
+              <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    borderRadius: "50%",
+                    background: "var(--cumi-gradient-primary)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 1.5rem",
+                    boxShadow: "var(--cumi-shadow-lg)",
+                  }}
+                >
+                  <FaUserPlus style={{ fontSize: "24px", color: "white" }} />
+                </div>
+                <Title
+                  level={2}
+                  style={{ margin: 0, color: "#1a1a1a", fontWeight: "600" }}
+                >
+                  Join CUMI
+                </Title>
+                <Text style={{ color: "#666", fontSize: "16px" }}>
+                  Create your account to access our technology platform
+                </Text>
+              </div>
+
+              {/* Register Form */}
+              <Form
+                name="register"
+                layout="vertical"
+                onFinish={onFinish}
+                size="large"
+                style={{ marginTop: "2rem" }}
+                autoComplete="off"
+              >
+                <Form.Item
+                  label={
+                    <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
+                      Username
+                    </Text>
+                  }
+                  name="username"
+                  rules={[
+                    { required: true, message: "Please enter your username!" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter your username"
+                    disabled={loading}
+                    autoComplete="username"
+                    aria-label="Username"
+                    aria-required="true"
+                    prefix={
+                      <FaUser
+                        style={{
+                          color: "var(--cumi-primary)",
+                          fontSize: "16px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    }
+                    style={{
+                      borderRadius: "12px",
+                      border: "2px solid #f0f0f0",
+                      padding: "12px 16px",
+                      fontSize: "16px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--cumi-primary)";
+                      e.target.style.boxShadow = "var(--cumi-shadow-sm)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#f0f0f0";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
+                      Email Address
+                    </Text>
+                  }
+                  name="email"
+                  rules={[
+                    { required: true, message: "Please enter your email!" },
+                    { type: "email", message: "Enter a valid email!" },
+                  ]}
+                >
+                  <Input
+                    placeholder="Enter your email address"
+                    disabled={loading}
+                    autoComplete="email"
+                    aria-label="Email address"
+                    aria-required="true"
+                    prefix={
+                      <FaEnvelope
+                        style={{
+                          color: "var(--cumi-primary)",
+                          fontSize: "16px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    }
+                    style={{
+                      borderRadius: "12px",
+                      border: "2px solid #f0f0f0",
+                      padding: "12px 16px",
+                      fontSize: "16px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--cumi-primary)";
+                      e.target.style.boxShadow = "var(--cumi-shadow-sm)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#f0f0f0";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
+                      Password
+                    </Text>
+                  }
+                  name="password"
+                  rules={[
+                    { required: true, message: "Please enter your password!" },
+                    {
+                      min: 6,
+                      message: "Password must be at least 6 characters!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="Enter your password"
+                    disabled={loading}
+                    autoComplete="new-password"
+                    aria-label="Password"
+                    aria-required="true"
+                    prefix={
+                      <FaLock
+                        style={{
+                          color: "var(--cumi-primary)",
+                          fontSize: "16px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    }
+                    iconRender={(visible) =>
+                      visible ? (
+                        <FaEye style={{ color: "var(--cumi-primary)" }} />
+                      ) : (
+                        <FaEyeSlash style={{ color: "#999" }} />
+                      )
+                    }
+                    style={{
+                      borderRadius: "12px",
+                      border: "2px solid #f0f0f0",
+                      padding: "12px 16px",
+                      fontSize: "16px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--cumi-primary)";
+                      e.target.style.boxShadow = "var(--cumi-shadow-sm)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#f0f0f0";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label={
+                    <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
+                      Confirm Password
+                    </Text>
+                  }
+                  name="confirmPassword"
+                  dependencies={["password"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your password!",
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(_, value) {
+                        if (!value || getFieldValue("password") === value) {
+                          return Promise.resolve();
+                        }
+                        return Promise.reject(
+                          new Error("Passwords do not match!")
+                        );
+                      },
+                    }),
+                  ]}
+                >
+                  <Input.Password
+                    placeholder="Confirm your password"
+                    disabled={loading}
+                    autoComplete="new-password"
+                    aria-label="Confirm password"
+                    aria-required="true"
+                    prefix={
+                      <FaLock
+                        style={{
+                          color: "var(--cumi-primary)",
+                          fontSize: "16px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    }
+                    iconRender={(visible) =>
+                      visible ? (
+                        <FaEye style={{ color: "var(--cumi-primary)" }} />
+                      ) : (
+                        <FaEyeSlash style={{ color: "#999" }} />
+                      )
+                    }
+                    style={{
+                      borderRadius: "12px",
+                      border: "2px solid #f0f0f0",
+                      padding: "12px 16px",
+                      fontSize: "16px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "var(--cumi-primary)";
+                      e.target.style.boxShadow = "var(--cumi-shadow-sm)";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#f0f0f0";
+                      e.target.style.boxShadow = "none";
+                    }}
+                  />
+                </Form.Item>
+
+                {/* Register Button */}
+                <Form.Item style={{ marginBottom: "1.5rem" }}>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                    disabled={loading}
+                    aria-label="Create your account"
+                    style={{
+                      width: "100%",
+                      height: "50px",
+                      borderRadius: "12px",
+                      background: "var(--cumi-gradient-primary)",
+                      border: "none",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      boxShadow: "var(--cumi-shadow-lg)",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "var(--cumi-shadow-xl)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "var(--cumi-shadow-lg)";
+                    }}
+                  >
+                    {loading ? "Creating Account..." : "Create Account"}
+                  </Button>
+                </Form.Item>
+
+                {/* Divider */}
+                <Divider style={{ margin: "2rem 0" }}>
+                  <Text style={{ color: "#999", fontSize: "14px" }}>OR</Text>
+                </Divider>
+
+                {/* Social Login Buttons */}
+                <div style={{ marginBottom: "2rem" }}>
+                  <Text
+                    strong
+                    style={{
+                      color: "#1a1a1a",
+                      fontSize: "14px",
+                      marginBottom: "1rem",
+                      display: "block",
+                      textAlign: "center",
+                    }}
+                  >
+                    Register with Social Media
+                  </Text>
+
+                  <Space
+                    direction="vertical"
+                    size="middle"
+                    style={{ width: "100%" }}
+                  >
+                    {/* Google */}
+                    <Button
+                      icon={<SiGoogle style={{ fontSize: "20px" }} />}
+                      onClick={auth0SocialLogin.google}
+                      aria-label="Register with Google"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        borderRadius: "12px",
+                        border: "2px solid #f0f0f0",
+                        background: "white",
+                        color: "#4285f4",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        transition: "all 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#4285f4";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(66, 133, 244, 0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#f0f0f0";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      Register with Google
+                    </Button>
+
+                    {/* Facebook */}
+                    <Button
+                      icon={<SiFacebook style={{ fontSize: "20px" }} />}
+                      onClick={auth0SocialLogin.facebook}
+                      aria-label="Register with Facebook"
+                      style={{
+                        width: "100%",
+                        height: "50px",
+                        borderRadius: "12px",
+                        border: "2px solid #f0f0f0",
+                        background: "white",
+                        color: "#1877f2",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        transition: "all 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#1877f2";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow =
+                          "0 8px 20px rgba(24, 119, 242, 0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#f0f0f0";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      Register with Facebook
+                    </Button>
+                  </Space>
+                </div>
+
+                {/* Auth0 Universal Login */}
+                <div style={{ marginBottom: "2rem" }}>
+                  <Text
+                    strong
+                    style={{
+                      color: "#1a1a1a",
+                      fontSize: "14px",
+                      marginBottom: "1rem",
+                      display: "block",
+                      textAlign: "center",
+                    }}
+                  >
+                    Or use Auth0 Universal Login
+                  </Text>
+                  <Button
+                    icon={<SiAuth0 style={{ fontSize: "20px" }} />}
+                    onClick={() => signIn("auth0")}
+                    aria-label="Register with Auth0 Universal Login"
+                    style={{
+                      width: "100%",
+                      height: "50px",
+                      borderRadius: "12px",
+                      border: "2px solid #f0f0f0",
+                      background: "white",
+                      color: "#d8452e",
+                      fontSize: "16px",
+                      fontWeight: "600",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#d8452e";
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 20px rgba(216, 69, 46, 0.2)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "#f0f0f0";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    Auth0 Universal Login
+                  </Button>
+                </div>
+              </Form>
+
+              {/* Login Link */}
+              <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                <Text style={{ color: "#666", fontSize: "16px" }}>
+                  Already have an account?{" "}
+                  <Link
+                    href="/login"
+                    style={{
+                      color: "var(--cumi-primary)",
+                      textDecoration: "none",
+                      fontWeight: "600",
+                      fontSize: "16px",
+                    }}
+                  >
+                    Sign In
+                  </Link>
+                </Text>
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+
+      {/* Footer */}
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

@@ -36,7 +36,7 @@ interface Service {
   slug: string;
   description: string;
   imageUrl: string;
-  items: string[];
+  items?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -99,7 +99,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
 
   if (error || !service) {
     return (
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
         <div className="container py-5">
           <Alert
@@ -122,7 +122,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
 
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
         <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -275,19 +275,25 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                   {/* Service Features */}
                   <Card className="cumi-card mb-4">
                     <Title level={3} className="mb-4">What We Offer</Title>
-                    <Row gutter={[16, 16]}>
-                      {service.items.map((item, index) => (
-                        <Col xs={24} sm={12} key={index}>
-                          <div className="d-flex align-items-center p-3 border rounded">
-                            <CheckCircleOutlined 
-                              style={{ color: 'var(--cumi-green)', fontSize: '20px' }} 
-                              className="me-3" 
-                            />
-                            <Text strong>{item}</Text>
-                          </div>
-                        </Col>
-                      ))}
-                    </Row>
+                    {service.items && Array.isArray(service.items) && service.items.length > 0 ? (
+                      <Row gutter={[16, 16]}>
+                        {service.items.map((item, index) => (
+                          <Col xs={24} sm={12} key={index}>
+                            <div className="d-flex align-items-center p-3 border rounded">
+                              <CheckCircleOutlined 
+                                style={{ color: 'var(--cumi-green)', fontSize: '20px' }} 
+                                className="me-3" 
+                              />
+                              <Text strong>{item}</Text>
+                            </div>
+                          </Col>
+                        ))}
+                      </Row>
+                    ) : (
+                      <div className="text-center p-4">
+                        <Text type="secondary">Service features will be available soon.</Text>
+                      </div>
+                    )}
                   </Card>
 
                   {/* Process Overview */}

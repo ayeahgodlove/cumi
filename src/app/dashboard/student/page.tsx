@@ -1,581 +1,482 @@
 "use client";
 
-import React from "react";
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import React, { useState, useRef } from "react";
 import {
-  Card,
-  Row,
   Col,
-  Typography,
-  Tag,
-  Space,
-  Button,
-  Table,
-  Avatar,
-  Progress,
+  Row,
+  Card,
   Statistic,
-  Tooltip,
-  Empty,
+  Typography,
+  Space,
+  Table,
+  Tag,
+  Button,
   Spin,
+  Tabs,
+  message,
 } from "antd";
 import {
   BookOutlined,
-  UserOutlined,
-  PlayCircleOutlined,
-  TrophyOutlined,
-  ClockCircleOutlined,
+  CalendarOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
   EyeOutlined,
+  UserOutlined,
+  TrophyOutlined,
 } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
-import { Authenticated, useList } from "@refinedev/core";
-import { ICourse } from "@domain/models/course";
-import { IEnrollment } from "@domain/models/enrollment";
-import { ILesson } from "@domain/models/lesson";
-import { IQuiz } from "@domain/models/quiz";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
-import { NavigateToResource } from "@refinedev/nextjs-router";
+import { useTranslation } from "@contexts/translation.context";
+import { statsAPI } from "@store/api/stats_api";
+import { useTable } from "@refinedev/antd";
+import { BaseRecord } from "@refinedev/core";
+import { format } from "@utils/format";
+import CourseCreateModal from "@components/modals/CourseCreateModal";
+import PostCreateModal from "@components/modals/PostCreateModal";
+import EventCreateModal from "@components/modals/EventCreateModal";
+
 const { Title, Text } = Typography;
 
 export default function StudentDashboard() {
-  const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const { t } = useTranslation();
+  
+  // Modal states
+  const [courseModalVisible, setCourseModalVisible] = useState(false);
+  const [postModalVisible, setPostModalVisible] = useState(false);
+  const [eventModalVisible, setEventModalVisible] = useState(false);
+  
+  // Table refs for focus management
+  const coursesTableRef = useRef<any>(null);
+  const postsTableRef = useRef<any>(null);
+  const eventsTableRef = useRef<any>(null);
 
-  // Get current user from session
-  const currentUser = session?.user;
-
-  console.log("Student Dashboard - Current User:", currentUser);
-
-  // Fetch student's enrollments
-  const {
-    data: enrollmentsData,
-    isLoading: isLoadingEnrollments,
-    error: enrollmentsError,
-  } = useList<IEnrollment>({
-    resource: "enrollments",
-    filters: currentUser?.id
-      ? [
-          {
-            field: "userId",
-            operator: "eq",
-            value: currentUser.id,
-          },
-        ]
-      : [],
-    queryOptions: {
-      enabled: !!currentUser?.id,
-      retry: 1,
-      retryDelay: 1000,
-    },
+  // Fetch stats data
+  const statsQuery = statsAPI.useGetDashboardStatsQuery(undefined, {
+    skip: !session?.user,
+    refetchOnMountOrArgChange: true,
   });
 
-  const enrollments = enrollmentsData?.data || [];
-  console.log("Student Dashboard - Enrollments:", enrollments);
+  const stats = statsQuery.data?.overview || {
+    totalUsers: 0,
+    totalPosts: 0,
+    totalEvents: 0,
+    totalCourses: 0,
+    totalProjects: 0,
+    totalOpportunities: 0,
+    totalServices: 0,
+    totalProfessionals: 0,
+    totalBanners: 0,
+    totalContactMessages: 0,
+    totalSubscribers: 0,
+    totalComments: 0,
+    totalPostLikes: 0,
+    totalCommentLikes: 0,
+    totalUserLikes: 0,
+    totalUserComments: 0,
+  };
 
-  // Fetch courses for enrolled courses
-  const courseIds = enrollments.map((e) => e.courseId);
-  const { data: coursesData, isLoading: isLoadingCourses } = useList<ICourse>({
+  // Table configurations
+  const { tableProps: coursesTableProps, tableQueryResult: coursesQueryResult } = useTable({
     resource: "courses",
-    filters:
-      courseIds.length > 0
-        ? [
-            {
-              field: "id",
-              operator: "in",
-              value: courseIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: courseIds.length > 0,
-      retry: 1,
-      retryDelay: 1000,
-    },
+    syncWithLocation: true,
   });
 
-  const courses = coursesData?.data || [];
-
-  // Fetch lessons for enrolled courses
-  const { data: lessonsData } = useList<ILesson>({
-    resource: "lessons",
-    filters:
-      courseIds.length > 0
-        ? [
-            {
-              field: "courseId",
-              operator: "in",
-              value: courseIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: courseIds.length > 0,
-      retry: 1,
-      retryDelay: 1000,
-    },
+  const { tableProps: postsTableProps, tableQueryResult: postsQueryResult } = useTable({
+    resource: "posts",
+    syncWithLocation: true,
   });
 
-  const lessons = lessonsData?.data || [];
-
-  // Fetch quizzes for enrolled courses
-  const lessonIds = lessons.map((l) => l.id);
-  const { data: quizesData } = useList<IQuiz>({
-    resource: "quizes",
-    filters:
-      lessonIds.length > 0
-        ? [
-            {
-              field: "lessonId",
-              operator: "in",
-              value: lessonIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: lessonIds.length > 0,
-      retry: 1,
-      retryDelay: 1000,
-    },
+  const { tableProps: eventsTableProps, tableQueryResult: eventsQueryResult } = useTable({
+    resource: "events",
+    syncWithLocation: true,
   });
 
-  const quizes = quizesData?.data || [];
+  // Handle successful creation
+  const handleCreationSuccess = (type: 'course' | 'post' | 'event') => {
+    message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
+    
+    // Refetch the appropriate table data
+    switch (type) {
+      case 'course':
+        coursesQueryResult.refetch();
+        // Focus on courses table
+        setTimeout(() => {
+          coursesTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'post':
+        postsQueryResult.refetch();
+        // Focus on posts table
+        setTimeout(() => {
+          postsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'event':
+        eventsQueryResult.refetch();
+        // Focus on events table
+        setTimeout(() => {
+          eventsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+    }
+    
+    // Refetch stats
+    statsQuery.refetch();
+  };
 
-  // Show error state if there are API errors
-  if (enrollmentsError) {
-    console.error("Student Dashboard - Enrollments Error:", enrollmentsError);
+  // Show loading while session is loading
+  if (status === "loading") {
     return (
-      <div style={{ padding: "24px" }}>
-        <PageBreadCrumbs items={["Dashboard", "Student"]} />
-        <Card>
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            <div style={{ fontSize: "24px", marginBottom: "16px" }}>⚠️</div>
-            <div>Unable to load your courses. Please try again later.</div>
-            <Button
-              type="primary"
-              style={{ marginTop: "16px" }}
-              onClick={() => window.location.reload()}
-            >
-              Retry
-            </Button>
-          </div>
-        </Card>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  // Memoize expensive calculations
-  const statistics = useMemo(() => {
-    const activeEnrollments = enrollments.filter((e) => {
-      try {
-        const enrollmentDate = new Date(e.enrollmentDate);
-        const completionDate = new Date(e.completionDate);
-        const now = new Date();
-        return now >= enrollmentDate && now < completionDate;
-      } catch {
-        return false;
-      }
-    }).length;
+  // Only render student dashboard for student users
+  if (!session?.user || session.user.role !== "student") {
+    return (
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
-    const completedEnrollments = enrollments.filter((e) => {
-      try {
-        const completionDate = new Date(e.completionDate);
-        const now = new Date();
-        return now >= completionDate;
-      } catch {
-        return false;
-      }
-    }).length;
+  // Student-specific stats
+  const studentStats = [
+    {
+      title: "Courses Enrolled",
+      value: 0, // This would need to be fetched from course progress
+      icon: <BookOutlined />,
+      color: "#1890ff",
+    },
+    {
+      title: "Courses Completed",
+      value: 0, // This would need to be fetched from course progress
+      icon: <TrophyOutlined />,
+      color: "#52c41a",
+    },
+    {
+      title: "My Comments",
+      value: stats.totalUserComments,
+      icon: <UserOutlined />,
+      color: "#722ed1",
+    },
+    {
+      title: "Events Attended",
+      value: 0, // This would need to be fetched from event attendance
+      icon: <CalendarOutlined />,
+      color: "#13c2c2",
+    },
+  ];
 
-    return {
-      activeEnrollments,
-      completedEnrollments,
-      totalLessons: lessons.length,
-      totalQuizzes: quizes.length,
-    };
-  }, [enrollments, lessons.length, quizes.length]);
-
-  // Memoize table columns
-  const enrollmentColumns = useMemo(
-    () => [
-      {
-        title: "Course",
-        dataIndex: "courseId",
-        key: "courseId",
-        render: (courseId: string) => {
-          const course = courses.find((c) => c.id === courseId);
-          return (
-            <Space>
-              <Avatar icon={<BookOutlined />} />
-              <div>
-                <Text strong>{course?.title || "Unknown Course"}</Text>
-                <br />
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {course?.description?.substring(0, 50) || "No description"}...
-                </Text>
-              </div>
-            </Space>
-          );
-        },
+  // Table columns
+  const courseColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (value: any, record: any) => (
+        <span>
+          {record.isFree ? (
+            <Tag color="green">Free</Tag>
+          ) : (
+            `${value || 0} ${record.currency || 'XAF'}`
+          )}
+        </span>
+      ),
+    },
+    {
+      title: "Progress",
+      dataIndex: "progress",
+      key: "progress",
+      render: (value: number) => (
+        <div>
+          <div style={{ marginBottom: 4 }}>{value || 0}%</div>
+          <div style={{ width: '100%', backgroundColor: '#f0f0f0', borderRadius: 4 }}>
+            <div 
+              style={{ 
+                width: `${value || 0}%`, 
+                height: 8, 
+                backgroundColor: '#1890ff', 
+                borderRadius: 4 
+              }} 
+            />
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          enrolled: 'blue',
+          completed: 'green',
+          in_progress: 'orange',
+          not_enrolled: 'gray'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
       },
-      {
-        title: "Enrollment Date",
-        dataIndex: "enrollmentDate",
-        key: "enrollmentDate",
-        render: (date: string) => {
-          try {
-            return new Date(date).toLocaleDateString();
-          } catch {
-            return "Invalid Date";
-          }
-        },
-      },
-      {
-        title: "Completion Date",
-        dataIndex: "completionDate",
-        key: "completionDate",
-        render: (date: string) => {
-          try {
-            return new Date(date).toLocaleDateString();
-          } catch {
-            return "Invalid Date";
-          }
-        },
-      },
-      {
-        title: "Progress",
-        key: "progress",
-        render: (record: IEnrollment) => {
-          try {
-            const enrollmentDate = new Date(record.enrollmentDate);
-            const completionDate = new Date(record.completionDate);
-            const now = new Date();
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button type="primary" size="small">Continue</Button>
+        </Space>
+      ),
+    },
+  ];
 
-            let progress = 0;
-            let status = "Pending";
-            let color = "orange";
-
-            if (now >= completionDate) {
-              progress = 100;
-              status = "Completed";
-              color = "green";
-            } else if (now >= enrollmentDate) {
-              const totalDays =
-                completionDate.getTime() - enrollmentDate.getTime();
-              const elapsedDays = now.getTime() - enrollmentDate.getTime();
-              progress = Math.min((elapsedDays / totalDays) * 100, 95);
-              status = "In Progress";
-              color = "blue";
-            }
-
-            return (
-              <Space direction="vertical" style={{ width: "100%" }}>
-                <Progress
-                  percent={Math.round(progress)}
-                  size="small"
-                  strokeColor={color === "green" ? "#52c41a" : "#1890ff"}
-                />
-                <Tag color={color}>{status}</Tag>
-              </Space>
-            );
-          } catch {
-            return <Tag color="red">Error</Tag>;
-          }
-        },
+  const postColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          archived: 'gray'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
       },
-      {
-        title: "Actions",
-        key: "actions",
-        render: (record: IEnrollment) => (
-          <Space>
-            <Tooltip title="View Course">
-              <Button
-                type="text"
-                icon={<EyeOutlined />}
-                onClick={() =>
-                  router.push(`/dashboard/student/courses/${record.courseId}`)
-                }
-              />
-            </Tooltip>
-            <Tooltip title="Start Learning">
-              <Button
-                type="primary"
-                icon={<PlayCircleOutlined />}
-                onClick={() =>
-                  router.push(
-                    `/dashboard/student/courses/${record.courseId}/learn`
-                  )
-                }
-              />
-            </Tooltip>
-          </Space>
-        ),
-      },
-    ],
-    [courses, router]
-  );
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button icon={<EditOutlined />} size="small" />
+          <Button icon={<DeleteOutlined />} size="small" danger />
+        </Space>
+      ),
+    },
+  ];
 
-  console.log("Student Dashboard - Rendering with:", {
-    enrollments: enrollments.length,
-    courses: courses.length,
-    isLoadingEnrollments,
-  });
+  const eventColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Event Date",
+      dataIndex: "eventDate",
+      key: "eventDate",
+      render: (value: string) => format.date(value),
+    },
+    {
+      title: "Location",
+      dataIndex: "location",
+      key: "location",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          cancelled: 'red',
+          completed: 'blue'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button type="primary" size="small">Register</Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const tabItems = [
+    {
+      key: "courses",
+      label: "My Courses",
+      children: (
+        <div ref={coursesTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Course Progress</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setCourseModalVisible(true)}
+            >
+              Create Course
+            </Button>
+          </div>
+          <Table
+            {...coursesTableProps}
+            columns={courseColumns}
+            rowKey="id"
+            pagination={{
+              ...coursesTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "posts",
+      label: "Learning Posts",
+      children: (
+        <div ref={postsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Educational Content</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setPostModalVisible(true)}
+            >
+              Create Post
+            </Button>
+          </div>
+          <Table
+            {...postsTableProps}
+            columns={postColumns}
+            rowKey="id"
+            pagination={{
+              ...postsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "events",
+      label: "Learning Events",
+      children: (
+        <div ref={eventsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Educational Events</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setEventModalVisible(true)}
+            >
+              Create Event
+            </Button>
+          </div>
+          <Table
+            {...eventsTableProps}
+            columns={eventColumns}
+            rowKey="id"
+            pagination={{
+              ...eventsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div style={{ minHeight: "100vh" }}>
-      <PageBreadCrumbs items={["Dashboard", "Student"]} />
-
-      <div style={{ padding: "24px" }}>
-        {/* Header Section */}
-        <Card style={{ marginBottom: 24, borderRadius: 12 }}>
-          <Row justify="space-between" align="middle">
-            <Col>
-              <Space>
-                <Title level={2} style={{ margin: 0 }}>
-                  <UserOutlined style={{ marginRight: 8, color: "#52c41a" }} />
-                  Student Dashboard
-                  {isLoadingEnrollments && (
-                    <Spin size="small" style={{ marginLeft: 8 }} />
-                  )}
-                </Title>
-              </Space>
-              <div style={{ marginTop: 8 }}>
-                <Text type="secondary">
-                  Welcome back,{" "}
-                  {currentUser?.name || currentUser?.email || "Student"}! Track
-                  your learning progress and access your courses.
-                </Text>
-              </div>
-            </Col>
-            <Col>
-              <Space>
-                <Button
-                  icon={<BookOutlined />}
-                  onClick={() => router.push("/dashboard/student/courses")}
-                >
-                  Browse Courses
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
-
-        <Row gutter={[16, 16]}>
-          {/* Statistics */}
-          <Col xs={24}>
-            <Card
-              title="Learning Statistics"
-              style={{ borderRadius: 12, marginBottom: 16 }}
-            >
-              <Row gutter={[16, 16]}>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Enrolled Courses"
-                    value={enrollments.length}
-                    prefix={<BookOutlined style={{ color: "#1890ff" }} />}
-                    valueStyle={{ color: "#1890ff" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Active Courses"
-                    value={statistics.activeEnrollments}
-                    prefix={<PlayCircleOutlined style={{ color: "#52c41a" }} />}
-                    valueStyle={{ color: "#52c41a" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Completed Courses"
-                    value={statistics.completedEnrollments}
-                    prefix={<TrophyOutlined style={{ color: "#faad14" }} />}
-                    valueStyle={{ color: "#faad14" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Total Lessons"
-                    value={statistics.totalLessons}
-                    prefix={
-                      <ClockCircleOutlined style={{ color: "#722ed1" }} />
-                    }
-                    valueStyle={{ color: "#722ed1" }}
-                  />
-                </Col>
-              </Row>
+    <div style={{ padding: "24px" }}>
+      <Title level={2}>Student Dashboard</Title>
+      
+      {/* Student Statistics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Title level={4}>Learning Progress</Title>
+        </Col>
+        {studentStats.map((stat, index) => (
+          <Col sm={6} md={6} span={24} key={index}>
+            <Card size="small">
+              <Statistic
+                title={stat.title}
+                value={stat.value}
+                prefix={<span style={{ color: stat.color }}>{stat.icon}</span>}
+                valueStyle={{ fontSize: 20 }}
+              />
             </Card>
           </Col>
+        ))}
+      </Row>
 
-          {/* Quick Access */}
-          <Col xs={24} lg={8}>
-            <Card
-              title="Quick Access"
-              style={{ borderRadius: 12, marginBottom: 16 }}
-            >
-              <Space
-                direction="vertical"
-                style={{ width: "100%" }}
-                size="middle"
-              >
-                <Button
-                  type="primary"
-                  icon={<BookOutlined />}
-                  onClick={() => router.push("/dashboard/student/courses")}
-                  block
-                >
-                  Browse All Courses
-                </Button>
-                <Button
-                  icon={<PlayCircleOutlined />}
-                  onClick={() => router.push("/dashboard/student/progress")}
-                  block
-                >
-                  View Progress
-                </Button>
-                <Button
-                  icon={<TrophyOutlined />}
-                  onClick={() => router.push("/dashboard/student/achievements")}
-                  block
-                >
-                  My Achievements
-                </Button>
-              </Space>
-            </Card>
-          </Col>
+      {/* Content Management Tabs */}
+      <Card>
+        <Tabs defaultActiveKey="courses" items={tabItems} />
+      </Card>
 
-          {/* Recent Activity */}
-          <Col xs={24} lg={16}>
-            <Card
-              title="Recent Activity"
-              style={{ borderRadius: 12, marginBottom: 16 }}
-            >
-              <Space
-                direction="vertical"
-                style={{ width: "100%" }}
-                size="middle"
-              >
-                {isLoadingEnrollments ? (
-                  <div style={{ textAlign: "center", padding: "20px" }}>
-                    <Spin />
-                    <div style={{ marginTop: "8px" }}>
-                      Loading enrollments...
-                    </div>
-                  </div>
-                ) : enrollments.length === 0 ? (
-                  <Empty
-                    description="No enrollments yet"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  >
-                    <Button
-                      type="primary"
-                      icon={<BookOutlined />}
-                      onClick={() => router.push("/dashboard/student/courses")}
-                    >
-                      Browse Courses
-                    </Button>
-                  </Empty>
-                ) : (
-                  <div>
-                    <Text strong>Recent Enrollments:</Text>
-                    <div style={{ marginTop: 12 }}>
-                      {enrollments.slice(0, 3).map((enrollment) => {
-                        const course = courses.find(
-                          (c) => c.id === enrollment.courseId
-                        );
-                        return (
-                          <Card
-                            key={enrollment.id}
-                            size="small"
-                            style={{ marginBottom: 8, borderRadius: 8 }}
-                          >
-                            <Row align="middle" justify="space-between">
-                              <Col>
-                                <Text strong>
-                                  {course?.title || "Unknown Course"}
-                                </Text>
-                                <br />
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                  Enrolled:{" "}
-                                  {(() => {
-                                    try {
-                                      return new Date(
-                                        enrollment.enrollmentDate
-                                      ).toLocaleDateString();
-                                    } catch {
-                                      return "Invalid Date";
-                                    }
-                                  })()}
-                                </Text>
-                              </Col>
-                              <Col>
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon={<PlayCircleOutlined />}
-                                  onClick={() =>
-                                    router.push(
-                                      `/dashboard/student/courses/${enrollment.courseId}/learn`
-                                    )
-                                  }
-                                >
-                                  Continue
-                                </Button>
-                              </Col>
-                            </Row>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </Space>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* My Courses */}
-        <Card
-          title={
-            <span>
-              <BookOutlined style={{ marginRight: 8, color: "#1890ff" }} />
-              My Courses ({enrollments.length})
-            </span>
-          }
-          style={{ marginTop: 16, borderRadius: 12 }}
-        >
-          {isLoadingEnrollments ? (
-            <div style={{ textAlign: "center", padding: "40px" }}>
-              <Spin size="large" />
-              <div style={{ marginTop: "16px" }}>Loading your courses...</div>
-            </div>
-          ) : enrollments.length === 0 ? (
-            <Empty
-              description="You haven't enrolled in any courses yet"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            >
-              <Button
-                type="primary"
-                icon={<BookOutlined />}
-                onClick={() => router.push("/dashboard/student/courses")}
-              >
-                Browse Available Courses
-              </Button>
-            </Empty>
-          ) : (
-            <Table
-              columns={enrollmentColumns}
-              dataSource={enrollments}
-              rowKey="id"
-              pagination={{ pageSize: 10 }}
-              size="middle"
-              loading={isLoadingCourses}
-            />
-          )}
-        </Card>
-      </div>
-
-      {/* <Authenticated key="student-dashboard">
-        <NavigateToResource />
-      </Authenticated> */}
+      {/* Modals */}
+      <CourseCreateModal
+        visible={courseModalVisible}
+        onCancel={() => setCourseModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('course')}
+      />
+      
+      <PostCreateModal
+        visible={postModalVisible}
+        onCancel={() => setPostModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('post')}
+      />
+      
+      <EventCreateModal
+        visible={eventModalVisible}
+        onCancel={() => setEventModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('event')}
+      />
     </div>
   );
 }

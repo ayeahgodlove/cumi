@@ -1,286 +1,461 @@
 "use client";
 
-import React from "react";
-import { Authenticated } from "@refinedev/core";
-import { NavigateToResource } from "@refinedev/nextjs-router";
+import React, { useState, useRef } from "react";
 import {
-  Card,
-  Row,
   Col,
+  Row,
+  Card,
   Statistic,
   Typography,
   Space,
+  Table,
+  Tag,
   Button,
-  Avatar,
+  Spin,
+  Tabs,
+  message,
 } from "antd";
 import {
-  UserOutlined,
   BookOutlined,
   CalendarOutlined,
-  TrophyOutlined,
-  MessageOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  EyeOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useTranslation } from "@contexts/translation.context";
+import { statsAPI } from "@store/api/stats_api";
+import { useTable } from "@refinedev/antd";
+import { BaseRecord } from "@refinedev/core";
+import { format } from "@utils/format";
+import CourseCreateModal from "@components/modals/CourseCreateModal";
+import PostCreateModal from "@components/modals/PostCreateModal";
+import EventCreateModal from "@components/modals/EventCreateModal";
 
 const { Title, Text } = Typography;
 
 export default function UserDashboard() {
   const { data: session, status } = useSession();
+  const { t } = useTranslation();
+  
+  // Modal states
+  const [courseModalVisible, setCourseModalVisible] = useState(false);
+  const [postModalVisible, setPostModalVisible] = useState(false);
+  const [eventModalVisible, setEventModalVisible] = useState(false);
+  
+  // Table refs for focus management
+  const coursesTableRef = useRef<any>(null);
+  const postsTableRef = useRef<any>(null);
+  const eventsTableRef = useRef<any>(null);
 
-  // Show loading state while session is loading
+  // Fetch stats data
+  const statsQuery = statsAPI.useGetDashboardStatsQuery(undefined, {
+    skip: !session?.user,
+    refetchOnMountOrArgChange: true,
+  });
+
+  const stats = statsQuery.data?.overview || {
+    totalUsers: 0,
+    totalPosts: 0,
+    totalEvents: 0,
+    totalCourses: 0,
+    totalProjects: 0,
+    totalOpportunities: 0,
+    totalServices: 0,
+    totalProfessionals: 0,
+    totalBanners: 0,
+    totalContactMessages: 0,
+    totalSubscribers: 0,
+    totalComments: 0,
+    totalPostLikes: 0,
+    totalCommentLikes: 0,
+    totalUserLikes: 0,
+    totalUserComments: 0,
+  };
+
+  // Table configurations
+  const { tableProps: coursesTableProps, tableQueryResult: coursesQueryResult } = useTable({
+    resource: "courses",
+    syncWithLocation: true,
+  });
+
+  const { tableProps: postsTableProps, tableQueryResult: postsQueryResult } = useTable({
+    resource: "posts",
+    syncWithLocation: true,
+  });
+
+  const { tableProps: eventsTableProps, tableQueryResult: eventsQueryResult } = useTable({
+    resource: "events",
+    syncWithLocation: true,
+  });
+
+  // Handle successful creation
+  const handleCreationSuccess = (type: 'course' | 'post' | 'event') => {
+    message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
+    
+    // Refetch the appropriate table data
+    switch (type) {
+      case 'course':
+        coursesQueryResult.refetch();
+        // Focus on courses table
+        setTimeout(() => {
+          coursesTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'post':
+        postsQueryResult.refetch();
+        // Focus on posts table
+        setTimeout(() => {
+          postsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'event':
+        eventsQueryResult.refetch();
+        // Focus on events table
+        setTimeout(() => {
+          eventsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+    }
+    
+    // Refetch stats
+    statsQuery.refetch();
+  };
+
+  // Show loading while session is loading
   if (status === "loading") {
     return (
       <div style={{ 
-        minHeight: "65vh", 
         display: "flex", 
         justifyContent: "center", 
-        alignItems: "center",
-        backgroundColor: 'white'
+        alignItems: "center", 
+        height: "100vh" 
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', marginBottom: '16px' }}>🔄</div>
-          <div>Loading your dashboard...</div>
-        </div>
+        <Spin size="large" />
       </div>
     );
   }
 
-  // Show error state if no session
-  if (!session) {
+  // Only render user dashboard for regular users
+  if (!session?.user || session.user.role !== "user") {
     return (
       <div style={{ 
-        minHeight: "65vh", 
         display: "flex", 
         justifyContent: "center", 
-        alignItems: "center",
-        backgroundColor: 'white'
+        alignItems: "center", 
+        height: "100vh" 
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', marginBottom: '16px' }}>⚠️</div>
-          <div>Please log in to access your dashboard.</div>
-        </div>
+        <Spin size="large" />
       </div>
     );
   }
 
+  // User-specific stats
   const userStats = [
     {
-      title: "Enrolled Courses",
-      value: 3,
-      icon: <BookOutlined style={{ fontSize: 24, color: "#1890ff" }} />,
-      color: "#1890ff",
+      title: "My Comments",
+      value: stats.totalUserComments,
+      icon: <UserOutlined />,
+      color: "#722ed1",
     },
     {
-      title: "Completed Lessons",
-      value: 12,
-      icon: <TrophyOutlined style={{ fontSize: 24, color: "#52c41a" }} />,
+      title: "My Likes",
+      value: stats.totalUserLikes,
+      icon: <CalendarOutlined />,
       color: "#52c41a",
     },
     {
-      title: "Upcoming Events",
-      value: 2,
-      icon: <CalendarOutlined style={{ fontSize: 24, color: "#faad14" }} />,
-      color: "#faad14",
+      title: "Courses Enrolled",
+      value: 0, // This would need to be fetched from course progress
+      icon: <BookOutlined />,
+      color: "#1890ff",
     },
     {
-      title: "Messages",
-      value: 5,
-      icon: <MessageOutlined style={{ fontSize: 24, color: "#722ed1" }} />,
-      color: "#722ed1",
+      title: "Events Attended",
+      value: 0, // This would need to be fetched from event attendance
+      icon: <CalendarOutlined />,
+      color: "#13c2c2",
     },
   ];
 
-  const quickActions = [
+  // Table columns
+  const courseColumns = [
     {
-      title: "Browse Courses",
-      description: "Explore available courses",
-      icon: <BookOutlined />,
-      link: "/courses",
-      color: "#1890ff",
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
     },
     {
-      title: "View Events",
-      description: "Check upcoming events",
-      icon: <CalendarOutlined />,
-      link: "/events",
-      color: "#52c41a",
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
     },
     {
-      title: "My Profile",
-      description: "Update your profile",
-      icon: <UserOutlined />,
-      link: "/dashboard/settings",
-      color: "#faad14",
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (value: any, record: any) => (
+        <span>
+          {record.isFree ? (
+            <Tag color="green">Free</Tag>
+          ) : (
+            `${value || 0} ${record.currency || 'XAF'}`
+          )}
+        </span>
+      ),
     },
     {
-      title: "Contact Support",
-      description: "Get help and support",
-      icon: <MessageOutlined />,
-      link: "/contact_us",
-      color: "#722ed1",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          archived: 'gray',
+          suspended: 'red'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button type="primary" size="small">Enroll</Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const postColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          archived: 'gray'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button icon={<EditOutlined />} size="small" />
+          <Button icon={<DeleteOutlined />} size="small" danger />
+        </Space>
+      ),
+    },
+  ];
+
+  const eventColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Event Date",
+      dataIndex: "eventDate",
+      key: "eventDate",
+      render: (value: string) => format.date(value),
+    },
+    {
+      title: "Location",
+      dataIndex: "location",
+      key: "location",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          cancelled: 'red',
+          completed: 'blue'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record: BaseRecord) => (
+        <Space>
+          <Button icon={<EyeOutlined />} size="small" />
+          <Button type="primary" size="small">Register</Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const tabItems = [
+    {
+      key: "courses",
+      label: "Available Courses",
+      children: (
+        <div ref={coursesTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Browse Courses</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setCourseModalVisible(true)}
+            >
+              Create Course
+            </Button>
+          </div>
+          <Table
+            {...coursesTableProps}
+            columns={courseColumns}
+            rowKey="id"
+            pagination={{
+              ...coursesTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "posts",
+      label: "Blog Posts",
+      children: (
+        <div ref={postsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Latest Posts</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setPostModalVisible(true)}
+            >
+              Create Post
+            </Button>
+          </div>
+          <Table
+            {...postsTableProps}
+            columns={postColumns}
+            rowKey="id"
+            pagination={{
+              ...postsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "events",
+      label: "Events",
+      children: (
+        <div ref={eventsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>Upcoming Events</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setEventModalVisible(true)}
+            >
+              Create Event
+            </Button>
+          </div>
+          <Table
+            {...eventsTableProps}
+            columns={eventColumns}
+            rowKey="id"
+            pagination={{
+              ...eventsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
     },
   ];
 
   return (
-    <div>
-      <Col span={24}>
-        <PageBreadCrumbs items={["Dashboard"]} />
-
-        {/* Welcome Section */}
-        <Card style={{ marginBottom: 24 }} className="bg-white">
-          <Row align="middle" gutter={[16, 16]}>
-            <Col>
-              <Avatar
-                size={64}
-                src={session?.user?.image}
-                icon={<UserOutlined />}
-                style={{ backgroundColor: "#1890ff" }}
+    <div style={{ padding: "24px" }}>
+      <Title level={2}>User Dashboard</Title>
+      
+      {/* User Statistics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Title level={4}>Your Activity</Title>
+        </Col>
+        {userStats.map((stat, index) => (
+          <Col sm={6} md={6} span={24} key={index}>
+            <Card size="small">
+              <Statistic
+                title={stat.title}
+                value={stat.value}
+                prefix={<span style={{ color: stat.color }}>{stat.icon}</span>}
+                valueStyle={{ fontSize: 20 }}
               />
-            </Col>
-            <Col flex="auto">
-              <Title level={3} style={{ margin: 0 }}>
-                Welcome back, {session?.user?.name || "User"}! 👋
-              </Title>
-              <Text type="secondary">
-                Here&apos;s your learning progress and upcoming activities
-              </Text>
-            </Col>
-          </Row>
-        </Card>
+            </Card>
+          </Col>
+        ))}
+      </Row>
 
-        {/* Statistics */}
-        <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-          {userStats.map((stat, index) => (
-            <Col xs={24} sm={12} md={6} key={index}>
-              <Card>
-                <Statistic
-                  title={stat.title}
-                  value={stat.value}
-                  prefix={stat.icon}
-                  valueStyle={{ color: stat.color }}
-                />
-              </Card>
-            </Col>
-          ))}
-        </Row>
+      {/* Content Management Tabs */}
+      <Card>
+        <Tabs defaultActiveKey="courses" items={tabItems} />
+      </Card>
 
-        {/* Quick Actions */}
-        <Card title="Quick Actions" style={{ marginBottom: 24, backgroundColor: 'white' }}>
-          <Row gutter={[16, 16]}>
-            {quickActions.map((action, index) => (
-              <Col xs={24} sm={12} md={6} key={index}>
-                <Card
-                  hoverable
-                  style={{
-                    textAlign: "center",
-                    border: `2px solid ${action.color}20`,
-                    borderRadius: 8,
-                    backgroundColor: 'white',
-                  }}
-                >
-                  <Space direction="vertical" size="small">
-                    <div style={{ fontSize: 32, color: action.color }}>
-                      {action.icon}
-                    </div>
-                    <Title level={5} style={{ margin: 0 }}>
-                      {action.title}
-                    </Title>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {action.description}
-                    </Text>
-                    <Link href={action.link}>
-                      <Button
-                        type="primary"
-                        size="small"
-                        style={{
-                          backgroundColor: action.color,
-                          borderColor: action.color,
-                        }}
-                      >
-                        Go
-                      </Button>
-                    </Link>
-                  </Space>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card title="Recent Activity" style={{ backgroundColor: 'white' }}>
-          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
-            <div
-              style={{ padding: 16, background: "#f5f5f5", borderRadius: 8 }}
-            >
-              <Space>
-                <BookOutlined style={{ color: "#1890ff" }} />
-                <Text>Completed lesson: &quot;Introduction to React&quot;</Text>
-                <Text type="secondary">2 hours ago</Text>
-              </Space>
-            </div>
-            <div
-              style={{ padding: 16, background: "#f5f5f5", borderRadius: 8 }}
-            >
-              <Space>
-                <CalendarOutlined style={{ color: "#52c41a" }} />
-                <Text>Registered for &quot;Web Development Workshop&quot;</Text>
-                <Text type="secondary">1 day ago</Text>
-              </Space>
-            </div>
-            <div
-              style={{ padding: 16, background: "#f5f5f5", borderRadius: 8 }}
-            >
-              <Space>
-                <TrophyOutlined style={{ color: "#faad14" }} />
-                <Text>Earned certificate: &quot;JavaScript Fundamentals&quot;</Text>
-                <Text type="secondary">3 days ago</Text>
-              </Space>
-            </div>
-          </Space>
-        </Card>
-      </Col>
-
-      {/* Additional Content */}
-      <Col span={24} style={{ marginTop: 24 }}>
-        <Card title="Learning Resources" style={{ backgroundColor: 'white' }}>
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12} md={8}>
-              <Card hoverable style={{ textAlign: 'center' }}>
-                <Space direction="vertical">
-                  <BookOutlined style={{ fontSize: 32, color: '#1890ff' }} />
-                  <Text strong>Free Courses</Text>
-                  <Text type="secondary">Access our collection of free courses</Text>
-                </Space>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Card hoverable style={{ textAlign: 'center' }}>
-                <Space direction="vertical">
-                  <CalendarOutlined style={{ fontSize: 32, color: '#52c41a' }} />
-                  <Text strong>Events</Text>
-                  <Text type="secondary">Join our upcoming events and workshops</Text>
-                </Space>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-              <Card hoverable style={{ textAlign: 'center' }}>
-                <Space direction="vertical">
-                  <MessageOutlined style={{ fontSize: 32, color: '#faad14' }} />
-                  <Text strong>Community</Text>
-                  <Text type="secondary">Connect with other learners</Text>
-                </Space>
-              </Card>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
-
-      <Authenticated key="user-dashboard">
-        <NavigateToResource />
-      </Authenticated>
+      {/* Modals */}
+      <CourseCreateModal
+        visible={courseModalVisible}
+        onCancel={() => setCourseModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('course')}
+      />
+      
+      <PostCreateModal
+        visible={postModalVisible}
+        onCancel={() => setPostModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('post')}
+      />
+      
+      <EventCreateModal
+        visible={eventModalVisible}
+        onCancel={() => setEventModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('event')}
+      />
     </div>
   );
 }

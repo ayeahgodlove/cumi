@@ -80,7 +80,7 @@ export default function OurServicesPageComponent() {
 
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
@@ -90,7 +90,7 @@ export default function OurServicesPageComponent() {
       />
 
       {/* Hero Section */}
-      <section
+      {/* <section
         className="py-5"
         style={{
           background: "linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)",
@@ -143,7 +143,7 @@ export default function OurServicesPageComponent() {
             </Col>
           </Row>
         </div>
-      </section>
+      </section> */}
 
       {/* Features Section */}
       <section className="py-5">
@@ -201,9 +201,10 @@ export default function OurServicesPageComponent() {
 
       {/* Services List */}
       <ServiceList services={services} />
-
+      {/* CTA Section */}
+      <AppCTA />
       {/* Benefits Section */}
-      <section className="py-5 bg-light">
+      <section className="py-5">
         <div className="container">
           <Row justify="center" align="middle">
             <Col xs={24} lg={12}>
@@ -251,9 +252,6 @@ export default function OurServicesPageComponent() {
           </Row>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <AppCTA />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

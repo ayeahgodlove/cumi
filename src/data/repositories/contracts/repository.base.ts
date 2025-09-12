@@ -1,9 +1,9 @@
 import { IBanner } from "@domain/models/banner.model";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
+import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
 import { IEvent } from "@domain/models/event.model";
 import { ILesson } from "@domain/models/lesson";
-import { IMedia } from "@domain/models/media.model";
 import { IOpportunity } from "@domain/models/opportunity.model";
 import { IPost } from "@domain/models/post.model";
 import { IProject } from "@domain/models/project.model";
@@ -11,17 +11,19 @@ import { IQuiz } from "@domain/models/quiz";
 import { IRole } from "@domain/models/role.model";
 import { IService } from "@domain/models/service.model";
 import { ITag } from "@domain/models/tag";
+import { IModule } from "@domain/models/module.model";
+import { IAssignment } from "@domain/models/assignment.model";
+import { ICourseProgress } from "@domain/models/course-progress.model";
 import { IUser } from "@domain/models/user";
 
 import {
   Banner,
   Category,
   Course,
-  Enrollment,
+  CourseEnrollment,
   Event,
   EventTag,
   Lesson,
-  Media,
   Opportunity,
   Post,
   PostTag,
@@ -31,6 +33,9 @@ import {
   Service,
   User,
   Tag,
+  Module,
+  Assignment,
+  CourseProgress,
 } from "../../entities/index";
 
 export interface IRepository<T, U> {
@@ -39,12 +44,6 @@ export interface IRepository<T, U> {
   getAll(): Promise<U[]>;
   update(category: T): Promise<U>;
   delete(id: string): Promise<void>;
-}
-
-export interface IMediaRepository
-  extends IRepository<IMedia, InstanceType<typeof Media>> {
-  findByTitle(title: string): Promise<InstanceType<typeof Media> | null>;
-  findBySlug(slug: string): Promise<InstanceType<typeof Media> | null>;
 }
 
 export interface IPostRepository
@@ -68,6 +67,7 @@ export interface ILessonRepository
   extends IRepository<ILesson, InstanceType<typeof Lesson>> {
   findByTitle(title: string): Promise<InstanceType<typeof Lesson> | null>;
   findBySlug(slug: string): Promise<InstanceType<typeof Lesson> | null>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Lesson>[]>;
 }
 
 export interface IQuizRepository
@@ -90,6 +90,8 @@ export interface ICategoryRepository
 export interface IUserRepository
   extends IRepository<IUser, InstanceType<typeof User>> {
   findByUsername(username: string): Promise<InstanceType<typeof User> | null>;
+  findByEmail(email: string): Promise<InstanceType<typeof User> | null>;
+  findByResetToken(token: string): Promise<InstanceType<typeof User> | null>;
 }
 export interface IRoleRepository
   extends IRepository<IRole, InstanceType<typeof Role>> {
@@ -118,4 +120,49 @@ export interface IEventRepository
 export interface IBannerRepository
   extends IRepository<IBanner, InstanceType<typeof Banner>> {
   findByTitle(title: string): Promise<InstanceType<typeof Banner> | null>;
+}
+
+export interface ICourseEnrollmentRepository
+  extends IRepository<ICourseEnrollment, InstanceType<typeof CourseEnrollment>> {
+  findByCourseAndUser(courseId: string, userId: string): Promise<InstanceType<typeof CourseEnrollment> | null>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof CourseEnrollment>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]>;
+  updateProgress(id: string, progress: number): Promise<InstanceType<typeof CourseEnrollment> | null>;
+  countByCourseId(courseId: string): Promise<number>;
+}
+
+export interface IModuleRepository
+  extends IRepository<IModule, InstanceType<typeof Module>> {
+  findByTitle(title: string): Promise<InstanceType<typeof Module> | null>;
+  findBySlug(slug: string): Promise<InstanceType<typeof Module> | null>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Module>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof Module>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof Module>[]>;
+}
+
+export interface IAssignmentRepository
+  extends IRepository<IAssignment, InstanceType<typeof Assignment>> {
+  findByTitle(title: string): Promise<InstanceType<typeof Assignment> | null>;
+  findBySlug(slug: string): Promise<InstanceType<typeof Assignment> | null>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Assignment>[]>;
+  findByModuleId(moduleId: string): Promise<InstanceType<typeof Assignment>[]>;
+  findByLessonId(lessonId: string): Promise<InstanceType<typeof Assignment>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof Assignment>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof Assignment>[]>;
+  findByType(type: string): Promise<InstanceType<typeof Assignment>[]>;
+}
+
+export interface ICourseProgressRepository
+  extends IRepository<ICourseProgress, InstanceType<typeof CourseProgress>> {
+  findByEnrollmentId(enrollmentId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByModuleId(moduleId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByLessonId(lessonId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByQuizId(quizId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByAssignmentId(assignmentId: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  findByProgressType(progressType: string): Promise<InstanceType<typeof CourseProgress>[]>;
+  updateProgress(id: string, progress: number): Promise<InstanceType<typeof CourseProgress> | null>;
+  updateStatus(id: string, status: string): Promise<InstanceType<typeof CourseProgress> | null>;
 }

@@ -1,6 +1,7 @@
 import {
   Banner,
   Category,
+  Comment,
   Course,
   Enrollment,
   Event,
@@ -17,10 +18,14 @@ import {
   User,
   Professional,
   Partner,
+  Module,
+  Assignment,
+  CourseProgress,
 } from "@data/entities/index";
 
 import { IBanner } from "@domain/models/banner.model";
 import { ICategory } from "@domain/models/category";
+import { IComment } from "@domain/models/comment.model";
 import { ICourse } from "@domain/models/course";
 import { IEnrollment } from "@domain/models/enrollment";
 import { IEvent } from "@domain/models/event.model";
@@ -36,6 +41,9 @@ import { IService } from "@domain/models/service.model";
 import { ITag } from "@domain/models/tag";
 import { IUser } from "@domain/models/user";
 import { IPartner } from "@domain/models/partner.model";
+import { IModule } from "@domain/models/module.model";
+import { IAssignment } from "@domain/models/assignment.model";
+import { ICourseProgress } from "@domain/models/course-progress.model";
 
 export class CategoryMapper {
   toDTO(category: InstanceType<typeof Category>): ICategory {
@@ -276,5 +284,61 @@ export class PartnerMapper {
       return entity;
     });
     return _partners;
+  }
+}
+
+export class CommentMapper {
+  toDTO(comment: InstanceType<typeof Comment>): IComment {
+    const entity = comment.toJSON<IComment>();
+    return entity;
+  }
+  toDTOs(comments: InstanceType<typeof Comment>[]): IComment[] {
+    const _comments = comments.map((comment) => {
+      const entity = comment.toJSON<IComment>();
+      return entity;
+    });
+    return _comments;
+  }
+}
+
+export class ModuleMapper {
+  toDTO(module: InstanceType<typeof Module>): IModule {
+    const entity = module.toJSON<IModule>();
+    return entity;
+  }
+  toDTOs(modules: InstanceType<typeof Module>[]): IModule[] {
+    const _modules = modules.map((module) => {
+      const entity = module.toJSON<IModule>();
+      return entity;
+    });
+    return _modules;
+  }
+}
+
+export class AssignmentMapper {
+  toDTO(assignment: InstanceType<typeof Assignment>): IAssignment {
+    const entity = assignment.toJSON<IAssignment>();
+    return entity;
+  }
+  toDTOs(assignments: InstanceType<typeof Assignment>[]): IAssignment[] {
+    const _assignments = assignments.map((assignment) => {
+      const entity = assignment.toJSON<IAssignment>();
+      return entity;
+    });
+    return _assignments;
+  }
+}
+
+export class CourseProgressMapper {
+  toDTO(progress: InstanceType<typeof CourseProgress>): ICourseProgress {
+    const entity = progress.toJSON<ICourseProgress>();
+    return entity;
+  }
+  toDTOs(progresses: InstanceType<typeof CourseProgress>[]): ICourseProgress[] {
+    const _progresses = progresses.map((progress) => {
+      const entity = progress.toJSON<ICourseProgress>();
+      return entity;
+    });
+    return _progresses;
   }
 }

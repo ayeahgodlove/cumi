@@ -16,9 +16,11 @@ export async function GET(
     const slug = params.slug;
 
     const course = await courseUseCase.getCourseBySlug(slug);
+    
     if (!course) {
       throw new NotFoundException("Course", slug);
     }
+    
     const courseDTO = courseMapper.toDTO(course);
     return NextResponse.json(courseDTO);
   } catch (error: any) {

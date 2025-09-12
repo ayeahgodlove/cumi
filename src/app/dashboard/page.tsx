@@ -35,18 +35,73 @@ import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@contexts/translation.context";
 import { statsAPI } from "@store/api/stats_api";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 const { Title, Text } = Typography;
 
 export default function AdminDashboard() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { t } = useTranslation();
+  const router = useRouter();
+  const hasRedirected = useRef(false);
 
-  // Fetch real stats data with auto-refresh for admin dashboard
+  // Redirect non-admin users to their appropriate dashboard (only once)
+  useEffect(() => {
+    if (session?.user && !hasRedirected.current) {
+      const userRole = session.user.role || "user";
+      
+      // If user is not admin, redirect to their role-specific dashboard
+      if (userRole !== "admin") {
+        const roleDashboards = {
+          creator: "/dashboard/creator",
+          student: "/dashboard/student", 
+          user: "/dashboard/user",
+        };
+        
+        const targetDashboard = roleDashboards[userRole as keyof typeof roleDashboards];
+        if (targetDashboard) {
+          hasRedirected.current = true;
+          router.replace(targetDashboard);
+        }
+      }
+    }
+  }, [session?.user]); // Only depend on session.user
+
+  // Show loading while session is loading
+  if (status === "loading") {
+    return (
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // Only render admin dashboard for admin users
+  if (!session?.user || session.user.role !== "admin") {
+    return (
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // Fetch real stats data with auto-refresh for admin dashboard (only for admin users)
   const statsQuery = statsAPI.useGetDashboardStatsQuery(undefined, {
     pollingInterval: 30000, // Auto-refresh every 30 seconds
     refetchOnFocus: true,
     refetchOnReconnect: true,
+    skip: !session?.user, // Only skip if no user session
   });
 
   const {
@@ -71,6 +126,11 @@ export default function AdminDashboard() {
     totalBanners: 0,
     totalMedia: 0,
     totalSubscribers: 0,
+    totalComments: 0,
+    totalPostLikes: 0,
+    totalCommentLikes: 0,
+    totalUserLikes: 0,
+    totalUserComments: 0,
   };
 
   const loading = isLoadingStats || isFetchingStats;
@@ -137,10 +197,66 @@ export default function AdminDashboard() {
       icon: <UserOutlined />,
       color: "#52c41a",
     },
+    {
+      title: "Total Comments",
+      value: stats.totalComments,
+      icon: <MessageOutlined />,
+      color: "#722ed1",
+    },
+    {
+      title: "Post Likes",
+      value: stats.totalPostLikes,
+      icon: <RiseOutlined />,
+      color: "#52c41a",
+    },
+    {
+      title: "Comment Likes",
+      value: stats.totalCommentLikes,
+      icon: <RiseOutlined />,
+      color: "#1890ff",
+    },
   ];
 
   // Get recent activities from API data
   const recentActivities = statsData?.recentActivities || [];
+
+  // User-specific stats for non-admin users
+  const userStats = [
+    {
+      title: "My Comments",
+      value: stats.totalUserComments,
+      icon: <MessageOutlined />,
+      color: "#722ed1",
+    },
+    {
+      title: "My Likes",
+      value: stats.totalUserLikes,
+      icon: <RiseOutlined />,
+      color: "#52c41a",
+    },
+  ];
+
+  // Creator-specific stats
+  const creatorStats = [
+    {
+      title: "My Posts",
+      value: stats.totalPosts, // This would need to be filtered by user in a real implementation
+      icon: <GrArticle size={24} fontWeight={"bold"} />,
+      color: "#52c41a",
+    },
+    {
+      title: "Post Likes Received",
+      value: stats.totalPostLikes, // This would need to be filtered by user's posts
+      icon: <RiseOutlined />,
+      color: "#1890ff",
+    },
+    {
+      title: "Comment Likes Received",
+      value: stats.totalCommentLikes, // This would need to be filtered by user's comments
+      icon: <RiseOutlined />,
+      color: "#13c2c2",
+    },
+  ];
 
   const activityColumns = [
     {
@@ -315,6 +431,52 @@ export default function AdminDashboard() {
             </Col>
           ))}
         </Row>
+
+        {/* User-specific stats for non-admin users */}
+        {session?.user?.role !== "admin" && (
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Col span={24}>
+              <Title level={4}>Your Activity</Title>
+            </Col>
+            {userStats.map((stat, index) => (
+              <Col sm={6} md={6} span={24} key={index}>
+                <Card size="small">
+                  <Statistic
+                    title={stat.title}
+                    value={stat.value}
+                    prefix={
+                      <span style={{ color: stat.color }}>{stat.icon}</span>
+                    }
+                    valueStyle={{ fontSize: 20 }}
+                  />
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
+
+        {/* Creator-specific stats */}
+        {session?.user?.role && ["creator", "student"].includes(session.user.role) && (
+          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Col span={24}>
+              <Title level={4}>Creator Statistics</Title>
+            </Col>
+            {creatorStats.map((stat, index) => (
+              <Col sm={6} md={6} span={24} key={index}>
+                <Card size="small">
+                  <Statistic
+                    title={stat.title}
+                    value={stat.value}
+                    prefix={
+                      <span style={{ color: stat.color }}>{stat.icon}</span>
+                    }
+                    valueStyle={{ fontSize: 20 }}
+                  />
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        )}
 
         {/* Charts and Analytics */}
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>

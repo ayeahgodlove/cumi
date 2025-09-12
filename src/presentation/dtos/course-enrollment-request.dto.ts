@@ -9,9 +9,9 @@ export class CourseEnrollmentRequestDto {
   @IsString()
   courseId: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  userId: string;
+  userId?: string;
 
   @IsOptional()
   @IsEnum(['active', 'completed', 'dropped', 'suspended'])
@@ -116,7 +116,7 @@ export class CourseEnrollmentRequestDto {
 
   constructor(data: ICourseEnrollment) {
     this.courseId = data.courseId;
-    this.userId = data.userId;
+    this.userId = data.userId || undefined;
     this.status = data.status;
     this.progress = data.progress;
     this.lastAccessedAt = data.lastAccessedAt?.toISOString();
@@ -149,7 +149,7 @@ export class CourseEnrollmentRequestDto {
       ...emptyCourseEnrollment,
       id: nanoid(20),
       courseId: this.courseId,
-      userId: this.userId,
+      userId: this.userId || '', // Will be overridden by API with session userId
       enrollmentDate: new Date(),
       status: this.status ?? 'active',
       progress: this.progress ?? 0,

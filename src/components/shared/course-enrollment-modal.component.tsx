@@ -1,0 +1,338 @@
+"use client";
+
+import React, { useState } from "react";
+import {
+  Modal,
+  Form,
+  Card,
+  Row,
+  Col,
+  Space,
+  Typography,
+  Input,
+  Select,
+  Button,
+  message,
+} from "antd";
+import {
+  CalendarOutlined,
+  EnvironmentOutlined,
+  BookOutlined,
+  ClockCircleOutlined,
+  StarOutlined,
+  DollarOutlined,
+} from "@ant-design/icons";
+import { ICourse } from "@domain/models/course";
+import { useSession } from "next-auth/react";
+import PhoneNumberInput from "@components/shared/phone-number-input.component";
+import { validatePhoneNumber } from "@utils/country-codes";
+
+const { Title, Text } = Typography;
+const { Option } = Select;
+
+interface CourseEnrollmentModalProps {
+  visible: boolean;
+  onCancel: () => void;
+  course: ICourse | null;
+  onSuccess?: () => void;
+}
+
+export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
+  visible,
+  onCancel,
+  course,
+  onSuccess,
+}) => {
+  const { data: session } = useSession();
+  const [form] = Form.useForm();
+  const [isEnrolling, setIsEnrolling] = useState(false);
+
+  const handleEnrollmentSubmit = async (values: any) => {
+    try {
+      if (!course || !session?.user?.id) {
+        message.error("Please log in to enroll in courses");
+        return;
+      }
+
+      setIsEnrolling(true);
+
+      const enrollmentData = {
+        courseId: course.id,
+        userId: session.user.id,
+        studentPhone: values.studentPhone,
+        countryCode: values.countryCode || 'CM',
+        emergencyContact: values.emergencyContact,
+        educationLevel: values.educationLevel,
+        internetAccess: values.internetAccess,
+        preferredContact: values.preferredContact,
+        studySchedule: values.studySchedule,
+        certificateLanguage: values.certificateLanguage,
+        motivation: values.motivation,
+        skillsGained: values.skillsGained,
+        notes: values.notes,
+      };
+
+      const response = await fetch("/api/course-enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(enrollmentData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Enrollment failed");
+      }
+
+      message.success("Successfully enrolled in the course!");
+      form.resetFields();
+      onCancel();
+      onSuccess?.();
+    } catch (error) {
+      console.error("Enrollment error:", error);
+      message.error(
+        error instanceof Error
+          ? error.message
+          : "Enrollment failed. Please try again."
+      );
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  if (!course) return null;
+
+  return (
+    <Modal
+      title={`Enroll in ${course.title}`}
+      open={visible}
+      onCancel={onCancel}
+      footer={null}
+      width={700}
+    >
+      <Card size="small" style={{ marginBottom: 24 }}>
+        <Row gutter={[16, 16]}>
+          <Col span={24}>
+            <img
+              src={course.imageUrl || "/img/design-3.jpg"}
+              alt={course.title}
+              style={{
+                width: "100%",
+                height: 150,
+                objectFit: "cover",
+                borderRadius: 8,
+              }}
+            />
+          </Col>
+          <Col span={24}>
+            <Space direction="vertical" size="small">
+              <Title level={4} style={{ margin: 0 }}>
+                {course.title}
+              </Title>
+              <Space>
+                <ClockCircleOutlined />
+                <Text>{course.durationWeeks ? `${course.durationWeeks} weeks` : 'Self-paced'}</Text>
+              </Space>
+              <Space>
+                <StarOutlined />
+                <Text>{course.level?.charAt(0).toUpperCase() + course.level?.slice(1)} Level</Text>
+              </Space>
+              <Space>
+                <DollarOutlined />
+                <Text>{course.isFree ? 'Free' : `${course.price} ${course.currency}`}</Text>
+              </Space>
+            </Space>
+          </Col>
+        </Row>
+      </Card>
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleEnrollmentSubmit}
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="studentPhone"
+              label="Phone Number"
+              rules={[
+                { required: true, message: "Please enter your phone number" },
+                {
+                  validator: (_, value) => {
+                    if (!value) return Promise.resolve();
+                    const countryCode = form.getFieldValue('countryCode') || 'CM';
+                    if (validatePhoneNumber(countryCode, value)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error("Please enter a valid phone number"));
+                  },
+                },
+              ]}
+            >
+              <PhoneNumberInput
+                placeholder="Enter your phone number"
+                showMoneyServices={true}
+                onCountryCodeChange={(countryCode) => {
+                  form.setFieldValue('countryCode', countryCode);
+                }}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="emergencyContact"
+              label="Emergency Contact"
+              rules={[
+                { required: true, message: "Please enter emergency contact" },
+              ]}
+            >
+              <Input placeholder="Emergency contact phone number" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="educationLevel"
+              label="Education Level"
+              rules={[
+                { required: true, message: "Please select your education level" },
+              ]}
+            >
+              <Select placeholder="Select education level">
+                <Option value="primary">Primary School</Option>
+                <Option value="secondary">Secondary School</Option>
+                <Option value="university">University</Option>
+                <Option value="professional">Professional</Option>
+                <Option value="other">Other</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="internetAccess"
+              label="Internet Access"
+              rules={[
+                { required: true, message: "Please select your internet access type" },
+              ]}
+            >
+              <Select placeholder="Select internet access type">
+                <Option value="high_speed">High Speed</Option>
+                <Option value="mobile_data">Mobile Data</Option>
+                <Option value="limited">Limited</Option>
+                <Option value="cybercafe">Cybercafe</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="preferredContact"
+              label="Preferred Contact Method"
+              rules={[
+                { required: true, message: "Please select preferred contact method" },
+              ]}
+            >
+              <Select placeholder="Select contact method">
+                <Option value="whatsapp">WhatsApp</Option>
+                <Option value="sms">SMS</Option>
+                <Option value="call">Phone Call</Option>
+                <Option value="email">Email</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              name="studySchedule"
+              label="Preferred Study Schedule"
+              rules={[
+                { required: true, message: "Please select your study schedule" },
+              ]}
+            >
+              <Select placeholder="Select study schedule">
+                <Option value="morning">Morning</Option>
+                <Option value="afternoon">Afternoon</Option>
+                <Option value="evening">Evening</Option>
+                <Option value="weekend">Weekend</Option>
+                <Option value="flexible">Flexible</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Form.Item
+          name="certificateLanguage"
+          label="Certificate Language"
+          rules={[
+            { required: true, message: "Please select certificate language" },
+          ]}
+        >
+          <Select placeholder="Select certificate language">
+            <Option value="french">French</Option>
+            <Option value="english">English</Option>
+            <Option value="both">Both</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="motivation"
+          label="Motivation for Taking This Course"
+          rules={[
+            { required: true, message: "Please explain your motivation" },
+          ]}
+        >
+          <Input.TextArea 
+            placeholder="Why do you want to take this course? What are your goals?" 
+            rows={3}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="skillsGained"
+          label="Expected Skills"
+        >
+          <Input.TextArea 
+            placeholder="What skills do you expect to gain from this course?" 
+            rows={2}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name="notes"
+          label="Additional Notes"
+        >
+          <Input.TextArea 
+            placeholder="Any additional information or special requests" 
+            rows={2}
+          />
+        </Form.Item>
+
+        <Form.Item>
+          <Space>
+            <Button 
+              type="primary" 
+              htmlType="submit"
+              loading={isEnrolling}
+            >
+              {isEnrolling ? 'Enrolling...' : 'Complete Enrollment'}
+            </Button>
+            <Button onClick={onCancel}>
+              Cancel
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
+
+export default CourseEnrollmentModal;

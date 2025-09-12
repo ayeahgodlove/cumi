@@ -6,6 +6,8 @@ import { Create, useForm, useSelect } from "@refinedev/antd";
 import { Col, Form, Input, Row, Select, Upload, message, InputNumber, Switch, DatePicker } from "antd";
 import { useUpload, getImageUrlFromEvent, getImageUrlString } from "@hooks/shared/upload.hook";
 import { useEffect } from "react";
+import PhoneNumberInput from "@components/shared/phone-number-input.component";
+import { validatePhoneNumber } from "@utils/country-codes";
 
 export default function CourseCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -271,8 +273,26 @@ export default function CourseCreate() {
                 name={"instructorContact"}
                 label="Instructor Contact"
                 style={{ marginBottom: 10 }}
+                rules={[
+                  {
+                    validator: (_, value) => {
+                      if (!value) return Promise.resolve();
+                      const countryCode = formProps.form?.getFieldValue('countryCode') || 'CM';
+                      if (validatePhoneNumber(countryCode, value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error("Please enter a valid phone number"));
+                    },
+                  },
+                ]}
               >
-                <Input size="large" placeholder="Phone number" />
+                <PhoneNumberInput
+                  placeholder="Enter instructor phone number"
+                  showMoneyServices={true}
+                  onCountryCodeChange={(countryCode) => {
+                    formProps.form?.setFieldValue('countryCode', countryCode);
+                  }}
+                />
               </Form.Item>
             </Col>
           </Row>

@@ -13,9 +13,11 @@ import { OpportunityRepository } from "@data/repositories/impl/opportunity.repos
 import { ServiceRepository } from "@data/repositories/impl/service.repository";
 import { ProfessionalRepository } from "@data/repositories/impl/professional.repository";
 import { BannerRepository } from "@data/repositories/impl/banner.repository";
-import { MediaRepository } from "@data/repositories/impl/media.repository";
 import { ContactMessageRepository } from "@data/repositories/impl/contact-message.repository";
 import { SubscriberRepository } from "@data/repositories/impl/subscriber.repository";
+import { CommentRepository } from "@data/repositories/impl/comment.repository";
+import { PostInteractionRepository } from "@data/repositories/impl/post-interaction.repository";
+import { CommentInteractionRepository } from "@data/repositories/impl/comment-interaction.repository";
 
 // Helper function to get time ago string
 function getTimeAgo(date: Date | string): string {
@@ -36,7 +38,7 @@ export async function GET(request: NextRequest) {
     
     const session = await getServerSession(authOptions);
     
-    if (!session || session.user?.role !== 'admin') {
+    if (!session || !session.user) {
       console.log('Unauthorized access attempt');
       return NextResponse.json(
         {
@@ -60,11 +62,17 @@ export async function GET(request: NextRequest) {
     const serviceRepository = new ServiceRepository();
     const professionalRepository = new ProfessionalRepository();
     const bannerRepository = new BannerRepository();
-    const mediaRepository = new MediaRepository();
     const contactMessageRepository = new ContactMessageRepository();
     const subscriberRepository = new SubscriberRepository();
+    const commentRepository = new CommentRepository();
+    const postInteractionRepository = new PostInteractionRepository();
+    const commentInteractionRepository = new CommentInteractionRepository();
 
-    // Fetch all counts in parallel with error handling
+    // Fetch counts based on user role
+    const isAdmin = session.user.role === 'admin';
+    const isCreator = session.user.role === 'creator' || session.user.role === 'student';
+    const userId = session.user.id;
+    
     const [
       totalUsers,
       totalPosts,
@@ -75,23 +83,105 @@ export async function GET(request: NextRequest) {
       totalServices,
       totalProfessionals,
       totalBanners,
-      totalMedia,
       totalContactMessages,
-      totalSubscribers
+      totalSubscribers,
+      totalComments,
+      totalPostLikes,
+      totalCommentLikes
     ] = await Promise.all([
-      userRepository.getAll().then(users => users.length).catch(() => 0),
-      postRepository.getAll().then(posts => posts.length).catch(() => 0),
-      eventRepository.getAll().then(events => events.length).catch(() => 0),
-      courseRepository.getAll().then(courses => courses.length).catch(() => 0),
-      projectRepository.getAll().then(projects => projects.length).catch(() => 0),
-      opportunityRepository.getAll().then(opportunities => opportunities.length).catch(() => 0),
-      serviceRepository.getAll().then(services => services.length).catch(() => 0),
-      professionalRepository.getAll().then(professionals => professionals.length).catch(() => 0),
-      bannerRepository.getAll().then(banners => banners.length).catch(() => 0),
-      mediaRepository.getAll().then(media => media.length).catch(() => 0),
-      contactMessageRepository.getAll().then(messages => messages.length).catch(() => 0),
-      subscriberRepository.getAll().then(subscribers => subscribers.length).catch(() => 0)
+      // Only fetch sensitive data for admin users
+      isAdmin ? userRepository.getAll().then(users => users.length).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch their own posts; for admin, fetch all posts
+      isCreator ? postRepository.getAll().then(posts => posts.filter((p: any) => p.authorId === userId).length).catch(() => 0) : 
+                  isAdmin ? postRepository.getAll().then(posts => posts.length).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch their own events; for admin, fetch all events
+      isCreator ? eventRepository.getAll().then(events => events.filter((e: any) => e.userId === userId).length).catch(() => 0) : 
+                  isAdmin ? eventRepository.getAll().then(events => events.length).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch their own courses; for admin, fetch all courses
+      isCreator ? courseRepository.getAll().then(courses => courses.filter((c: any) => c.userId === userId).length).catch(() => 0) : 
+                  isAdmin ? courseRepository.getAll().then(courses => courses.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? projectRepository.getAll().then(projects => projects.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? opportunityRepository.getAll().then(opportunities => opportunities.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? serviceRepository.getAll().then(services => services.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? professionalRepository.getAll().then(professionals => professionals.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? bannerRepository.getAll().then(banners => banners.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? contactMessageRepository.getAll().then(messages => messages.length).catch(() => 0) : Promise.resolve(0),
+      isAdmin ? subscriberRepository.getAll().then(subscribers => subscribers.length).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch comments on their posts; for admin, fetch all comments
+      isCreator ? commentRepository.findAll().then(comments => 
+        comments.filter((c: any) => {
+          // This would need to be enhanced to check if comment is on creator's posts
+          return true; // For now, return all comments
+        }).length
+      ).catch(() => 0) : 
+      isAdmin ? commentRepository.findAll().then(comments => comments.length).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch likes on their posts; for admin, fetch all post likes
+      isCreator ? postInteractionRepository.findAll().then(interactions => 
+        interactions.filter((i: any) => i.action === 'like').length
+      ).catch(() => 0) : 
+      isAdmin ? postInteractionRepository.findAll().then(interactions => 
+        interactions.filter((i: any) => i.action === 'like').length
+      ).catch(() => 0) : Promise.resolve(0),
+      // For creators, fetch likes on their comments; for admin, fetch all comment likes
+      isCreator ? commentInteractionRepository.findAll().then(interactions => 
+        interactions.filter((i: any) => i.interactionType === 'like').length
+      ).catch(() => 0) : 
+      isAdmin ? commentInteractionRepository.findAll().then(interactions => 
+        interactions.filter((i: any) => i.interactionType === 'like').length
+      ).catch(() => 0) : Promise.resolve(0)
     ]);
+
+    // Calculate user-specific stats if userId is provided
+    let totalUserLikes = 0;
+    let totalUserComments = 0;
+    
+    if (session?.user?.id) {
+      try {
+        const [userPostLikes, userCommentLikes, userComments] = await Promise.all([
+          postInteractionRepository.findByUserId(session.user.id).then(interactions => 
+            interactions.filter((i: any) => i.action === 'like').length
+          ).catch(() => 0),
+          commentInteractionRepository.findByUserId(session.user.id).then(interactions => 
+            interactions.filter((i: any) => i.interactionType === 'like').length
+          ).catch(() => 0),
+          commentRepository.findByUserId(session.user.id).then(comments => comments.length).catch(() => 0)
+        ]);
+        
+        totalUserLikes = userPostLikes + userCommentLikes;
+        totalUserComments = userComments;
+      } catch (error) {
+        console.warn('Error fetching user-specific stats:', error);
+      }
+    }
+
+    // Calculate course-specific stats for creators
+    let totalCourseEnrollments = 0;
+    let totalCourseModules = 0;
+    let totalCourseAssignments = 0;
+    let totalCourseProgress = 0;
+    
+    if (isCreator && session?.user?.id) {
+      try {
+        // Get creator's courses
+        const creatorCourses = await courseRepository.getAll().then(courses => 
+          courses.filter((c: any) => c.userId === userId)
+        ).catch(() => []);
+        
+        // Calculate course-related stats
+        totalCourseEnrollments = creatorCourses.length; // This would need enrollment tracking
+        totalCourseModules = creatorCourses.reduce((total: number, course: any) => {
+          return total + (course.modules?.length || 0);
+        }, 0);
+        totalCourseAssignments = creatorCourses.reduce((total: number, course: any) => {
+          return total + (course.assignments?.length || 0);
+        }, 0);
+        totalCourseProgress = creatorCourses.reduce((total: number, course: any) => {
+          return total + (course.progress?.length || 0);
+        }, 0);
+      } catch (error) {
+        console.warn('Error fetching course-specific stats:', error);
+      }
+    }
 
     // Calculate additional metrics
     const now = new Date();
@@ -222,9 +312,18 @@ export async function GET(request: NextRequest) {
         totalServices,
         totalProfessionals,
         totalBanners,
-        totalMedia,
         totalMessages: totalContactMessages,
-        totalSubscribers
+        totalSubscribers,
+        totalComments,
+        totalPostLikes,
+        totalCommentLikes,
+        totalUserLikes,
+        totalUserComments,
+        // Course-specific stats for creators
+        totalCourseEnrollments,
+        totalCourseModules,
+        totalCourseAssignments,
+        totalCourseProgress
       },
       recentActivity: {
         newUsers: recentUsersFiltered?.length || 0,

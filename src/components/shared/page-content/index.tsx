@@ -12,7 +12,7 @@ export default function PageContent(props: any) {
       span={24}
       className="bg-dark p-5 overflow-hidden d-flex justify-content-center"
       style={{
-        borderRadius: 32,
+        borderRadius: 20,
         backgroundImage: `url('${BASE_URL_UPLOADS_MEDIA}/${banner}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",

@@ -1,445 +1,449 @@
 "use client";
 
-import React from "react";
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
+import React, { useState, useRef } from "react";
 import {
-  Card,
-  Row,
   Col,
-  Typography,
-  Tag,
-  Space,
-  Button,
-  Table,
-  Avatar,
-  Progress,
-  Divider,
+  Row,
+  Card,
   Statistic,
-  Badge,
-  Tooltip,
-  Empty,
+  Typography,
+  Space,
+  Table,
+  Tag,
+  Button,
+  Spin,
+  Tabs,
+  message,
+  Modal,
+  Descriptions,
+  Popconfirm,
 } from "antd";
 import {
   BookOutlined,
-  UserOutlined,
-  EditOutlined,
-  PlusOutlined,
-  FileTextOutlined,
   CalendarOutlined,
-  TrophyOutlined,
-  EyeOutlined,
+  PlusOutlined,
+  EditOutlined,
   DeleteOutlined,
-  PlayCircleOutlined,
-  QuestionCircleOutlined,
-  TeamOutlined,
-  ClockCircleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
-import { Authenticated, useList } from "@refinedev/core";
-import { ICourse } from "@domain/models/course";
-import { IPost } from "@domain/models/post.model";
-import { IEvent } from "@domain/models/event.model";
-import { IEnrollment } from "@domain/models/enrollment";
-import { ILesson } from "@domain/models/lesson";
-import { IQuiz } from "@domain/models/quiz";
-import { NavigateToResource } from "@refinedev/nextjs-router/app";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
+import { useTranslation } from "@contexts/translation.context";
+import { statsAPI } from "@store/api/stats_api";
+import { useTable } from "@refinedev/antd";
+import { useNotification as useCoreNotification } from "@refinedev/core";
+import { BaseRecord } from "@refinedev/core";
+import { format } from "@utils/format";
+import { useRouter } from "next/navigation";
+import CourseCreateModal from "@components/modals/CourseCreateModal";
+import PostCreateModal from "@components/modals/PostCreateModal";
+import EventCreateModal from "@components/modals/EventCreateModal";
+import CourseManagementModal from "@components/modals/CourseManagementModal";
 
 const { Title, Text } = Typography;
 
 export default function CreatorDashboard() {
-  const router = useRouter();
   const { data: session, status } = useSession();
+  const { t } = useTranslation();
+  const { open } = useCoreNotification();
+  const router = useRouter();
+  
+  // Modal states
+  const [courseModalVisible, setCourseModalVisible] = useState(false);
+  const [postModalVisible, setPostModalVisible] = useState(false);
+  const [eventModalVisible, setEventModalVisible] = useState(false);
+  const [courseManagementVisible, setCourseManagementVisible] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [editingCourse, setEditingCourse] = useState<any>(null);
+  
+  // View modal states
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [viewModalData, setViewModalData] = useState<any>(null);
+  const [viewModalType, setViewModalType] = useState<'course' | 'post' | 'event'>('course');
+  
+  // Table refs for focus management
+  const coursesTableRef = useRef<any>(null);
+  const postsTableRef = useRef<any>(null);
+  const eventsTableRef = useRef<any>(null);
 
-  // Get current user from session
-  const currentUser = session?.user;
+  // Fetch stats data
+  const statsQuery = statsAPI.useGetDashboardStatsQuery(undefined, {
+    skip: !session?.user,
+    refetchOnMountOrArgChange: true,
+  });
 
-  // Fetch creator's content - ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
-  const { data: coursesData, isLoading: isLoadingCourses } = useList<ICourse>({
+  const stats = statsQuery.data?.overview || {
+    totalUsers: 0,
+    totalPosts: 0,
+    totalEvents: 0,
+    totalCourses: 0,
+    totalProjects: 0,
+    totalOpportunities: 0,
+    totalServices: 0,
+    totalProfessionals: 0,
+    totalBanners: 0,
+    totalContactMessages: 0,
+    totalSubscribers: 0,
+    totalComments: 0,
+    totalPostLikes: 0,
+    totalCommentLikes: 0,
+    totalUserLikes: 0,
+    totalUserComments: 0,
+    // Course-specific stats for creators
+    totalCourseEnrollments: 0,
+    totalCourseModules: 0,
+    totalCourseAssignments: 0,
+    totalCourseProgress: 0,
+  };
+
+  // Table configurations
+  const { tableProps: coursesTableProps, tableQueryResult: coursesQueryResult } = useTable({
     resource: "courses",
-    filters: currentUser?.id
-      ? [
-          {
-            field: "userId",
-            operator: "eq",
-            value: currentUser.id,
-          },
-        ]
-      : [],
-    queryOptions: {
-      enabled: !!currentUser?.id, // Only fetch if user ID exists
-      retry: false, // Disable retries to prevent hanging
-      staleTime: 30000, // Cache for 30 seconds
-    },
+    syncWithLocation: true,
   });
 
-  const { data: postsData, isLoading: isLoadingPosts } = useList<IPost>({
+  const { tableProps: postsTableProps, tableQueryResult: postsQueryResult } = useTable({
     resource: "posts",
-    filters: currentUser?.id
-      ? [
-          {
-            field: "authorId",
-            operator: "eq",
-            value: currentUser.id,
-          },
-        ]
-      : [],
-    queryOptions: {
-      enabled: !!currentUser?.id, // Only fetch if user ID exists
-      retry: false, // Disable retries to prevent hanging
-      staleTime: 30000, // Cache for 30 seconds
-    },
+    syncWithLocation: true,
   });
 
-  const { data: eventsData, isLoading: isLoadingEvents } = useList<IEvent>({
+  const { tableProps: eventsTableProps, tableQueryResult: eventsQueryResult } = useTable({
     resource: "events",
-    filters: currentUser?.id
-      ? [
-          {
-            field: "userId",
-            operator: "eq",
-            value: currentUser.id,
-          },
-        ]
-      : [],
-    queryOptions: {
-      enabled: !!currentUser?.id, // Only fetch if user ID exists
-      retry: false, // Disable retries to prevent hanging
-      staleTime: 30000, // Cache for 30 seconds
-    },
+    syncWithLocation: true,
   });
 
-  const courses = coursesData?.data || [];
-  const posts = postsData?.data || [];
-  const events = eventsData?.data || [];
+  // Handle successful creation
+  const handleCreationSuccess = (type: 'course' | 'post' | 'event') => {
+    message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
+    
+    // Refetch the appropriate table data
+    switch (type) {
+      case 'course':
+        coursesQueryResult.refetch();
+        // Focus on courses table
+        setTimeout(() => {
+          coursesTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'post':
+        postsQueryResult.refetch();
+        // Focus on posts table
+        setTimeout(() => {
+          postsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+      case 'event':
+        eventsQueryResult.refetch();
+        // Focus on events table
+        setTimeout(() => {
+          eventsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        break;
+    }
+    
+    // Refetch stats
+    statsQuery.refetch();
+  };
 
-  // Fetch enrollments for creator's courses
-  const courseIds = courses.map((c) => c.id);
-  const { data: enrollmentsData } = useList<IEnrollment>({
-    resource: "enrollments",
-    filters:
-      courseIds.length > 0
-        ? [
-            {
-              field: "courseId",
-              operator: "in",
-              value: courseIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: courseIds.length > 0, // Only fetch if there are course IDs
-      retry: false,
-      staleTime: 30000,
-    },
-  });
+  // Handle view action
+  const handleView = async (record: BaseRecord, type: 'course' | 'post' | 'event') => {
+    try {
+      const response = await fetch(`/api/${type}s/${record.id}`);
+      const data = await response.json();
+      
+      if (response.ok) {
+        setViewModalData(data);
+        setViewModalType(type);
+        setViewModalVisible(true);
+      } else {
+        open?.({
+          type: "error",
+          message: "Error",
+          description: `Failed to fetch ${type} details: ${data.message}`,
+        });
+      }
+    } catch (error: any) {
+      open?.({
+        type: "error",
+        message: "Error",
+        description: `Failed to fetch ${type} details: ${error.message}`,
+      });
+    }
+  };
 
-  const enrollments = enrollmentsData?.data || [];
+  // Handle edit action
+  const handleEdit = (record: BaseRecord, type: 'course' | 'post' | 'event') => {
+    if (type === 'course') {
+      setEditingCourse(record);
+      setCourseModalVisible(true);
+    } else {
+      // For posts and events, we can implement edit modals later
+      message.info(`Edit functionality for ${type}s will be implemented soon.`);
+    }
+  };
 
-  // Fetch lessons for creator's courses
-  const { data: lessonsData } = useList<ILesson>({
-    resource: "lessons",
-    filters:
-      courseIds.length > 0
-        ? [
-            {
-              field: "courseId",
-              operator: "in",
-              value: courseIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: courseIds.length > 0, // Only fetch if there are course IDs
-      retry: false,
-      staleTime: 30000,
-    },
-  });
+  // Handle delete action
+  const handleDelete = async (record: BaseRecord, type: 'course' | 'post' | 'event') => {
+    try {
+      const response = await fetch(`/api/${type}s/${record.id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        open?.({
+          type: "success",
+          message: "Success",
+          description: `${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully!`,
+        });
+        
+        // Refetch the appropriate table data
+        switch (type) {
+          case 'course':
+            coursesQueryResult.refetch();
+            break;
+          case 'post':
+            postsQueryResult.refetch();
+            break;
+          case 'event':
+            eventsQueryResult.refetch();
+            break;
+        }
+        
+        // Refetch stats
+        statsQuery.refetch();
+      } else {
+        open?.({
+          type: "error",
+          message: "Error",
+          description: `Failed to delete ${type}: ${data.message}`,
+        });
+      }
+    } catch (error: any) {
+      open?.({
+        type: "error",
+        message: "Error",
+        description: `Failed to delete ${type}: ${error.message}`,
+      });
+    }
+  };
 
-  const lessons = lessonsData?.data || [];
-
-  // Fetch quizzes for creator's lessons
-  const lessonIds = lessons.map((l) => l.id);
-  const { data: quizesData } = useList<IQuiz>({
-    resource: "quizes",
-    filters:
-      lessonIds.length > 0
-        ? [
-            {
-              field: "lessonId",
-              operator: "in",
-              value: lessonIds,
-            },
-          ]
-        : [],
-    queryOptions: {
-      enabled: lessonIds.length > 0, // Only fetch if there are lesson IDs
-      retry: false,
-      staleTime: 30000,
-    },
-  });
-
-  const quizes = quizesData?.data || [];
-
-  // Show loading state while session is loading
+  // Show loading while session is loading
   if (status === "loading") {
     return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "24px", marginBottom: "16px" }}>🔄</div>
-          <div>Loading your dashboard...</div>
-        </div>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  // Show error state if no session
-  if (!session) {
+  // Only render creator dashboard for creator/student users
+  if (!session?.user || !["creator", "student"].includes(session.user.role || "")) {
     return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "24px", marginBottom: "16px" }}>⚠️</div>
-          <div>Please log in to access your dashboard.</div>
-        </div>
+      <div style={{ 
+        display: "flex", 
+        justifyContent: "center", 
+        alignItems: "center", 
+        height: "100vh" 
+      }}>
+        <Spin size="large" />
       </div>
     );
   }
 
-  // Memoize expensive calculations to prevent unnecessary re-renders
-  const statistics = useMemo(() => {
-    const totalEnrollments = enrollments.length;
-    const activeEnrollments = enrollments.filter((e) => {
-      try {
-        const enrollmentDate = new Date(e.enrollmentDate);
-        const completionDate = new Date(e.completionDate);
-        const now = new Date();
-        return now >= enrollmentDate && now < completionDate;
-      } catch {
-        return false;
-      }
-    }).length;
+  // Creator-specific stats
+  const creatorStats = [
+    {
+      title: "My Courses",
+      value: stats.totalCourses,
+      icon: <BookOutlined />,
+      color: "#52c41a",
+    },
+    {
+      title: "Course Modules",
+      value: stats.totalCourseModules,
+      icon: <CalendarOutlined />,
+      color: "#1890ff",
+    },
+    {
+      title: "Course Assignments",
+      value: stats.totalCourseAssignments,
+      icon: <CalendarOutlined />,
+      color: "#13c2c2",
+    },
+    {
+      title: "My Posts",
+      value: stats.totalPosts,
+      icon: <BookOutlined />,
+      color: "#722ed1",
+    },
+    {
+      title: "Post Likes Received",
+      value: stats.totalPostLikes,
+      icon: <CalendarOutlined />,
+      color: "#fa8c16",
+    },
+    {
+      title: "Comment Likes Received",
+      value: stats.totalCommentLikes,
+      icon: <CalendarOutlined />,
+      color: "#eb2f96",
+    },
+    {
+      title: "My Comments",
+      value: stats.totalUserComments,
+      icon: <CalendarOutlined />,
+      color: "#52c41a",
+    },
+  ];
 
-    const completedEnrollments = enrollments.filter((e) => {
-      try {
-        const completionDate = new Date(e.completionDate);
-        const now = new Date();
-        return now >= completionDate;
-      } catch {
-        return false;
-      }
-    }).length;
-
-    const upcomingEvents = events.filter((e) => {
-      try {
-        const eventDate = new Date(e.eventDate);
-        const now = new Date();
-        return eventDate >= now;
-      } catch {
-        return false;
-      }
-    }).length;
-
-    return {
-      totalEnrollments,
-      activeEnrollments,
-      completedEnrollments,
-      upcomingEvents,
-    };
-  }, [enrollments, events]);
-
-  const recentData = useMemo(
-    () => ({
-      recentPosts: posts.slice(0, 3),
-      recentCourses: courses.slice(0, 3),
-      recentEvents: events.slice(0, 3),
-    }),
-    [posts, courses, events]
-  );
-
-  // Memoize table columns to prevent unnecessary re-renders
-  const courseColumns = useMemo(
-    () => [
-      {
-        title: "Course",
-        dataIndex: "title",
-        key: "title",
-        render: (title: string, record: ICourse) => (
-          <Space>
-            <Avatar
-              src={
-                record.imageUrl
-                  ? `${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`
-                  : undefined
-              }
-              icon={<BookOutlined />}
-            />
-            <div>
-              <Text strong>{title}</Text>
-              <br />
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {record.description?.substring(0, 50) || "No description"}...
-              </Text>
-            </div>
-          </Space>
-        ),
-      },
-      {
-        title: "Enrollments",
-        key: "enrollments",
-        render: (record: ICourse) => {
-          const courseEnrollments = enrollments.filter(
-            (e) => e.courseId === record.id
-          );
-          return (
-            <Badge
-              count={courseEnrollments.length}
-              style={{ backgroundColor: "#1890ff" }}
-            />
-          );
-        },
-      },
-      {
-        title: "Lessons",
-        key: "lessons",
-        render: (record: ICourse) => {
-          const courseLessons = lessons.filter((l) => l.courseId === record.id);
-          return (
-            <Badge
-              count={courseLessons.length}
-              style={{ backgroundColor: "#52c41a" }}
-            />
-          );
-        },
-      },
-      {
-        title: "Status",
-        dataIndex: "isPublished",
-        key: "isPublished",
-        render: (isPublished: boolean) => (
-          <Tag color={isPublished ? "green" : "orange"}>
-            {isPublished ? "Published" : "Draft"}
-          </Tag>
-        ),
-      },
-      {
-        title: "Actions",
-        key: "actions",
-        render: (record: ICourse) => (
-          <Space>
-            <Tooltip title="View Course">
-              <Button
-                type="text"
-                icon={<EyeOutlined />}
-                onClick={() =>
-                  router.push(`/dashboard/courses/show/${record.id}`)
-                }
-              />
-            </Tooltip>
-            <Tooltip title="Edit Course">
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={() =>
-                  router.push(`/dashboard/courses/edit/${record.id}`)
-                }
-              />
-            </Tooltip>
-            <Tooltip title="Manage Lessons">
-              <Button
-                type="text"
-                icon={<PlayCircleOutlined />}
-                onClick={() =>
-                  router.push(`/dashboard/courses/${record.id}/lessons`)
-                }
-              />
-            </Tooltip>
-          </Space>
-        ),
-      },
-    ],
-    [enrollments, lessons, router]
-  );
-
-  const postColumns = [
+  // Table columns
+  const courseColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
     {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      render: (title: string, record: IPost) => (
-        <Space>
-          <Avatar
-            src={
-              record.imageUrl
-                ? `${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`
-                : undefined
-            }
-            icon={<FileTextOutlined />}
-          />
-          <div>
-            <Text strong>{title}</Text>
-            <br />
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {record.description?.substring(0, 50)}...
-            </Text>
-          </div>
-        </Space>
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (value: any, record: any) => (
+        <span>
+          {record.isFree ? (
+            <Tag color="green">Free</Tag>
+          ) : (
+            `${value || 0} ${record.currency || 'XAF'}`
+          )}
+        </span>
       ),
     },
     {
       title: "Status",
-      dataIndex: "isPublished",
-      key: "isPublished",
-      render: (isPublished: boolean) => (
-        <Tag color={isPublished ? "green" : "orange"}>
-          {isPublished ? "Published" : "Draft"}
-        </Tag>
-      ),
-    },
-    {
-      title: "Created",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          archived: 'gray',
+          suspended: 'red'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (record: IPost) => (
+      render: (_: any, record: BaseRecord) => (
         <Space>
-          <Tooltip title="View Post">
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => router.push(`/posts/${record.slug}`)}
+          <Button 
+            icon={<EyeOutlined />} 
+            size="small" 
+            onClick={() => handleView(record, 'course')}
+            title="View Course"
+          />
+          <Button 
+            icon={<EditOutlined />} 
+            size="small" 
+            onClick={() => handleEdit(record, 'course')}
+            title="Edit Course"
+          />
+          <Button 
+            type="primary"
+            size="small" 
+            onClick={() => router.push(`/dashboard/courses/${record.id}`)}
+            title="Manage Course"
+          >
+            Manage
+          </Button>
+          <Popconfirm
+            title="Delete Course"
+            description="Are you sure you want to delete this course?"
+            onConfirm={() => handleDelete(record, 'course')}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button 
+              icon={<DeleteOutlined />} 
+              size="small" 
+              danger 
+              title="Delete Course"
             />
-          </Tooltip>
-          <Tooltip title="Edit Post">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(`/dashboard/blog-posts/edit/${record.id}`)
-              }
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  const postColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          archived: 'gray'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
+      },
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: any, record: BaseRecord) => (
+        <Space>
+          <Button 
+            icon={<EyeOutlined />} 
+            size="small" 
+            onClick={() => handleView(record, 'post')}
+            title="View Post"
+          />
+          <Button 
+            icon={<EditOutlined />} 
+            size="small" 
+            onClick={() => handleEdit(record, 'post')}
+            title="Edit Post"
+          />
+          <Popconfirm
+            title="Delete Post"
+            description="Are you sure you want to delete this post?"
+            onConfirm={() => handleDelete(record, 'post')}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button 
+              icon={<DeleteOutlined />} 
+              size="small" 
+              danger 
+              title="Delete Post"
             />
-          </Tooltip>
+          </Popconfirm>
         </Space>
       ),
     },
@@ -447,34 +451,22 @@ export default function CreatorDashboard() {
 
   const eventColumns = [
     {
-      title: "Event",
-      dataIndex: "title",
-      key: "title",
-      render: (title: string, record: IEvent) => (
-        <Space>
-          <Avatar
-            src={
-              record.imageUrl
-                ? `${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`
-                : undefined
-            }
-            icon={<CalendarOutlined />}
-          />
-          <div>
-            <Text strong>{title}</Text>
-            <br />
-            <Text type="secondary" style={{ fontSize: 12 }}>
-              {record.description?.substring(0, 50)}...
-            </Text>
-          </div>
-        </Space>
-      ),
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      render: (value: any, record: any, index: number) =>
+        format.twoChar((index + 1).toString()),
     },
     {
-      title: "Date",
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Event Date",
       dataIndex: "eventDate",
       key: "eventDate",
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (value: string) => new Date(value).toLocaleDateString(),
     },
     {
       title: "Location",
@@ -483,423 +475,307 @@ export default function CreatorDashboard() {
     },
     {
       title: "Status",
+      dataIndex: "status",
       key: "status",
-      render: (record: IEvent) => {
-        const eventDate = new Date(record.eventDate);
-        const now = new Date();
-        const isUpcoming = eventDate >= now;
-        return (
-          <Tag color={isUpcoming ? "blue" : "gray"}>
-            {isUpcoming ? "Upcoming" : "Past"}
-          </Tag>
-        );
+      render: (value: string) => {
+        const colorMap = {
+          draft: 'orange',
+          published: 'green',
+          cancelled: 'red',
+          completed: 'blue'
+        };
+        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
       },
     },
     {
       title: "Actions",
       key: "actions",
-      render: (record: IEvent) => (
+      render: (_: any, record: BaseRecord) => (
         <Space>
-          <Tooltip title="View Event">
-            <Button
-              type="text"
-              icon={<EyeOutlined />}
-              onClick={() => router.push(`/events/${record.slug}`)}
+          <Button 
+            icon={<EyeOutlined />} 
+            size="small" 
+            onClick={() => handleView(record, 'event')}
+            title="View Event"
+          />
+          <Button 
+            icon={<EditOutlined />} 
+            size="small" 
+            onClick={() => handleEdit(record, 'event')}
+            title="Edit Event"
+          />
+          <Popconfirm
+            title="Delete Event"
+            description="Are you sure you want to delete this event?"
+            onConfirm={() => handleDelete(record, 'event')}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button 
+              icon={<DeleteOutlined />} 
+              size="small" 
+              danger 
+              title="Delete Event"
             />
-          </Tooltip>
-          <Tooltip title="Edit Event">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => router.push(`/dashboard/events/edit/${record.id}`)}
-            />
-          </Tooltip>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
+  const tabItems = [
+    {
+      key: "courses",
+      label: "Courses",
+      children: (
+        <div ref={coursesTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>My Courses</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setCourseModalVisible(true)}
+            >
+              Create Course
+            </Button>
+          </div>
+          <Table
+            {...coursesTableProps}
+            columns={courseColumns}
+            rowKey="id"
+            pagination={{
+              ...coursesTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "posts",
+      label: "Posts",
+      children: (
+        <div ref={postsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>My Posts</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setPostModalVisible(true)}
+            >
+              Create Post
+            </Button>
+          </div>
+          <Table
+            {...postsTableProps}
+            columns={postColumns}
+            rowKey="id"
+            pagination={{
+              ...postsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "events",
+      label: "Events",
+      children: (
+        <div ref={eventsTableRef}>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Title level={4}>My Events</Title>
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />}
+              onClick={() => setEventModalVisible(true)}
+            >
+              Create Event
+            </Button>
+          </div>
+          <Table
+            {...eventsTableProps}
+            columns={eventColumns}
+            rowKey="id"
+            pagination={{
+              ...eventsTableProps.pagination,
+              showSizeChanger: true,
+              showQuickJumper: true,
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <>
-      <PageBreadCrumbs items={["Dashboard", "Creator"]} />
-
-      <div style={{ padding: "24px", minHeight: "100vh" }}>
-        {/* Header Section */}
-        <Card
-          style={{ marginBottom: 24, borderRadius: 12, background: "#f4f4f4" }}
-        >
-          <Row justify="space-between" align="middle">
-            <Col>
-              <Space>
-                <Title level={2} style={{ margin: 0 }}>
-                  <EditOutlined style={{ marginRight: 8, color: "#722ed1" }} />
-                  Content Creator Dashboard
-                  {(isLoadingCourses || isLoadingPosts || isLoadingEvents) && (
-                    <span
-                      style={{
-                        marginLeft: 8,
-                        fontSize: "14px",
-                        color: "#1890ff",
-                      }}
-                    >
-                      🔄 Loading...
-                    </span>
-                  )}
-                </Title>
-              </Space>
-              <div style={{ marginTop: 8 }}>
-                <Text type="secondary">
-                  Welcome back, {currentUser?.name || "Creator"}! Manage your
-                  content and track your audience engagement.
-                </Text>
-              </div>
-            </Col>
-            <Col>
-              <Space>
-                <Button
-                  icon={<PlusOutlined />}
-                  onClick={() => router.push("/dashboard/courses/create")}
-                >
-                  Create Course
-                </Button>
-                <Button
-                  icon={<FileTextOutlined />}
-                  onClick={() => router.push("/dashboard/blog-posts/create")}
-                >
-                  Write Post
-                </Button>
-                <Button
-                  icon={<CalendarOutlined />}
-                  onClick={() => router.push("/dashboard/events/create")}
-                >
-                  Create Event
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
-
-        <Row gutter={[16, 16]}>
-          {/* Statistics */}
-          <Col xs={24}>
-            <Card
-              title="Content Statistics"
+    <div style={{ padding: "24px" }}>
+      <Title level={2}>Creator Dashboard</Title>
+      
+      {/* Creator Statistics */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Title level={4}>Your Statistics</Title>
+        </Col>
+        {creatorStats.map((stat, index) => (
+          <Col sm={6} md={6} span={24} key={index}>
+            <Card 
+              size="small"
               style={{
-                borderRadius: 12,
-                marginBottom: 16,
-                background: "#f4f4f4",
+                backgroundColor: "white",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                border: "none"
               }}
             >
-              <Row gutter={[16, 16]}>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Total Courses"
-                    value={courses.length}
-                    prefix={<BookOutlined style={{ color: "#1890ff" }} />}
-                    valueStyle={{ color: "#1890ff" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Total Posts"
-                    value={posts.length}
-                    prefix={<FileTextOutlined style={{ color: "#52c41a" }} />}
-                    valueStyle={{ color: "#52c41a" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Total Events"
-                    value={events.length}
-                    prefix={<CalendarOutlined style={{ color: "#faad14" }} />}
-                    valueStyle={{ color: "#faad14" }}
-                  />
-                </Col>
-                <Col xs={12} sm={6}>
-                  <Statistic
-                    title="Total Enrollments"
-                    value={statistics.totalEnrollments}
-                    prefix={<TeamOutlined style={{ color: "#722ed1" }} />}
-                    valueStyle={{ color: "#722ed1" }}
-                  />
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-
-          {/* Quick Actions */}
-          <Col xs={24} lg={8}>
-            <Card
-              title="Quick Actions"
-              style={{
-                borderRadius: 12,
-                marginBottom: 16,
-                background: "#f4f4f4",
-              }}
-            >
-              <Space
-                direction="vertical"
-                style={{ width: "100%" }}
-                size="middle"
-              >
-                <Button
-                  type="primary"
-                  icon={<BookOutlined />}
-                  onClick={() => router.push("/dashboard/courses/create")}
-                  block
-                >
-                  Create New Course
-                </Button>
-                <Button
-                  icon={<FileTextOutlined />}
-                  onClick={() => router.push("/dashboard/blog-posts/create")}
-                  block
-                >
-                  Write New Post
-                </Button>
-                <Button
-                  icon={<CalendarOutlined />}
-                  onClick={() => router.push("/dashboard/events/create")}
-                  block
-                >
-                  Create New Event
-                </Button>
-                <Button
-                  icon={<PlayCircleOutlined />}
-                  onClick={() => router.push("/dashboard/lessons/create")}
-                  block
-                >
-                  Add Lesson
-                </Button>
-                <Button
-                  icon={<QuestionCircleOutlined />}
-                  onClick={() => router.push("/dashboard/quizes/create")}
-                  block
-                >
-                  Create Quiz
-                </Button>
-              </Space>
-            </Card>
-          </Col>
-
-          {/* Recent Activity */}
-          <Col xs={24} lg={16}>
-            <Card
-              title="Recent Activity"
-              style={{
-                borderRadius: 12,
-                marginBottom: 16,
-                background: "#f4f4f4",
-              }}
-            >
-              <Space
-                direction="vertical"
-                style={{ width: "100%" }}
-                size="middle"
-              >
-                <div>
-                  <Text strong>Recent Content:</Text>
-                  <div style={{ marginTop: 12 }}>
-                    {recentData.recentPosts.length > 0 && (
-                      <div style={{ marginBottom: 12 }}>
-                        <Text type="secondary">Latest Posts:</Text>
-                        {recentData.recentPosts.map((post) => (
-                          <Card
-                            key={post.id}
-                            size="small"
-                            style={{ marginBottom: 8, borderRadius: 8 }}
-                          >
-                            <Row align="middle" justify="space-between">
-                              <Col>
-                                <Text strong>{post.title}</Text>
-                                <br />
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                  {new Date(
-                                    post.publishedAt
-                                  ).toLocaleDateString()}
-                                </Text>
-                              </Col>
-                              <Col>
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon={<EyeOutlined />}
-                                  onClick={() =>
-                                    router.push(`/posts/${post.slug}`)
-                                  }
-                                >
-                                  View
-                                </Button>
-                              </Col>
-                            </Row>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-
-                    {recentData.recentCourses.length > 0 && (
-                      <div style={{ marginBottom: 12 }}>
-                        <Text type="secondary">Latest Courses:</Text>
-                        {recentData.recentCourses.map((course) => (
-                          <Card
-                            key={course.id}
-                            size="small"
-                            style={{ marginBottom: 8, borderRadius: 8 }}
-                          >
-                            <Row align="middle" justify="space-between">
-                              <Col>
-                                <Text strong>{course.title}</Text>
-                                <br />
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                  {
-                                    enrollments.filter(
-                                      (e) => e.courseId === course.id
-                                    ).length
-                                  }{" "}
-                                  enrollments
-                                </Text>
-                              </Col>
-                              <Col>
-                                <Button
-                                  type="primary"
-                                  size="small"
-                                  icon={<EyeOutlined />}
-                                  onClick={() =>
-                                    router.push(
-                                      `/dashboard/courses/show/${course.id}`
-                                    )
-                                  }
-                                >
-                                  Manage
-                                </Button>
-                              </Col>
-                            </Row>
-                          </Card>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </Space>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* My Courses */}
-        <Card
-          title={
-            <span>
-              <BookOutlined
-                style={{
-                  marginRight: 8,
-                  color: "#1890ff",
-                }}
+              <Statistic
+                title={stat.title}
+                value={stat.value}
+                prefix={<span style={{ color: stat.color }}>{stat.icon}</span>}
+                valueStyle={{ fontSize: 20 }}
               />
-              My Courses ({courses.length})
-            </span>
-          }
-          style={{
-            marginTop: 16,
-            borderRadius: 12,
-            marginBottom: 16,
-            background: "#f4f4f4",
-          }}
-        >
-          {courses.length === 0 ? (
-            <Empty
-              description="You haven't created any courses yet"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            >
-              <Button
-                type="primary"
-                icon={<BookOutlined />}
-                onClick={() => router.push("/dashboard/courses/create")}
-              >
-                Create Your First Course
-              </Button>
-            </Empty>
-          ) : (
-            <Table
-              columns={courseColumns}
-              dataSource={courses}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-              size="middle"
-            />
-          )}
-        </Card>
+            </Card>
+          </Col>
+        ))}
+      </Row>
 
-        {/* My Posts */}
-        <Card
-          title={
-            <span>
-              <FileTextOutlined style={{ marginRight: 8, color: "#52c41a" }} />
-              My Posts ({posts.length})
-            </span>
-          }
-          style={{ marginBottom: 16, borderRadius: 12, background: "#f4f4f4" }}
-        >
-          {posts.length === 0 ? (
-            <Empty
-              description="You haven't written any posts yet"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            >
-              <Button
-                type="primary"
-                icon={<FileTextOutlined />}
-                onClick={() => router.push("/dashboard/blog-posts/create")}
-              >
-                Write Your First Post
-              </Button>
-            </Empty>
-          ) : (
-            <Table
-              columns={postColumns}
-              dataSource={posts}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-              size="middle"
-            />
-          )}
-        </Card>
+      {/* Content Management Tabs */}
+      <Card
+        style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          border: "none"
+        }}
+      >
+        <Tabs defaultActiveKey="courses" items={tabItems} />
+      </Card>
 
-        {/* My Events */}
-        <Card
-          title={
-            <span>
-              <CalendarOutlined style={{ marginRight: 8, color: "#faad14" }} />
-              My Events ({events.length})
-            </span>
-          }
-          style={{ borderRadius: 12, background: "#f4f4f4" }}
-        >
-          {events.length === 0 ? (
-            <Empty
-              description="You haven't created any events yet"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            >
-              <Button
-                type="primary"
-                icon={<CalendarOutlined />}
-                onClick={() => router.push("/dashboard/events/create")}
-              >
-                Create Your First Event
-              </Button>
-            </Empty>
-          ) : (
-            <Table
-              columns={eventColumns}
-              dataSource={events}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-              size="middle"
-            />
-          )}
-        </Card>
-      </div>
-      {/* <Authenticated key="creator-dashboard">
-        <NavigateToResource />
-      </Authenticated> */}
-    </>
+      {/* Modals */}
+      <CourseCreateModal
+        visible={courseModalVisible}
+        onCancel={() => {
+          setCourseModalVisible(false);
+          setEditingCourse(null);
+        }}
+        onSuccess={() => handleCreationSuccess('course')}
+        editingCourse={editingCourse}
+      />
+      
+      <PostCreateModal
+        visible={postModalVisible}
+        onCancel={() => setPostModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('post')}
+      />
+      
+      <EventCreateModal
+        visible={eventModalVisible}
+        onCancel={() => setEventModalVisible(false)}
+        onSuccess={() => handleCreationSuccess('event')}
+      />
+      
+      <CourseManagementModal
+        visible={courseManagementVisible}
+        onCancel={() => {
+          setCourseManagementVisible(false);
+          setSelectedCourse(null);
+        }}
+        courseId={selectedCourse?.id}
+        courseTitle={selectedCourse?.title}
+      />
+      
+      {/* View Modal */}
+      <Modal
+        title={`View ${viewModalType.charAt(0).toUpperCase() + viewModalType.slice(1)} Details`}
+        open={viewModalVisible}
+        onCancel={() => {
+          setViewModalVisible(false);
+          setViewModalData(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => {
+            setViewModalVisible(false);
+            setViewModalData(null);
+          }}>
+            Close
+          </Button>
+        ]}
+        width={800}
+      >
+        {viewModalData && (
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="ID">{viewModalData.id}</Descriptions.Item>
+            <Descriptions.Item label="Title">{viewModalData.title}</Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag color={
+                viewModalData.status === 'published' ? 'green' :
+                viewModalData.status === 'draft' ? 'orange' :
+                viewModalData.status === 'archived' ? 'gray' :
+                viewModalData.status === 'cancelled' ? 'red' :
+                viewModalData.status === 'completed' ? 'blue' : 'default'
+              }>
+                {viewModalData.status}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Created At">
+              {new Date(viewModalData.createdAt).toLocaleString()}
+            </Descriptions.Item>
+            <Descriptions.Item label="Updated At">
+              {new Date(viewModalData.updatedAt).toLocaleString()}
+            </Descriptions.Item>
+            
+            {/* Course-specific fields */}
+            {viewModalType === 'course' && (
+              <>
+                <Descriptions.Item label="Author">{viewModalData.authorName}</Descriptions.Item>
+                <Descriptions.Item label="Price">
+                  {viewModalData.isFree ? (
+                    <Tag color="green">Free</Tag>
+                  ) : (
+                    `${viewModalData.price || 0} ${viewModalData.currency || 'XAF'}`
+                  )}
+                </Descriptions.Item>
+                <Descriptions.Item label="Level">{viewModalData.level}</Descriptions.Item>
+                <Descriptions.Item label="Language">{viewModalData.language}</Descriptions.Item>
+                <Descriptions.Item label="Description" span={2}>
+                  {viewModalData.description}
+                </Descriptions.Item>
+              </>
+            )}
+            
+            {/* Post-specific fields */}
+            {viewModalType === 'post' && (
+              <>
+                <Descriptions.Item label="Excerpt" span={2}>
+                  {viewModalData.description}
+                </Descriptions.Item>
+                <Descriptions.Item label="Content" span={2}>
+                  <div dangerouslySetInnerHTML={{ __html: viewModalData.content }} />
+                </Descriptions.Item>
+              </>
+            )}
+            
+            {/* Event-specific fields */}
+            {viewModalType === 'event' && (
+              <>
+                <Descriptions.Item label="Event Date">
+                  {new Date(viewModalData.eventDate).toLocaleString()}
+                </Descriptions.Item>
+                <Descriptions.Item label="Location">{viewModalData.location}</Descriptions.Item>
+                <Descriptions.Item label="Category">{viewModalData.category}</Descriptions.Item>
+                <Descriptions.Item label="Description" span={2}>
+                  {viewModalData.description}
+                </Descriptions.Item>
+                <Descriptions.Item label="Content" span={2}>
+                  <div dangerouslySetInnerHTML={{ __html: viewModalData.content }} />
+                </Descriptions.Item>
+              </>
+            )}
+          </Descriptions>
+        )}
+      </Modal>
+    </div>
   );
 }

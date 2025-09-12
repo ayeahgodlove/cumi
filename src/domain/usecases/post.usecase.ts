@@ -22,6 +22,10 @@ export class PostUseCase {
     return this.postRepository.getAll();
   }
 
+  async getPublishedPosts(): Promise<InstanceType<typeof Post>[]> {
+    return this.postRepository.findPublished();
+  }
+
   async getPostById(id: string): Promise<InstanceType<typeof Post> | null> {
     return this.postRepository.findById(id);
   }

@@ -15,6 +15,16 @@ export interface DashboardStats {
     totalMedia: number;
     totalMessages: number;
     totalSubscribers: number;
+    totalComments: number;
+    totalPostLikes: number;
+    totalCommentLikes: number;
+    totalUserLikes: number;
+    totalUserComments: number;
+    // Course-specific stats for creators
+    totalCourseEnrollments: number;
+    totalCourseModules: number;
+    totalCourseAssignments: number;
+    totalCourseProgress: number;
   };
   recentActivity: {
     newUsers: number;

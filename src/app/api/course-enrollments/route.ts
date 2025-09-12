@@ -6,14 +6,43 @@ import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import { notificationService } from "@services/notification.service";
+import { courseUseCase } from "@domain/usecases/course.usecase";
 
 const courseEnrollmentRepository = new CourseEnrollmentRepository();
 const courseEnrollmentUseCase = new CourseEnrollmentUseCase(courseEnrollmentRepository);
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session || !session.user) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Please log in to access this resource.",
+        success: false,
+        data: null,
+        validationErrors: [],
+      },
+      { status: 401 }
+    );
+  }
+
   try {
-    const enrollments = await courseEnrollmentUseCase.getAll();
-    return NextResponse.json(enrollments);
+    const { searchParams } = new URL(request.url);
+    const courseId = searchParams.get("courseId");
+    
+    if (courseId) {
+      // Check if user is enrolled in specific course
+      const isEnrolled = await courseEnrollmentUseCase.checkUserEnrollment(courseId, session.user.id);
+      return NextResponse.json({
+        enrolled: isEnrolled,
+        success: true
+      });
+    } else {
+      // Get all enrollments for the user
+      const enrollments = await courseEnrollmentUseCase.getEnrollmentsByUserId(session.user.id);
+      return NextResponse.json(enrollments);
+    }
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -64,6 +93,21 @@ export async function POST(request: NextRequest) {
       ...dto.toData(),
       userId,
     });
+
+    // Send enrollment notification email
+    try {
+      const course = await courseUseCase.getCourseById(dto.toData().courseId);
+      if (course) {
+        await notificationService.notifyCourseEnrollment(
+          userId,
+          course.title,
+          `/courses/${course.id}`
+        );
+      }
+    } catch (emailError) {
+      console.error("Failed to send enrollment notification:", emailError);
+      // Don't fail the enrollment if email fails
+    }
 
     return NextResponse.json(
       {

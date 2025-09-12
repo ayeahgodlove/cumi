@@ -7,6 +7,8 @@ import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import { useTranslation } from "@contexts/translation.context";
+import PhoneNumberInput from "@components/shared/phone-number-input.component";
+import { validatePhoneNumber } from "@utils/country-codes";
 
 const { TextArea } = Input;
 
@@ -47,7 +49,7 @@ export default function ContactUsPageComponent() {
 
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%", backgroundColor: "white" }}>
+      <div className="container-fluid" style={{ width: "100%", backgroundColor: "white" }}>
         <AppNav logoPath="/" />
       </div>
       
@@ -114,10 +116,25 @@ export default function ContactUsPageComponent() {
                         name="phone"
                         label="Phone Number"
                         rules={[
-                          { pattern: /^[\+]?[1-9][\d]{0,15}$/, message: "Please enter a valid phone number" },
+                          {
+                            validator: (_, value) => {
+                              if (!value) return Promise.resolve();
+                              const countryCode = form.getFieldValue('countryCode') || 'CM';
+                              if (validatePhoneNumber(countryCode, value)) {
+                                return Promise.resolve();
+                              }
+                              return Promise.reject(new Error("Please enter a valid phone number"));
+                            },
+                          },
                         ]}
                       >
-                        <Input placeholder="+1234567890" />
+                        <PhoneNumberInput
+                          placeholder="Enter your phone number"
+                          showMoneyServices={true}
+                          onCountryCodeChange={(countryCode) => {
+                            form.setFieldValue('countryCode', countryCode);
+                          }}
+                        />
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>

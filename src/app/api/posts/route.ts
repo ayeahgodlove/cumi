@@ -14,35 +14,73 @@ const postMapper = new PostMapper();
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const searchTitle = searchParams.get("searchTitle");
+    const sortBy = searchParams.get("sortBy");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const authorId = searchParams.get("authorId");
+
+    // For public blog posts, we don't require authentication
+    // Only require auth for admin/dashboard access
     const session = await getServerSession(authOptions);
-    
-    if (!session || !session.user) {
-      return NextResponse.json(
-        {
-          message: "Unauthorized: Please log in to access this resource.",
-          success: false,
-          data: null,
-          validationErrors: [],
-        },
-        { status: 401 }
-      );
+    const isAdmin = session?.user?.role === "admin";
+
+    let posts;
+    if (isAdmin) {
+      // Admin gets all posts including drafts
+      posts = await postUseCase.getAll();
+    } else {
+      // Public gets only published posts
+      posts = await postUseCase.getPublishedPosts();
     }
 
-    const posts = await postUseCase.getAll();
-    const postsDto = postMapper.toDTOs(posts);
+    // Apply author filter if provided
+    if (authorId) {
+      posts = posts.filter(post => {
+        const postData = post.toJSON();
+        return postData.authorId === authorId;
+      });
+    }
+
+    // Apply search filter
+    if (searchTitle) {
+      posts = posts.filter(post => {
+        const postData = post.toJSON();
+        return postData.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
+               postData.description.toLowerCase().includes(searchTitle.toLowerCase());
+      });
+    }
+
+    // Apply sorting
+    if (sortBy) {
+      posts = posts.sort((a, b) => {
+        const aData = a.toJSON();
+        const bData = b.toJSON();
+        switch (sortBy) {
+          case "title":
+            return aData.title.localeCompare(bData.title);
+          case "createdAt":
+            return new Date(bData.createdAt).getTime() - new Date(aData.createdAt).getTime();
+          case "publishedAt":
+            return new Date(bData.publishedAt).getTime() - new Date(aData.publishedAt).getTime();
+          default:
+            return 0;
+        }
+      });
+    }
+
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedPosts = posts.slice(startIndex, endIndex);
+
+    const postsDto = postMapper.toDTOs(paginatedPosts);
     
     return NextResponse.json(postsDto);
   } catch (error: any) {
     console.error('Error fetching posts:', error);
-    return NextResponse.json(
-      {
-        data: null,
-        message: error.message || "Failed to fetch posts",
-        validationErrors: [],
-        success: false,
-      },
-      { status: 500 }
-    );
+    return NextResponse.json([], { status: 500 });
   }
 }
 

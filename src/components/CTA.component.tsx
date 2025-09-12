@@ -8,7 +8,7 @@ const { Title, Paragraph } = Typography;
 export const AppCTA = () => {
   const { t } = useTranslation();
   return (
-    <div>
+    <div className="my-5">
       {/* CTA Section */}
       <Card className="cumi-card">
         <div className="text-center p-4">

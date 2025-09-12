@@ -1,0 +1,685 @@
+/* Bootstrap Color Override - CUMI Brand Theme */
+/* This file overrides Bootstrap's default colors to match the CUMI brand theme */
+
+/* Import CUMI theme variables */
+@import "./cumi-theme.css";
+
+/* Bootstrap CSS Custom Properties Override */
+:root {
+  /* Primary Colors - CUMI Green */
+  --bs-primary: var(--cumi-green) !important;
+  --bs-primary-rgb: 34, 197, 94 !important;
+  --bs-primary-text-emphasis: var(--cumi-green-alt) !important;
+  --bs-primary-bg-subtle: rgba(34, 197, 94, 0.1) !important;
+  --bs-primary-border-subtle: rgba(34, 197, 94, 0.2) !important;
+
+  /* Secondary Colors - CUMI Blue */
+  --bs-secondary: var(--cumi-blue) !important;
+  --bs-secondary-rgb: 14, 165, 233 !important;
+  --bs-secondary-text-emphasis: var(--cumi-blue-dark) !important;
+  --bs-secondary-bg-subtle: rgba(14, 165, 233, 0.1) !important;
+  --bs-secondary-border-subtle: rgba(14, 165, 233, 0.2) !important;
+
+  /* Success Colors - CUMI Green */
+  --bs-success: var(--cumi-green) !important;
+  --bs-success-rgb: 34, 197, 94 !important;
+  --bs-success-text-emphasis: var(--cumi-green-alt) !important;
+  --bs-success-bg-subtle: rgba(34, 197, 94, 0.1) !important;
+  --bs-success-border-subtle: rgba(34, 197, 94, 0.2) !important;
+
+  /* Info Colors - CUMI Teal */
+  --bs-info: var(--cumi-teal) !important;
+  --bs-info-rgb: 20, 184, 166 !important;
+  --bs-info-text-emphasis: var(--cumi-teal-alt) !important;
+  --bs-info-bg-subtle: rgba(20, 184, 166, 0.1) !important;
+  --bs-info-border-subtle: rgba(20, 184, 166, 0.2) !important;
+
+  /* Warning Colors - CUMI Warning */
+  --bs-warning: var(--cumi-warning) !important;
+  --bs-warning-rgb: 245, 158, 11 !important;
+  --bs-warning-text-emphasis: #D97706 !important;
+  --bs-warning-bg-subtle: rgba(245, 158, 11, 0.1) !important;
+  --bs-warning-border-subtle: rgba(245, 158, 11, 0.2) !important;
+
+  /* Danger Colors - CUMI Error */
+  --bs-danger: var(--cumi-error) !important;
+  --bs-danger-rgb: 239, 68, 68 !important;
+  --bs-danger-text-emphasis: #DC2626 !important;
+  --bs-danger-bg-subtle: rgba(239, 68, 68, 0.1) !important;
+  --bs-danger-border-subtle: rgba(239, 68, 68, 0.2) !important;
+
+  /* Light Colors */
+  --bs-light: var(--cumi-bg-secondary) !important;
+  --bs-light-rgb: 249, 250, 251 !important;
+  --bs-light-text-emphasis: var(--cumi-text-secondary) !important;
+  --bs-light-bg-subtle: var(--cumi-bg-tertiary) !important;
+  --bs-light-border-subtle: var(--cumi-border-light) !important;
+
+  /* Dark Colors */
+  --bs-dark: var(--cumi-text-primary) !important;
+  --bs-dark-rgb: 31, 41, 55 !important;
+  --bs-dark-text-emphasis: var(--cumi-text-white) !important;
+  --bs-dark-bg-subtle: var(--cumi-bg-tertiary) !important;
+  --bs-dark-border-subtle: var(--cumi-border-medium) !important;
+
+  /* Body Colors */
+  --bs-body-color: var(--cumi-text-primary) !important;
+  --bs-body-color-rgb: 31, 41, 55 !important;
+  --bs-body-bg: var(--cumi-bg-primary) !important;
+  --bs-body-bg-rgb: 255, 255, 255 !important;
+
+  /* Link Colors */
+  --bs-link-color: var(--cumi-link-color) !important;
+  --bs-link-hover-color: var(--cumi-link-hover) !important;
+
+  /* Border Colors */
+  --bs-border-color: var(--cumi-border-light) !important;
+  --bs-border-color-translucent: rgba(229, 231, 235, 0.175) !important;
+}
+
+/* Bootstrap Button Overrides */
+.btn-primary {
+  --bs-btn-color: var(--cumi-text-white) !important;
+  --bs-btn-bg: var(--cumi-primary) !important;
+  --bs-btn-border-color: var(--cumi-primary) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-green-alt) !important;
+  --bs-btn-hover-border-color: var(--cumi-green-alt) !important;
+  --bs-btn-focus-shadow-rgb: 34, 197, 94 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-green-alt) !important;
+  --bs-btn-active-border-color: var(--cumi-green-alt) !important;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125) !important;
+  --bs-btn-disabled-color: var(--cumi-text-white) !important;
+  --bs-btn-disabled-bg: var(--cumi-primary) !important;
+  --bs-btn-disabled-border-color: var(--cumi-primary) !important;
+}
+
+.btn-secondary {
+  --bs-btn-color: var(--cumi-text-white) !important;
+  --bs-btn-bg: var(--cumi-secondary) !important;
+  --bs-btn-border-color: var(--cumi-secondary) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-blue-dark) !important;
+  --bs-btn-hover-border-color: var(--cumi-blue-dark) !important;
+  --bs-btn-focus-shadow-rgb: 14, 165, 233 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-blue-dark) !important;
+  --bs-btn-active-border-color: var(--cumi-blue-dark) !important;
+}
+
+.btn-success {
+  --bs-btn-color: var(--cumi-text-white) !important;
+  --bs-btn-bg: var(--cumi-success) !important;
+  --bs-btn-border-color: var(--cumi-success) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-green-alt) !important;
+  --bs-btn-hover-border-color: var(--cumi-green-alt) !important;
+  --bs-btn-focus-shadow-rgb: 34, 197, 94 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-green-alt) !important;
+  --bs-btn-active-border-color: var(--cumi-green-alt) !important;
+}
+
+.btn-info {
+  --bs-btn-color: var(--cumi-text-white) !important;
+  --bs-btn-bg: var(--cumi-info) !important;
+  --bs-btn-border-color: var(--cumi-info) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-teal-alt) !important;
+  --bs-btn-hover-border-color: var(--cumi-teal-alt) !important;
+  --bs-btn-focus-shadow-rgb: 20, 184, 166 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-teal-alt) !important;
+  --bs-btn-active-border-color: var(--cumi-teal-alt) !important;
+}
+
+.btn-warning {
+  --bs-btn-color: var(--cumi-text-primary) !important;
+  --bs-btn-bg: var(--cumi-warning) !important;
+  --bs-btn-border-color: var(--cumi-warning) !important;
+  --bs-btn-hover-color: var(--cumi-text-primary) !important;
+  --bs-btn-hover-bg: #D97706 !important;
+  --bs-btn-hover-border-color: #D97706 !important;
+  --bs-btn-focus-shadow-rgb: 245, 158, 11 !important;
+  --bs-btn-active-color: var(--cumi-text-primary) !important;
+  --bs-btn-active-bg: #D97706 !important;
+  --bs-btn-active-border-color: #D97706 !important;
+}
+
+.btn-danger {
+  --bs-btn-color: var(--cumi-text-white) !important;
+  --bs-btn-bg: var(--cumi-error) !important;
+  --bs-btn-border-color: var(--cumi-error) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: #DC2626 !important;
+  --bs-btn-hover-border-color: #DC2626 !important;
+  --bs-btn-focus-shadow-rgb: 239, 68, 68 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: #DC2626 !important;
+  --bs-btn-active-border-color: #DC2626 !important;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--cumi-primary) !important;
+  --bs-btn-border-color: var(--cumi-primary) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-primary) !important;
+  --bs-btn-hover-border-color: var(--cumi-primary) !important;
+  --bs-btn-focus-shadow-rgb: 34, 197, 94 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-primary) !important;
+  --bs-btn-active-border-color: var(--cumi-primary) !important;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--cumi-secondary) !important;
+  --bs-btn-border-color: var(--cumi-secondary) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-secondary) !important;
+  --bs-btn-hover-border-color: var(--cumi-secondary) !important;
+  --bs-btn-focus-shadow-rgb: 14, 165, 233 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-secondary) !important;
+  --bs-btn-active-border-color: var(--cumi-secondary) !important;
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--cumi-success) !important;
+  --bs-btn-border-color: var(--cumi-success) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-success) !important;
+  --bs-btn-hover-border-color: var(--cumi-success) !important;
+  --bs-btn-focus-shadow-rgb: 34, 197, 94 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-success) !important;
+  --bs-btn-active-border-color: var(--cumi-success) !important;
+}
+
+.btn-outline-info {
+  --bs-btn-color: var(--cumi-info) !important;
+  --bs-btn-border-color: var(--cumi-info) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-info) !important;
+  --bs-btn-hover-border-color: var(--cumi-info) !important;
+  --bs-btn-focus-shadow-rgb: 20, 184, 166 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-info) !important;
+  --bs-btn-active-border-color: var(--cumi-info) !important;
+}
+
+.btn-outline-warning {
+  --bs-btn-color: var(--cumi-warning) !important;
+  --bs-btn-border-color: var(--cumi-warning) !important;
+  --bs-btn-hover-color: var(--cumi-text-primary) !important;
+  --bs-btn-hover-bg: var(--cumi-warning) !important;
+  --bs-btn-hover-border-color: var(--cumi-warning) !important;
+  --bs-btn-focus-shadow-rgb: 245, 158, 11 !important;
+  --bs-btn-active-color: var(--cumi-text-primary) !important;
+  --bs-btn-active-bg: var(--cumi-warning) !important;
+  --bs-btn-active-border-color: var(--cumi-warning) !important;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--cumi-error) !important;
+  --bs-btn-border-color: var(--cumi-error) !important;
+  --bs-btn-hover-color: var(--cumi-text-white) !important;
+  --bs-btn-hover-bg: var(--cumi-error) !important;
+  --bs-btn-hover-border-color: var(--cumi-error) !important;
+  --bs-btn-focus-shadow-rgb: 239, 68, 68 !important;
+  --bs-btn-active-color: var(--cumi-text-white) !important;
+  --bs-btn-active-bg: var(--cumi-error) !important;
+  --bs-btn-active-border-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Alert Overrides */
+.alert-primary {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-primary-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-primary-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-primary) !important;
+}
+
+.alert-secondary {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-secondary-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-secondary-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-secondary) !important;
+}
+
+.alert-success {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-success-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-success-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-success) !important;
+}
+
+.alert-info {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-info-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-info-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-info) !important;
+}
+
+.alert-warning {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-warning-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-warning-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-warning) !important;
+}
+
+.alert-danger {
+  --bs-alert-color: var(--cumi-text-primary) !important;
+  --bs-alert-bg: var(--bs-danger-bg-subtle) !important;
+  --bs-alert-border-color: var(--bs-danger-border-subtle) !important;
+  --bs-alert-link-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Badge Overrides */
+.badge.bg-primary {
+  background-color: var(--cumi-primary) !important;
+}
+
+.badge.bg-secondary {
+  background-color: var(--cumi-secondary) !important;
+}
+
+.badge.bg-success {
+  background-color: var(--cumi-success) !important;
+}
+
+.badge.bg-info {
+  background-color: var(--cumi-info) !important;
+}
+
+.badge.bg-warning {
+  background-color: var(--cumi-warning) !important;
+}
+
+.badge.bg-danger {
+  background-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Text Color Overrides */
+.text-primary {
+  color: var(--cumi-primary) !important;
+}
+
+.text-secondary {
+  color: var(--cumi-secondary) !important;
+}
+
+.text-success {
+  color: var(--cumi-success) !important;
+}
+
+.text-info {
+  color: var(--cumi-info) !important;
+}
+
+.text-warning {
+  color: var(--cumi-warning) !important;
+}
+
+.text-danger {
+  color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Background Color Overrides */
+.bg-primary {
+  background-color: var(--cumi-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--cumi-secondary) !important;
+}
+
+.bg-success {
+  background-color: var(--cumi-success) !important;
+}
+
+.bg-info {
+  background-color: var(--cumi-info) !important;
+}
+
+.bg-warning {
+  background-color: var(--cumi-warning) !important;
+}
+
+.bg-danger {
+  background-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Border Color Overrides */
+.border-primary {
+  border-color: var(--cumi-primary) !important;
+}
+
+.border-secondary {
+  border-color: var(--cumi-secondary) !important;
+}
+
+.border-success {
+  border-color: var(--cumi-success) !important;
+}
+
+.border-info {
+  border-color: var(--cumi-info) !important;
+}
+
+.border-warning {
+  border-color: var(--cumi-warning) !important;
+}
+
+.border-danger {
+  border-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap Form Control Overrides */
+.form-control:focus {
+  border-color: var(--cumi-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
+}
+
+.form-select:focus {
+  border-color: var(--cumi-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
+}
+
+.form-check-input:checked {
+  background-color: var(--cumi-primary) !important;
+  border-color: var(--cumi-primary) !important;
+}
+
+.form-check-input:focus {
+  border-color: var(--cumi-primary) !important;
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Bootstrap Progress Bar Overrides */
+.progress-bar {
+  background-color: var(--cumi-primary) !important;
+}
+
+.progress-bar.bg-primary {
+  background-color: var(--cumi-primary) !important;
+}
+
+.progress-bar.bg-secondary {
+  background-color: var(--cumi-secondary) !important;
+}
+
+.progress-bar.bg-success {
+  background-color: var(--cumi-success) !important;
+}
+
+.progress-bar.bg-info {
+  background-color: var(--cumi-info) !important;
+}
+
+.progress-bar.bg-warning {
+  background-color: var(--cumi-warning) !important;
+}
+
+.progress-bar.bg-danger {
+  background-color: var(--cumi-error) !important;
+}
+
+/* Bootstrap List Group Overrides */
+.list-group-item.active {
+  background-color: var(--cumi-primary) !important;
+  border-color: var(--cumi-primary) !important;
+}
+
+.list-group-item.active:hover {
+  background-color: var(--cumi-green-alt) !important;
+  border-color: var(--cumi-green-alt) !important;
+}
+
+/* Bootstrap Pagination Overrides */
+.page-link {
+  color: var(--cumi-primary) !important;
+}
+
+.page-link:hover {
+  color: var(--cumi-green-alt) !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--cumi-primary) !important;
+  border-color: var(--cumi-primary) !important;
+}
+
+/* Bootstrap Nav Overrides */
+.nav-link.active {
+  color: var(--cumi-primary) !important;
+}
+
+.nav-pills .nav-link.active {
+  background-color: var(--cumi-primary) !important;
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--cumi-primary) !important;
+  border-color: var(--cumi-primary) var(--cumi-primary) var(--cumi-bg-primary) !important;
+}
+
+/* Bootstrap Dropdown Overrides */
+.dropdown-item.active {
+  background-color: var(--cumi-primary) !important;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bs-primary-bg-subtle) !important;
+}
+
+/* Bootstrap Modal Overrides */
+.modal-header {
+  border-bottom-color: var(--cumi-border-light) !important;
+}
+
+.modal-footer {
+  border-top-color: var(--cumi-border-light) !important;
+}
+
+/* Bootstrap Card Overrides */
+.card-header {
+  background-color: var(--cumi-bg-secondary) !important;
+  border-bottom-color: var(--cumi-border-light) !important;
+}
+
+.card-footer {
+  background-color: var(--cumi-bg-secondary) !important;
+  border-top-color: var(--cumi-border-light) !important;
+}
+
+/* Bootstrap Table Overrides */
+.table-primary {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-primary-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-primary-border-subtle) !important;
+}
+
+.table-secondary {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-secondary-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-secondary-border-subtle) !important;
+}
+
+.table-success {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-success-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-success-border-subtle) !important;
+}
+
+.table-info {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-info-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-info-border-subtle) !important;
+}
+
+.table-warning {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-warning-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-warning-border-subtle) !important;
+}
+
+.table-danger {
+  --bs-table-color: var(--cumi-text-primary) !important;
+  --bs-table-bg: var(--bs-danger-bg-subtle) !important;
+  --bs-table-border-color: var(--bs-danger-border-subtle) !important;
+}
+
+/* Bootstrap Spinner Overrides */
+.spinner-border-primary {
+  color: var(--cumi-primary) !important;
+}
+
+.spinner-border-secondary {
+  color: var(--cumi-secondary) !important;
+}
+
+.spinner-border-success {
+  color: var(--cumi-success) !important;
+}
+
+.spinner-border-info {
+  color: var(--cumi-info) !important;
+}
+
+.spinner-border-warning {
+  color: var(--cumi-warning) !important;
+}
+
+.spinner-border-danger {
+  color: var(--cumi-error) !important;
+}
+
+.spinner-grow-primary {
+  color: var(--cumi-primary) !important;
+}
+
+.spinner-grow-secondary {
+  color: var(--cumi-secondary) !important;
+}
+
+.spinner-grow-success {
+  color: var(--cumi-success) !important;
+}
+
+.spinner-grow-info {
+  color: var(--cumi-info) !important;
+}
+
+.spinner-grow-warning {
+  color: var(--cumi-warning) !important;
+}
+
+.spinner-grow-danger {
+  color: var(--cumi-error) !important;
+}
+
+/* Custom CUMI Gradient Buttons */
+.btn-gradient-primary {
+  background: var(--cumi-gradient-primary) !important;
+  border: none !important;
+  color: var(--cumi-text-white) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-gradient-primary:hover {
+  background: var(--cumi-gradient-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--cumi-shadow-lg) !important;
+  color: var(--cumi-text-white) !important;
+}
+
+.btn-gradient-secondary {
+  background: var(--cumi-gradient-secondary) !important;
+  border: none !important;
+  color: var(--cumi-text-white) !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-gradient-secondary:hover {
+  background: var(--cumi-gradient-hover) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: var(--cumi-shadow-lg) !important;
+  color: var(--cumi-text-white) !important;
+}
+
+/* Custom CUMI Gradient Backgrounds */
+.bg-gradient-primary {
+  background: var(--cumi-gradient-primary) !important;
+}
+
+.bg-gradient-secondary {
+  background: var(--cumi-gradient-secondary) !important;
+}
+
+.bg-gradient-hover {
+  background: var(--cumi-gradient-hover) !important;
+}
+
+/* Custom CUMI Gradient Text */
+.text-gradient-primary {
+  background: var(--cumi-gradient-primary) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.text-gradient-secondary {
+  background: var(--cumi-gradient-secondary) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+/* Custom CUMI Gradient Borders */
+.border-gradient-primary {
+  border: 2px solid transparent !important;
+  background: linear-gradient(var(--cumi-bg-primary), var(--cumi-bg-primary)) padding-box,
+              var(--cumi-gradient-primary) border-box !important;
+}
+
+.border-gradient-secondary {
+  border: 2px solid transparent !important;
+  background: linear-gradient(var(--cumi-bg-primary), var(--cumi-bg-primary)) padding-box,
+              var(--cumi-gradient-secondary) border-box !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .btn-gradient-primary,
+  .btn-gradient-secondary {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 1rem !important;
+  }
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] {
+  --bs-body-color: var(--cumi-text-primary) !important;
+  --bs-body-color-rgb: 249, 250, 251 !important;
+  --bs-body-bg: var(--cumi-bg-primary) !important;
+  --bs-body-bg-rgb: 17, 24, 39 !important;
+  
+  --bs-border-color: var(--cumi-border-light) !important;
+  --bs-border-color-translucent: rgba(55, 65, 81, 0.175) !important;
+}
+
+/* Print Styles */
+@media print {
+  .btn-gradient-primary,
+  .btn-gradient-secondary {
+    background: var(--cumi-primary) !important;
+    color: var(--cumi-text-white) !important;
+  }
+  
+  .text-gradient-primary,
+  .text-gradient-secondary {
+    color: var(--cumi-primary) !important;
+    -webkit-text-fill-color: var(--cumi-primary) !important;
+  }
+}

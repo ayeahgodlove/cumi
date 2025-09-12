@@ -103,7 +103,7 @@
 }
 
 .cumi-card {
-  background: var(--cumi-bg-primary);
+  background: var(--cumi-bg-primary) !important;
   border: 1px solid var(--cumi-border-light);
   border-radius: 12px;
   box-shadow: var(--cumi-shadow-sm);

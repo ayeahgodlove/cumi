@@ -7,6 +7,7 @@ import { validate } from "class-validator";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { getServerSession } from "next-auth";
 import authOptions from "@lib/options";
+import { emailService } from "@services/email.service";
 
 const subscriberRepository = new SubscriberRepository();
 const subscriberUseCase = new SubscriberUseCase(subscriberRepository);
@@ -68,6 +69,20 @@ export async function POST(request: NextRequest) {
 
     const subscriber = await subscriberUseCase.create(subscriberDto);
     const subscriberResponse = subscriberMapper.toDTO(subscriber);
+
+    // Send subscription confirmation email
+    try {
+      await emailService.sendNotificationEmail(
+        subscriber.email,
+        subscriber.name || 'Subscriber',
+        'Welcome to CUMI Newsletter!',
+        `Thank you for subscribing to our newsletter! You'll now receive updates about our latest courses, events, and educational content. We're excited to have you as part of our learning community.`,
+        `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`
+      );
+    } catch (emailError) {
+      console.error("Failed to send subscription confirmation email:", emailError);
+      // Don't fail the subscription if email fails
+    }
     
     return NextResponse.json(subscriberResponse, { status: 201 });
   } catch (error) {

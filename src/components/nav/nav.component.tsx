@@ -39,6 +39,14 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     setTimeout(() => setIsNavigating(false), 1000);
   }, []);
 
+  const getLinkStyle = (path: string) => ({
+    color: pathname === path ? "#20b2aa" : "inherit",
+    fontWeight: pathname === path ? "bold" : "normal"
+  });
+
+  const getLinkClassName = (path: string) => 
+    `nav-link ${pathname === path ? " active fw-bold" : ""}`;
+
   const userMenuItems = [
     {
       key: "username",
@@ -96,8 +104,14 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
   ];
   return (
     <Affix offsetTop={0}>
-      <nav className="navbar bg-white navbar-expand-lg">
-        <div className="container-fluid">
+      <nav 
+        className="navbar navbar-expand-lg navbar-full-width" 
+        style={{ 
+          backgroundColor: "white", 
+          // boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+        }}
+      >
+        <div className="container-fluid" style={{ width: "100%", maxWidth: "none", paddingLeft: "15px", paddingRight: "15px" }}>
           <Link href={"/"}>
             <Image
               src={`${logoPath || '/'}cumi-green.jpg`}
@@ -136,8 +150,12 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
-                    pathname === "/" ? " active fw-bold text-secondary" : ""
+                    pathname === "/" ? " active fw-bold" : ""
                   }`}
+                  style={{
+                    color: pathname === "/" ? "#20b2aa" : "inherit",
+                    fontWeight: pathname === "/" ? "bold" : "normal"
+                  }}
                   aria-current="page"
                   href="/"
                 >
@@ -146,11 +164,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/our_services"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/our_services")}
+                  style={getLinkStyle("/our_services")}
                   href="/our_services"
                 >
                   {t('nav.services')}
@@ -159,11 +174,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
 
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/projects"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/projects")}
+                  style={getLinkStyle("/projects")}
                   href="/projects"
                 >
                   {t('nav.projects')}
@@ -171,11 +183,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/blog_posts"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/blog_posts")}
+                  style={getLinkStyle("/blog_posts")}
                   href="/blog_posts"
                 >
                   {t('nav.blog_posts')}
@@ -183,11 +192,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/opportunities"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/opportunities")}
+                  style={getLinkStyle("/opportunities")}
                   href="/opportunities"
                 >
                   {t('nav.opportunities')}
@@ -195,11 +201,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/events"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/events")}
+                  style={getLinkStyle("/events")}
                   href="/events"
                 >
                   {t('nav.events')}
@@ -207,11 +210,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/courses"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/courses")}
+                  style={getLinkStyle("/courses")}
                   href="/courses"
                 >
                   {t('nav.courses')}
@@ -219,11 +219,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/about_us"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/about_us")}
+                  style={getLinkStyle("/about_us")}
                   aria-disabled="true"
                   href="/about_us"
                 >
@@ -232,11 +229,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/contact_us"
-                      ? " active fw-bold text-secondary"
-                      : ""
-                  }`}
+                  className={getLinkClassName("/contact_us")}
+                  style={getLinkStyle("/contact_us")}
                   aria-disabled="true"
                   href="/contact_us"
                 >

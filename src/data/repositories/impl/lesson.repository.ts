@@ -65,6 +65,18 @@ export class LessonRepository implements ILessonRepository {
     }
   }
 
+  async findByCourseId(courseId: string): Promise<InstanceType<typeof Lesson>[]> {
+    try {
+      const lessons = await Lesson.findAll({
+        where: { courseId },
+        order: [['lessonOrder', 'ASC']], // Order by lesson order (priority)
+      });
+      return lessons;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /*
    * Returns an array of Lesson
    */

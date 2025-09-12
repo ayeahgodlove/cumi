@@ -14,7 +14,7 @@ import "@refinedev/antd/dist/reset.css";
 import { dataProvider } from "../providers/data-provider";
 import { useMenu } from "../utils/menus";
 
-import { Spin } from "antd";
+import { Spin, App as AntdApp } from "antd";
 import { accessControlProvider } from "../providers/access-control-provider";
 import { useLocale, useTranslations } from "next-intl";
 import { setUserLocale } from "../i18n/index";
@@ -150,39 +150,41 @@ export const App = (props: any) => {
     <>
       <RefineKbarProvider>
         <AntdRegistry>
-          <ClientProvider>
-            <Refine
-              routerProvider={routerProvider}
-              dataProvider={dataProvider}
-              accessControlProvider={{
-                can: async ({ resource, action }) => {
-                  const user = await authProvider.getPermissions();
-                  return accessControlProvider.can({
-                    resource,
-                    action,
-                    params: { user },
-                  });
-                },
-                options: {},
-              }}
-              notificationProvider={useNotificationProvider}
-              authProvider={authProvider}
-              i18nProvider={i18nProvider}
-              resources={filteredMenus}
-              options={{
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-                useNewQueryKeys: true,
-                projectId: "njMZZm-fu7OWZ-sdebsw",
-                breadcrumb: true,
-                mutationMode: "optimistic",
-              }}
-              // liveProvider={liveProvider}
-            >
-              {props.children}
-              <RefineKbar />
-            </Refine>
-          </ClientProvider>
+          <AntdApp>
+            <ClientProvider>
+              <Refine
+                routerProvider={routerProvider}
+                dataProvider={dataProvider}
+                accessControlProvider={{
+                  can: async ({ resource, action }) => {
+                    const user = await authProvider.getPermissions();
+                    return accessControlProvider.can({
+                      resource,
+                      action,
+                      params: { user },
+                    });
+                  },
+                  options: {},
+                }}
+                notificationProvider={useNotificationProvider}
+                authProvider={authProvider}
+                i18nProvider={i18nProvider}
+                resources={filteredMenus}
+                options={{
+                  syncWithLocation: true,
+                  warnWhenUnsavedChanges: true,
+                  useNewQueryKeys: true,
+                  projectId: "njMZZm-fu7OWZ-sdebsw",
+                  breadcrumb: true,
+                  mutationMode: "optimistic",
+                }}
+                // liveProvider={liveProvider}
+              >
+                {props.children}
+                <RefineKbar />
+              </Refine>
+            </ClientProvider>
+          </AntdApp>
         </AntdRegistry>
       </RefineKbarProvider>
     </>

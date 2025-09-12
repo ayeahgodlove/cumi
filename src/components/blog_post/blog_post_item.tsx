@@ -25,14 +25,14 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
   const userDescription = users?.find((c) => c.id === post.authorId);
   const { width } = useWindowSize();
   return (
-    <Link href={`/blog_posts/${post.slug}`}>
-      <Card
-        hoverable
-        style={{ width: "100%" }}
-        styles={{ header: { overflow: "hidden" } }}
-        key={post.id}
-        className="bg-white border-0 shadow"
-        cover={
+    <Card
+      hoverable
+      style={{ width: "100%" }}
+      styles={{ header: { overflow: "hidden" } }}
+      key={post.id}
+      className="bg-white border-0 shadow"
+      cover={
+        <Link href={`/blog_posts/${post.slug}`}>
           <Image
             alt={post.title}
             src={`${BASE_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
@@ -43,50 +43,51 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
               height: 250,
               objectFit: "cover",
               width: "100%",
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
             }}
           />
-        }
-      >
-        <Meta
-          title={
+        </Link>
+      }
+    >
+      <Meta
+        title={
+          <Link href={`/blog_posts/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Title level={4} style={{ marginBottom: 10, textWrap: "wrap" }}>
               {post.title}
             </Title>
-          }
-          description={
-            <div className="w-100">
-              {width > 767 && (
-                <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
-                  <Typography.Link className="text-secondary">
-                    <FaRegCircleUser /> {userDescription?.username}
-                  </Typography.Link>
-                  <Typography.Link className="text-secondary">
-                    <CiFolderOn /> {categoryDescription?.name}
-                  </Typography.Link>
-                  <Typography.Text className="text-secondary">
-                    <CiCalendarDate /> {format.date(post?.publishedAt)}
-                  </Typography.Text>
-                </Space>
-              )}
-              <Typography.Paragraph>{post.description}</Typography.Paragraph>
-              {width < 767 && (
-                <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
-                  <Typography.Link className="text-secondary">
-                    <FaRegCircleUser /> {userDescription?.username}
-                  </Typography.Link>
-                  {/* <Typography.Link className="text-secondary">
-                    <CiFolderOn /> {categoryDescription?.name}
-                  </Typography.Link> */}
-                  <Typography.Text className="text-secondary">
-                    <CiCalendarDate /> {format.date(post?.publishedAt)}
-                  </Typography.Text>
-                </Space>
-              )}
-            </div>
-          }
-        />
-      </Card>
-    </Link>
+          </Link>
+        }
+        description={
+          <div className="w-100">
+            {width > 767 && (
+              <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
+                <Typography.Text className="text-secondary">
+                  <FaRegCircleUser /> {userDescription?.username}
+                </Typography.Text>
+                <Typography.Text className="text-secondary">
+                  <CiFolderOn /> {categoryDescription?.name}
+                </Typography.Text>
+                <Typography.Text className="text-secondary">
+                  <CiCalendarDate /> {format.date(post?.publishedAt)}
+                </Typography.Text>
+              </Space>
+            )}
+            <Typography.Paragraph>{post.description}</Typography.Paragraph>
+            {width < 767 && (
+              <Space style={{ marginBottom: 5, flexWrap: "wrap" }}>
+                <Typography.Text className="text-secondary">
+                  <FaRegCircleUser /> {userDescription?.username}
+                </Typography.Text>
+                <Typography.Text className="text-secondary">
+                  <CiCalendarDate /> {format.date(post?.publishedAt)}
+                </Typography.Text>
+              </Space>
+            )}
+          </div>
+        }
+      />
+    </Card>
   );
 };
 

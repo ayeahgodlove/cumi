@@ -12,19 +12,11 @@ const eventUseCase = new EventUseCase(eventRepository);
 
 export async function GET(request: any) {
   try {
-    const categories = await eventUseCase.getAll();
+    const events = await eventUseCase.getAll();
 
-    return NextResponse.json(categories);
+    return NextResponse.json(events);
   } catch (error: any) {
-    return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
-    );
+    return NextResponse.json([], { status: 500 });
   }
 }
 

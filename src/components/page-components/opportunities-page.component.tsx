@@ -17,9 +17,10 @@ import {
   Typography,
   Space,
   Spin,
+  Input,
 } from "antd";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IOpportunity } from "@domain/models/opportunity.model";
 import {
   CalendarOutlined,
@@ -27,6 +28,7 @@ import {
   DollarOutlined,
   UserOutlined,
   BookOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { opportunityAPI } from "@store/api/opportunity_api";
@@ -34,10 +36,13 @@ import { useTranslation } from "@contexts/translation.context";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
+const { Search } = Input;
 
 export default function OpportunitiesPageComponent() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
   const {
     data: opportunities,
@@ -46,10 +51,24 @@ export default function OpportunitiesPageComponent() {
     isFetching,
   } = opportunityAPI.useFetchAllOpportunitiesQuery();
 
-  const filteredOpportunities =
-    filter === "all"
-      ? opportunities || []
-      : (opportunities || []).filter((opp) => opp.opp_type === filter);
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const filteredOpportunities = (opportunities || [])
+    .filter((opp) => {
+      const matchesFilter = filter === "all" || opp.opp_type === filter;
+      const matchesSearch = 
+        opp.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        opp.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        opp.companyOrInstitution.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
+    });
 
   const getOpportunityTypeColor = (type: string) => {
     switch (type) {
@@ -133,6 +152,19 @@ export default function OpportunitiesPageComponent() {
                     <Title level={4} className="mb-3">
                       {t('opportunities.filter_title')}
                     </Title>
+                    
+                    {/* Search Input */}
+                    <div className="mb-4">
+                      <Search
+                        placeholder="Search opportunities..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        prefix={<SearchOutlined />}
+                        style={{ maxWidth: "400px" }}
+                        allowClear
+                      />
+                    </div>
+                    
                     <Space wrap>
                       <Button
                         type={filter === "all" ? "primary" : "default"}

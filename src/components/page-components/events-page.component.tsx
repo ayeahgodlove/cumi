@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Row,
@@ -11,11 +11,9 @@ import {
   Tag,
   Input,
   Select,
-  Modal,
-  Form,
-  message,
   Empty,
   Spin,
+  App,
 } from "antd";
 import {
   CalendarOutlined,
@@ -34,6 +32,7 @@ import { motion } from "framer-motion";
 import { IEvent } from "@domain/models/event.model";
 import { useTranslation } from "@contexts/translation.context";
 import { useRouter } from "next/navigation";
+import EventRegistrationModal from "@components/shared/event-registration-modal.component";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -43,12 +42,13 @@ export default function EventsPageComponent() {
   const { data: session } = useSession();
   const { t } = useTranslation();
   const router = useRouter();
+  const { message } = App.useApp();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [registrationModalVisible, setRegistrationModalVisible] =
     useState(false);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
-  const [registrationForm] = Form.useForm();
 
   const {
     data: events,
@@ -56,15 +56,24 @@ export default function EventsPageComponent() {
     isLoading,
     isFetching,
   } = eventAPI.useFetchAllEventsQuery({
-    searchTitle: searchTerm,
+    searchTitle: debouncedSearchTerm,
     sortBy: "date",
   });
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const filteredEvents =
     events?.filter((event) => {
       const matchesSearch =
-        event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchTerm.toLowerCase());
+        event.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        event.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
       // Note: IEvent doesn't have category property, so we'll skip category filtering for now
       return matchesSearch;
     }) || [];
@@ -72,52 +81,6 @@ export default function EventsPageComponent() {
   const handleRegisterEvent = (event: IEvent) => {
     setSelectedEvent(event);
     setRegistrationModalVisible(true);
-  };
-
-  const handleRegistrationSubmit = async (values: any) => {
-    try {
-      if (!selectedEvent || !session?.user?.id) {
-        message.error("Please log in to register for events");
-        return;
-      }
-
-      const registrationData = {
-        eventId: selectedEvent.id,
-        userId: session.user.id,
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        company: values.company,
-        dietaryRequirements: values.dietaryRequirements,
-        additionalNotes: values.additionalNotes,
-      };
-
-      const response = await fetch("/api/event-registrations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(registrationData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Registration failed");
-      }
-
-      message.success("Successfully registered for the event!");
-      setRegistrationModalVisible(false);
-      registrationForm.resetFields();
-
-      // Note: RTK Query will automatically refetch data when needed
-    } catch (error) {
-      console.error("Registration error:", error);
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "Registration failed. Please try again."
-      );
-    }
   };
 
   const formatDate = (dateString: string) => {
@@ -374,103 +337,14 @@ export default function EventsPageComponent() {
       </div>
 
       {/* Registration Modal */}
-      <Modal
-        title={`Register for ${selectedEvent?.title}`}
-        open={registrationModalVisible}
+      <EventRegistrationModal
+        visible={registrationModalVisible}
         onCancel={() => setRegistrationModalVisible(false)}
-        footer={null}
-        width={600}
-      >
-        {selectedEvent && (
-          <div>
-            <Card size="small" style={{ marginBottom: 24 }}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <img
-                    src={selectedEvent.imageUrl || "/img/design-3.jpg"}
-                    alt={selectedEvent.title}
-                    style={{
-                      width: "100%",
-                      height: 150,
-                      objectFit: "cover",
-                      borderRadius: 8,
-                    }}
-                  />
-                </Col>
-                <Col span={24}>
-                  <Space direction="vertical" size="small">
-                    <Title level={4} style={{ margin: 0 }}>
-                      {selectedEvent.title}
-                    </Title>
-                    <Space>
-                      <CalendarOutlined />
-                      <Text>
-                        {formatDate(selectedEvent.eventDate.toString())}
-                      </Text>
-                    </Space>
-                    <Space>
-                      <EnvironmentOutlined />
-                      <Text>{selectedEvent.location}</Text>
-                    </Space>
-                  </Space>
-                </Col>
-              </Row>
-            </Card>
-
-            <Form
-              form={registrationForm}
-              layout="vertical"
-              onFinish={handleRegistrationSubmit}
-            >
-              <Form.Item
-                name="name"
-                label="Full Name"
-                rules={[
-                  { required: true, message: "Please enter your full name" },
-                ]}
-              >
-                <Input placeholder="Enter your full name" />
-              </Form.Item>
-
-              <Form.Item
-                name="email"
-                label="Email Address"
-                rules={[
-                  { required: true, message: "Please enter your email" },
-                  { type: "email", message: "Please enter a valid email" },
-                ]}
-              >
-                <Input placeholder="Enter your email address" />
-              </Form.Item>
-
-              <Form.Item
-                name="phone"
-                label="Phone Number"
-                rules={[
-                  { required: true, message: "Please enter your phone number" },
-                ]}
-              >
-                <Input placeholder="Enter your phone number" />
-              </Form.Item>
-
-              <Form.Item name="company" label="Company/Organization">
-                <Input placeholder="Enter your company or organization" />
-              </Form.Item>
-
-              <Form.Item>
-                <Space>
-                  <Button type="primary" htmlType="submit">
-                    Complete Registration
-                  </Button>
-                  <Button onClick={() => setRegistrationModalVisible(false)}>
-                    Cancel
-                  </Button>
-                </Space>
-              </Form.Item>
-            </Form>
-          </div>
-        )}
-      </Modal>
+        event={selectedEvent}
+        onSuccess={() => {
+          // Optionally refresh data or show success message
+        }}
+      />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

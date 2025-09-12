@@ -31,6 +31,8 @@ export interface IUser {
   emailVerificationToken?: string;
   passwordResetToken?: string;
   passwordResetExpiresAt?: Date;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
   twoFactorEnabled: boolean;
   twoFactorSecret?: string;
   lastLoginAt?: Date;

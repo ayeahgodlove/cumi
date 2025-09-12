@@ -22,12 +22,21 @@ type Prop = {
 
 const colors = ["#1890ff", "#52c41a", "#faad14", "#f5222d", "#722ed1", "#13c2c2"];
 const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short' 
-    });
+  const formatDate = (dateString: string | Date) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
+      }
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid Date';
+    }
   };
 
   return (
@@ -134,7 +143,7 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
           <div className="d-flex align-items-center text-muted">
             <CalendarOutlined className="me-2" />
             <Text type="secondary" className="small">
-              {formatDate(project.createdAt.toISOString())}
+              {formatDate(project.createdAt)}
             </Text>
           </div>
           

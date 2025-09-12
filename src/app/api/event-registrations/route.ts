@@ -1,86 +1,126 @@
-import { NextRequest, NextResponse } from "next/server";
+import EventRegistrationRepository from "@data/repositories/event-registration.repository";
 import EventRegistrationUsecase from "@domain/usecases/event-registration.usecase";
-import { EventRegistrationMapper } from "@presentation/mappers/event-registration.mapper";
+import authOptions from "@lib/options";
 import { CreateEventRegistrationDto } from "@presentation/dtos/event-registration.dto";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { notificationService } from "@services/notification.service";
+import { eventUseCase } from "@domain/usecases/event.usecase";
 
-const eventRegistrationUsecase = new EventRegistrationUsecase();
+const eventRegistrationRepository = new EventRegistrationRepository();
+const eventRegistrationUseCase = new EventRegistrationUsecase();
 
 export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { message: "Unauthorized: Please log in to access this resource.", success: false, data: null, validationErrors: [] },
+      { status: 401 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
-    const eventId = searchParams.get('eventId');
-    const userId = searchParams.get('userId');
-
-    let eventRegistrations;
+    const eventId = searchParams.get("eventId");
 
     if (eventId) {
-      eventRegistrations = await eventRegistrationUsecase.getEventRegistrationsByEventId(eventId);
-    } else if (userId) {
-      eventRegistrations = await eventRegistrationUsecase.getEventRegistrationsByUserId(userId);
+      const isRegistered = await eventRegistrationUseCase.checkUserRegistration(eventId, session.user.id);
+      return NextResponse.json({ registered: isRegistered, success: true });
     } else {
-      eventRegistrations = await eventRegistrationUsecase.getAllEventRegistrations();
+      const registrations = await eventRegistrationUseCase.getEventRegistrationsByUserId(session.user.id);
+      return NextResponse.json(registrations);
     }
-
-    return NextResponse.json({
-      success: true,
-      data: eventRegistrations.map(registration => EventRegistrationMapper.toDto(registration)),
-    });
-  } catch (error) {
-    console.error('Error fetching event registrations:', error);
+  } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch event registrations' },
+      {
+        data: null,
+        message: error.message || "Failed to fetch event registrations",
+        validationErrors: [],
+        success: false,
+      },
       { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { message: "Unauthorized: Please log in to access this resource.", success: false, data: null, validationErrors: [] },
+      { status: 401 }
+    );
+  }
+
   try {
-    const body: CreateEventRegistrationDto = await request.json();
-    
-    // Validate required fields
-    if (!body.eventId || !body.userId || !body.name || !body.email || !body.phone) {
+    const body = await request.json();
+    const userId = session.user.id;
+
+    // Basic validation
+    if (!body.eventId) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        {
+          validationErrors: ["Event ID is required"],
+          success: false,
+          data: null,
+          message: "Validation failed",
+        },
         { status: 400 }
       );
     }
 
-    const eventRegistrationData = {
+    const registrationData = {
       eventId: body.eventId,
-      userId: body.userId,
-      name: body.name,
-      email: body.email,
-      phone: body.phone,
+      userId,
+      name: body.name || session.user.name || "User",
+      email: body.email || session.user.email || "",
+      phone: body.phone || "",
       company: body.company,
       dietaryRequirements: body.dietaryRequirements,
       additionalNotes: body.additionalNotes,
+      paymentAmount: body.paymentAmount,
+      paymentMethod: body.paymentMethod,
       registrationDate: new Date(),
       status: 'pending' as const,
       paymentStatus: 'pending' as const,
-      paymentAmount: body.paymentAmount,
-      paymentMethod: body.paymentMethod,
     };
 
-    const eventRegistration = await eventRegistrationUsecase.createEventRegistration(eventRegistrationData);
+    const registrationResponse = await eventRegistrationUseCase.createEventRegistration(registrationData);
 
-    return NextResponse.json({
-      success: true,
-      data: EventRegistrationMapper.toDto(eventRegistration),
-      message: 'Event registration created successfully',
-    }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating event registration:', error);
-    
-    if (error instanceof Error && error.message.includes('already registered')) {
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 409 }
-      );
+    // Send registration notification email
+    try {
+      const event = await eventUseCase.getEventById(body.eventId);
+      if (event) {
+        await notificationService.notifyEventRegistration(
+          userId,
+          event.title,
+          `/events/${event.id}`
+        );
+      }
+    } catch (emailError) {
+      console.error("Failed to send registration notification:", emailError);
+      // Don't fail the registration if email fails
     }
 
     return NextResponse.json(
-      { success: false, error: 'Failed to create event registration' },
+      {
+        data: registrationResponse,
+        message: "Successfully registered for the event!",
+        validationErrors: [],
+        success: true,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message || "Registration failed",
+        validationErrors: [],
+        success: false,
+      },
       { status: 500 }
     );
   }

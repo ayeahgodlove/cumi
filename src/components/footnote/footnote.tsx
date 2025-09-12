@@ -10,7 +10,7 @@ import styles from './footnote.module.css'
 export const AppFootnote = () => {
 	return (
 		<section className={`section ${styles.section}`}>
-			<div className='container'>
+			<div className='container bg-lightt'>
 				<div className={styles.content}>
 					<div className={styles.content_group_social}>
 						<a href='#'><FacebookFilled /></a>

@@ -1,14 +1,15 @@
-import CourseEnrollmentRepository from "@data/repositories/course-enrollment.repository";
-import { ICourseEnrollment, CourseEnrollmentCreationAttributes } from "@domain/models/course-enrollment.model";
+import { CourseEnrollmentRepository } from "@data/repositories/impl/course-enrollment.repository";
+import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
+import { CourseEnrollment } from "@data/entities/index";
 
-export class CourseEnrollmentUsecase {
+export class CourseEnrollmentUseCase {
   private courseEnrollmentRepository: CourseEnrollmentRepository;
 
-  constructor() {
-    this.courseEnrollmentRepository = new CourseEnrollmentRepository();
+  constructor(courseEnrollmentRepository: CourseEnrollmentRepository) {
+    this.courseEnrollmentRepository = courseEnrollmentRepository;
   }
 
-  async createCourseEnrollment(data: CourseEnrollmentCreationAttributes): Promise<ICourseEnrollment> {
+  async createEnrollment(data: ICourseEnrollment): Promise<InstanceType<typeof CourseEnrollment>> {
     // Check if user is already enrolled in this course
     const existingEnrollment = await this.courseEnrollmentRepository.findByCourseAndUser(
       data.courseId,
@@ -22,31 +23,35 @@ export class CourseEnrollmentUsecase {
     return await this.courseEnrollmentRepository.create(data);
   }
 
-  async getCourseEnrollmentById(id: string): Promise<ICourseEnrollment | null> {
+  async getEnrollmentById(id: string): Promise<InstanceType<typeof CourseEnrollment> | null> {
     return await this.courseEnrollmentRepository.findById(id);
   }
 
-  async getAllCourseEnrollments(): Promise<ICourseEnrollment[]> {
-    return await this.courseEnrollmentRepository.findAll();
+  async getAll(): Promise<InstanceType<typeof CourseEnrollment>[]> {
+    return await this.courseEnrollmentRepository.getAll();
   }
 
-  async getCourseEnrollmentsByCourseId(courseId: string): Promise<ICourseEnrollment[]> {
+  async getEnrollmentsByCourseId(courseId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     return await this.courseEnrollmentRepository.findByCourseId(courseId);
   }
 
-  async getCourseEnrollmentsByUserId(userId: string): Promise<ICourseEnrollment[]> {
+  async getEnrollmentsByUserId(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     return await this.courseEnrollmentRepository.findByUserId(userId);
   }
 
-  async updateCourseEnrollment(id: string, data: Partial<ICourseEnrollment>): Promise<ICourseEnrollment | null> {
-    return await this.courseEnrollmentRepository.update(id, data);
+  async updateEnrollment(id: string, data: Partial<ICourseEnrollment>): Promise<InstanceType<typeof CourseEnrollment> | null> {
+    const enrollment = await this.courseEnrollmentRepository.findById(id);
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+    return await this.courseEnrollmentRepository.update({ ...enrollment.toJSON(), ...data });
   }
 
-  async deleteCourseEnrollment(id: string): Promise<boolean> {
+  async deleteEnrollment(id: string): Promise<void> {
     return await this.courseEnrollmentRepository.delete(id);
   }
 
-  async updateProgress(id: string, progress: number): Promise<ICourseEnrollment | null> {
+  async updateProgress(id: string, progress: number): Promise<InstanceType<typeof CourseEnrollment> | null> {
     if (progress < 0 || progress > 100) {
       throw new Error('Progress must be between 0 and 100');
     }
@@ -54,32 +59,43 @@ export class CourseEnrollmentUsecase {
     return await this.courseEnrollmentRepository.updateProgress(id, progress);
   }
 
-  async dropCourse(id: string): Promise<ICourseEnrollment | null> {
-    return await this.courseEnrollmentRepository.update(id, { 
-      status: 'dropped' 
-    });
+  async dropCourse(id: string): Promise<InstanceType<typeof CourseEnrollment> | null> {
+    const enrollment = await this.courseEnrollmentRepository.findById(id);
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+    return await this.courseEnrollmentRepository.update({ ...enrollment.toJSON(), status: 'dropped' });
   }
 
-  async suspendCourse(id: string): Promise<ICourseEnrollment | null> {
-    return await this.courseEnrollmentRepository.update(id, { 
-      status: 'suspended' 
-    });
+  async suspendCourse(id: string): Promise<InstanceType<typeof CourseEnrollment> | null> {
+    const enrollment = await this.courseEnrollmentRepository.findById(id);
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+    return await this.courseEnrollmentRepository.update({ ...enrollment.toJSON(), status: 'suspended' });
   }
 
-  async reactivateCourse(id: string): Promise<ICourseEnrollment | null> {
-    return await this.courseEnrollmentRepository.update(id, { 
-      status: 'active' 
-    });
+  async reactivateCourse(id: string): Promise<InstanceType<typeof CourseEnrollment> | null> {
+    const enrollment = await this.courseEnrollmentRepository.findById(id);
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+    return await this.courseEnrollmentRepository.update({ ...enrollment.toJSON(), status: 'active' });
   }
 
-  async issueCertificate(id: string, certificateUrl: string): Promise<ICourseEnrollment | null> {
-    return await this.courseEnrollmentRepository.update(id, { 
+  async issueCertificate(id: string, certificateUrl: string): Promise<InstanceType<typeof CourseEnrollment> | null> {
+    const enrollment = await this.courseEnrollmentRepository.findById(id);
+    if (!enrollment) {
+      throw new Error('Enrollment not found');
+    }
+    return await this.courseEnrollmentRepository.update({ 
+      ...enrollment.toJSON(), 
       certificateIssued: true,
       certificateUrl 
     });
   }
 
-  async getCourseEnrollmentCount(courseId: string): Promise<number> {
+  async getEnrollmentCount(courseId: string): Promise<number> {
     return await this.courseEnrollmentRepository.countByCourseId(courseId);
   }
 
@@ -88,15 +104,15 @@ export class CourseEnrollmentUsecase {
     return enrollment !== null;
   }
 
-  async getUserActiveEnrollments(userId: string): Promise<ICourseEnrollment[]> {
+  async getUserActiveEnrollments(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
     return enrollments.filter(enrollment => enrollment.status === 'active');
   }
 
-  async getUserCompletedEnrollments(userId: string): Promise<ICourseEnrollment[]> {
+  async getUserCompletedEnrollments(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
     return enrollments.filter(enrollment => enrollment.status === 'completed');
   }
 }
 
-export default CourseEnrollmentUsecase;
+export default CourseEnrollmentUseCase;

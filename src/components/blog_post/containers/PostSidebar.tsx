@@ -17,7 +17,9 @@ const PostSidebar = ({
   const pathname = usePathname();
   const allCategories: string[] =
     posts && posts.length > 0 ? posts.map((p) => p.categoryId) : [];
-  const [allTags] = posts && posts.length > 0 ? posts.map((p) => p.tags) : [];
+  const allTags = posts && posts.length > 0 
+    ? posts.flatMap((p) => p.tags || []) 
+    : [];
 
 
   return (
@@ -29,9 +31,9 @@ const PostSidebar = ({
           <ul className="navbar-nav">
             {categories?.length ? (
               categories.map((category: ICategory) => {
-                const count = allCategories.filter(
-                  (c: string) => c === category.id
-                ).length;
+                const count = allCategories && Array.isArray(allCategories)
+                  ? allCategories.filter((c: string) => c === category.id).length
+                  : 0;
 
                 const isActive = pathname === `/categories/${category.slug}`;
 
@@ -62,9 +64,9 @@ const PostSidebar = ({
           <ul className="nav justify-content-start">
             {tags?.length ? (
               tags.map((tag: ITag) => {
-                const count = allTags.filter(
-                  (t: any) => t.id === tag.id
-                ).length;
+                const count = allTags && Array.isArray(allTags) 
+                  ? allTags.filter((t: any) => t.id === tag.id).length 
+                  : 0;
 
                 const isActive = pathname === `/tags/${tag.slug}`;
                 return (

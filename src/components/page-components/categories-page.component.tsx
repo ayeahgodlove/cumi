@@ -10,10 +10,12 @@ import { Spin } from "antd";
 
 export default function CategoriesPageComponent() {
   const {
-    data: posts,
+    data: postsResponse,
     isLoading,
     isFetching,
-  } = postAPI.useFetchAllPostsQuery(1);
+  } = postAPI.useFetchAllPostsQuery({});
+
+  const posts = postsResponse?.data || [];
 
   const {
     data: categories,
@@ -37,7 +39,7 @@ export default function CategoriesPageComponent() {
   }
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
@@ -49,7 +51,7 @@ export default function CategoriesPageComponent() {
 
       <CategoryContainer
         posts={isLoading || isFetching ? [] : posts}
-        categories={isLoadingCategory || isFetchCategory ? [] : categories}
+        categories={isLoadingCategory || isFetchCategory ? [] : categories || []}
       />
 
       <AppFooter logoPath="/" />

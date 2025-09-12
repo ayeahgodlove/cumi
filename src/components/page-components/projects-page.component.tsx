@@ -38,7 +38,7 @@ const { Title, Paragraph, Text } = Typography;
 
 export default function ProjectsPageComponent() {
   const { t } = useTranslation();
-  
+
   const {
     data: projects,
     isLoading: isLoadingEvent,
@@ -62,24 +62,32 @@ export default function ProjectsPageComponent() {
 
   const stats = [
     {
-      title: t('about.projects_completed'),
+      title: t("about.projects_completed"),
       value: projects?.length || 0,
       icon: <TrophyOutlined />,
     },
-    { title: t('projects.technologies_master'), value: "15+", icon: <CodeOutlined /> },
-    { title: t('about.happy_clients'), value: "50+", icon: <RocketOutlined /> },
-    { title: t('about.years_experience'), value: "5+", icon: <GlobalOutlined /> },
+    {
+      title: t("projects.technologies_master"),
+      value: "15+",
+      icon: <CodeOutlined />,
+    },
+    { title: t("about.happy_clients"), value: "50+", icon: <RocketOutlined /> },
+    {
+      title: t("about.years_experience"),
+      value: "5+",
+      icon: <GlobalOutlined />,
+    },
   ];
 
   const technologies = [
-    'JavaScript',
-    'PHP',
+    "JavaScript",
+    "PHP",
     "React",
     "Next.js",
     "Node.js",
     "TypeScript",
     "PostgreSQL",
-    'MySQL',
+    "MySQL",
     "GraphQL",
     "Python",
     "REST API",
@@ -89,13 +97,13 @@ export default function ProjectsPageComponent() {
 
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
       <BannerComponent
-        breadcrumbs={[{ label: t('nav.projects'), uri: "projects" }]}
-        pageTitle={t('nav.projects')}
+        breadcrumbs={[{ label: t("nav.projects"), uri: "projects" }]}
+        pageTitle={t("nav.projects")}
       />
 
       {/* Hero Section */}
@@ -105,7 +113,7 @@ export default function ProjectsPageComponent() {
           background: "linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%)",
         }}
       >
-        <div className="container">
+        <div className="container bg-light">
           <Row justify="center" align="middle">
             <Col xs={24} lg={12}>
               <motion.div
@@ -114,10 +122,10 @@ export default function ProjectsPageComponent() {
                 transition={{ duration: 0.6 }}
               >
                 <Title level={1} className="mb-4">
-                  {t('projects.innovative_projects')}
+                  {t("projects.innovative_projects")}
                 </Title>
                 <Paragraph className="fs-5 text-muted mb-4">
-                  {t('projects.innovative_description')}
+                  {t("projects.innovative_description")}
                 </Paragraph>
                 <Space size="large">
                   <Button
@@ -126,10 +134,10 @@ export default function ProjectsPageComponent() {
                     icon={<ArrowRightOutlined />}
                     href="/contact_us"
                   >
-                    {t('projects.start_project')}
+                    {t("projects.start_project")}
                   </Button>
                   <Button size="large" href="/our_services">
-                    {t('projects.view_services')}
+                    {t("projects.view_services")}
                   </Button>
                 </Space>
               </motion.div>
@@ -154,7 +162,7 @@ export default function ProjectsPageComponent() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-5">
+      <section className="py-5 my-5">
         <div className="container">
           <Row gutter={[24, 24]} justify="center">
             {stats.map((stat, index) => (
@@ -189,15 +197,15 @@ export default function ProjectsPageComponent() {
       </section>
 
       {/* Technologies Section */}
-      <section className="py-5 bg-light">
+      <section className="py-5 my-5">
         <div className="container">
           <Row justify="center" className="mb-4">
             <Col xs={24} lg={16} className="text-center">
               <Title level={2} className="mb-3">
-                {t('projects.technologies_master')}
+                {t("projects.technologies_master")}
               </Title>
               <Paragraph className="fs-5 text-muted">
-                {t('projects.tech_description')}
+                {t("projects.tech_description")}
               </Paragraph>
             </Col>
           </Row>
@@ -233,10 +241,12 @@ export default function ProjectsPageComponent() {
         <Row justify="center" className="mb-5">
           <Col xs={24} lg={16} className="text-center">
             <Title level={2} className="mb-3">
-              <span className={styles.glow}>{t('projects.featured_projects')}</span>
+              <span className={styles.glow}>
+                {t("projects.featured_projects")}
+              </span>
             </Title>
             <Paragraph className="fs-5 text-muted">
-              {t('projects.featured_description')}
+              {t("projects.featured_description")}
             </Paragraph>
           </Col>
         </Row>
@@ -264,7 +274,7 @@ export default function ProjectsPageComponent() {
             <Col span={24}>
               <Card className="text-center border-0 shadow-sm">
                 <Empty
-                  description={t('projects.no_projects')}
+                  description={t("projects.no_projects")}
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
               </Card>

@@ -93,7 +93,10 @@ export async function GET(
       throw new NotFoundException("Post", id);
     }
     const postDTO = postMapper.toDTO(post);
-    return NextResponse.json(postDTO);
+    return NextResponse.json({
+      data: postDTO,
+      success: true
+    });
   } catch (error: any) {
     return NextResponse.json(
       {

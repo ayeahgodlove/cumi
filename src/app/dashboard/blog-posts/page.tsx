@@ -23,11 +23,13 @@ export default function BlogPostList() {
   const { data: categoryData, isLoading: categoryIsLoading } = useMany({
     resource: "categories",
     ids:
-      tableProps?.dataSource
-        ?.map((item) => item?.category?.id)
-        .filter(Boolean) ?? [],
+      Array.isArray(tableProps?.dataSource)
+        ? tableProps.dataSource
+            .map((item) => item?.category?.id)
+            .filter(Boolean)
+        : [],
     queryOptions: {
-      enabled: !!tableProps?.dataSource,
+      enabled: !!tableProps?.dataSource && Array.isArray(tableProps.dataSource),
     },
   });
 
@@ -35,7 +37,12 @@ export default function BlogPostList() {
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table 
+          {...tableProps} 
+          
+          // dataSource={Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : []}
+          rowKey="id"
+        >
           <Table.Column
             dataIndex="id"
             title={"ID"}

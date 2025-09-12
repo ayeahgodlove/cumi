@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   Row,
@@ -11,11 +11,7 @@ import {
   Tag,
   Input,
   Select,
-  Modal,
-  Form,
-  message,
-  Empty,
-  Spin,
+  App,
 } from "antd";
 import {
   CalendarOutlined,
@@ -26,15 +22,18 @@ import {
   BookOutlined,
 } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
-import { AppNav } from "@components/nav/nav.component";
-import { AppFooter } from "@components/footer/footer";
-import { AppFootnote } from "@components/footnote/footnote";
-import BannerComponent from "@components/banner/banner.component";
 import { courseAPI } from "@store/api/course_api";
 import { motion } from "framer-motion";
 import { ICourse } from "@domain/models/course";
 import { useTranslation } from "@contexts/translation.context";
 import { useRouter } from "next/navigation";
+import { 
+  PageLayout, 
+  LoadingSpinner, 
+  SearchAndFilterBar, 
+  EmptyState,
+  CourseEnrollmentModal 
+} from "@components/shared";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -44,12 +43,13 @@ export default function CoursesPageComponent() {
   const { data: session } = useSession();
   const { t } = useTranslation();
   const router = useRouter();
+  const { message } = App.useApp();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [filterLevel, setFilterLevel] = useState<string>("all");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [enrollmentModalVisible, setEnrollmentModalVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
-  const [enrollmentForm] = Form.useForm();
 
   const {
     data: courses,
@@ -57,107 +57,67 @@ export default function CoursesPageComponent() {
     isLoading,
     isFetching,
   } = courseAPI.useFetchAllCoursesQuery({
-    searchTitle: searchTerm,
+    searchTitle: debouncedSearchTerm,
     sortBy: "date",
   });
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const filteredCourses =
     courses?.filter((course) => {
       const matchesSearch =
-        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.description.toLowerCase().includes(searchTerm.toLowerCase());
+        course.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
       // Note: ICourse doesn't have level/category properties, so we'll skip filtering for now
       return matchesSearch;
     }) || [];
 
   const handleEnrollCourse = (course: ICourse) => {
+    // Check if user is logged in
+    if (!session?.user?.id) {
+      message.error('Please log in to enroll in courses');
+      return;
+    }
+
     setSelectedCourse(course);
     setEnrollmentModalVisible(true);
   };
 
-  const handleEnrollmentSubmit = async (values: any) => {
+  const formatDate = (dateString: string | Date) => {
     try {
-      if (!selectedCourse || !session?.user?.id) {
-        message.error("Please log in to enroll in courses");
-        return;
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Invalid Date';
       }
-
-      const enrollmentData = {
-        courseId: selectedCourse.id,
-        userId: session.user.id,
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        experience: values.experience,
-        goals: values.goals,
-      };
-
-      const response = await fetch("/api/enrollments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(enrollmentData),
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Enrollment failed");
-      }
-
-      message.success("Successfully enrolled in the course!");
-      setEnrollmentModalVisible(false);
-      enrollmentForm.resetFields();
-
-      // Note: RTK Query will automatically refetch data when needed
     } catch (error) {
-      console.error("Enrollment error:", error);
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "Enrollment failed. Please try again."
-      );
+      console.error('Error formatting date:', error);
+      return 'Invalid Date';
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   if (isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "50px",
-          backgroundColor: "white",
-          minHeight: "100vh",
-        }}
-      >
-        <Spin size="large" />
-        <Text>Loading courses...</Text>
-      </div>
-    );
+    return <LoadingSpinner tip="Loading courses..." />;
   }
 
   return (
-    <>
-      <div
-        className="container-fluid mt-3"
-        style={{ width: "100%", backgroundColor: "white" }}
-      >
-        <AppNav logoPath="/" />
-      </div>
-      {/* Banner */}
-      <BannerComponent
-        breadcrumbs={[{ label: t("nav.courses"), uri: "courses" }]}
-        pageTitle={t("nav.courses")}
-      />
+    <PageLayout
+      showBanner={true}
+      bannerTitle={t("nav.courses")}
+      bannerBreadcrumbs={[{ label: t("nav.courses"), uri: "courses" }]}
+    >
       <div
         className="container pb-5"
         style={{ marginTop: 24, backgroundColor: "white" }}
@@ -375,7 +335,7 @@ export default function CoursesPageComponent() {
                           <Space>
                             <CalendarOutlined style={{ color: "#1890ff" }} />
                             <Text type="secondary">
-                              {formatDate(course.createdAt.toString())}
+                              {formatDate(course.createdAt)}
                             </Text>
                           </Space>
                           <Space>
@@ -391,138 +351,17 @@ export default function CoursesPageComponent() {
             ))}
           </Row>
         )}
+
+        {/* Course Enrollment Modal */}
+        <CourseEnrollmentModal
+          visible={enrollmentModalVisible}
+          onCancel={() => setEnrollmentModalVisible(false)}
+          course={selectedCourse}
+          onSuccess={() => {
+            // Optionally refresh data or show success message
+          }}
+        />
       </div>
-
-      {/* Enrollment Modal */}
-      <Modal
-        title={`Enroll in ${selectedCourse?.title}`}
-        open={enrollmentModalVisible}
-        onCancel={() => setEnrollmentModalVisible(false)}
-        footer={null}
-        width={600}
-      >
-        {selectedCourse && (
-          <div>
-            <Card size="small" style={{ marginBottom: 24 }}>
-              <Row gutter={[16, 16]}>
-                <Col span={24}>
-                  <img
-                    src={selectedCourse.imageUrl || "/img/design-3.jpg"}
-                    alt={selectedCourse.title}
-                    style={{
-                      width: "100%",
-                      height: 150,
-                      objectFit: "cover",
-                      borderRadius: 8,
-                    }}
-                  />
-                </Col>
-                <Col span={24}>
-                  <Space direction="vertical" size="small">
-                    <Title level={4} style={{ margin: 0 }}>
-                      {selectedCourse.title}
-                    </Title>
-                    <Space>
-                      <CalendarOutlined />
-                      <Text>
-                        {formatDate(selectedCourse.createdAt.toString())}
-                      </Text>
-                    </Space>
-                    <Space>
-                      <EnvironmentOutlined />
-                      <Text>{selectedCourse.authorName}</Text>
-                    </Space>
-                  </Space>
-                </Col>
-              </Row>
-            </Card>
-
-            <Form
-              form={enrollmentForm}
-              layout="vertical"
-              onFinish={handleEnrollmentSubmit}
-            >
-              <Form.Item
-                name="name"
-                label="Full Name"
-                rules={[
-                  { required: true, message: "Please enter your full name" },
-                ]}
-              >
-                <Input placeholder="Enter your full name" />
-              </Form.Item>
-
-              <Form.Item
-                name="email"
-                label="Email Address"
-                rules={[
-                  { required: true, message: "Please enter your email" },
-                  { type: "email", message: "Please enter a valid email" },
-                ]}
-              >
-                <Input placeholder="Enter your email address" />
-              </Form.Item>
-
-              <Form.Item
-                name="phone"
-                label="Phone Number"
-                rules={[
-                  { required: true, message: "Please enter your phone number" },
-                ]}
-              >
-                <Input placeholder="Enter your phone number" />
-              </Form.Item>
-
-              <Form.Item
-                name="experience"
-                label="Programming Experience"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select your experience level",
-                  },
-                ]}
-              >
-                <Select placeholder="Select your experience level">
-                  <Option value="beginner">Beginner</Option>
-                  <Option value="intermediate">Intermediate</Option>
-                  <Option value="advanced">Advanced</Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                name="goals"
-                label="Learning Goals"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please describe your learning goals",
-                  },
-                ]}
-              >
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Any specific learning goals or questions..."
-                />
-              </Form.Item>
-
-              <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
-                <Space>
-                  <Button onClick={() => setEnrollmentModalVisible(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="primary" htmlType="submit">
-                    Enroll Now
-                  </Button>
-                </Space>
-              </Form.Item>
-            </Form>
-          </div>
-        )}
-      </Modal>
-
-      <AppFooter logoPath="/" />
-      <AppFootnote />
-    </>
+    </PageLayout>
   );
 }

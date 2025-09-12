@@ -51,11 +51,27 @@ export class UserRepository implements IUserRepository {
    * @name
    * returns User
    */
-  async findByUsername(
-    name: string
-  ): Promise<InstanceType<typeof User> | null> {
+  async findByEmail(email: string): Promise<InstanceType<typeof User> | null> {
     try {
-      const userItem = await User.findOne({ where: { username: name } });
+      const userItem = await User.findOne({ where: { email } });
+      return userItem;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByResetToken(token: string): Promise<InstanceType<typeof User> | null> {
+    try {
+      const userItem = await User.findOne({ where: { resetToken: token } });
+      return userItem;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByUsername(username: string): Promise<InstanceType<typeof User> | null> {
+    try {
+      const userItem = await User.findOne({ where: { username } });
       return userItem;
     } catch (error) {
       throw error;
@@ -88,8 +104,12 @@ export class UserRepository implements IUserRepository {
         throw new NotFoundException("User", id.toString());
       }
 
-      const hashedPassword = await bcrypt.hash(user.password, 10);
-      user.password = hashedPassword;
+      // Only hash password if it's not already hashed (check if it starts with $2b$)
+      if (user.password && !user.password.startsWith('$2b$')) {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        user.password = hashedPassword;
+      }
+
       return await userItem?.update({ ...user });
     } catch (error) {
       throw error;

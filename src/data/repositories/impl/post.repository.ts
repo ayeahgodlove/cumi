@@ -206,6 +206,22 @@ export class PostRepository implements IPostRepository {
     }
   }
 
+  async findPublished(): Promise<InstanceType<typeof Post>[]> {
+    try {
+      const posts = await Post.findAll({
+        where: { status: 'PUBLISHED' },
+        include: [
+          { model: Tag, as: "tags" },
+          { model: Category, as: "category" },
+        ],
+        order: [['publishedAt', 'DESC']],
+      });
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /**
    * Receives a Post as parameter
    * @post

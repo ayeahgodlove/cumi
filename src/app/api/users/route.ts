@@ -7,6 +7,7 @@ import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextResponse, NextRequest } from "next/server";
+import { emailService } from "@services/email.service";
 
 const userRepository = new UserRepository();
 const userUseCase = new UserUseCase(userRepository);
@@ -61,6 +62,17 @@ export async function POST(request: NextRequest) {
       );
     }
     const userResponse = await userUseCase.createUser(dto.toData());
+
+    // Send welcome email
+    try {
+      await emailService.sendRegistrationConfirmationEmail(
+        userResponse.email,
+        userResponse.fullName || userResponse.username
+      );
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError);
+      // Don't fail the registration if email fails
+    }
 
     return NextResponse.json(
       {

@@ -4,30 +4,42 @@ import { IResponseBase } from "./response-base.model";
 export interface IComment {
   id: string;
   content: string;
-  userId: string; //foreign key to user table
-  postId: string; //foreign key to post table
-  publishedAt: Date;
-  parent_id?: string;
+  postId: string;
+  userId: string;
+  parentId?: string;
+  isApproved: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  // Relations
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+  post?: {
+    id: string;
+    title: string;
+    slug: string;
+  };
   replies?: IComment[];
 }
 
 export const emptyComment: IComment = {
   id: "",
   content: "",
-  userId: "",
   postId: "",
-  publishedAt: new Date(),
-  parent_id: "",
-  replies: [],
+  userId: "",
+  parentId: "",
+  isApproved: true,
+  createdAt: new Date(),
+  updatedAt: new Date(),
 };
-
 
 export interface ICommentState extends IBaseState {
   readonly comments: IComment[];
-  readonly comment: IComment;
 }
 
 export interface ICommentResponse extends IResponseBase {
-  data: IComment | null | IComment[];
+  data: IComment[];
 }
-

@@ -58,7 +58,11 @@ export class CourseRepository implements ICourseRepository {
     try {
       const course = await Course.findOne({
         where: { slug },
-        include: Category,
+        include: [{ 
+          model: Category, 
+          as: "category",
+          required: false // Make it optional so it doesn't fail if category doesn't exist
+        }],
       });
       return course;
     } catch (error) {
@@ -79,7 +83,7 @@ export class CourseRepository implements ICourseRepository {
 
       const courses = await Course.findAll({
         where: { categoryId: item.id },
-        include: Category,
+        include: [{ model: Category, as: "category" }],
       });
       return courses;
     } catch (error) {

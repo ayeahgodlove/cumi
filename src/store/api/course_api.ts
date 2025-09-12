@@ -29,3 +29,10 @@ export const courseAPI = createApi({
     }),
   }),
 });
+
+export const {
+  useGetSingleCourseQuery,
+  useGetSingleCourseBySlugQuery,
+  useGetCoursesByCategoryQuery,
+  useFetchAllCoursesQuery,
+} = courseAPI;

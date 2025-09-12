@@ -18,15 +18,7 @@ export async function GET(request: any) {
     const coursesDto = courseMapper.toDTOs(courses);
     return NextResponse.json(coursesDto);
   } catch (error: any) {
-    return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
-    );
+    return NextResponse.json([], { status: 500 });
   }
 }
 

@@ -13,7 +13,7 @@ import { AppService } from "@components/service/service.component";
 export default function HomePageComponent() {
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
 

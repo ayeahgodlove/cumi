@@ -3,7 +3,7 @@ import { Select } from "antd";
 
 interface SortPostsProps {
   sortOrderValue: SortPostsType;
-  sortOrderChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  sortOrderChange: (value: SortPostsType) => void;
 }
 
 const SortPosts = ({ sortOrderValue, sortOrderChange }: SortPostsProps) => {

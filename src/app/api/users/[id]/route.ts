@@ -1,10 +1,8 @@
 import { UserRepository } from "@data/repositories/impl/user.repository";
-import { emptyUser, IUser } from "@domain/models/user";
 import { UserUseCase } from "@domain/usecases/user.usecase";
 import authOptions from "@lib/options";
 import { UserRequestDto } from "@presentation/dtos/user-request.dto";
 import { UserMapper } from "@presentation/mappers/mapper";
-import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
@@ -14,54 +12,99 @@ const userRepository = new UserRepository();
 const userUseCase = new UserUseCase(userRepository);
 const userMapper = new UserMapper();
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  const session = await getServerSession(authOptions); //get session info
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Unauthorized: Please log in to access this resource.", success: false, data: null, validationErrors: [] },
+        { status: 401 }
+      );
+    }
 
-  if (!session || !session.user) {
+    // Users can only access their own data unless they're admin
+    if (session.user.id !== params.id && session.user.role !== 'admin') {
+      return NextResponse.json(
+        { message: "Forbidden: You can only access your own data.", success: false, data: null, validationErrors: [] },
+        { status: 403 }
+      );
+    }
+
+    const user = await userUseCase.getUserById(params.id);
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found", success: false, data: null, validationErrors: [] },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(userMapper.toDTO(user));
+  } catch (error: any) {
     return NextResponse.json(
-      {
-        message: "Unauthorized: Please log in to access this resource.",
-        success: false,
-        data: null,
-        validationErrors: [],
-      },
-      { status: 401 }
+      { message: error.message || "Failed to fetch user", success: false, data: null, validationErrors: [] },
+      { status: 500 }
     );
   }
+}
 
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const dto = new UserRequestDto(await req.json());
-    const validationErrors = await validate(dto);
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Unauthorized: Please log in to access this resource.", success: false, data: null, validationErrors: [] },
+        { status: 401 }
+      );
+    }
 
+    // Users can only update their own data unless they're admin
+    if (session.user.id !== params.id && session.user.role !== 'admin') {
+      return NextResponse.json(
+        { message: "Forbidden: You can only update your own data.", success: false, data: null, validationErrors: [] },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    
+    // Get existing user data
+    const existingUser = await userUseCase.getUserById(params.id);
+    if (!existingUser) {
+      return NextResponse.json(
+        { message: "User not found", success: false, data: null, validationErrors: [] },
+        { status: 404 }
+      );
+    }
+
+    // Create DTO with existing data and new updates
+    const dto = new UserRequestDto({
+      ...existingUser.toJSON(),
+      ...body,
+      // Don't allow changing password through this endpoint
+      password: existingUser.password,
+    });
+
+    const validationErrors = await validate(dto);
     if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          validationErrors: displayValidationErrors(validationErrors) as any,
+          validationErrors: displayValidationErrors(validationErrors),
           success: false,
           data: null,
-          message: "Attention!",
+          message: "Validation failed",
         },
         { status: 400 }
       );
     }
 
-    const id = params.id;
-
-    const obj: IUser = {
-      ...emptyUser,
-      ...req.body,
-      id: id,
-    };
-    const updatedUser = await userUseCase.updateUser(obj);
-    const userDto = userMapper.toDTO(updatedUser);
+    const updatedUser = await userUseCase.updateUser(dto.toUpdateData(existingUser.toJSON()));
 
     return NextResponse.json(
       {
-        data: userDto,
-        message: "User Updated Successfully!",
+        data: userMapper.toDTO(updatedUser),
+        message: "User updated successfully!",
         validationErrors: [],
         success: true,
       },
@@ -69,67 +112,47 @@ export async function PATCH(
     );
   } catch (error: any) {
     return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
+      { message: error.message || "Failed to update user", success: false, data: null, validationErrors: [] },
+      { status: 500 }
     );
   }
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const id = params.id;
-
-    const user = await userUseCase.getUserById(id);
-    if (!user) {
-      throw new NotFoundException("User", id);
+    const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: "Unauthorized: Please log in to access this resource.", success: false, data: null, validationErrors: [] },
+        { status: 401 }
+      );
     }
-    const userDTO = userMapper.toDTO(user);
-    return NextResponse.json(userDTO);
-  } catch (error: any) {
+
+    // Only admins can delete users
+    if (session.user.role !== 'admin') {
+      return NextResponse.json(
+        { message: "Forbidden: Only admins can delete users.", success: false, data: null, validationErrors: [] },
+        { status: 403 }
+      );
+    }
+
+    const deleted = await userUseCase.deleteUser(params.id);
+    if (!deleted) {
+      return NextResponse.json(
+        { message: "User not found", success: false, data: null, validationErrors: [] },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
+      { message: "User deleted successfully!", success: true, data: null, validationErrors: [] },
+      { status: 200 }
     );
-  }
-}
-
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const id = params.id;
-
-    await userUseCase.deleteUser(id);
-
-    return NextResponse.json({
-      message: `Operation successfully completed!`,
-      validationErrors: [],
-      success: true,
-      data: null,
-    });
   } catch (error: any) {
     return NextResponse.json(
-      {
-        message: error.message,
-        data: null,
-        validationErrors: [error],
-        success: true,
-      },
-      { status: 400 }
+      { message: error.message || "Failed to delete user", success: false, data: null, validationErrors: [] },
+      { status: 500 }
     );
   }
 }

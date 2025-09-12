@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { SubscribeUseCase } from "@domain/usecases/subscribe.usecase";
 import { SubscribeRepository } from "@data/repositories/subscribe.repository";
 import { subscribeMapper } from "@presentation/mappers/subscribe.mapper";
+import { emailService } from "@services/email.service";
 
 const subscribeUseCase = new SubscribeUseCase(new SubscribeRepository());
 
@@ -34,6 +35,21 @@ export async function POST(request: NextRequest) {
 
     const subscribe = await subscribeUseCase.create(body);
     const subscribeDTO = subscribeMapper.toDTO(subscribe as any);
+
+    // Send subscription confirmation email
+    try {
+      await emailService.sendNotificationEmail(
+        body.email,
+        body.name || 'Subscriber',
+        'Welcome to CUMI Newsletter!',
+        `Thank you for subscribing to our newsletter! You'll now receive updates about our latest courses, events, and educational content. We're excited to have you as part of our learning community.`,
+        `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`
+      );
+    } catch (emailError) {
+      console.error("Failed to send subscription confirmation email:", emailError);
+      // Don't fail the subscription if email fails
+    }
+
     return NextResponse.json(subscribeDTO, { status: 201 });
   } catch (error) {
     console.error("Error creating subscription:", error);

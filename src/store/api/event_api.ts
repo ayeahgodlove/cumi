@@ -29,3 +29,9 @@ export const eventAPI = createApi({
     }),
   }),
 });
+
+export const {
+  useGetSingleEventQuery,
+  useGetSingleEventBySlugQuery,
+  useFetchAllEventsQuery,
+} = eventAPI;

@@ -10,11 +10,13 @@ import { Spin } from "antd";
 
 export default function TagsPageComponent() {
   const {
-    data: posts,
+    data: postsResponse,
     error,
     isLoading,
     isFetching,
-  } = postAPI.useFetchAllPostsQuery(1);
+  } = postAPI.useFetchAllPostsQuery({});
+
+  const posts = postsResponse?.data || [];
 
   const {
     data: tags,
@@ -38,7 +40,7 @@ export default function TagsPageComponent() {
   }
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>

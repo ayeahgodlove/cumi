@@ -74,7 +74,7 @@ export default function CategoryDetailPageComponent({
 
   return (
     <>
-      <div className="container-fluid mt-3" style={{ width: "100%" }}>
+      <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
@@ -125,7 +125,7 @@ export default function CategoryDetailPageComponent({
                           categories={
                             isFetchCategory || isLoadingCategory
                               ? []
-                              : categories
+                              : categories || []
                           }
                           post={post}
                         />
@@ -139,7 +139,7 @@ export default function CategoryDetailPageComponent({
                   tags={isFetchTag || isLoadingTag ? [] : tags}
                   posts={isLoading || isFetching ? [] : posts}
                   categories={
-                    isFetchCategory || isLoadingCategory ? [] : categories
+                    isFetchCategory || isLoadingCategory ? [] : categories?.data || []
                   }
                 />
               </div>

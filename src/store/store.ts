@@ -11,7 +11,15 @@ import { serviceAPI } from "./api/service_api";
 import { opportunityAPI } from "./api/opportunity_api";
 import { statsAPI } from "./api/stats_api";
 import { publicStatsAPI } from "./api/public-stats_api";
-
+import { moduleAPI } from "./api/module_api";
+import { assignmentAPI } from "./api/assignment_api";
+import { courseProgressAPI } from "./api/course-progress_api";
+import { courseEnrollmentAPI } from "./api/course-enrollment_api";
+import { eventRegistrationAPI } from "./api/event-registration_api";
+import { lessonAPI } from "./api/lesson_api";
+import { commentAPI } from "./api/comment_api";
+import { commentInteractionAPI } from "./api/comment-interaction_api";
+import { postInteractionAPI } from "./api/post-interaction_api";
 export const store = configureStore({
   reducer: {
     [postAPI.reducerPath]: postAPI.reducer,
@@ -26,6 +34,15 @@ export const store = configureStore({
     [opportunityAPI.reducerPath]: opportunityAPI.reducer,
     [statsAPI.reducerPath]: statsAPI.reducer,
     [publicStatsAPI.reducerPath]: publicStatsAPI.reducer,
+    [moduleAPI.reducerPath]: moduleAPI.reducer,
+    [assignmentAPI.reducerPath]: assignmentAPI.reducer,
+    [courseProgressAPI.reducerPath]: courseProgressAPI.reducer,
+    [courseEnrollmentAPI.reducerPath]: courseEnrollmentAPI.reducer,
+    [eventRegistrationAPI.reducerPath]: eventRegistrationAPI.reducer,
+    [lessonAPI.reducerPath]: lessonAPI.reducer,
+    [commentAPI.reducerPath]: commentAPI.reducer,
+    [commentInteractionAPI.reducerPath]: commentInteractionAPI.reducer,
+    [postInteractionAPI.reducerPath]: postInteractionAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -41,6 +58,15 @@ export const store = configureStore({
       opportunityAPI.middleware,
       statsAPI.middleware,
       publicStatsAPI.middleware,
+      moduleAPI.middleware,
+      assignmentAPI.middleware,
+      courseProgressAPI.middleware,
+      courseEnrollmentAPI.middleware,
+      eventRegistrationAPI.middleware,
+      lessonAPI.middleware,
+      commentAPI.middleware,
+      commentInteractionAPI.middleware,
+      postInteractionAPI.middleware,
     ]),
 });
 

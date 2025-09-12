@@ -1,0 +1,104 @@
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BASE_URL } from "@constants/api-url";
+import { ILesson } from "@domain/models/lesson";
+
+interface ILessonSearchParams {
+  courseId?: string;
+  moduleId?: string;
+  userId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const lessonAPI = createApi({
+  reducerPath: "lessonAPI",
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${BASE_URL}`,
+  }),
+  tagTypes: ["Lesson"],
+  endpoints: (build) => ({
+    getSingleLesson: build.query<ILesson, string>({
+      query: (lessonId) => `/lessons/${lessonId}`,
+      providesTags: (result, error, id) => [{ type: "Lesson", id }],
+    }),
+    getLessonBySlug: build.query<ILesson, string>({
+      query: (slug) => `/lessons/slugs/${slug}`,
+      providesTags: (result, error, slug) => [{ type: "Lesson", id: slug }],
+    }),
+    getLessonsByCourse: build.query<ILesson[], string>({
+      query: (courseId) => `/lessons?courseId=${courseId}`,
+      providesTags: (result, error, courseId) => [
+        { type: "Lesson", id: "LIST" },
+        { type: "Lesson", id: courseId },
+      ],
+    }),
+    getLessonsByModule: build.query<ILesson[], string>({
+      query: (moduleId) => `/lessons?moduleId=${moduleId}`,
+      providesTags: (result, error, moduleId) => [
+        { type: "Lesson", id: "LIST" },
+        { type: "Lesson", id: moduleId },
+      ],
+    }),
+    getLessonsByUser: build.query<ILesson[], string>({
+      query: (userId) => `/lessons?userId=${userId}`,
+      providesTags: (result, error, userId) => [
+        { type: "Lesson", id: "LIST" },
+        { type: "Lesson", id: userId },
+      ],
+    }),
+    fetchAllLessons: build.query<{data: ILesson[], total: number, page: number, limit: number, totalPages: number}, ILessonSearchParams>({
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+        if (params.courseId) searchParams.append('courseId', params.courseId);
+        if (params.moduleId) searchParams.append('moduleId', params.moduleId);
+        if (params.userId) searchParams.append('userId', params.userId);
+        if (params.page) searchParams.append('page', params.page.toString());
+        if (params.limit) searchParams.append('limit', params.limit.toString());
+        
+        return `/lessons?${searchParams.toString()}`;
+      },
+      providesTags: [{ type: "Lesson", id: "LIST" }],
+    }),
+    createLesson: build.mutation<ILesson, Partial<ILesson>>({
+      query: (lesson) => ({
+        url: "/lessons",
+        method: "POST",
+        body: lesson,
+      }),
+      invalidatesTags: [{ type: "Lesson", id: "LIST" }],
+    }),
+    updateLesson: build.mutation<ILesson, { id: string; lesson: Partial<ILesson> }>({
+      query: ({ id, lesson }) => ({
+        url: `/lessons/${id}`,
+        method: "PATCH",
+        body: lesson,
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Lesson", id },
+        { type: "Lesson", id: "LIST" },
+      ],
+    }),
+    deleteLesson: build.mutation<void, string>({
+      query: (id) => ({
+        url: `/lessons/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (result, error, id) => [
+        { type: "Lesson", id },
+        { type: "Lesson", id: "LIST" },
+      ],
+    }),
+  }),
+});
+
+export const {
+  useGetSingleLessonQuery,
+  useGetLessonBySlugQuery,
+  useGetLessonsByCourseQuery,
+  useGetLessonsByModuleQuery,
+  useGetLessonsByUserQuery,
+  useFetchAllLessonsQuery,
+  useCreateLessonMutation,
+  useUpdateLessonMutation,
+  useDeleteLessonMutation,
+} = lessonAPI;
