@@ -76,7 +76,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         progress: 0,
       };
 
-      const response = await fetch("/api/enrollments", {
+      const response = await fetch("/api/course-enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

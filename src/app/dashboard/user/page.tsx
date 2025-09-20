@@ -251,7 +251,7 @@ export default function UserDashboard() {
   const handleEnrollmentSubmit = async (values: any) => {
     setEnrollingCourse(selectedCourse?.id);
     try {
-      const response = await fetch("/api/enrollments", {
+      const response = await fetch("/api/course-enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

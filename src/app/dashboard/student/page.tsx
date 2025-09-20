@@ -117,7 +117,7 @@ export default function StudentDashboard() {
 
   // Get user's existing event registrations to initialize registered events state
   const { data: userEventRegistrations, refetch: refetchEventRegistrations } =
-    eventRegistrationAPI.useGetUserEventRegistrationsQuery(undefined, {
+    eventRegistrationAPI.useGetUserEventRegistrationsQuery(session?.user?.id || "", {
       skip: !session?.user?.id,
     });
 
@@ -224,6 +224,24 @@ export default function StudentDashboard() {
     }
   }, [userEventRegistrations]);
 
+  // Enhanced courses with enrollment progress
+  const enhancedCourses = React.useMemo(() => {
+    const courses = coursesTableProps.dataSource || [];
+    const enrollments = Array.isArray(userEnrollments) 
+      ? userEnrollments 
+      : (userEnrollments as any)?.data || [];
+
+    return courses.map((course: any) => {
+      const enrollment = enrollments.find((enr: any) => enr.courseId === course.id);
+      return {
+        ...course,
+        progress: enrollment?.progress || 0,
+        enrollmentStatus: enrollment?.status || null,
+        enrollmentId: enrollment?.id || null,
+      };
+    });
+  }, [coursesTableProps.dataSource, userEnrollments]);
+
   // Handle course continuation
   const handleContinueCourse = async (
     courseId: string,
@@ -231,15 +249,13 @@ export default function StudentDashboard() {
   ) => {
     setContinuingCourse(courseId);
     try {
-      // Simulate navigation to course learning page
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Navigate to the new learning interface with continue parameter
+      router.push(`/dashboard/student/courses/${courseId}/learn?continue=true`);
       open?.({
         type: "success",
-        message: "Continuing Course",
-        description: `Continuing with "${courseTitle}"...`,
+        message: "Continuing Course! 📚",
+        description: `Welcome back to "${courseTitle.length > 50 ? courseTitle.substring(0, 50) + '...' : courseTitle}"`,
       });
-      // In real implementation, navigate to learning page
-      // router.push(`/dashboard/student/courses/${courseId}/learn`);
     } catch (error) {
       open?.({
         type: "error",
@@ -273,7 +289,7 @@ export default function StudentDashboard() {
     }
 
     try {
-      const response = await fetch("/api/enrollments", {
+      const response = await fetch("/api/course-enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -1192,7 +1208,16 @@ export default function StudentDashboard() {
               Track your progress and continue learning
             </Text>
           </div>
-          {renderCourseCards([...(coursesTableProps.dataSource || [])])}
+          {coursesQueryResult.isLoading ? (
+            <div style={{ padding: "60px 0", textAlign: "center" }}>
+              <Spin size="large" style={{ marginBottom: "16px" }} />
+              <div style={{ color: "#666", fontSize: "16px" }}>
+                Loading courses...
+              </div>
+            </div>
+          ) : (
+            renderCourseCards(enhancedCourses)
+          )}
         </div>
       ),
     },
@@ -1207,7 +1232,16 @@ export default function StudentDashboard() {
               Explore educational posts and resources
             </Text>
           </div>
-          {renderPostCards([...(postsTableProps.dataSource || [])])}
+          {postsQueryResult.isLoading ? (
+            <div style={{ padding: "60px 0", textAlign: "center" }}>
+              <Spin size="large" style={{ marginBottom: "16px" }} />
+              <div style={{ color: "#666", fontSize: "16px" }}>
+                Loading posts...
+              </div>
+            </div>
+          ) : (
+            renderPostCards([...(postsTableProps.dataSource || [])])
+          )}
         </div>
       ),
     },
@@ -1220,7 +1254,16 @@ export default function StudentDashboard() {
             <Title level={4}>Learning Events</Title>
             <Text type="secondary">Join educational events and workshops</Text>
           </div>
-          {renderEventCards([...(eventsTableProps.dataSource || [])])}
+          {eventsQueryResult.isLoading ? (
+            <div style={{ padding: "60px 0", textAlign: "center" }}>
+              <Spin size="large" style={{ marginBottom: "16px" }} />
+              <div style={{ color: "#666", fontSize: "16px" }}>
+                Loading events...
+              </div>
+            </div>
+          ) : (
+            renderEventCards([...(eventsTableProps.dataSource || [])])
+          )}
         </div>
       ),
     },
@@ -1319,7 +1362,7 @@ export default function StudentDashboard() {
       </Row>
 
       {/* My Enrolled Courses Section */}
-      {enrolledCourses.size > 0 && (
+      {(coursesQueryResult.isLoading || enrolledCourses.size > 0) && (
         <Card
           style={{
             backgroundColor: "white",
@@ -1340,10 +1383,18 @@ export default function StudentDashboard() {
               </Text>
             </div>
 
-            <Row gutter={[16, 16]}>
-              {[...(coursesTableProps.dataSource || [])]
-                .filter((course: any) => enrolledCourses.has(course.id))
-                .map((course: any) => (
+            {coursesQueryResult.isLoading ? (
+              <div style={{ padding: "40px 0", textAlign: "center" }}>
+                <Spin size="large" style={{ marginBottom: "16px" }} />
+                <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "16px" }}>
+                  Loading your enrolled courses...
+                </div>
+              </div>
+            ) : (
+              <Row gutter={[16, 16]}>
+                {enhancedCourses
+                  .filter((course: any) => enrolledCourses.has(course.id))
+                  .map((course: any) => (
                   <Col xs={24} sm={12} md={8} lg={6} key={course.id}>
                     <Card
                       hoverable
@@ -1450,8 +1501,9 @@ export default function StudentDashboard() {
                       </div>
                     </Card>
                   </Col>
-                ))}
-            </Row>
+                  ))}
+              </Row>
+            )}
           </div>
         </Card>
       )}
@@ -1819,6 +1871,37 @@ export default function StudentDashboard() {
                   : "-"}
               </Descriptions.Item>
             </Descriptions>
+
+            {/* Course Reviews Section */}
+            <div style={{ marginTop: "24px" }}>
+              <Title level={5} style={{ marginBottom: "16px" }}>
+                <StarOutlined style={{ marginRight: "8px", color: "#faad14" }} />
+                Student Reviews
+              </Title>
+              
+              <div style={{ 
+                padding: "16px", 
+                background: "#f8f9fa", 
+                borderRadius: "8px",
+                textAlign: "center"
+              }}>
+                <Text style={{ color: "#666" }}>
+                  Reviews are available in the detailed course view and learning interface
+                </Text>
+                <div style={{ marginTop: "8px" }}>
+                  <Button 
+                    type="link" 
+                    onClick={() => {
+                      handleNavigateToCourse(selectedItem?.id, selectedItem?.slug);
+                      setCourseModalVisible(false);
+                    }}
+                    style={{ padding: 0 }}
+                  >
+                    View Course Details & Reviews →
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Card>
         )}
       </Modal>

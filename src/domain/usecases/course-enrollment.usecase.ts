@@ -1,12 +1,15 @@
 import { CourseEnrollmentRepository } from "@data/repositories/impl/course-enrollment.repository";
+import { CourseProgressRepository } from "@data/repositories/impl/course-progress.repository";
 import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
 import { CourseEnrollment } from "@data/entities/index";
 
 export class CourseEnrollmentUseCase {
   private courseEnrollmentRepository: CourseEnrollmentRepository;
+  private courseProgressRepository: CourseProgressRepository;
 
   constructor(courseEnrollmentRepository: CourseEnrollmentRepository) {
     this.courseEnrollmentRepository = courseEnrollmentRepository;
+    this.courseProgressRepository = new CourseProgressRepository();
   }
 
   async createEnrollment(data: ICourseEnrollment): Promise<InstanceType<typeof CourseEnrollment>> {
@@ -36,7 +39,17 @@ export class CourseEnrollmentUseCase {
   }
 
   async getEnrollmentsByUserId(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
-    return await this.courseEnrollmentRepository.findByUserId(userId);
+    const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
+    
+    // Calculate and update progress for each enrollment
+    for (const enrollment of enrollments) {
+      const progress = await this.calculateCourseProgress(enrollment.getDataValue('id'), userId);
+      await this.courseEnrollmentRepository.updateProgress(enrollment.getDataValue('id'), progress);
+      // Update the enrollment instance with the calculated progress
+      enrollment.setDataValue('progress', progress);
+    }
+    
+    return enrollments;
   }
 
   async updateEnrollment(id: string, data: Partial<ICourseEnrollment>): Promise<InstanceType<typeof CourseEnrollment> | null> {
@@ -112,6 +125,35 @@ export class CourseEnrollmentUseCase {
   async getUserCompletedEnrollments(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
     return enrollments.filter(enrollment => enrollment.status === 'completed');
+  }
+
+  private async calculateCourseProgress(enrollmentId: string, userId: string): Promise<number> {
+    try {
+      // Get all progress records for this enrollment
+      const progressRecords = await this.courseProgressRepository.findByEnrollmentId(enrollmentId);
+      
+      // Filter for lesson progress records only
+      const lessonProgressRecords = progressRecords.filter(record => 
+        record.getDataValue('progressType') === 'lesson' && 
+        record.getDataValue('userId') === userId
+      );
+      
+      if (lessonProgressRecords.length === 0) {
+        return 0;
+      }
+      
+      // Calculate average completion percentage
+      const totalCompletion = lessonProgressRecords.reduce((sum, record) => {
+        return sum + (record.getDataValue('completionPercentage') || 0);
+      }, 0);
+      
+      const averageCompletion = Math.round(totalCompletion / lessonProgressRecords.length);
+      
+      return Math.min(100, Math.max(0, averageCompletion));
+    } catch (error) {
+      console.error('Error calculating course progress:', error);
+      return 0;
+    }
   }
 }
 

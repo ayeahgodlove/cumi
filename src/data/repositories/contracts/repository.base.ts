@@ -14,6 +14,9 @@ import { ITag } from "@domain/models/tag";
 import { IModule } from "@domain/models/module.model";
 import { IAssignment } from "@domain/models/assignment.model";
 import { ICourseProgress } from "@domain/models/course-progress.model";
+import { IReview } from "@domain/models/review.model";
+import { IQuizSubmission } from "@domain/models/quiz-submission.model";
+import { IAssignmentSubmission } from "@domain/models/assignment-submission.model";
 import { IUser } from "@domain/models/user";
 
 import {
@@ -36,6 +39,9 @@ import {
   Module,
   Assignment,
   CourseProgress,
+  Review,
+  QuizSubmission,
+  AssignmentSubmission,
 } from "../../entities/index";
 
 export interface IRepository<T, U> {
@@ -69,6 +75,16 @@ export interface ILessonRepository
   findBySlug(slug: string): Promise<InstanceType<typeof Lesson> | null>;
   findByCourseId(courseId: string): Promise<InstanceType<typeof Lesson>[]>;
   findByModuleId(moduleId: string): Promise<InstanceType<typeof Lesson>[]>;
+}
+
+export interface IModuleRepository
+  extends IRepository<IModule, InstanceType<typeof Module>> {
+  findByTitle(title: string): Promise<InstanceType<typeof Module> | null>;
+  findBySlug(slug: string): Promise<InstanceType<typeof Module> | null>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Module>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof Module>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof Module>[]>;
+  findByCourseIdWithLessons(courseId: string): Promise<InstanceType<typeof Module>[]>;
 }
 
 export interface IQuizRepository
@@ -166,4 +182,60 @@ export interface ICourseProgressRepository
   findByProgressType(progressType: string): Promise<InstanceType<typeof CourseProgress>[]>;
   updateProgress(id: string, progress: number): Promise<InstanceType<typeof CourseProgress> | null>;
   updateStatus(id: string, status: string): Promise<InstanceType<typeof CourseProgress> | null>;
+}
+
+export interface IReviewRepository
+  extends IRepository<IReview, InstanceType<typeof Review>> {
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Review>[]>;
+  findByUserId(userId: string): Promise<InstanceType<typeof Review>[]>;
+  findByUserAndCourse(userId: string, courseId: string): Promise<InstanceType<typeof Review> | null>;
+  findByStatus(status: string): Promise<InstanceType<typeof Review>[]>;
+  findByRating(rating: number): Promise<InstanceType<typeof Review>[]>;
+  findApprovedByCourseId(courseId: string): Promise<InstanceType<typeof Review>[]>;
+  updateStatus(id: string, status: string, moderatorNotes?: string): Promise<InstanceType<typeof Review> | null>;
+  incrementHelpfulVotes(id: string): Promise<InstanceType<typeof Review> | null>;
+  incrementReportedCount(id: string): Promise<InstanceType<typeof Review> | null>;
+  getAverageRatingByCourseId(courseId: string): Promise<number>;
+  getReviewStatsByCourseId(courseId: string): Promise<{
+    totalReviews: number;
+    averageRating: number;
+    ratingDistribution: { [key: number]: number };
+  }>;
+}
+
+export interface IQuizSubmissionRepository
+  extends IRepository<IQuizSubmission, InstanceType<typeof QuizSubmission>> {
+  findByUserId(userId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByQuizId(quizId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByUserAndQuiz(userId: string, quizId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByUserAndCourse(userId: string, courseId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByLessonId(lessonId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  getLatestAttempt(userId: string, quizId: string): Promise<InstanceType<typeof QuizSubmission> | null>;
+  getUserQuizPerformance(userId: string, courseId: string): Promise<InstanceType<typeof QuizSubmission>[]>;
+  getQuizStatistics(quizId: string): Promise<{
+    totalSubmissions: number;
+    averageScore: number;
+    passRate: number;
+  }>;
+}
+
+export interface IAssignmentSubmissionRepository
+  extends IRepository<IAssignmentSubmission, InstanceType<typeof AssignmentSubmission>> {
+  findByUserId(userId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByAssignmentId(assignmentId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByUserAndAssignment(userId: string, assignmentId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByUserAndCourse(userId: string, courseId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByStatus(status: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  findByGrader(graderId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  getLatestAttempt(userId: string, assignmentId: string): Promise<InstanceType<typeof AssignmentSubmission> | null>;
+  getUserAssignmentPerformance(userId: string, courseId: string): Promise<InstanceType<typeof AssignmentSubmission>[]>;
+  getAssignmentStatistics(assignmentId: string): Promise<{
+    totalSubmissions: number;
+    averageScore: number;
+    passRate: number;
+  }>;
+  updateGrade(id: string, score: number, feedback?: string, gradedBy?: string): Promise<InstanceType<typeof AssignmentSubmission> | null>;
 }

@@ -30,6 +30,7 @@ export const Title: React.FC<TitleProps> = ({ collapsed }) => {
               margin: "0 auto",
               padding: "12px 0",
               maxHeight: "65.5px",
+              width: "auto",
             }}
           />
         </div>
@@ -39,6 +40,7 @@ export const Title: React.FC<TitleProps> = ({ collapsed }) => {
           alt="Cumi website logo"
           style={{
             width: "180px",
+            height: "auto",
             padding: "12px 24px",
           }}
         />

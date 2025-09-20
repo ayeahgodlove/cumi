@@ -21,6 +21,9 @@ import {
   Module,
   Assignment,
   CourseProgress,
+  Review,
+  QuizSubmission,
+  AssignmentSubmission,
 } from "@data/entities/index";
 
 import { IBanner } from "@domain/models/banner.model";
@@ -44,6 +47,9 @@ import { IPartner } from "@domain/models/partner.model";
 import { IModule } from "@domain/models/module.model";
 import { IAssignment } from "@domain/models/assignment.model";
 import { ICourseProgress } from "@domain/models/course-progress.model";
+import { IReview } from "@domain/models/review.model";
+import { IQuizSubmission } from "@domain/models/quiz-submission.model";
+import { IAssignmentSubmission } from "@domain/models/assignment-submission.model";
 
 export class CategoryMapper {
   toDTO(category: InstanceType<typeof Category>): ICategory {
@@ -340,5 +346,50 @@ export class CourseProgressMapper {
       return entity;
     });
     return _progresses;
+  }
+}
+
+export class ReviewMapper {
+  toDTO(review: InstanceType<typeof Review>): IReview {
+    const entity = review.toJSON<IReview>();
+    return entity;
+  }
+
+  toDTOs(reviews: InstanceType<typeof Review>[]): IReview[] {
+    const _reviews = reviews.map((review) => {
+      const entity = review.toJSON<IReview>();
+      return entity;
+    });
+    return _reviews;
+  }
+}
+
+export class QuizSubmissionMapper {
+  toDTO(submission: InstanceType<typeof QuizSubmission>): IQuizSubmission {
+    const entity = submission.toJSON<IQuizSubmission>();
+    return entity;
+  }
+
+  toDTOs(submissions: InstanceType<typeof QuizSubmission>[]): IQuizSubmission[] {
+    const _submissions = submissions.map((submission) => {
+      const entity = submission.toJSON<IQuizSubmission>();
+      return entity;
+    });
+    return _submissions;
+  }
+}
+
+export class AssignmentSubmissionMapper {
+  toDTO(submission: InstanceType<typeof AssignmentSubmission>): IAssignmentSubmission {
+    const entity = submission.toJSON<IAssignmentSubmission>();
+    return entity;
+  }
+
+  toDTOs(submissions: InstanceType<typeof AssignmentSubmission>[]): IAssignmentSubmission[] {
+    const _submissions = submissions.map((submission) => {
+      const entity = submission.toJSON<IAssignmentSubmission>();
+      return entity;
+    });
+    return _submissions;
   }
 }

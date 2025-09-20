@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import authOptions from "@lib/options";
-import { EventRegistration } from "@domain/models/event-registration.model";
+import { EventRegistration } from "@data/entities/index";
 import { nanoid } from "nanoid";
 import sequelize from "@database/db-sequelize.config";
 
@@ -132,6 +132,18 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
     const eventId = searchParams.get("eventId");
+
+    // Require at least one filter parameter for security and performance
+    if (!userId && !eventId) {
+      return NextResponse.json(
+        {
+          message: "Either userId or eventId parameter is required",
+          success: false,
+          data: null,
+        },
+        { status: 400 }
+      );
+    }
 
     let whereClause: any = {};
     if (userId) whereClause.userId = userId;

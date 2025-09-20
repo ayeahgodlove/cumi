@@ -1,0 +1,77 @@
+/* Responsive utility classes for the learning page */
+
+/* Mobile-first approach: Show mobile elements by default */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+/* Hide mobile elements on desktop (lg: 1024px+) */
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none !important;
+  }
+  
+  .lg\:flex {
+    display: flex !important;
+  }
+  
+  .lg\:block {
+    display: block !important;
+  }
+  
+  .hidden {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+}
+
+/* Tablet adjustments (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-hidden {
+    display: none !important;
+  }
+  
+  .tablet-block {
+    display: block !important;
+  }
+}
+
+/* Responsive content margins */
+.responsive-content {
+  margin: 8px;
+}
+
+@media (min-width: 768px) {
+  .responsive-content {
+    margin: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-content {
+    margin: 16px;
+  }
+}
+
+/* Assignments panel - sticky on desktop, static on mobile */
+.assignments-panel {
+  position: static;
+}
+
+@media (min-width: 1024px) {
+  .assignments-panel {
+    position: sticky;
+    top: 100px;
+  }
+}

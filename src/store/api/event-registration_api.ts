@@ -27,8 +27,14 @@ export const eventRegistrationAPI = createApi({
   }),
   tagTypes: ["EventRegistration"],
   endpoints: (build) => ({
-    getUserEventRegistrations: build.query<IEventRegistration[], void>({
-      query: () => `/event-registrations`,
+    getUserEventRegistrations: build.query<IEventRegistration[], string>({
+      query: (userId) => `/event-registrations?userId=${userId}`,
+      transformResponse: (response: any) => {
+        if (response && response.success && response.data) {
+          return Array.isArray(response.data) ? response.data : [];
+        }
+        return response || [];
+      },
       providesTags: ["EventRegistration"],
     }),
     checkEventRegistration: build.query<{ registered: boolean }, string>({

@@ -149,6 +149,52 @@ export class ModuleRepository implements IModuleRepository {
       throw error;
     }
   }
+
+  async findByCourseIdWithLessons(courseId: string): Promise<InstanceType<typeof Module>[]> {
+    try {
+      // Import the models we need for associations
+      const { Lesson, Assignment, Quiz } = require("@data/entities/index");
+      
+      const modules = await Module.findAll({
+        where: { 
+          courseId,
+          status: 'published'
+        },
+        include: [
+          { model: Module.associations.course.target, as: "course" },
+          { model: Module.associations.instructor.target, as: "instructor" },
+          { 
+            model: Lesson, 
+            as: "lessons",
+            where: { status: 'published' },
+            required: false,
+            include: [
+              {
+                model: Assignment,
+                as: "assignments",
+                where: { status: 'published' },
+                required: false,
+              },
+              {
+                model: Quiz,
+                as: "quizzes", 
+                where: { status: 'published' },
+                required: false,
+              }
+            ]
+          }
+        ],
+        order: [
+          ['moduleOrder', 'ASC'],
+          [{ model: Lesson, as: "lessons" }, 'lessonOrder', 'ASC']
+        ],
+      });
+      return modules;
+    } catch (error) {
+      console.error("Error in findByCourseIdWithLessons:", error);
+      throw error;
+    }
+  }
 }
 
 export default ModuleRepository;

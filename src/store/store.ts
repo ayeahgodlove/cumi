@@ -21,6 +21,10 @@ import { commentAPI } from "./api/comment_api";
 import { commentInteractionAPI } from "./api/comment-interaction_api";
 import { postInteractionAPI } from "./api/post-interaction_api";
 import { quizAPI } from "./api/quiz_api";
+import { learningAPI } from "./api/learning_api";
+import { reviewAPI } from "./api/review_api";
+import { quizSubmissionAPI } from "./api/quiz-submission_api";
+import { assignmentSubmissionAPI } from "./api/assignment-submission_api";
 export const store = configureStore({
   reducer: {
     [postAPI.reducerPath]: postAPI.reducer,
@@ -45,6 +49,10 @@ export const store = configureStore({
     [commentInteractionAPI.reducerPath]: commentInteractionAPI.reducer,
     [postInteractionAPI.reducerPath]: postInteractionAPI.reducer,
     [quizAPI.reducerPath]: quizAPI.reducer,
+    [learningAPI.reducerPath]: learningAPI.reducer,
+    [reviewAPI.reducerPath]: reviewAPI.reducer,
+    [quizSubmissionAPI.reducerPath]: quizSubmissionAPI.reducer,
+    [assignmentSubmissionAPI.reducerPath]: assignmentSubmissionAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -70,6 +78,10 @@ export const store = configureStore({
       commentInteractionAPI.middleware,
       postInteractionAPI.middleware,
       quizAPI.middleware,
+      learningAPI.middleware,
+      reviewAPI.middleware,
+      quizSubmissionAPI.middleware,
+      assignmentSubmissionAPI.middleware,
     ]),
 });
 

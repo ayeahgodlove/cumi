@@ -10,6 +10,7 @@ import defineCourse from "./course";
 import defineTag from "./tag";
 import defineEvent from "./event";
 import defineEventTag from "./event_tag";
+import defineEventRegistration from "./event-registration";
 import defineLesson from "./lesson";
 import defineOpportunity from "./opportunity";
 import definePost from "./post";
@@ -27,6 +28,9 @@ import defineCourseEnrollment from "./course-enrollment";
 import defineModule from "./module.entity";
 import defineAssignment from "./assignment.entity";
 import defineCourseProgress from "./course-progress.entity";
+import defineReview from "./review";
+import defineQuizSubmission from "./quiz-submission";
+import defineAssignmentSubmission from "./assignment-submission";
 
 const Banner = defineBanner(sequelize, DataTypes);
 const Category = defineCategory(sequelize, DataTypes);
@@ -37,6 +41,7 @@ const Tag = defineTag(sequelize, DataTypes);
 const Course = defineCourse(sequelize, DataTypes);
 const Event = defineEvent(sequelize, DataTypes);
 const EventTag = defineEventTag(sequelize, DataTypes);
+const EventRegistration = defineEventRegistration(sequelize, DataTypes);
 const Post = definePost(sequelize, DataTypes);
 const Lesson = defineLesson(sequelize, DataTypes);
 const Opportunity = defineOpportunity(sequelize, DataTypes);
@@ -54,6 +59,9 @@ const CourseEnrollment = defineCourseEnrollment(sequelize, DataTypes);
 const Module = defineModule(sequelize, DataTypes);
 const Assignment = defineAssignment(sequelize, DataTypes);
 const CourseProgress = defineCourseProgress(sequelize, DataTypes);
+const Review = defineReview(sequelize, DataTypes);
+const QuizSubmission = defineQuizSubmission(sequelize, DataTypes);
+const AssignmentSubmission = defineAssignmentSubmission(sequelize, DataTypes);
 
 Event.belongsToMany(Tag, {
   through: {
@@ -151,6 +159,10 @@ Module.belongsTo(Course, { foreignKey: "courseId", as: "course" });
 User.hasMany(Module, { foreignKey: "userId", as: "modules" });
 Module.belongsTo(User, { foreignKey: "userId", as: "instructor" });
 
+// Module-Lesson associations
+Module.hasMany(Lesson, { foreignKey: "moduleId", as: "lessons" });
+Lesson.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
+
 // Assignment associations
 Course.hasMany(Assignment, { foreignKey: "courseId", as: "assignments" });
 Assignment.belongsTo(Course, { foreignKey: "courseId", as: "course" });
@@ -163,6 +175,10 @@ Assignment.belongsTo(Lesson, { foreignKey: "lessonId", as: "lesson" });
 
 User.hasMany(Assignment, { foreignKey: "userId", as: "assignments" });
 Assignment.belongsTo(User, { foreignKey: "userId", as: "instructor" });
+
+// Lesson-Quiz associations
+Lesson.hasMany(Quiz, { foreignKey: "lessonId", as: "quizzes" });
+Quiz.belongsTo(Lesson, { foreignKey: "lessonId", as: "lesson" });
 
 // Course Progress associations
 CourseEnrollment.hasMany(CourseProgress, { foreignKey: "enrollmentId", as: "courseProgress" });
@@ -186,6 +202,58 @@ CourseProgress.belongsTo(Quiz, { foreignKey: "quizId", as: "quiz" });
 Assignment.hasMany(CourseProgress, { foreignKey: "assignmentId", as: "courseProgress" });
 CourseProgress.belongsTo(Assignment, { foreignKey: "assignmentId", as: "assignment" });
 
+// Event Registration associations
+Event.hasMany(EventRegistration, { foreignKey: "eventId", as: "registrations" });
+EventRegistration.belongsTo(Event, { foreignKey: "eventId", as: "event" });
+
+User.hasMany(EventRegistration, { foreignKey: "userId", as: "eventRegistrations" });
+EventRegistration.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+// Review associations
+Course.hasMany(Review, { foreignKey: "courseId", as: "reviews" });
+Review.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+
+User.hasMany(Review, { foreignKey: "userId", as: "reviews" });
+Review.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+CourseEnrollment.hasMany(Review, { foreignKey: "enrollmentId", as: "reviews" });
+Review.belongsTo(CourseEnrollment, { foreignKey: "enrollmentId", as: "enrollment" });
+
+// Quiz Submission associations
+User.hasMany(QuizSubmission, { foreignKey: "userId", as: "quizSubmissions" });
+QuizSubmission.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+Quiz.hasMany(QuizSubmission, { foreignKey: "quizId", as: "submissions" });
+QuizSubmission.belongsTo(Quiz, { foreignKey: "quizId", as: "quiz" });
+
+Lesson.hasMany(QuizSubmission, { foreignKey: "lessonId", as: "quizSubmissions" });
+QuizSubmission.belongsTo(Lesson, { foreignKey: "lessonId", as: "lesson" });
+
+Course.hasMany(QuizSubmission, { foreignKey: "courseId", as: "quizSubmissions" });
+QuizSubmission.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+
+Module.hasMany(QuizSubmission, { foreignKey: "moduleId", as: "quizSubmissions" });
+QuizSubmission.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
+
+// Assignment Submission associations
+User.hasMany(AssignmentSubmission, { foreignKey: "userId", as: "assignmentSubmissions" });
+AssignmentSubmission.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+Assignment.hasMany(AssignmentSubmission, { foreignKey: "assignmentId", as: "submissions" });
+AssignmentSubmission.belongsTo(Assignment, { foreignKey: "assignmentId", as: "assignment" });
+
+Course.hasMany(AssignmentSubmission, { foreignKey: "courseId", as: "assignmentSubmissions" });
+AssignmentSubmission.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+
+Module.hasMany(AssignmentSubmission, { foreignKey: "moduleId", as: "assignmentSubmissions" });
+AssignmentSubmission.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
+
+Lesson.hasMany(AssignmentSubmission, { foreignKey: "lessonId", as: "assignmentSubmissions" });
+AssignmentSubmission.belongsTo(Lesson, { foreignKey: "lessonId", as: "lesson" });
+
+// Grader association for assignment submissions
+AssignmentSubmission.belongsTo(User, { foreignKey: "gradedBy", as: "grader" });
+
 export {
   Banner,
   Category,
@@ -195,6 +263,7 @@ export {
   Course,
   Event,
   EventTag,
+  EventRegistration,
   Lesson,
   Opportunity,
   PostTag,
@@ -212,5 +281,8 @@ export {
   CourseEnrollment,
   Module,
   Assignment,
-  CourseProgress
+  CourseProgress,
+  Review,
+  QuizSubmission,
+  AssignmentSubmission
 };

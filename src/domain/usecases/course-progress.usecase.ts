@@ -34,6 +34,10 @@ export class CourseProgressUseCase {
     return this.courseProgressRepository.findByEnrollmentId(enrollmentId);
   }
 
+  async getCourseProgressByLessonId(lessonId: string): Promise<InstanceType<typeof CourseProgress>[]> {
+    return this.courseProgressRepository.findByLessonId(lessonId);
+  }
+
   async updateCourseProgress(courseProgress: ICourseProgress): Promise<InstanceType<typeof CourseProgress>> {
     return this.courseProgressRepository.update(courseProgress);
   }

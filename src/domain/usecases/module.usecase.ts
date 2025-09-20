@@ -36,6 +36,10 @@ export class ModuleUseCase {
     return this.moduleRepository.findByCourseId(courseId);
   }
 
+  async getModulesByCourseIdWithLessons(courseId: string): Promise<InstanceType<typeof Module>[]> {
+    return this.moduleRepository.findByCourseIdWithLessons(courseId);
+  }
+
   async updateModule(module: IModule): Promise<InstanceType<typeof Module>> {
     return this.moduleRepository.update(module);
   }
