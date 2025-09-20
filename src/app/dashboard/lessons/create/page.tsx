@@ -89,7 +89,7 @@ export default function LessonCreate() {
     <>
       <PageBreadCrumbs items={["Lessons", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Row gutter={[8, 8]}>
             <Col xs={24} md={12}>
               <Form.Item

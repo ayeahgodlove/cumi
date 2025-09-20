@@ -20,6 +20,7 @@ import { lessonAPI } from "./api/lesson_api";
 import { commentAPI } from "./api/comment_api";
 import { commentInteractionAPI } from "./api/comment-interaction_api";
 import { postInteractionAPI } from "./api/post-interaction_api";
+import { quizAPI } from "./api/quiz_api";
 export const store = configureStore({
   reducer: {
     [postAPI.reducerPath]: postAPI.reducer,
@@ -43,6 +44,7 @@ export const store = configureStore({
     [commentAPI.reducerPath]: commentAPI.reducer,
     [commentInteractionAPI.reducerPath]: commentInteractionAPI.reducer,
     [postInteractionAPI.reducerPath]: postInteractionAPI.reducer,
+    [quizAPI.reducerPath]: quizAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -67,6 +69,7 @@ export const store = configureStore({
       commentAPI.middleware,
       commentInteractionAPI.middleware,
       postInteractionAPI.middleware,
+      quizAPI.middleware,
     ]),
 });
 

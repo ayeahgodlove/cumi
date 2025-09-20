@@ -65,6 +65,42 @@ export class QuizRepository implements IQuizRepository {
       throw error;
     }
   }
+
+  async findByLessonId(lessonId: string): Promise<InstanceType<typeof Quiz>[]> {
+    try {
+      const quizes = await Quiz.findAll({
+        where: { lessonId },
+        order: [['quiz_order', 'ASC']],
+      });
+      return quizes;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByModuleId(moduleId: string): Promise<InstanceType<typeof Quiz>[]> {
+    try {
+      const quizes = await Quiz.findAll({
+        where: { moduleId },
+        order: [['quiz_order', 'ASC']],
+      });
+      return quizes;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findByCourseId(courseId: string): Promise<InstanceType<typeof Quiz>[]> {
+    try {
+      const quizes = await Quiz.findAll({
+        where: { courseId },
+        order: [['quiz_order', 'ASC']],
+      });
+      return quizes;
+    } catch (error) {
+      throw error;
+    }
+  }
   /*
    * Returns an array of Quiz
    */

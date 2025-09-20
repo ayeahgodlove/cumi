@@ -63,7 +63,6 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
     <Option key={country.code} value={country.code}>
       <Space>
         <span>{country.flag}</span>
-        {/* <span>{country.name}</span> */}
         <span style={{ color: "#999", fontSize: "12px" }}>
           {country.phonePrefix}
         </span>
@@ -107,19 +106,6 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
         dropdownRender={(menu) => (
           <div>
             {menu}
-            {showMoneyServices && (
-              <div
-                style={{
-                  padding: "8px 12px",
-                  borderTop: "1px solid #f0f0f0",
-                  fontSize: "12px",
-                  color: "#666",
-                }}
-              >
-                <InfoCircleOutlined style={{ marginRight: 4 }} />
-                Look for MTN Money and Orange Money tags
-              </div>
-            )}
           </div>
         )}
       >

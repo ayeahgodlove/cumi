@@ -1,24 +1,55 @@
 import { QuizRepository } from "@data/repositories/impl/quiz.repository";
-import { emptyQuiz, IQuiz } from "@domain/models/quiz";
 import { QuizUseCase } from "@domain/usecases/quiz.usecase";
 import authOptions from "@lib/options";
 import { QuizRequestDto } from "@presentation/dtos/quiz-request.dto";
-import { QuizMapper } from "@presentation/mappers/mapper";
-import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { displayValidationErrors } from "@utils/displayValidationErrors";
 import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const quizRepository = new QuizRepository();
 const quizUseCase = new QuizUseCase(quizRepository);
-const quizMapper = new QuizMapper();
 
-export async function PATCH(
-  req: NextRequest,
+export async function GET(
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions); //get session info
+  try {
+    const quiz = await quizUseCase.getQuizById(params.id);
+    
+    if (!quiz) {
+      return NextResponse.json(
+        {
+          data: null,
+          message: "Quiz not found",
+          success: false,
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      data: quiz,
+      message: "Quiz retrieved successfully",
+      success: true,
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        data: null,
+        message: error.message,
+        success: false,
+      },
+      { status: 400 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
 
   if (!session || !session.user) {
     return NextResponse.json(
@@ -33,72 +64,48 @@ export async function PATCH(
   }
 
   try {
-    const dto = new QuizRequestDto(await req.json());
+    const body = await request.json();
+    const dto = new QuizRequestDto(body);
     const validationErrors = await validate(dto);
-    const userId = session.user.id;
 
     if (validationErrors.length > 0) {
       return NextResponse.json(
         {
-          validationErrors: displayValidationErrors(validationErrors) as any,
+          validationErrors: displayValidationErrors(validationErrors),
           success: false,
           data: null,
-          message: "Attention!",
+          message: "Validation failed",
         },
         { status: 400 }
       );
     }
 
-    const id = params.id;
-    const obj: IQuiz = {
-      ...emptyQuiz,
-      ...dto.toData(),
-      id: id,
-    };
-    const updatedQuiz = await quizUseCase.updateQuiz(obj);
-    const quizDto = quizMapper.toDTO(updatedQuiz);
-
-    return NextResponse.json(
-      {
-        data: quizDto,
-        message: "Quiz Updated Successfully!",
-        validationErrors: [],
-        success: true,
-      },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
-    );
-  }
-}
-
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const id = params.id;
-
-    const quiz = await quizUseCase.getQuizById(id);
-    if (!quiz) {
-      throw new NotFoundException("Quiz", id);
+    const existingQuiz = await quizUseCase.getQuizById(params.id);
+    if (!existingQuiz) {
+      return NextResponse.json(
+        {
+          data: null,
+          message: "Quiz not found",
+          success: false,
+        },
+        { status: 404 }
+      );
     }
-    const quizDTO = quizMapper.toDTO(quiz);
-    return NextResponse.json(quizDTO);
+
+    const updatedQuiz = await quizUseCase.updateQuiz(
+      dto.toUpdateData(existingQuiz.toJSON())
+    );
+
+    return NextResponse.json({
+      data: updatedQuiz,
+      message: "Quiz updated successfully",
+      success: true,
+    });
   } catch (error: any) {
     return NextResponse.json(
       {
         data: null,
         message: error.message,
-        validationErrors: [error],
         success: false,
       },
       { status: 400 }
@@ -107,27 +114,36 @@ export async function GET(
 }
 
 export async function DELETE(
-  req: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      {
+        message: "Unauthorized: Please log in to access this resource.",
+        success: false,
+        data: null,
+      },
+      { status: 401 }
+    );
+  }
+
   try {
-    const id = params.id;
-
-    await quizUseCase.deleteQuiz(id);
-
+    await quizUseCase.deleteQuiz(params.id);
+    
     return NextResponse.json({
-      message: `Operation successfully completed!`,
-      validationErrors: [],
-      success: true,
       data: null,
+      message: "Quiz deleted successfully",
+      success: true,
     });
   } catch (error: any) {
     return NextResponse.json(
       {
-        message: error.message,
         data: null,
-        validationErrors: [error],
-        success: true,
+        message: error.message,
+        success: false,
       },
       { status: 400 }
     );

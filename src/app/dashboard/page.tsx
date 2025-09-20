@@ -356,7 +356,15 @@ export default function AdminDashboard() {
         <PageBreadCrumbs items={["Dashboard"]} />
 
         {/* Welcome Section */}
-        <Card style={{ marginBottom: 24 }}>
+        <Card 
+          style={{ 
+            marginBottom: 24,
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            border: "none",
+          }}
+        >
           <Row align="middle" justify="space-between">
             <Col>
               <Title level={3} style={{ margin: 0 }}>
@@ -385,7 +393,14 @@ export default function AdminDashboard() {
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           {mainStats.map((stat, index) => (
             <Col sm={8} md={6} span={24} key={index}>
-              <Card>
+              <Card
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  border: "none",
+                }}
+              >
                 <Statistic
                   title={stat.title}
                   value={stat.value}
@@ -481,7 +496,16 @@ export default function AdminDashboard() {
         {/* Charts and Analytics */}
         <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
           <Col xs={24} md={12}>
-            <Card title={t("dashboard.platform_growth")} size="small">
+            <Card 
+              title={t("dashboard.platform_growth")} 
+              size="small"
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                border: "none",
+              }}
+            >
               <Space direction="vertical" style={{ width: "100%" }}>
                 <div>
                   <Text strong>User Registration</Text>
@@ -527,7 +551,16 @@ export default function AdminDashboard() {
             </Card>
           </Col>
           <Col xs={24} md={12}>
-            <Card title={t("dashboard.recent_activity")} size="small">
+            <Card 
+              title={t("dashboard.recent_activity")} 
+              size="small"
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                border: "none",
+              }}
+            >
               {recentActivities.length > 0 ? (
                 <Table
                   dataSource={recentActivities}
@@ -554,10 +587,28 @@ export default function AdminDashboard() {
         </Row>
 
         {/* Quick Actions */}
-        <Card title={t("dashboard.quick_actions")}>
+        <Card 
+          title={t("dashboard.quick_actions")}
+          style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            border: "none",
+          }}
+        >
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12} md={6}>
-              <Card hoverable size="small" style={{ textAlign: "center" }}>
+              <Card 
+                hoverable 
+                size="small" 
+                style={{ 
+                  textAlign: "center",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  border: "none",
+                }}
+              >
                 <Space direction="vertical">
                   <TrophyOutlined style={{ fontSize: 24, color: "#1890ff" }} />
                   <Text strong>{t("dashboard.manage_courses")}</Text>
@@ -565,7 +616,17 @@ export default function AdminDashboard() {
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
-              <Card hoverable size="small" style={{ textAlign: "center" }}>
+              <Card 
+                hoverable 
+                size="small" 
+                style={{ 
+                  textAlign: "center",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  border: "none",
+                }}
+              >
                 <Space direction="vertical">
                   <CalendarOutlined
                     style={{ fontSize: 24, color: "#52c41a" }}
@@ -575,7 +636,17 @@ export default function AdminDashboard() {
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
-              <Card hoverable size="small" style={{ textAlign: "center" }}>
+              <Card 
+                hoverable 
+                size="small" 
+                style={{ 
+                  textAlign: "center",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  border: "none",
+                }}
+              >
                 <Space direction="vertical">
                   <MessageOutlined style={{ fontSize: 24, color: "#faad14" }} />
                   <Text strong>{t("dashboard.view_messages")}</Text>
@@ -583,7 +654,17 @@ export default function AdminDashboard() {
               </Card>
             </Col>
             <Col xs={24} sm={12} md={6}>
-              <Card hoverable size="small" style={{ textAlign: "center" }}>
+              <Card 
+                hoverable 
+                size="small" 
+                style={{ 
+                  textAlign: "center",
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  border: "none",
+                }}
+              >
                 <Space direction="vertical">
                   <UserOutlined style={{ fontSize: 24, color: "#722ed1" }} />
                   <Text strong>{t("dashboard.user_management")}</Text>

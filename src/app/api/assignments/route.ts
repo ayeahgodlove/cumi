@@ -14,11 +14,30 @@ const assignmentRepository = new AssignmentRepository();
 const assignmentUseCase = new AssignmentUseCase(assignmentRepository);
 const assignmentMapper = new AssignmentMapper();
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
-    const assignments = await assignmentUseCase.getAll();
+    const { searchParams } = new URL(request.url);
+    const moduleId = searchParams.get('moduleId');
+    const courseId = searchParams.get('courseId');
+    const lessonId = searchParams.get('lessonId');
+
+    let assignments;
+    if (lessonId) {
+      assignments = await assignmentUseCase.getAssignmentsByLessonId(lessonId);
+    } else if (moduleId) {
+      assignments = await assignmentUseCase.getAssignmentsByModuleId(moduleId);
+    } else if (courseId) {
+      assignments = await assignmentUseCase.getAssignmentsByCourseId(courseId);
+    } else {
+      assignments = await assignmentUseCase.getAll();
+    }
+    
     const assignmentsDto = assignmentMapper.toDTOs(assignments);
-    return NextResponse.json(assignmentsDto);
+    return NextResponse.json({
+      data: assignmentsDto,
+      message: "Assignments retrieved successfully",
+      success: true,
+    });
   } catch (error: any) {
     return NextResponse.json(
       {

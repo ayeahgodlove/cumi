@@ -23,7 +23,7 @@ export default function OpportunityEdit() {
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             label={"Title"}
             name={["title"]}

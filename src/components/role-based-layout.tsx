@@ -39,9 +39,7 @@ export default function RoleBasedLayout({
         }}
       >
         <Spin size="large" />
-        <p style={{ marginTop: 16, color: "#666" }}>
-          Loading session...
-        </p>
+        <p style={{ marginTop: 16, color: "#666" }}>Loading session...</p>
       </div>
     );
   }
@@ -60,7 +58,7 @@ export default function RoleBasedLayout({
       <ThemedLayoutV2 Header={Header} Title={Title}>
         <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
           <Row justify="center" align="top">
-            <Col xs={22} md={20}>
+            <Col xs={22} md={20} style={{ padding: "2rem 0" }}>
               {children}
             </Col>
           </Row>
@@ -84,7 +82,10 @@ export default function RoleBasedLayout({
           <AppNav logoPath="/" />
 
           {/* Creator Content Area */}
-          <div className="container-fluid" style={{ width: "100%" }}>
+          <div
+            // className="container-fluid"
+            style={{ width: "100%", padding: "1.5rem 0" }}
+          >
             <Row justify="center" align="top">
               <Col xs={22} md={20}>
                 {children}
@@ -115,7 +116,10 @@ export default function RoleBasedLayout({
           <AppNav logoPath="/" />
 
           {/* Student Content Area */}
-          <div className="container-fluid" style={{ width: "100%" }}>
+          <div
+            className="container-fluid"
+            style={{ width: "100%", padding: "24px 0" }}
+          >
             <Row justify="center" align="top">
               <Col xs={22} md={20}>
                 {children}
@@ -134,7 +138,7 @@ export default function RoleBasedLayout({
   // User Layout - show user dashboard
   return (
     <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
-      <div className="container-fluid" style={{ width: "100%" }}>
+      <div style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
         <Row justify="center" align="top">

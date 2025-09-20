@@ -2,6 +2,8 @@ import { IBaseState } from "./base-state.model";
 import { IResponseBase } from "./response-base.model";
 
 export interface ILesson {
+  // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+
   id: string;
   title: string;
   slug: string;
@@ -10,20 +12,18 @@ export interface ILesson {
   imageUrl: string;
   userId: string;
   courseId: string;
+  moduleId: string;
   authorName: string;
-  duration: number;
   difficulty: string;
-  url: string;
-  prerequisites: string[];
-  objectives: string[];
-  keywords: string[];
-  author: string;
-  reviews?: string[];
+  // Stored as LONGTEXT JSON in DB; in app may be arrays or raw string
+  prerequisites: string[] | string;
+  objectives: string[] | string;
+  keywords: string[] | string;
+  reviews?: string[] | string;
   language?: string;
   rating?: number;
   createdAt: Date;
   updatedAt: Date;
-  // New fields from database schema
   durationMinutes?: number;
   lessonOrder: number;
   status: 'draft' | 'published' | 'archived';
@@ -47,14 +47,12 @@ export const emptyLesson: ILesson = {
   imageUrl: "",
   userId: "",
   courseId: "",
+  moduleId: "",
   authorName: "",
-  duration: 0,
   difficulty: "",
-  url: "",
   prerequisites: [],
   objectives: [],
   keywords: [],
-  author: "",
   reviews: [],
   language: "",
   rating: 0,
@@ -70,8 +68,8 @@ export const emptyLesson: ILesson = {
   isFreePreview: false,
   requiresCompletion: true,
   estimatedCompletionTime: 0,
-  practicalExamples: "",
-  resourcesNeeded: "",
+  practicalExamples: [],
+  resourcesNeeded: [],
 };
 
 export interface ILessonState extends IBaseState {

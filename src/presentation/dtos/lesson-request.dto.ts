@@ -1,11 +1,13 @@
 // src/presentation/dtos/lesson-request.dto.ts
 
 import { emptyLesson, ILesson } from "@domain/models/lesson";
-import { IsNotEmpty, IsNumber, IsString, IsArray, IsOptional, IsBoolean, IsEnum } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, IsArray, IsOptional, IsBoolean, IsEnum, IsDate } from "class-validator";
 import { nanoid } from "nanoid";
 import slugify from "slugify";
 
 export class LessonRequestDto {
+  // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+
   @IsNotEmpty()
   @IsString()
   title: string;
@@ -16,23 +18,31 @@ export class LessonRequestDto {
 
   @IsNotEmpty()
   @IsString()
+  content: string;
+
+  @IsNotEmpty()
+  @IsString()
   imageUrl: string;
 
   @IsNotEmpty()
   @IsString()
-  content: string;
+  userId: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  duration: number;
+  @IsString()
+  courseId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  moduleId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  authorName: string;
 
   @IsNotEmpty()
   @IsString()
   difficulty: string;
-
-  @IsNotEmpty()
-  @IsString()
-  author: string;
 
   @IsNotEmpty()
   @IsArray()
@@ -46,16 +56,24 @@ export class LessonRequestDto {
   @IsArray()
   keywords: string[];
 
-  @IsNotEmpty()
-  @IsString()
-  courseId: string;
+  @IsOptional()
+  reviews?: string[];
 
-  url: string;
-
-  // New fields from database schema
   @IsOptional()
   @IsString()
-  authorName?: string;
+  language?: string;
+
+  @IsOptional()
+  @IsNumber()
+  rating?: number;
+
+  @IsOptional()
+  @IsDate()
+  createdAt?: Date;
+
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
 
   @IsOptional()
   @IsNumber()
@@ -107,30 +125,34 @@ export class LessonRequestDto {
 
   @IsOptional()
   @IsString()
-  language?: string;
-
-  @IsOptional()
-  @IsNumber()
-  rating?: number;
-
-  @IsOptional()
-  @IsArray()
-  reviews?: string[];
+  slug?: string;
 
   constructor(data: ILesson) {
+    // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+    
     this.title = data.title;
     this.description = data.description;
-    this.imageUrl = data.imageUrl;
     this.content = data.content;
-    this.duration = data.duration;
-    this.difficulty = data.difficulty;
-    this.prerequisites = data.prerequisites;
-    this.objectives = data.objectives;
-    this.keywords = data.keywords;
-    this.author = data.author;
+    this.imageUrl = data.imageUrl;
+    this.userId = data.userId;
     this.courseId = data.courseId;
-    this.url = data.url;
-    this.authorName = data.authorName;
+    this.moduleId = data.moduleId || "";
+    this.authorName = data.authorName || "";
+    this.difficulty = data.difficulty;
+    this.prerequisites = Array.isArray(data.prerequisites)
+      ? data.prerequisites
+      : JSON.parse((data.prerequisites as any) || "[]");
+    this.objectives = Array.isArray(data.objectives)
+      ? data.objectives
+      : JSON.parse((data.objectives as any) || "[]");
+    this.keywords = Array.isArray(data.keywords)
+      ? data.keywords
+      : JSON.parse((data.keywords as any) || "[]");
+    this.reviews = Array.isArray(data.reviews) ? data.reviews : [];
+    this.language = data.language;
+    this.rating = data.rating;
+    this.createdAt = data.createdAt;
+    this.updatedAt = data.updatedAt;
     this.durationMinutes = data.durationMinutes;
     this.lessonOrder = data.lessonOrder;
     this.status = data.status;
@@ -141,31 +163,40 @@ export class LessonRequestDto {
     this.isFreePreview = data.isFreePreview;
     this.requiresCompletion = data.requiresCompletion;
     this.estimatedCompletionTime = data.estimatedCompletionTime;
-    this.practicalExamples = data.practicalExamples;
-    this.resourcesNeeded = data.resourcesNeeded;
-    this.language = data.language;
-    this.rating = data.rating;
-    this.reviews = data.reviews;
+    this.practicalExamples = Array.isArray(data.practicalExamples)
+      ? (data.practicalExamples as any[]).join("\n")
+      : (data.practicalExamples as any);
+    this.resourcesNeeded = Array.isArray(data.resourcesNeeded)
+      ? (data.resourcesNeeded as any[]).join("\n")
+      : (data.resourcesNeeded as any);
+    this.slug = data.slug;
   }
 
   toData(): ILesson {
     return {
+      // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+      
       ...emptyLesson,
       id: nanoid(10),
       title: this.title,
+      slug: this.slug || slugify(this.title, { lower: true, replacement: "-" }),
       description: this.description,
-      imageUrl: this.imageUrl,
       content: this.content,
-      difficulty: this.difficulty,
-      duration: this.duration,
-      prerequisites: this.prerequisites,
-      objectives: this.objectives,
-      keywords: this.keywords,
-      author: this.author,
+      imageUrl: this.imageUrl,
+      userId: this.userId,
       courseId: this.courseId,
-      url: this.url,
-      slug: slugify(this.title, { lower: true, replacement: "-" }),
-      authorName: this.authorName ?? "",
+      moduleId: this.moduleId,
+      authorName: this.authorName,
+      difficulty: this.difficulty,
+      // Stringify arrays to match LONGTEXT columns in MySQL
+      prerequisites: JSON.stringify(this.prerequisites ?? []),
+      objectives: JSON.stringify(this.objectives ?? []),
+      keywords: JSON.stringify(this.keywords ?? []),
+      reviews: JSON.stringify(this.reviews ?? []),
+      language: this.language,
+      rating: this.rating,
+      createdAt: this.createdAt || new Date(),
+      updatedAt: this.updatedAt || new Date(),
       durationMinutes: this.durationMinutes,
       lessonOrder: this.lessonOrder ?? 1,
       status: this.status ?? 'draft',
@@ -178,48 +209,44 @@ export class LessonRequestDto {
       estimatedCompletionTime: this.estimatedCompletionTime,
       practicalExamples: this.practicalExamples,
       resourcesNeeded: this.resourcesNeeded,
-      language: this.language,
-      rating: this.rating,
-      reviews: this.reviews,
-      // userId will be set by the API route
     };
   }
 
   toUpdateData(data: ILesson): ILesson {
     return {
+      // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+      
       id: data.id,
-      title: data.title,
-      description: data.description,
-      userId: data.userId,
-      content: data.content,
-      duration: data.duration,
-      prerequisites: data.prerequisites,
-      objectives: data.objectives,
-      keywords: data.keywords,
-      difficulty: data.difficulty,
-      author: data.author,
-      courseId: data.courseId,
-      url: data.url,
-      slug: data.slug,
-      imageUrl: data.imageUrl,
-      authorName: data.authorName,
-      durationMinutes: data.durationMinutes,
-      lessonOrder: data.lessonOrder,
-      status: data.status,
-      lessonType: data.lessonType,
-      videoUrl: data.videoUrl,
-      audioUrl: data.audioUrl,
-      downloadMaterials: data.downloadMaterials,
-      isFreePreview: data.isFreePreview,
-      requiresCompletion: data.requiresCompletion,
-      estimatedCompletionTime: data.estimatedCompletionTime,
-      practicalExamples: data.practicalExamples,
-      resourcesNeeded: data.resourcesNeeded,
-      language: data.language,
-      rating: data.rating,
-      reviews: data.reviews,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
+      title: this.title ?? data.title,
+      slug: this.slug ?? data.slug,
+      description: this.description ?? data.description,
+      content: this.content ?? data.content,
+      imageUrl: this.imageUrl ?? data.imageUrl,
+      userId: data.userId, // Preserve original userId
+      courseId: this.courseId ?? data.courseId,
+      moduleId: this.moduleId ?? data.moduleId,
+      authorName: this.authorName ?? data.authorName,
+      difficulty: this.difficulty ?? data.difficulty,
+      prerequisites: this.prerequisites ?? data.prerequisites,
+      objectives: this.objectives ?? data.objectives,
+      keywords: this.keywords ?? data.keywords,
+      reviews: this.reviews ?? data.reviews,
+      language: this.language ?? data.language,
+      rating: this.rating ?? data.rating,
+      createdAt: data.createdAt, // Preserve original creation time
+      updatedAt: new Date(), // Update timestamp
+      durationMinutes: this.durationMinutes ?? data.durationMinutes,
+      lessonOrder: this.lessonOrder ?? data.lessonOrder,
+      status: this.status ?? data.status,
+      lessonType: this.lessonType ?? data.lessonType,
+      videoUrl: this.videoUrl ?? data.videoUrl,
+      audioUrl: this.audioUrl ?? data.audioUrl,
+      downloadMaterials: this.downloadMaterials ?? data.downloadMaterials,
+      isFreePreview: this.isFreePreview ?? data.isFreePreview,
+      requiresCompletion: this.requiresCompletion ?? data.requiresCompletion,
+      estimatedCompletionTime: this.estimatedCompletionTime ?? data.estimatedCompletionTime,
+      practicalExamples: this.practicalExamples ?? data.practicalExamples,
+      resourcesNeeded: this.resourcesNeeded ?? data.resourcesNeeded,
     };
   }
 }

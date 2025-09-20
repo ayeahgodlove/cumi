@@ -6,6 +6,7 @@ export default function FeatureCard(props: any) {
   return (
     <Card
       className="cursor-pointer"
+      style={{ backgroundColor: 'white' }}
       styles={{
         body: {
           display: "flex",

@@ -31,9 +31,9 @@ export class AssignmentRequestDto {
   @IsString()
   lessonId?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  userId?: string;
+  userId: string;
 
   @IsOptional()
   @IsEnum(['essay', 'project', 'practical', 'presentation', 'research', 'coding', 'design'])
@@ -130,7 +130,7 @@ export class AssignmentRequestDto {
     this.courseId = data.courseId;
     this.moduleId = data.moduleId;
     this.lessonId = data.lessonId;
-    this.userId = data.userId || undefined;
+    this.userId = data.userId || "";
     this.assignmentType = data.assignmentType;
     this.status = data.status;
     this.assignmentOrder = data.assignmentOrder;
@@ -138,8 +138,8 @@ export class AssignmentRequestDto {
     this.passingScore = data.passingScore;
     this.maxAttempts = data.maxAttempts;
     this.timeLimitMinutes = data.timeLimitMinutes;
-    this.availableFrom = data.availableFrom?.toISOString();
-    this.dueDate = data.dueDate?.toISOString();
+    this.availableFrom = data.availableFrom instanceof Date ? data.availableFrom.toISOString() : (data.availableFrom as any);
+    this.dueDate = data.dueDate instanceof Date ? data.dueDate.toISOString() : (data.dueDate as any);
     this.lateSubmissionAllowed = data.lateSubmissionAllowed;
     this.latePenaltyPercent = data.latePenaltyPercent;
     this.submissionFormat = data.submissionFormat;

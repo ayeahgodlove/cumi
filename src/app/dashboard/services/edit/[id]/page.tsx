@@ -103,7 +103,7 @@ export default function ServiceEdit() {
     <>
       <PageBreadCrumbs items={["Services", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             name={"title"}
             label="Title"

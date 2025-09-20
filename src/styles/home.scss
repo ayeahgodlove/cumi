@@ -1,10 +1,16 @@
 :root {
-  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
-  --default-color: #212529; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #32353a; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #e84545; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --contrast-color: #ffffff; /* The contrast color is used for elements when the background color is one of the heading, accent, or default colors. Its purpose is to ensure proper contrast and readability when placed over these more dominant colors */
+  --background-color: #ffffff;
+  /* Background color for the entire website, including individual sections */
+  --default-color: #212529;
+  /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #32353a;
+  /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #e84545;
+  /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --contrast-color: #ffffff;
+  /* The contrast color is used for elements when the background color is one of the heading, accent, or default colors. Its purpose is to ensure proper contrast and readability when placed over these more dominant colors */
 }
+
 /* 
 block
 ----- 
@@ -16,19 +22,17 @@ block
 
 .service-details .service-box {
   padding: 20px;
-  box-shadow: 0px 2px 20px
-    color-mix(in srgb, var(--default-color), transparent 88%);
+  box-shadow: 0px 2px 20px color-mix(in srgb, var(--default-color), transparent 88%);
 }
 
-.service-details .service-box + .service-box {
+.service-details .service-box+.service-box {
   margin-top: 30px;
 }
 
 .service-details .service-box h4 {
   font-size: 20px;
   font-weight: 700;
-  border-bottom: 2px solid
-    color-mix(in srgb, var(--default-color), transparent 92%);
+  border-bottom: 2px solid color-mix(in srgb, var(--default-color), transparent 92%);
   padding-bottom: 15px;
   margin-bottom: 15px;
 }
@@ -73,8 +77,7 @@ block
   align-items: center;
   padding: 10px 0;
   transition: 0.3s;
-  border-top: 1px solid
-    color-mix(in srgb, var(--default-color), transparent 90%);
+  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
 }
 
 .service-details .download-catalog a:first-child {
@@ -96,7 +99,7 @@ block
   color: var(--accent-color);
 }
 
-.service-details .help-box { 
+.service-details .help-box {
   background-color: var(--heading-color);
   color: var(--contrast-color);
   margin-top: 30px;
@@ -117,7 +120,7 @@ block
   margin-bottom: 20px;
   min-width: 100%;
   max-height: 400px;
-  object-fit: cover ;
+  object-fit: cover;
 }
 
 .service-details h3 {
@@ -145,4 +148,19 @@ block
   font-size: 20px;
   margin-right: 8px;
   color: var(--accent-color);
+}
+
+.course-image-container .ant-image {
+  height: 100% !important;
+  display: flex !important;
+}
+
+.course-image-container .course-image {
+  border-radius: 12px 12px 0 0 !important;
+}
+
+@media (min-width: 576px) {
+  .course-image-container .course-image {
+    border-radius: 12px 0 0 12px !important;
+  }
 }

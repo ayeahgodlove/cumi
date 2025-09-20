@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Upload, message, InputNumber, Switch, DatePicker, Row, Col, Button, Space } from "antd";
+import { Modal, Form, Input, Select, Upload, message, InputNumber, Switch, DatePicker, Row, Col, Button, Space, Card } from "antd";
 import { PlusOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
 import { useNotification } from "@refinedev/core";
@@ -175,12 +175,14 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
         }
       }}
     >
-      <Form
-        {...formProps}
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-      >
+      <Card style={{ backgroundColor: 'white', border: 'none' }}>
+        <Form
+          {...formProps}
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          size="large"
+        >
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
@@ -392,7 +394,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
             </Button>
           </div>
         </Form.Item>
-      </Form>
+        </Form>
+      </Card>
     </Modal>
   );
 }

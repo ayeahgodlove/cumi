@@ -83,7 +83,7 @@ export default function FAQsPageComponent() {
             {/* FAQs Section */}
             <Row justify="center">
               <Col xs={24} lg={18}>
-                <Card className="cumi-card">
+                <Card className="cumi-card" style={{ backgroundColor: 'white' }}>
                   <Collapse
                     bordered={false}
                     expandIconPosition="right"

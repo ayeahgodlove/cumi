@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import authOptions from "@lib/options";
 import { PostInteractionUseCase } from "@domain/usecases/post-interaction.usecase";
 import { PostInteractionRepository } from "@data/repositories/impl/post-interaction.repository";
 
@@ -65,6 +65,18 @@ export async function POST(request: NextRequest) {
           data: null,
         },
         { status: 503 }
+      );
+    }
+
+    if (error.message && error.message.includes("already")) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+          data: null,
+          isDuplicate: true,
+        },
+        { status: 409 } // Conflict status for duplicate action
       );
     }
 

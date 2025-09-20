@@ -68,6 +68,7 @@ export interface ILessonRepository
   findByTitle(title: string): Promise<InstanceType<typeof Lesson> | null>;
   findBySlug(slug: string): Promise<InstanceType<typeof Lesson> | null>;
   findByCourseId(courseId: string): Promise<InstanceType<typeof Lesson>[]>;
+  findByModuleId(moduleId: string): Promise<InstanceType<typeof Lesson>[]>;
 }
 
 export interface IQuizRepository

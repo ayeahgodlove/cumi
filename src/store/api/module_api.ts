@@ -18,14 +18,17 @@ export const moduleAPI = createApi({
   endpoints: (build) => ({
     getSingleModule: build.query<IModule, string>({
       query: (moduleId) => `/modules/${moduleId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, id) => [{ type: "Module", id }],
     }),
     getModuleBySlug: build.query<IModule, string>({
       query: (slug) => `/modules/slugs/${slug}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, slug) => [{ type: "Module", id: slug }],
     }),
     getModulesByCourse: build.query<IModule[], string>({
       query: (courseId) => `/modules?courseId=${courseId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, courseId) => [
         { type: "Module", id: "LIST" },
         { type: "Module", id: courseId },
@@ -33,6 +36,7 @@ export const moduleAPI = createApi({
     }),
     getModulesByUser: build.query<IModule[], string>({
       query: (userId) => `/modules?userId=${userId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, userId) => [
         { type: "Module", id: "LIST" },
         { type: "Module", id: userId },
@@ -48,6 +52,7 @@ export const moduleAPI = createApi({
         
         return `/modules?${searchParams.toString()}`;
       },
+      transformResponse: (response: any) => response.data || response,
       providesTags: [{ type: "Module", id: "LIST" }],
     }),
     createModule: build.mutation<IModule, Partial<IModule>>({
@@ -56,6 +61,7 @@ export const moduleAPI = createApi({
         method: "POST",
         body: module,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: [{ type: "Module", id: "LIST" }],
     }),
     updateModule: build.mutation<IModule, { id: string; module: Partial<IModule> }>({
@@ -64,6 +70,7 @@ export const moduleAPI = createApi({
         method: "PATCH",
         body: module,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: (result, error, { id }) => [
         { type: "Module", id },
         { type: "Module", id: "LIST" },
@@ -74,6 +81,7 @@ export const moduleAPI = createApi({
         url: `/modules/${id}`,
         method: "DELETE",
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: (result, error, id) => [
         { type: "Module", id },
         { type: "Module", id: "LIST" },

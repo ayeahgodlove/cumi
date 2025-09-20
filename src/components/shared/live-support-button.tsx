@@ -452,7 +452,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
         styles={{ body: { padding: 0 } }}
         className="modern-support-modal"
       >
-        <div style={{ height: '500px', display: 'flex', flexDirection: 'column' }}>
+        <Card style={{ backgroundColor: 'white', border: 'none', height: '500px', display: 'flex', flexDirection: 'column' }}>
           {/* Mode Selector */}
           <div style={{ 
             padding: '20px', 
@@ -690,7 +690,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
               </Space>
             </div>
           </div>
-        </div>
+        </Card>
       </Modal>
     </>
   );

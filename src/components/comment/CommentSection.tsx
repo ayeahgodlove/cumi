@@ -128,7 +128,18 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
   // Process comments with stats
   const comments: CommentWithStats[] = React.useMemo(() => {
     if (!commentsData) return [];
-    return commentsData.map((comment: IComment) => ({
+    
+    // Handle both array response and object response with data property
+    const commentsArray = Array.isArray(commentsData) 
+      ? commentsData 
+      : (commentsData as any)?.data || [];
+    
+    if (!Array.isArray(commentsArray)) {
+      console.warn('Comments data is not an array:', commentsData);
+      return [];
+    }
+    
+    return commentsArray.map((comment: IComment) => ({
       ...comment,
       likesCount: 0,
       dislikesCount: 0,
@@ -300,7 +311,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     >
       {/* Comment Form */}
       {session?.user && (
-        <Form form={form} onFinish={handleSubmit} layout="vertical">
+        <Form form={form} onFinish={handleSubmit} layout="vertical" size="large">
           {replyingTo && (
             <div style={{ marginBottom: "16px", padding: "8px", backgroundColor: "#f0f8ff", borderRadius: "4px", border: "1px solid #d6e4ff" }}>
               <Text type="secondary" style={{ fontSize: "12px" }}>
@@ -336,6 +347,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
               htmlType="submit"
               loading={submitting}
               icon={<SendOutlined />}
+              size="large"
             >
               {replyingTo ? "Post Reply" : "Post Comment"}
             </Button>
@@ -388,45 +400,51 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
         footer={null}
         width={400}
       >
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <Text strong>{shareTitle}</Text>
-            <br />
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              {currentUrl}
-            </Text>
-          </div>
-          
-          <Space wrap style={{ justifyContent: 'center' }}>
-            <Button 
-              icon={<FacebookOutlined />} 
-              onClick={shareToFacebook}
-              style={{ color: '#1877F2', borderColor: '#1877F2' }}
-            >
-              Facebook
-            </Button>
-            <Button 
-              icon={<TwitterOutlined />} 
-              onClick={shareToTwitter}
-              style={{ color: '#1DA1F2', borderColor: '#1DA1F2' }}
-            >
-              Twitter
-            </Button>
-            <Button 
-              icon={<LinkedinOutlined />} 
-              onClick={shareToLinkedIn}
-              style={{ color: '#0077B5', borderColor: '#0077B5' }}
-            >
-              LinkedIn
-            </Button>
-            <Button 
-              icon={<CopyOutlined />} 
-              onClick={copyToClipboard}
-            >
-              Copy Link
-            </Button>
+        <Card style={{ backgroundColor: 'white', border: 'none' }}>
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <Text strong>{shareTitle}</Text>
+              <br />
+              <Text type="secondary" style={{ fontSize: '12px' }}>
+                {currentUrl}
+              </Text>
+            </div>
+            
+            <Space wrap style={{ justifyContent: 'center' }}>
+              <Button 
+                icon={<FacebookOutlined />} 
+                onClick={shareToFacebook}
+                style={{ color: '#1877F2', borderColor: '#1877F2' }}
+                size="large"
+              >
+                Facebook
+              </Button>
+              <Button 
+                icon={<TwitterOutlined />} 
+                onClick={shareToTwitter}
+                style={{ color: '#1DA1F2', borderColor: '#1DA1F2' }}
+                size="large"
+              >
+                Twitter
+              </Button>
+              <Button 
+                icon={<LinkedinOutlined />} 
+                onClick={shareToLinkedIn}
+                style={{ color: '#0077B5', borderColor: '#0077B5' }}
+                size="large"
+              >
+                LinkedIn
+              </Button>
+              <Button 
+                icon={<CopyOutlined />} 
+                onClick={copyToClipboard}
+                size="large"
+              >
+                Copy Link
+              </Button>
+            </Space>
           </Space>
-        </Space>
+        </Card>
       </Modal>
     </Card>
   );

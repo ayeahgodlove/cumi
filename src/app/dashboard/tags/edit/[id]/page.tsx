@@ -11,7 +11,7 @@ export default function TagEdit() {
     <>
       <PageBreadCrumbs items={["Tags", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             label={"Name"}
             name={["name"]}

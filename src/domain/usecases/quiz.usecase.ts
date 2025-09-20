@@ -34,6 +34,18 @@ export class QuizUseCase {
     return this.quizRepository.findBySlug(slug);
   }
 
+  async getQuizesByLessonId(lessonId: string): Promise<InstanceType<typeof Quiz>[]> {
+    return this.quizRepository.findByLessonId(lessonId);
+  }
+
+  async getQuizesByModuleId(moduleId: string): Promise<InstanceType<typeof Quiz>[]> {
+    return this.quizRepository.findByModuleId(moduleId);
+  }
+
+  async getQuizesByCourseId(courseId: string): Promise<InstanceType<typeof Quiz>[]> {
+    return this.quizRepository.findByCourseId(courseId);
+  }
+
   async updateQuiz(quiz: IQuiz): Promise<InstanceType<typeof Quiz>> {
     return this.quizRepository.update(quiz);
   }

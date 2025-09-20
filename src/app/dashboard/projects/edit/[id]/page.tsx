@@ -78,7 +78,7 @@ export default function ProjectEdit() {
     <>
       <PageBreadCrumbs items={["Projects", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             name={"title"}
             label="Title"

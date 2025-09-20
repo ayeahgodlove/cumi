@@ -100,7 +100,7 @@ export default function LessonEdit() {
     <>
       <PageBreadCrumbs items={["Courses", "Lists", "Edit"]} />
       <Edit saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Row gutter={[8, 8]}>
             <Col xs={24} md={12}>
               <Form.Item

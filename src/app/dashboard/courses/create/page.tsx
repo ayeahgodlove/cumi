@@ -47,7 +47,7 @@ export default function CourseCreate() {
     <>
       <PageBreadCrumbs items={["Courses", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             name={"title"}
             label="Title"

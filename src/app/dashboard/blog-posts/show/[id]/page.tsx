@@ -1,6 +1,6 @@
 "use client";
 
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { DateField, ImageField, Show, TextField } from "@refinedev/antd";
 import { useOne, useShow } from "@refinedev/core";
@@ -25,7 +25,14 @@ export default function BlogPostShow() {
 
   return (
     <>
-      <PageBreadCrumbs items={["Blog Posts", "Lists", "Details"]} />
+      <EnhancedBreadcrumb
+        items={[
+          { title: "Blog Posts" },
+          { title: "Lists" },
+          { title: "Details" }
+        ]}
+        backButtonText="Back to Dashboard"
+      />
       <Show isLoading={isLoading}>
         <Title level={5}>{"ID"}</Title>
         <TextField value={record?.id ?? ""} />

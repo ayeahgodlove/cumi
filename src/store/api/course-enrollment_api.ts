@@ -30,7 +30,13 @@ export const courseEnrollmentAPI = createApi({
       ],
     }),
     getCourseEnrollmentsByUser: build.query<ICourseEnrollment[], string>({
-      query: (userId) => `/course-enrollments?userId=${userId}`,
+      query: (userId) => `/enrollments?userId=${userId}`,
+      transformResponse: (response: any) => {
+        if (response && response.success && response.data) {
+          return response.data;
+        }
+        return response || [];
+      },
       providesTags: (result, error, userId) => [
         { type: "CourseEnrollment", id: "LIST" },
         { type: "CourseEnrollment", id: userId },

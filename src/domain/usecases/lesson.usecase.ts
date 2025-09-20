@@ -38,6 +38,10 @@ export class LessonUseCase {
     return this.lessonRepository.findByCourseId(courseId);
   }
 
+  async getLessonsByModuleId(moduleId: string): Promise<InstanceType<typeof Lesson>[]> {
+    return this.lessonRepository.findByModuleId(moduleId);
+  }
+
   async updateLesson(lesson: ILesson): Promise<InstanceType<typeof Lesson>> {
     return this.lessonRepository.update(lesson);
   }

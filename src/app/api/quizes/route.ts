@@ -10,14 +10,30 @@ import { NextRequest, NextResponse } from "next/server";
 const quizRepository = new QuizRepository();
 const quizUseCase = new QuizUseCase(quizRepository);
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
-    console.log("Fetching quizes...");
-    const quizes = await quizUseCase.getAll();
-    console.log("Quizes fetched successfully:", quizes);
-    return NextResponse.json(quizes);
+    const { searchParams } = new URL(request.url);
+    const lessonId = searchParams.get('lessonId');
+    const moduleId = searchParams.get('moduleId');
+    const courseId = searchParams.get('courseId');
+
+    let quizes;
+    if (lessonId) {
+      quizes = await quizUseCase.getQuizesByLessonId(lessonId);
+    } else if (moduleId) {
+      quizes = await quizUseCase.getQuizesByModuleId(moduleId);
+    } else if (courseId) {
+      quizes = await quizUseCase.getQuizesByCourseId(courseId);
+    } else {
+      quizes = await quizUseCase.getAll();
+    }
+
+    return NextResponse.json({
+      data: quizes,
+      message: "Quizzes retrieved successfully",
+      success: true,
+    });
   } catch (error: any) {
-    console.error("Error fetching quizes:", error);
     return NextResponse.json(
       {
         data: null,

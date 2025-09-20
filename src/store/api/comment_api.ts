@@ -11,6 +11,16 @@ export const commentAPI = createApi({
   endpoints: (build) => ({
     getCommentsByPostId: build.query<IComment[], string>({
       query: (postId) => `/comments?postId=${postId}`,
+      transformResponse: (response: any) => {
+        // Handle the API response structure
+        if (response && response.success && response.data) {
+          return Array.isArray(response.data) ? response.data : [];
+        }
+        if (Array.isArray(response)) {
+          return response;
+        }
+        return [];
+      },
       providesTags: (result, error, postId) => [
         { type: "Comment", id: postId },
         { type: "Comment", id: "LIST" },

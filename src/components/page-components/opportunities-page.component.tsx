@@ -138,7 +138,7 @@ export default function OpportunitiesPageComponent() {
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <Row justify="center" className="mb-4">
-              <Col xs={24} lg={18}>
+              <Col xs={24} lg={22}>
                 <Card
                   className="cumi-card"
                   style={{
@@ -224,7 +224,7 @@ export default function OpportunitiesPageComponent() {
             </div>
           ) : error ? (
             <Row justify="center">
-              <Col xs={24} lg={18}>
+              <Col xs={24} lg={22}>
                 <Alert
                   message="Error"
                   description={
@@ -237,7 +237,7 @@ export default function OpportunitiesPageComponent() {
             </Row>
           ) : filteredOpportunities.length > 0 ? (
             <Row justify="center" className="align-items-start">
-              <Col xs={24} lg={18}>
+              <Col xs={24} lg={22}>
                 <div className="row">
                   {filteredOpportunities.map((opportunity, index) => (
                     <motion.div
@@ -367,7 +367,7 @@ export default function OpportunitiesPageComponent() {
             </Row>
           ) : (
             <Row justify="center">
-              <Col xs={24} lg={18}>
+              <Col xs={24} lg={22}>
                 <Empty
                   description="No opportunities found"
                   image={Empty.PRESENTED_IMAGE_SIMPLE}

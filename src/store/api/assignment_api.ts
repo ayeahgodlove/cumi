@@ -20,14 +20,17 @@ export const assignmentAPI = createApi({
   endpoints: (build) => ({
     getSingleAssignment: build.query<IAssignment, string>({
       query: (assignmentId) => `/assignments/${assignmentId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, id) => [{ type: "Assignment", id }],
     }),
     getAssignmentBySlug: build.query<IAssignment, string>({
       query: (slug) => `/assignments/slugs/${slug}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, slug) => [{ type: "Assignment", id: slug }],
     }),
     getAssignmentsByCourse: build.query<IAssignment[], string>({
       query: (courseId) => `/assignments?courseId=${courseId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, courseId) => [
         { type: "Assignment", id: "LIST" },
         { type: "Assignment", id: courseId },
@@ -35,6 +38,7 @@ export const assignmentAPI = createApi({
     }),
     getAssignmentsByModule: build.query<IAssignment[], string>({
       query: (moduleId) => `/assignments?moduleId=${moduleId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, moduleId) => [
         { type: "Assignment", id: "LIST" },
         { type: "Assignment", id: moduleId },
@@ -42,6 +46,7 @@ export const assignmentAPI = createApi({
     }),
     getAssignmentsByLesson: build.query<IAssignment[], string>({
       query: (lessonId) => `/assignments?lessonId=${lessonId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, lessonId) => [
         { type: "Assignment", id: "LIST" },
         { type: "Assignment", id: lessonId },
@@ -49,6 +54,7 @@ export const assignmentAPI = createApi({
     }),
     getAssignmentsByUser: build.query<IAssignment[], string>({
       query: (userId) => `/assignments?userId=${userId}`,
+      transformResponse: (response: any) => response.data || response,
       providesTags: (result, error, userId) => [
         { type: "Assignment", id: "LIST" },
         { type: "Assignment", id: userId },
@@ -66,6 +72,7 @@ export const assignmentAPI = createApi({
         
         return `/assignments?${searchParams.toString()}`;
       },
+      transformResponse: (response: any) => response.data || response,
       providesTags: [{ type: "Assignment", id: "LIST" }],
     }),
     createAssignment: build.mutation<IAssignment, Partial<IAssignment>>({
@@ -74,6 +81,7 @@ export const assignmentAPI = createApi({
         method: "POST",
         body: assignment,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: [{ type: "Assignment", id: "LIST" }],
     }),
     updateAssignment: build.mutation<IAssignment, { id: string; assignment: Partial<IAssignment> }>({
@@ -82,6 +90,7 @@ export const assignmentAPI = createApi({
         method: "PATCH",
         body: assignment,
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: (result, error, { id }) => [
         { type: "Assignment", id },
         { type: "Assignment", id: "LIST" },
@@ -92,6 +101,7 @@ export const assignmentAPI = createApi({
         url: `/assignments/${id}`,
         method: "DELETE",
       }),
+      transformResponse: (response: any) => response.data,
       invalidatesTags: (result, error, id) => [
         { type: "Assignment", id },
         { type: "Assignment", id: "LIST" },

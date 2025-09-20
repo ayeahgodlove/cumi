@@ -1,6 +1,6 @@
 "use client";
 
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
@@ -20,7 +20,13 @@ export default function CategoryList() {
 
   return (
     <>
-      <PageBreadCrumbs items={["Events", "Lists"]} />
+      <EnhancedBreadcrumb
+        items={[
+          { title: "Events" },
+          { title: "Lists" }
+        ]}
+        backButtonText="Back to Dashboard"
+      />
       <List>
         <Table {...tableProps} rowKey="id">
           <Table.Column

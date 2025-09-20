@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiArrowRightCircle } from "react-icons/fi";
 import BannerComponent from "@components/banner/banner.component";
+import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -255,7 +256,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                   {/* Service Image */}
                   <Card className="cumi-card mb-4">
                     <img
-                      src={`/uploads/media/${service.imageUrl}`}
+                      src={`${BASE_URL_UPLOADS_MEDIA}${service.imageUrl}`}
                       alt={service.title}
                       className="img-fluid rounded"
                       style={{ width: '100%', height: '400px', objectFit: 'cover' }}

@@ -60,6 +60,10 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         company: values.company,
         dietaryRequirements: values.dietaryRequirements,
         additionalNotes: values.additionalNotes,
+        // Set admin-controlled defaults
+        status: "pending",
+        paymentStatus: event.isFree ? "paid" : "pending",
+        paymentAmount: event.isFree ? 0 : event.entryFee,
       };
 
       const response = await fetch("/api/event-registrations", {
@@ -110,49 +114,51 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
       footer={null}
       width={600}
     >
-      <Card size="small" style={{ marginBottom: 24 }}>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <img
-              src={event.imageUrl || "/img/design-3.jpg"}
-              alt={event.title}
-              style={{
-                width: "100%",
-                height: 150,
-                objectFit: "cover",
-                borderRadius: 8,
-              }}
-            />
-          </Col>
-          <Col span={24}>
-            <Space direction="vertical" size="small">
-              <Title level={4} style={{ margin: 0 }}>
-                {event.title}
-              </Title>
-              <Space>
-                <CalendarOutlined />
-                <Text>
-                  {formatDate(event.eventDate.toString())}
-                </Text>
+      <Card style={{ backgroundColor: 'white', border: 'none' }}>
+        <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <img
+                src={event.imageUrl || "/img/design-3.jpg"}
+                alt={event.title}
+                style={{
+                  width: "100%",
+                  height: 150,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                }}
+              />
+            </Col>
+            <Col span={24}>
+              <Space direction="vertical" size="small">
+                <Title level={4} style={{ margin: 0 }}>
+                  {event.title}
+                </Title>
+                <Space>
+                  <CalendarOutlined />
+                  <Text>
+                    {formatDate(event.eventDate.toString())}
+                  </Text>
+                </Space>
+                <Space>
+                  <EnvironmentOutlined />
+                  <Text>{event.location || 'TBA'}</Text>
+                </Space>
               </Space>
-              <Space>
-                <EnvironmentOutlined />
-                <Text>{event.location || 'TBA'}</Text>
-              </Space>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
+            </Col>
+          </Row>
+        </Card>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleRegistrationSubmit}
-        initialValues={{
-          name: session?.user?.name || "",
-          email: session?.user?.email || "",
-        }}
-      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleRegistrationSubmit}
+          initialValues={{
+            name: session?.user?.name || "",
+            email: session?.user?.email || "",
+          }}
+          size="large"
+        >
         <Form.Item
           name="name"
           label="Full Name"
@@ -232,7 +238,8 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
             </Button>
           </Space>
         </Form.Item>
-      </Form>
+        </Form>
+      </Card>
     </Modal>
   );
 };

@@ -34,11 +34,13 @@ const PostInteraction = (sequelizeInstance: Sequelize, DataTypes: any) => {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+        field: 'created_at', // Map to snake_case column name
       },
       updatedAt: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+        field: 'updated_at', // Map to snake_case column name
       },
     },
     {

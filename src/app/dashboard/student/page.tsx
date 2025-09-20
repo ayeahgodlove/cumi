@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Col,
   Row,
@@ -8,44 +8,119 @@ import {
   Statistic,
   Typography,
   Space,
-  Table,
   Tag,
   Button,
   Spin,
   Tabs,
-  message,
+  Progress,
+  Tooltip,
+  Avatar,
+  Divider,
+  Badge,
+  Image,
+  Modal,
+  Descriptions,
+  Rate,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Switch,
+  InputNumber,
 } from "antd";
 import {
   BookOutlined,
   CalendarOutlined,
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
   EyeOutlined,
   UserOutlined,
   TrophyOutlined,
+  PlayCircleOutlined,
+  CheckCircleOutlined,
+  HeartOutlined,
+  HeartFilled,
+  ClockCircleOutlined,
+  StarOutlined,
+  TeamOutlined,
+  EnvironmentOutlined,
+  ReadOutlined,
 } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@contexts/translation.context";
 import { statsAPI } from "@store/api/stats_api";
+import { postInteractionAPI } from "@store/api/post-interaction_api";
+import { courseEnrollmentAPI } from "@store/api/course-enrollment_api";
+import { eventRegistrationAPI } from "@store/api/event-registration_api";
 import { useTable } from "@refinedev/antd";
-import { BaseRecord } from "@refinedev/core";
+import { BaseRecord, useNotification } from "@refinedev/core";
 import { format } from "@utils/format";
-import CourseCreateModal from "@components/modals/CourseCreateModal";
-import PostCreateModal from "@components/modals/PostCreateModal";
-import EventCreateModal from "@components/modals/EventCreateModal";
+import { useRouter } from "next/navigation";
+import { nanoid } from "nanoid";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 
 const { Title, Text } = Typography;
 
 export default function StudentDashboard() {
   const { data: session, status } = useSession();
   const { t } = useTranslation();
-  
+
+  // Learning state
+  const [continuingCourse, setContinuingCourse] = useState<string | null>(null);
+  const [likingPost, setLikingPost] = useState<string | null>(null);
+  const [registeringEvent, setRegisteringEvent] = useState<string | null>(null);
+
   // Modal states
   const [courseModalVisible, setCourseModalVisible] = useState(false);
   const [postModalVisible, setPostModalVisible] = useState(false);
   const [eventModalVisible, setEventModalVisible] = useState(false);
-  
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+
+  // Enrollment modal states
+  const [enrollmentModalVisible, setEnrollmentModalVisible] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+
+  // Event registration modal states
+  const [eventRegistrationModalVisible, setEventRegistrationModalVisible] =
+    useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+
+  // State management for interactions
+  const [enrolledCourses, setEnrolledCourses] = useState<Set<string>>(
+    new Set()
+  );
+  const [registeredEvents, setRegisteredEvents] = useState<Set<string>>(
+    new Set()
+  );
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+
+  const router = useRouter();
+  const { open } = useNotification();
+  const [enrollmentForm] = Form.useForm();
+  const [eventRegistrationForm] = Form.useForm();
+
+  // RTK Query hooks
+  const [handlePostInteraction] =
+    postInteractionAPI.useHandlePostInteractionMutation();
+
+  // Get user's existing post interactions to initialize liked posts state
+  const { data: userInteractions, refetch: refetchInteractions } =
+    postInteractionAPI.useGetUserPostInteractionsQuery(
+      session?.user?.id || "",
+      { skip: !session?.user?.id }
+    );
+
+  // Get user's existing course enrollments to initialize enrolled courses state
+  const { data: userEnrollments, refetch: refetchEnrollments } =
+    courseEnrollmentAPI.useGetCourseEnrollmentsByUserQuery(
+      session?.user?.id || "",
+      { skip: !session?.user?.id }
+    );
+
+  // Get user's existing event registrations to initialize registered events state
+  const { data: userEventRegistrations, refetch: refetchEventRegistrations } =
+    eventRegistrationAPI.useGetUserEventRegistrationsQuery(undefined, {
+      skip: !session?.user?.id,
+    });
+
   // Table refs for focus management
   const coursesTableRef = useRef<any>(null);
   const postsTableRef = useRef<any>(null);
@@ -77,63 +152,985 @@ export default function StudentDashboard() {
   };
 
   // Table configurations
-  const { tableProps: coursesTableProps, tableQueryResult: coursesQueryResult } = useTable({
+  const {
+    tableProps: coursesTableProps,
+    tableQueryResult: coursesQueryResult,
+  } = useTable({
     resource: "courses",
     syncWithLocation: true,
   });
 
-  const { tableProps: postsTableProps, tableQueryResult: postsQueryResult } = useTable({
-    resource: "posts",
-    syncWithLocation: true,
-  });
+  const { tableProps: postsTableProps, tableQueryResult: postsQueryResult } =
+    useTable({
+      resource: "posts",
+      syncWithLocation: true,
+    });
 
-  const { tableProps: eventsTableProps, tableQueryResult: eventsQueryResult } = useTable({
-    resource: "events",
-    syncWithLocation: true,
-  });
+  const { tableProps: eventsTableProps, tableQueryResult: eventsQueryResult } =
+    useTable({
+      resource: "events",
+      syncWithLocation: true,
+    });
 
-  // Handle successful creation
-  const handleCreationSuccess = (type: 'course' | 'post' | 'event') => {
-    message.success(`${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`);
-    
-    // Refetch the appropriate table data
-    switch (type) {
-      case 'course':
-        coursesQueryResult.refetch();
-        // Focus on courses table
-        setTimeout(() => {
-          coursesTableRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-        break;
-      case 'post':
-        postsQueryResult.refetch();
-        // Focus on posts table
-        setTimeout(() => {
-          postsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-        break;
-      case 'event':
-        eventsQueryResult.refetch();
-        // Focus on events table
-        setTimeout(() => {
-          eventsTableRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-        break;
+  // Initialize liked posts from user's existing interactions
+  useEffect(() => {
+    if (userInteractions && Array.isArray(userInteractions)) {
+      const likedPostIds = userInteractions
+        .filter((interaction: any) => interaction.action === "like")
+        .map((interaction: any) => interaction.postId);
+      setLikedPosts(new Set(likedPostIds));
     }
-    
-    // Refetch stats
-    statsQuery.refetch();
+  }, [userInteractions]);
+
+  // Initialize enrolled courses from user's existing enrollments
+  useEffect(() => {
+    if (userEnrollments) {
+      const enrollments = Array.isArray(userEnrollments)
+        ? userEnrollments
+        : (userEnrollments as any)?.data || [];
+
+      if (Array.isArray(enrollments)) {
+        const enrolledCourseIds = enrollments
+          .filter(
+            (enrollment: any) =>
+              enrollment.status === "active" ||
+              enrollment.status === "completed"
+          )
+          .map((enrollment: any) => enrollment.courseId);
+
+        setEnrolledCourses(new Set(enrolledCourseIds));
+      }
+    }
+  }, [userEnrollments]);
+
+  // Initialize registered events from user's existing registrations
+  useEffect(() => {
+    if (userEventRegistrations) {
+      const registrations = Array.isArray(userEventRegistrations)
+        ? userEventRegistrations
+        : (userEventRegistrations as any)?.data || [];
+
+      if (Array.isArray(registrations)) {
+        const registeredEventIds = registrations
+          .filter(
+            (registration: any) =>
+              registration.status === "pending" ||
+              registration.status === "confirmed"
+          )
+          .map((registration: any) => registration.eventId);
+
+        setRegisteredEvents(new Set(registeredEventIds));
+      }
+    }
+  }, [userEventRegistrations]);
+
+  // Handle course continuation
+  const handleContinueCourse = async (
+    courseId: string,
+    courseTitle: string
+  ) => {
+    setContinuingCourse(courseId);
+    try {
+      // Simulate navigation to course learning page
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      open?.({
+        type: "success",
+        message: "Continuing Course",
+        description: `Continuing with "${courseTitle}"...`,
+      });
+      // In real implementation, navigate to learning page
+      // router.push(`/dashboard/student/courses/${courseId}/learn`);
+    } catch (error) {
+      open?.({
+        type: "error",
+        message: "Continue Failed",
+        description: "Failed to continue course. Please try again.",
+      });
+    } finally {
+      setContinuingCourse(null);
+    }
+  };
+
+  // Handle course enrollment
+  const handleEnrollCourse = async (courseId: string, courseTitle: string) => {
+    if (!session?.user?.id) {
+      open?.({
+        type: "error",
+        message: "Authentication Required",
+        description: "Please log in to enroll in courses.",
+      });
+      return;
+    }
+
+    // Check if already enrolled
+    if (enrolledCourses.has(courseId)) {
+      open?.({
+        type: "success",
+        message: "Already Enrolled",
+        description: "You are already enrolled in this course! 📚",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/enrollments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId,
+          userId: session.user.id,
+          id: nanoid(20),
+          enrollmentDate: new Date(),
+          status: "active",
+          paymentStatus: "free", // Assuming free for students
+          studentPhone: (session.user as any).phoneNumber || "",
+          motivation: "Student enrollment",
+          preferredContact: "email",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state
+        setEnrolledCourses((prev) => new Set([...prev, courseId]));
+
+        open?.({
+          type: "success",
+          message: "Enrollment Successful! 🎓",
+          description: `Successfully enrolled in "${courseTitle}"!`,
+        });
+
+        coursesQueryResult.refetch();
+        refetchEnrollments();
+        statsQuery.refetch();
+      } else {
+        if (
+          response.status === 409 ||
+          result.message?.includes("already enrolled")
+        ) {
+          setEnrolledCourses((prev) => new Set([...prev, courseId]));
+          open?.({
+            type: "success",
+            message: "Already Enrolled",
+            description: "You are already enrolled in this course! 📚",
+          });
+        } else {
+          open?.({
+            type: "error",
+            message: "Enrollment Failed",
+            description: result.message || "Failed to enroll in course.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Enrollment error:", error);
+      open?.({
+        type: "error",
+        message: "Enrollment Failed",
+        description: "Failed to enroll in course. Please try again.",
+      });
+    }
+  };
+
+  // Handle event registration
+  const handleRegisterEvent = async (eventId: string, eventTitle: string) => {
+    if (!session?.user?.id) {
+      open?.({
+        type: "error",
+        message: "Authentication Required",
+        description: "Please log in to register for events.",
+      });
+      return;
+    }
+
+    // Check if already registered
+    if (registeredEvents.has(eventId)) {
+      open?.({
+        type: "success",
+        message: "Already Registered",
+        description: "You are already registered for this event! 🎪",
+      });
+      return;
+    }
+
+    setRegisteringEvent(eventId);
+    try {
+      // Create event registration via API
+      const response = await fetch("/api/event-registrations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId,
+          userId: session.user.id,
+          name: (session.user as any).fullName || session.user.name || "",
+          email: session.user.email || "",
+          phone: (session.user as any).phoneNumber || "",
+          status: "pending",
+          paymentStatus: "pending",
+          registrationDate: new Date(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state
+        setRegisteredEvents((prev) => new Set([...prev, eventId]));
+
+        open?.({
+          type: "success",
+          message: "Registration Successful! 🎪",
+          description: `Successfully registered for "${eventTitle}"!`,
+        });
+        eventsQueryResult.refetch();
+        refetchEventRegistrations();
+        statsQuery.refetch();
+      } else {
+        if (
+          response.status === 409 ||
+          result.message?.includes("already registered")
+        ) {
+          setRegisteredEvents((prev) => new Set([...prev, eventId]));
+          open?.({
+            type: "success",
+            message: "Already Registered",
+            description: "You are already registered for this event! 🎪",
+          });
+        } else {
+          open?.({
+            type: "error",
+            message: "Registration Failed",
+            description: result.message || "Failed to register for event.",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Event registration error:", error);
+      open?.({
+        type: "error",
+        message: "Registration Failed",
+        description: "Failed to register for event. Please try again.",
+      });
+    } finally {
+      setRegisteringEvent(null);
+    }
+  };
+
+  // Handle post like
+  const handleLikePost = async (postId: string, postTitle: string) => {
+    if (!session?.user?.id) {
+      open?.({
+        type: "error",
+        message: "Authentication Required",
+        description: "Please log in to like posts.",
+      });
+      return;
+    }
+
+    // Check if already liked
+    if (likedPosts.has(postId)) {
+      open?.({
+        type: "success",
+        message: "Already Liked",
+        description: "You have already liked this post!",
+      });
+      return;
+    }
+
+    setLikingPost(postId);
+    try {
+      await handlePostInteraction({ postId, action: "like" }).unwrap();
+
+      // Update local state
+      setLikedPosts((prev) => new Set([...prev, postId]));
+
+      open?.({
+        type: "success",
+        message: "Post Liked!",
+        description: `Liked "${postTitle}"!`,
+      });
+      postsQueryResult.refetch();
+      refetchInteractions();
+    } catch (error: any) {
+      console.error("Post interaction error:", error);
+      // Handle different error types
+      if (error?.status === 409 || error?.data?.isDuplicate) {
+        // Handle duplicate like from backend
+        setLikedPosts((prev) => new Set([...prev, postId])); // Update local state
+        open?.({
+          type: "success",
+          message: "Already Liked",
+          description:
+            error?.data?.message || "You have already liked this post!",
+        });
+      } else if (error?.data?.status === 503 || error?.status === 503) {
+        open?.({
+          type: "success",
+          message: "Feature Coming Soon",
+          description: "Post interactions feature is coming soon! 👍",
+        });
+      } else if (error?.data?.status === 401 || error?.status === 401) {
+        open?.({
+          type: "error",
+          message: "Authentication Required",
+          description: "Please log in to like posts.",
+        });
+      } else if (
+        error?.data?.message?.includes("doesn't exist") ||
+        error?.message?.includes("doesn't exist")
+      ) {
+        open?.({
+          type: "success",
+          message: "Feature Setup in Progress",
+          description:
+            "Post interactions feature is being set up. Please try again later! 🚀",
+        });
+      } else {
+        open?.({
+          type: "error",
+          message: "Feature Unavailable",
+          description: "Post interactions feature is temporarily unavailable.",
+        });
+      }
+    } finally {
+      setLikingPost(null);
+    }
+  };
+
+  // Handle view course
+  const handleViewCourse = (course: any) => {
+    setSelectedItem(course);
+    setCourseModalVisible(true);
+  };
+
+  // Handle navigate to full course
+  const handleNavigateToCourse = (courseId: string, courseSlug?: string) => {
+    if (courseSlug) {
+      router.push(`/courses/${courseSlug}`);
+    } else {
+      router.push(`/courses/${courseId}`);
+    }
+  };
+
+  // Handle view post
+  const handleViewPost = (post: any) => {
+    setSelectedItem(post);
+    setPostModalVisible(true);
+  };
+
+  // Handle navigate to full post
+  const handleNavigateToPost = (postId: string, postSlug?: string) => {
+    if (postSlug) {
+      router.push(`/blog_posts/${postSlug}`);
+    } else {
+      router.push(`/blog_posts/${postId}`);
+    }
+  };
+
+  // Handle view event
+  const handleViewEvent = (event: any) => {
+    setSelectedItem(event);
+    setEventModalVisible(true);
+  };
+
+  // Handle navigate to full event
+  const handleNavigateToEvent = (eventId: string, eventSlug?: string) => {
+    if (eventSlug) {
+      router.push(`/events/${eventSlug}`);
+    } else {
+      router.push(`/events/event/${eventId}`);
+    }
+  };
+
+  // Course card renderer for students
+  const renderCourseCards = (courses: readonly any[]) => {
+    if (!courses || courses.length === 0) {
+      return (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+          <BookOutlined style={{ fontSize: 48, marginBottom: 16 }} />
+          <div>No courses available</div>
+        </div>
+      );
+    }
+
+    return (
+      <Row gutter={[16, 16]}>
+        {courses.map((course: any) => {
+          const isEnrolled =
+            course.enrollmentStatus === "enrolled" ||
+            course.progress > 0 ||
+            enrolledCourses.has(course.id);
+          const isCompleted = course.progress >= 100;
+          return (
+            <Col xs={24} sm={12} md={8} lg={6} key={course.id}>
+              <Card
+                hoverable
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  border: "none",
+                  minHeight: "350px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+                cover={
+                  <div
+                    style={{
+                      height: 120,
+                      overflow: "hidden",
+                      position: "relative",
+                    }}
+                  >
+                    <Image
+                      alt={course.title}
+                      src={course.imageUrl || "/api/placeholder/300/120"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      preview={false}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        backgroundColor: "rgba(0,0,0,0.7)",
+                        borderRadius: "4px",
+                        padding: "2px 6px",
+                      }}
+                    >
+                      {course.isFree ? (
+                        <Tag
+                          color="green"
+                          style={{ margin: 0, fontSize: "10px" }}
+                        >
+                          Free
+                        </Tag>
+                      ) : (
+                        <span style={{ color: "white", fontSize: "10px" }}>
+                          {course.price || 0} {course.currency || "XAF"}
+                        </span>
+                      )}
+                    </div>
+                    {course.progress > 0 && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: "4px",
+                          backgroundColor: "rgba(0,0,0,0.3)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            height: "100%",
+                            width: `${course.progress || 0}%`,
+                            backgroundColor:
+                              course.progress >= 100 ? "#52c41a" : "#1890ff",
+                            transition: "width 0.3s ease",
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                }
+              >
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <div style={{ marginBottom: 8 }}>
+                      <Text strong style={{ fontSize: 14, lineHeight: 1.2 }}>
+                        {course.title?.length > 40
+                          ? `${course.title.substring(0, 40)}...`
+                          : course.title}
+                      </Text>
+                    </div>
+
+                    <div style={{ marginBottom: 8, minHeight: 32 }}>
+                      <Text
+                        type="secondary"
+                        style={{ fontSize: 12, lineHeight: 1.3 }}
+                      >
+                        {course.description?.length > 60
+                          ? `${course.description.substring(0, 60)}...`
+                          : course.description}
+                      </Text>
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 8,
+                        gap: 8,
+                      }}
+                    >
+                      <Avatar size={16} icon={<UserOutlined />} />
+                      <Text style={{ fontSize: 11 }}>{course.authorName}</Text>
+                    </div>
+
+                    {course.progress > 0 && (
+                      <div style={{ marginBottom: 8 }}>
+                        <Progress
+                          percent={course.progress || 0}
+                          size="small"
+                          strokeColor={{
+                            "0%": "#108ee9",
+                            "100%": "#87d068",
+                          }}
+                          showInfo={false}
+                        />
+                        <Text style={{ fontSize: 10, color: "#999" }}>
+                          {course.progress || 0}% Complete
+                        </Text>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ marginTop: "auto" }}>
+                    <Space size={8} style={{ width: "100%" }}>
+                      <Tooltip title="View course details">
+                        <Button
+                          icon={<EyeOutlined />}
+                          size="small"
+                          style={{ borderRadius: 6 }}
+                          onClick={() => handleViewCourse(course)}
+                        />
+                      </Tooltip>
+                      {isCompleted ? (
+                        <Button
+                          type="primary"
+                          size="small"
+                          icon={<TrophyOutlined />}
+                          disabled
+                          style={{ borderRadius: 6, flex: 1 }}
+                        >
+                          Completed
+                        </Button>
+                      ) : isEnrolled ? (
+                        <Button
+                          type="primary"
+                          size="small"
+                          icon={<PlayCircleOutlined />}
+                          loading={continuingCourse === course.id}
+                          onClick={() =>
+                            handleContinueCourse(course.id, course.title)
+                          }
+                          style={{ borderRadius: 6, flex: 1 }}
+                        >
+                          Continue
+                        </Button>
+                      ) : (
+                        <Button
+                          type="primary"
+                          size="small"
+                          onClick={() =>
+                            handleEnrollCourse(course.id, course.title)
+                          }
+                          style={{ borderRadius: 6, flex: 1 }}
+                        >
+                          Enroll
+                        </Button>
+                      )}
+                    </Space>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          );
+        })}
+      </Row>
+    );
+  };
+
+  // Post card renderer
+  const renderPostCards = (posts: readonly any[]) => {
+    if (!posts || posts.length === 0) {
+      return (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+          <ReadOutlined style={{ fontSize: 48, marginBottom: 16 }} />
+          <div>No posts available</div>
+        </div>
+      );
+    }
+
+    return (
+      <Row gutter={[16, 16]}>
+        {posts.map((post: any) => (
+          <Col xs={24} sm={12} md={8} lg={6} key={post.id}>
+            <Card
+              hoverable
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                border: "none",
+                minHeight: "300px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+              cover={
+                <div
+                  style={{
+                    height: 100,
+                    overflow: "hidden",
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    alt={post.title}
+                    src={post.imageUrl || "/api/placeholder/300/100"}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                    preview={false}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                    }}
+                  >
+                    <Badge
+                      status={
+                        post.status === "published"
+                          ? "success"
+                          : post.status === "draft"
+                          ? "warning"
+                          : "default"
+                      }
+                      text={post.status}
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.9)",
+                        borderRadius: "4px",
+                        padding: "2px 6px",
+                        fontSize: "10px",
+                      }}
+                    />
+                  </div>
+                </div>
+              }
+            >
+              <div
+                style={{
+                  padding: "12px 16px",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <div style={{ marginBottom: 8 }}>
+                    <Text strong style={{ fontSize: 14, lineHeight: 1.2 }}>
+                      {post.title?.length > 45
+                        ? `${post.title.substring(0, 45)}...`
+                        : post.title}
+                    </Text>
+                  </div>
+
+                  <div style={{ marginBottom: 12, minHeight: 36 }}>
+                    <Text
+                      type="secondary"
+                      style={{ fontSize: 12, lineHeight: 1.3 }}
+                    >
+                      {post.description?.length > 70
+                        ? `${post.description.substring(0, 70)}...`
+                        : post.description}
+                    </Text>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 12,
+                      gap: 8,
+                    }}
+                  >
+                    <Avatar size={16} icon={<UserOutlined />} />
+                    <Text style={{ fontSize: 11 }}>
+                      {post.authorName || "Author"}
+                    </Text>
+                    <Divider type="vertical" style={{ margin: "0 4px" }} />
+                    <ClockCircleOutlined
+                      style={{ fontSize: 11, color: "#999" }}
+                    />
+                    <Text style={{ fontSize: 11, color: "#999" }}>
+                      {post.publishedAt
+                        ? new Date(post.publishedAt).toLocaleDateString()
+                        : "Draft"}
+                    </Text>
+                  </div>
+                </div>
+
+                <div style={{ marginTop: "auto" }}>
+                  <Space size={8} style={{ width: "100%" }}>
+                    <Tooltip title="Read post">
+                      <Button
+                        icon={<EyeOutlined />}
+                        size="small"
+                        style={{ borderRadius: 6 }}
+                        onClick={() => handleViewPost(post)}
+                      />
+                    </Tooltip>
+                    <Button
+                      icon={
+                        likedPosts.has(post.id) ? (
+                          <HeartFilled />
+                        ) : (
+                          <HeartOutlined />
+                        )
+                      }
+                      size="small"
+                      type={likedPosts.has(post.id) ? "primary" : "default"}
+                      loading={likingPost === post.id}
+                      disabled={likedPosts.has(post.id)}
+                      onClick={() => handleLikePost(post.id, post.title)}
+                      style={{
+                        borderRadius: 6,
+                        flex: 1,
+                        backgroundColor: likedPosts.has(post.id)
+                          ? "#ff4d4f"
+                          : undefined,
+                        borderColor: likedPosts.has(post.id)
+                          ? "#ff4d4f"
+                          : undefined,
+                        color: likedPosts.has(post.id) ? "white" : undefined,
+                      }}
+                    >
+                      {likedPosts.has(post.id) ? "Liked" : "Like"}
+                    </Button>
+                  </Space>
+                </div>
+              </div>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    );
+  };
+
+  // Event card renderer
+  const renderEventCards = (events: readonly any[]) => {
+    if (!events || events.length === 0) {
+      return (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#999" }}>
+          <CalendarOutlined style={{ fontSize: 48, marginBottom: 16 }} />
+          <div>No events available</div>
+        </div>
+      );
+    }
+
+    return (
+      <Row gutter={[16, 16]}>
+        {events.map((event: any) => {
+          const isRegistered =
+            event.registrationStatus === "registered" ||
+            registeredEvents.has(event.id);
+          const eventDate = event.eventDate ? new Date(event.eventDate) : null;
+          const isUpcoming = eventDate && eventDate > new Date();
+
+          return (
+            <Col xs={24} sm={12} md={8} lg={6} key={event.id}>
+              <Card
+                hoverable
+                style={{
+                  backgroundColor: "white",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                  border: "none",
+                  minHeight: "320px",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+                cover={
+                  <div
+                    style={{
+                      height: 100,
+                      overflow: "hidden",
+                      position: "relative",
+                    }}
+                  >
+                    <Image
+                      alt={event.title}
+                      src={event.imageUrl || "/api/placeholder/300/100"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      preview={false}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                      }}
+                    >
+                      <Tag
+                        color={
+                          event.status === "published"
+                            ? "green"
+                            : event.status === "cancelled"
+                            ? "red"
+                            : event.status === "completed"
+                            ? "blue"
+                            : "orange"
+                        }
+                        style={{ fontSize: "10px" }}
+                      >
+                        {event.status}
+                      </Tag>
+                    </div>
+                    {isUpcoming && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          backgroundColor: "#ff4d4f",
+                          color: "white",
+                          borderRadius: "4px",
+                          padding: "2px 6px",
+                          fontSize: "10px",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        UPCOMING
+                      </div>
+                    )}
+                  </div>
+                }
+              >
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <div style={{ marginBottom: 8 }}>
+                      <Text strong style={{ fontSize: 14, lineHeight: 1.2 }}>
+                        {event.title?.length > 40
+                          ? `${event.title.substring(0, 40)}...`
+                          : event.title}
+                      </Text>
+                    </div>
+
+                    <div style={{ marginBottom: 8, minHeight: 32 }}>
+                      <Text
+                        type="secondary"
+                        style={{ fontSize: 12, lineHeight: 1.3 }}
+                      >
+                        {event.description?.length > 60
+                          ? `${event.description.substring(0, 60)}...`
+                          : event.description}
+                      </Text>
+                    </div>
+
+                    <div style={{ marginBottom: 8 }}>
+                      <Space size={4}>
+                        <CalendarOutlined
+                          style={{ fontSize: 12, color: "#1890ff" }}
+                        />
+                        <Text style={{ fontSize: 11 }}>
+                          {eventDate ? eventDate.toLocaleDateString() : "TBD"}
+                        </Text>
+                      </Space>
+                    </div>
+
+                    <div style={{ marginBottom: 12 }}>
+                      <Space size={4}>
+                        <EnvironmentOutlined
+                          style={{ fontSize: 12, color: "#52c41a" }}
+                        />
+                        <Text style={{ fontSize: 11 }}>
+                          {event.location || "Online"}
+                        </Text>
+                      </Space>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: "auto" }}>
+                    <Space size={8} style={{ width: "100%" }}>
+                      <Tooltip title="View event details">
+                        <Button
+                          icon={<EyeOutlined />}
+                          size="small"
+                          style={{ borderRadius: 6 }}
+                          onClick={() => handleViewEvent(event)}
+                        />
+                      </Tooltip>
+                      {isRegistered ? (
+                        <Button
+                          type="primary"
+                          size="small"
+                          icon={<CheckCircleOutlined />}
+                          disabled
+                          style={{ borderRadius: 6, flex: 1 }}
+                        >
+                          Registered
+                        </Button>
+                      ) : (
+                        <Button
+                          type="primary"
+                          size="small"
+                          loading={registeringEvent === event.id}
+                          onClick={() =>
+                            handleRegisterEvent(event.id, event.title)
+                          }
+                          style={{ borderRadius: 6, flex: 1 }}
+                        >
+                          Register
+                        </Button>
+                      )}
+                    </Space>
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          );
+        })}
+      </Row>
+    );
   };
 
   // Show loading while session is loading
   if (status === "loading") {
     return (
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "100vh" 
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -142,12 +1139,14 @@ export default function StudentDashboard() {
   // Only render student dashboard for student users
   if (!session?.user || session.user.role !== "student") {
     return (
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "100vh" 
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -181,195 +1180,19 @@ export default function StudentDashboard() {
     },
   ];
 
-  // Table columns
-  const courseColumns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (value: any, record: any, index: number) =>
-        format.twoChar((index + 1).toString()),
-    },
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-      render: (value: any, record: any) => (
-        <span>
-          {record.isFree ? (
-            <Tag color="green">Free</Tag>
-          ) : (
-            `${value || 0} ${record.currency || 'XAF'}`
-          )}
-        </span>
-      ),
-    },
-    {
-      title: "Progress",
-      dataIndex: "progress",
-      key: "progress",
-      render: (value: number) => (
-        <div>
-          <div style={{ marginBottom: 4 }}>{value || 0}%</div>
-          <div style={{ width: '100%', backgroundColor: '#f0f0f0', borderRadius: 4 }}>
-            <div 
-              style={{ 
-                width: `${value || 0}%`, 
-                height: 8, 
-                backgroundColor: '#1890ff', 
-                borderRadius: 4 
-              }} 
-            />
-          </div>
-        </div>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (value: string) => {
-        const colorMap = {
-          enrolled: 'blue',
-          completed: 'green',
-          in_progress: 'orange',
-          not_enrolled: 'gray'
-        };
-        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
-      },
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record: BaseRecord) => (
-        <Space>
-          <Button icon={<EyeOutlined />} size="small" />
-          <Button type="primary" size="small">Continue</Button>
-        </Space>
-      ),
-    },
-  ];
-
-  const postColumns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (value: any, record: any, index: number) =>
-        format.twoChar((index + 1).toString()),
-    },
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (value: string) => {
-        const colorMap = {
-          draft: 'orange',
-          published: 'green',
-          archived: 'gray'
-        };
-        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
-      },
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record: BaseRecord) => (
-        <Space>
-          <Button icon={<EyeOutlined />} size="small" />
-          <Button icon={<EditOutlined />} size="small" />
-          <Button icon={<DeleteOutlined />} size="small" danger />
-        </Space>
-      ),
-    },
-  ];
-
-  const eventColumns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-      render: (value: any, record: any, index: number) =>
-        format.twoChar((index + 1).toString()),
-    },
-    {
-      title: "Title",
-      dataIndex: "title",
-      key: "title",
-    },
-    {
-      title: "Event Date",
-      dataIndex: "eventDate",
-      key: "eventDate",
-      render: (value: string) => format.date(value),
-    },
-    {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (value: string) => {
-        const colorMap = {
-          draft: 'orange',
-          published: 'green',
-          cancelled: 'red',
-          completed: 'blue'
-        };
-        return <Tag color={colorMap[value as keyof typeof colorMap] || 'default'}>{value}</Tag>;
-      },
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_, record: BaseRecord) => (
-        <Space>
-          <Button icon={<EyeOutlined />} size="small" />
-          <Button type="primary" size="small">Register</Button>
-        </Space>
-      ),
-    },
-  ];
-
   const tabItems = [
     {
       key: "courses",
       label: "My Courses",
       children: (
         <div ref={coursesTableRef}>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Title level={4}>Course Progress</Title>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />}
-              onClick={() => setCourseModalVisible(true)}
-            >
-              Create Course
-            </Button>
+          <div style={{ marginBottom: 16 }}>
+            <Title level={4}>My Learning Journey</Title>
+            <Text type="secondary">
+              Track your progress and continue learning
+            </Text>
           </div>
-          <Table
-            {...coursesTableProps}
-            columns={courseColumns}
-            rowKey="id"
-            pagination={{
-              ...coursesTableProps.pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-            }}
-          />
+          {renderCourseCards([...(coursesTableProps.dataSource || [])])}
         </div>
       ),
     },
@@ -378,26 +1201,13 @@ export default function StudentDashboard() {
       label: "Learning Posts",
       children: (
         <div ref={postsTableRef}>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ marginBottom: 16 }}>
             <Title level={4}>Educational Content</Title>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />}
-              onClick={() => setPostModalVisible(true)}
-            >
-              Create Post
-            </Button>
+            <Text type="secondary">
+              Explore educational posts and resources
+            </Text>
           </div>
-          <Table
-            {...postsTableProps}
-            columns={postColumns}
-            rowKey="id"
-            pagination={{
-              ...postsTableProps.pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-            }}
-          />
+          {renderPostCards([...(postsTableProps.dataSource || [])])}
         </div>
       ),
     },
@@ -406,77 +1216,1260 @@ export default function StudentDashboard() {
       label: "Learning Events",
       children: (
         <div ref={eventsTableRef}>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Title level={4}>Educational Events</Title>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />}
-              onClick={() => setEventModalVisible(true)}
-            >
-              Create Event
-            </Button>
+          <div style={{ marginBottom: 16 }}>
+            <Title level={4}>Learning Events</Title>
+            <Text type="secondary">Join educational events and workshops</Text>
           </div>
-          <Table
-            {...eventsTableProps}
-            columns={eventColumns}
-            rowKey="id"
-            pagination={{
-              ...eventsTableProps.pagination,
-              showSizeChanger: true,
-              showQuickJumper: true,
-            }}
-          />
+          {renderEventCards([...(eventsTableProps.dataSource || [])])}
         </div>
       ),
     },
   ];
 
   return (
-    <div style={{ padding: "24px" }}>
-      <Title level={2}>Student Dashboard</Title>
-      
+    <div>
+      <EnhancedBreadcrumb
+        items={[{ title: "Student Dashboard" }]}
+        showBackButton
+      />
+
+      <div
+        style={{
+          textAlign: "center",
+          marginBottom: "32px",
+          padding: "32px 0",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          borderRadius: "16px",
+          color: "white",
+        }}
+      >
+        <Title level={1} style={{ color: "white", marginBottom: "8px" }}>
+          🎓 Student Learning Hub
+        </Title>
+        <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: "18px" }}>
+          Welcome back, {session?.user?.name}! Ready to continue learning?
+        </Text>
+      </div>
+
       {/* Student Statistics */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 32 }}>
         <Col span={24}>
-          <Title level={4}>Learning Progress</Title>
+          <div style={{ textAlign: "center", marginBottom: "24px" }}>
+            <Title level={3} style={{ color: "#2c3e50", marginBottom: "8px" }}>
+              📊 Your Learning Analytics
+            </Title>
+            <Text style={{ color: "#7f8c8d", fontSize: "16px" }}>
+              Track your progress and achievements
+            </Text>
+          </div>
         </Col>
         {studentStats.map((stat, index) => (
           <Col sm={6} md={6} span={24} key={index}>
-            <Card size="small">
-              <Statistic
-                title={stat.title}
-                value={stat.value}
-                prefix={<span style={{ color: stat.color }}>{stat.icon}</span>}
-                valueStyle={{ fontSize: 20 }}
-              />
+            <Card
+              hoverable
+              style={{
+                backgroundColor: "white",
+                borderRadius: "16px",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                border: "none",
+                overflow: "hidden",
+                transition: "all 0.3s ease",
+              }}
+            >
+              <div
+                style={{
+                  background: `linear-gradient(135deg, ${stat.color}15 0%, ${stat.color}05 100%)`,
+                  padding: "20px",
+                }}
+              >
+                <Statistic
+                  title={
+                    <Text
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "500",
+                        color: "#5a6c7d",
+                      }}
+                    >
+                      {stat.title}
+                    </Text>
+                  }
+                  value={stat.value}
+                  prefix={
+                    <span
+                      style={{
+                        color: stat.color,
+                        fontSize: "24px",
+                        marginRight: "8px",
+                      }}
+                    >
+                      {stat.icon}
+                    </span>
+                  }
+                  valueStyle={{
+                    fontSize: "28px",
+                    fontWeight: "700",
+                    color: "#2c3e50",
+                  }}
+                />
+              </div>
             </Card>
           </Col>
         ))}
       </Row>
 
-      {/* Content Management Tabs */}
-      <Card>
-        <Tabs defaultActiveKey="courses" items={tabItems} />
+      {/* My Enrolled Courses Section */}
+      {enrolledCourses.size > 0 && (
+        <Card
+          style={{
+            backgroundColor: "white",
+            borderRadius: "16px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+            border: "none",
+            marginBottom: "24px",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          }}
+        >
+          <div style={{ padding: "24px" }}>
+            <div style={{ marginBottom: "24px", textAlign: "center" }}>
+              <Title level={3} style={{ marginBottom: "8px" }}>
+                📚 My Enrolled Courses
+              </Title>
+              <Text style={{ fontSize: "16px" }}>
+                Continue your learning journey
+              </Text>
+            </div>
+
+            <Row gutter={[16, 16]}>
+              {[...(coursesTableProps.dataSource || [])]
+                .filter((course: any) => enrolledCourses.has(course.id))
+                .map((course: any) => (
+                  <Col xs={24} sm={12} md={8} lg={6} key={course.id}>
+                    <Card
+                      hoverable
+                      style={{
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        borderRadius: "12px",
+                        border: "none",
+                        minHeight: "280px",
+                        backdropFilter: "blur(10px)",
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                      }}
+                      cover={
+                        <div
+                          style={{
+                            height: 100,
+                            overflow: "hidden",
+                            position: "relative",
+                          }}
+                        >
+                          <Image
+                            alt={course.title}
+                            src={course.imageUrl || "/api/placeholder/300/100"}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            preview={false}
+                          />
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 8,
+                              backgroundColor: "rgba(102, 126, 234, 0.9)",
+                              borderRadius: "20px",
+                              padding: "4px 12px",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: "white",
+                                fontSize: "12px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {course.progress || 0}% Complete
+                            </Text>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <div style={{ padding: "16px 0" }}>
+                        <div style={{ marginBottom: 12 }}>
+                          <Text
+                            strong
+                            style={{
+                              fontSize: 16,
+                              lineHeight: 1.3,
+                              display: "block",
+                            }}
+                          >
+                            {course.title?.length > 40
+                              ? `${course.title.substring(0, 40)}...`
+                              : course.title}
+                          </Text>
+                        </div>
+
+                        <div style={{ marginBottom: 16 }}>
+                          <Progress
+                            percent={course.progress || 0}
+                            strokeColor={{
+                              "0%": "#667eea",
+                              "100%": "#764ba2",
+                            }}
+                            style={{ marginBottom: 8 }}
+                          />
+                          <Text style={{ fontSize: 12, color: "#666" }}>
+                            Progress: {course.progress || 0}%
+                          </Text>
+                        </div>
+
+                        <Button
+                          type="primary"
+                          size="large"
+                          block
+                          onClick={() =>
+                            handleContinueCourse(course.id, course.title)
+                          }
+                          loading={continuingCourse === course.id}
+                          style={{
+                            borderRadius: "8px",
+                            height: "48px",
+                            fontSize: "16px",
+                            fontWeight: "600",
+                            background:
+                              "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            border: "none",
+                            boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                          }}
+                        >
+                          Continue Learning
+                        </Button>
+                      </div>
+                    </Card>
+                  </Col>
+                ))}
+            </Row>
+          </div>
+        </Card>
+      )}
+
+      {/* My Registered Events Section */}
+      {registeredEvents.size > 0 && (
+        <Card
+          style={{
+            backgroundColor: "white",
+            borderRadius: "16px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+            border: "none",
+            marginBottom: "24px",
+            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+          }}
+        >
+          <div style={{ padding: "24px" }}>
+            <div style={{ marginBottom: "24px", textAlign: "center" }}>
+              <Title level={3} style={{ color: "white", marginBottom: "8px" }}>
+                🎪 My Registered Events
+              </Title>
+              <Text
+                style={{ color: "rgba(255,255,255,0.9)", fontSize: "16px" }}
+              >
+                Your upcoming learning events
+              </Text>
+            </div>
+
+            <Row gutter={[16, 16]}>
+              {[...(eventsTableProps.dataSource || [])]
+                .filter((event: any) => registeredEvents.has(event.id))
+                .map((event: any) => {
+                  const eventDate = event.eventDate
+                    ? new Date(event.eventDate)
+                    : null;
+                  const isUpcoming = eventDate && eventDate > new Date();
+
+                  return (
+                    <Col xs={24} sm={12} md={8} lg={6} key={event.id}>
+                      <Card
+                        hoverable
+                        style={{
+                          backgroundColor: "rgba(255,255,255,0.95)",
+                          borderRadius: "12px",
+                          border: "none",
+                          minHeight: "280px",
+                          backdropFilter: "blur(10px)",
+                          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        }}
+                        cover={
+                          <div
+                            style={{
+                              height: 100,
+                              overflow: "hidden",
+                              position: "relative",
+                            }}
+                          >
+                            <Image
+                              alt={event.title}
+                              src={event.imageUrl || "/api/placeholder/300/100"}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                              preview={false}
+                            />
+                            {isUpcoming && (
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: 8,
+                                  left: 8,
+                                  backgroundColor: "#ff4757",
+                                  color: "white",
+                                  borderRadius: "20px",
+                                  padding: "4px 12px",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                UPCOMING
+                              </div>
+                            )}
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                backgroundColor: "rgba(250, 112, 154, 0.9)",
+                                borderRadius: "20px",
+                                padding: "4px 12px",
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: "white",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                REGISTERED
+                              </Text>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <div style={{ padding: "16px 0" }}>
+                          <div style={{ marginBottom: 12 }}>
+                            <Text
+                              strong
+                              style={{
+                                fontSize: 16,
+                                lineHeight: 1.3,
+                                display: "block",
+                              }}
+                            >
+                              {event.title?.length > 40
+                                ? `${event.title.substring(0, 40)}...`
+                                : event.title}
+                            </Text>
+                          </div>
+
+                          <div style={{ marginBottom: 16 }}>
+                            <Space
+                              direction="vertical"
+                              size="small"
+                              style={{ width: "100%" }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                }}
+                              >
+                                <CalendarOutlined
+                                  style={{ color: "#667eea" }}
+                                />
+                                <Text style={{ fontSize: 13, color: "#666" }}>
+                                  {eventDate
+                                    ? eventDate.toLocaleDateString()
+                                    : "TBD"}
+                                </Text>
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 8,
+                                }}
+                              >
+                                <EnvironmentOutlined
+                                  style={{ color: "#52c41a" }}
+                                />
+                                <Text style={{ fontSize: 13, color: "#666" }}>
+                                  {event.location || "Online"}
+                                </Text>
+                              </div>
+                            </Space>
+                          </div>
+
+                          <Button
+                            type="primary"
+                            size="large"
+                            block
+                            onClick={() => handleViewEvent(event)}
+                            style={{
+                              borderRadius: "8px",
+                              height: "48px",
+                              fontSize: "16px",
+                              fontWeight: "600",
+                              background:
+                                "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                              border: "none",
+                              boxShadow: "0 4px 12px rgba(250, 112, 154, 0.4)",
+                            }}
+                          >
+                            View Event Details
+                          </Button>
+                        </div>
+                      </Card>
+                    </Col>
+                  );
+                })}
+            </Row>
+          </div>
+        </Card>
+      )}
+
+      {/* Learning Tabs */}
+      <Card
+        style={{
+          backgroundColor: "white",
+          borderRadius: "16px",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+          border: "none",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)",
+            padding: "24px 24px 0 24px",
+            marginBottom: "16px",
+          }}
+        >
+          <Title level={3} style={{ margin: 0, color: "#2c3e50" }}>
+            🎓 Explore Learning Opportunities
+          </Title>
+          <Text style={{ color: "#7f8c8d", fontSize: "16px" }}>
+            Discover courses, posts, and events to advance your skills
+          </Text>
+        </div>
+        <Tabs
+          defaultActiveKey="courses"
+          items={tabItems}
+          style={{
+            boxShadow: "none",
+            padding: "0 24px 24px 24px",
+          }}
+          size="large"
+        />
       </Card>
 
-      {/* Modals */}
-      <CourseCreateModal
-        visible={courseModalVisible}
-        onCancel={() => setCourseModalVisible(false)}
-        onSuccess={() => handleCreationSuccess('course')}
-      />
-      
-      <PostCreateModal
-        visible={postModalVisible}
-        onCancel={() => setPostModalVisible(false)}
-        onSuccess={() => handleCreationSuccess('post')}
-      />
-      
-      <EventCreateModal
-        visible={eventModalVisible}
-        onCancel={() => setEventModalVisible(false)}
-        onSuccess={() => handleCreationSuccess('event')}
-      />
+      {/* Course View Modal */}
+      <Modal
+        title="Course Details"
+        open={courseModalVisible}
+        onCancel={() => {
+          setCourseModalVisible(false);
+          setSelectedItem(null);
+        }}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => setCourseModalVisible(false)}
+            size="large"
+          >
+            Close
+          </Button>,
+          <Button
+            key="view-full"
+            type="primary"
+            onClick={() => {
+              handleNavigateToCourse(selectedItem?.id, selectedItem?.slug);
+              setCourseModalVisible(false);
+            }}
+            size="large"
+          >
+            View Full Course
+          </Button>,
+        ]}
+        width={800}
+      >
+        {selectedItem && (
+          <Card style={{ backgroundColor: "white", border: "none" }}>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} md={8}>
+                <Image
+                  src={selectedItem.imageUrl || "/api/placeholder/300/200"}
+                  alt={selectedItem.title}
+                  style={{ borderRadius: 8, width: "100%" }}
+                />
+                {selectedItem.progress > 0 && (
+                  <div style={{ marginTop: 12 }}>
+                    <Text strong style={{ display: "block", marginBottom: 8 }}>
+                      Your Progress
+                    </Text>
+                    <Progress
+                      percent={selectedItem.progress || 0}
+                      strokeColor={{
+                        "0%": "#108ee9",
+                        "100%": "#87d068",
+                      }}
+                    />
+                  </div>
+                )}
+              </Col>
+              <Col xs={24} md={16}>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Title level={3} style={{ marginBottom: 8 }}>
+                      {selectedItem.title}
+                    </Title>
+                    <Text type="secondary">by {selectedItem.authorName}</Text>
+                  </div>
+
+                  <div>
+                    <Space size="large">
+                      <div>
+                        <Rate
+                          disabled
+                          defaultValue={4.5}
+                          style={{ fontSize: 16 }}
+                        />
+                        <Text style={{ marginLeft: 8 }}>4.5 (120 reviews)</Text>
+                      </div>
+                      <Tag color={selectedItem.isFree ? "green" : "blue"}>
+                        {selectedItem.isFree
+                          ? "Free"
+                          : `${selectedItem.price || 0} ${
+                              selectedItem.currency || "XAF"
+                            }`}
+                      </Tag>
+                    </Space>
+                  </div>
+
+                  <div>
+                    <Space>
+                      <Text strong>Status: </Text>
+                      <Tag
+                        color={
+                          selectedItem.status === "published"
+                            ? "green"
+                            : "orange"
+                        }
+                      >
+                        {selectedItem.status}
+                      </Tag>
+                      {selectedItem.progress >= 100 && (
+                        <Tag color="gold" icon={<TrophyOutlined />}>
+                          Completed
+                        </Tag>
+                      )}
+                    </Space>
+                  </div>
+                </Space>
+              </Col>
+            </Row>
+
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Description">
+                {selectedItem.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Level">
+                {selectedItem.level || "Beginner"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Duration">
+                {selectedItem.durationWeeks || 4} weeks
+              </Descriptions.Item>
+              <Descriptions.Item label="Language">
+                {selectedItem.language || "English"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Students Enrolled">
+                {selectedItem.currentStudents || 0} /{" "}
+                {selectedItem.maxStudents || "Unlimited"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Certificate Available">
+                {selectedItem.certificateAvailable ? "Yes" : "No"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Prerequisites">
+                {selectedItem.prerequisites || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Learning Outcomes">
+                {selectedItem.learningOutcomes || "Will be provided"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {selectedItem.createdAt
+                  ? new Date(selectedItem.createdAt).toLocaleDateString()
+                  : "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        )}
+      </Modal>
+
+      {/* Post View Modal */}
+      <Modal
+        title="Post Details"
+        open={postModalVisible}
+        onCancel={() => {
+          setPostModalVisible(false);
+          setSelectedItem(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setPostModalVisible(false)}>
+            Close
+          </Button>,
+          <Button
+            key="like"
+            type={
+              selectedItem && likedPosts.has(selectedItem.id)
+                ? "primary"
+                : "default"
+            }
+            icon={
+              selectedItem && likedPosts.has(selectedItem.id) ? (
+                <HeartFilled />
+              ) : (
+                <HeartOutlined />
+              )
+            }
+            loading={likingPost === selectedItem?.id}
+            disabled={selectedItem && likedPosts.has(selectedItem.id)}
+            onClick={() => {
+              if (selectedItem) {
+                handleLikePost(selectedItem.id, selectedItem.title);
+              }
+            }}
+            style={{
+              backgroundColor:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "#ff4d4f"
+                  : undefined,
+              borderColor:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "#ff4d4f"
+                  : undefined,
+              color:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "white"
+                  : undefined,
+            }}
+          >
+            {selectedItem && likedPosts.has(selectedItem.id)
+              ? "Liked"
+              : "Like Post"}
+          </Button>,
+          <Button
+            key="read-full"
+            type="primary"
+            onClick={() => {
+              handleNavigateToPost(selectedItem?.id, selectedItem?.slug);
+              setPostModalVisible(false);
+            }}
+          >
+            Read Full Post
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedItem && (
+          <div>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} md={8}>
+                <Image
+                  src={selectedItem.imageUrl || "/api/placeholder/300/200"}
+                  alt={selectedItem.title}
+                  style={{ borderRadius: 8, width: "100%" }}
+                />
+              </Col>
+              <Col xs={24} md={16}>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Title level={3} style={{ marginBottom: 8 }}>
+                      {selectedItem.title}
+                    </Title>
+                    <Text type="secondary">
+                      by {selectedItem.authorName || "Author"}
+                    </Text>
+                  </div>
+
+                  <div>
+                    <Tag
+                      color={
+                        selectedItem.status === "published"
+                          ? "green"
+                          : selectedItem.status === "draft"
+                          ? "orange"
+                          : "default"
+                      }
+                    >
+                      {selectedItem.status}
+                    </Tag>
+                  </div>
+
+                  <div>
+                    <Text type="secondary">
+                      Published:{" "}
+                      {selectedItem.publishedAt
+                        ? new Date(
+                            selectedItem.publishedAt
+                          ).toLocaleDateString()
+                        : "Draft"}
+                    </Text>
+                  </div>
+                </Space>
+              </Col>
+            </Row>
+
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Description">
+                {selectedItem.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Content Preview">
+                <div style={{ maxHeight: 200, overflow: "auto" }}>
+                  {selectedItem.content ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          selectedItem.content.substring(0, 500) +
+                          (selectedItem.content.length > 500 ? "..." : ""),
+                      }}
+                    />
+                  ) : (
+                    "No content preview available"
+                  )}
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Category">
+                {selectedItem.categoryId || "Uncategorized"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {selectedItem.createdAt
+                  ? new Date(selectedItem.createdAt).toLocaleDateString()
+                  : "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
+        )}
+      </Modal>
+
+      {/* Event View Modal */}
+      <Modal
+        title="Event Details"
+        open={eventModalVisible}
+        onCancel={() => {
+          setEventModalVisible(false);
+          setSelectedItem(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setEventModalVisible(false)}>
+            Close
+          </Button>,
+          selectedItem && selectedItem.registrationStatus !== "registered" && (
+            <Button
+              key="register"
+              type="primary"
+              loading={registeringEvent === selectedItem?.id}
+              onClick={() => {
+                if (selectedItem) {
+                  handleRegisterEvent(selectedItem.id, selectedItem.title);
+                  setEventModalVisible(false);
+                }
+              }}
+            >
+              Register Now
+            </Button>
+          ),
+          <Button
+            key="view-full"
+            type="primary"
+            onClick={() => {
+              handleNavigateToEvent(selectedItem?.id, selectedItem?.slug);
+              setEventModalVisible(false);
+            }}
+          >
+            View Full Event
+          </Button>,
+        ]}
+        width={800}
+      >
+        {selectedItem && (
+          <div>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} md={8}>
+                <Image
+                  src={selectedItem.imageUrl || "/api/placeholder/300/200"}
+                  alt={selectedItem.title}
+                  style={{ borderRadius: 8, width: "100%" }}
+                />
+              </Col>
+              <Col xs={24} md={16}>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Title level={3} style={{ marginBottom: 8 }}>
+                      {selectedItem.title}
+                    </Title>
+                    <Text type="secondary">
+                      Organized by {selectedItem.userId}
+                    </Text>
+                  </div>
+
+                  <div>
+                    <Space>
+                      <Tag
+                        color={
+                          selectedItem.status === "published"
+                            ? "green"
+                            : selectedItem.status === "cancelled"
+                            ? "red"
+                            : selectedItem.status === "completed"
+                            ? "blue"
+                            : "orange"
+                        }
+                      >
+                        {selectedItem.status}
+                      </Tag>
+                      {selectedItem.isFree ? (
+                        <Tag color="green">Free Event</Tag>
+                      ) : (
+                        <Tag color="blue">
+                          {selectedItem.entryFee || 0}{" "}
+                          {selectedItem.currency || "XAF"}
+                        </Tag>
+                      )}
+                    </Space>
+                  </div>
+
+                  <div>
+                    <Space direction="vertical" size="small">
+                      <div>
+                        <CalendarOutlined
+                          style={{ marginRight: 8, color: "#1890ff" }}
+                        />
+                        <Text strong>Date: </Text>
+                        <Text>
+                          {selectedItem.eventDate
+                            ? new Date(
+                                selectedItem.eventDate
+                              ).toLocaleDateString()
+                            : "TBD"}
+                        </Text>
+                      </div>
+                      <div>
+                        <EnvironmentOutlined
+                          style={{ marginRight: 8, color: "#52c41a" }}
+                        />
+                        <Text strong>Location: </Text>
+                        <Text>{selectedItem.location || "Online"}</Text>
+                      </div>
+                    </Space>
+                  </div>
+                </Space>
+              </Col>
+            </Row>
+
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Description">
+                {selectedItem.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Event Duration">
+                {selectedItem.eventDate && selectedItem.eventEndDate
+                  ? `${new Date(
+                      selectedItem.eventDate
+                    ).toLocaleString()} - ${new Date(
+                      selectedItem.eventEndDate
+                    ).toLocaleString()}`
+                  : selectedItem.eventDate
+                  ? new Date(selectedItem.eventDate).toLocaleString()
+                  : "TBD"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Target Audience">
+                {selectedItem.targetAudience || "General Public"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Language">
+                {selectedItem.language || "English"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Max Attendees">
+                {selectedItem.maxAttendees || "Unlimited"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Current Attendees">
+                {selectedItem.currentAttendees || 0}
+              </Descriptions.Item>
+              <Descriptions.Item label="Registration Required">
+                {selectedItem.registrationRequired ? "Yes" : "No"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Registration Deadline">
+                {selectedItem.registrationDeadline
+                  ? new Date(
+                      selectedItem.registrationDeadline
+                    ).toLocaleDateString()
+                  : "No deadline"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Requirements">
+                {selectedItem.requirements || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Contact">
+                {selectedItem.contactEmail ||
+                  selectedItem.contactPhone ||
+                  "Contact organizer"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {selectedItem.createdAt
+                  ? new Date(selectedItem.createdAt).toLocaleDateString()
+                  : "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
+        )}
+      </Modal>
+
+      {/* Post View Modal */}
+      <Modal
+        title="Post Details"
+        open={postModalVisible}
+        onCancel={() => {
+          setPostModalVisible(false);
+          setSelectedItem(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setPostModalVisible(false)}>
+            Close
+          </Button>,
+          <Button
+            key="like"
+            type={
+              selectedItem && likedPosts.has(selectedItem.id)
+                ? "primary"
+                : "default"
+            }
+            icon={
+              selectedItem && likedPosts.has(selectedItem.id) ? (
+                <HeartFilled />
+              ) : (
+                <HeartOutlined />
+              )
+            }
+            loading={likingPost === selectedItem?.id}
+            disabled={selectedItem && likedPosts.has(selectedItem.id)}
+            onClick={() => {
+              if (selectedItem) {
+                handleLikePost(selectedItem.id, selectedItem.title);
+              }
+            }}
+            style={{
+              backgroundColor:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "#ff4d4f"
+                  : undefined,
+              borderColor:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "#ff4d4f"
+                  : undefined,
+              color:
+                selectedItem && likedPosts.has(selectedItem.id)
+                  ? "white"
+                  : undefined,
+            }}
+          >
+            {selectedItem && likedPosts.has(selectedItem.id)
+              ? "Liked"
+              : "Like Post"}
+          </Button>,
+          <Button
+            key="read-full"
+            type="primary"
+            onClick={() => {
+              handleNavigateToPost(selectedItem?.id, selectedItem?.slug);
+              setPostModalVisible(false);
+            }}
+          >
+            Read Full Post
+          </Button>,
+        ]}
+        width={700}
+      >
+        {selectedItem && (
+          <div>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} md={8}>
+                <Image
+                  src={selectedItem.imageUrl || "/api/placeholder/300/200"}
+                  alt={selectedItem.title}
+                  style={{ borderRadius: 8, width: "100%" }}
+                />
+              </Col>
+              <Col xs={24} md={16}>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Title level={3} style={{ marginBottom: 8 }}>
+                      {selectedItem.title}
+                    </Title>
+                    <Text type="secondary">
+                      by {selectedItem.authorName || "Author"}
+                    </Text>
+                  </div>
+
+                  <div>
+                    <Tag
+                      color={
+                        selectedItem.status === "published"
+                          ? "green"
+                          : selectedItem.status === "draft"
+                          ? "orange"
+                          : "default"
+                      }
+                    >
+                      {selectedItem.status}
+                    </Tag>
+                  </div>
+
+                  <div>
+                    <Text type="secondary">
+                      Published:{" "}
+                      {selectedItem.publishedAt
+                        ? new Date(
+                            selectedItem.publishedAt
+                          ).toLocaleDateString()
+                        : "Draft"}
+                    </Text>
+                  </div>
+                </Space>
+              </Col>
+            </Row>
+
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Description">
+                {selectedItem.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Content Preview">
+                <div style={{ maxHeight: 200, overflow: "auto" }}>
+                  {selectedItem.content ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          selectedItem.content.substring(0, 500) +
+                          (selectedItem.content.length > 500 ? "..." : ""),
+                      }}
+                    />
+                  ) : (
+                    "No content preview available"
+                  )}
+                </div>
+              </Descriptions.Item>
+              <Descriptions.Item label="Category">
+                {selectedItem.categoryId || "Uncategorized"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {selectedItem.createdAt
+                  ? new Date(selectedItem.createdAt).toLocaleDateString()
+                  : "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
+        )}
+      </Modal>
+
+      {/* Event View Modal */}
+      <Modal
+        title="Event Details"
+        open={eventModalVisible}
+        onCancel={() => {
+          setEventModalVisible(false);
+          setSelectedItem(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setEventModalVisible(false)}>
+            Close
+          </Button>,
+          selectedItem && selectedItem.registrationStatus !== "registered" && (
+            <Button
+              key="register"
+              type="primary"
+              loading={registeringEvent === selectedItem?.id}
+              onClick={() => {
+                if (selectedItem) {
+                  handleRegisterEvent(selectedItem.id, selectedItem.title);
+                  setEventModalVisible(false);
+                }
+              }}
+            >
+              Register Now
+            </Button>
+          ),
+          <Button
+            key="view-full"
+            type="primary"
+            onClick={() => {
+              handleNavigateToEvent(selectedItem?.id, selectedItem?.slug);
+              setEventModalVisible(false);
+            }}
+          >
+            View Full Event
+          </Button>,
+        ]}
+        width={800}
+      >
+        {selectedItem && (
+          <div>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} md={8}>
+                <Image
+                  src={selectedItem.imageUrl || "/api/placeholder/300/200"}
+                  alt={selectedItem.title}
+                  style={{ borderRadius: 8, width: "100%" }}
+                />
+              </Col>
+              <Col xs={24} md={16}>
+                <Space
+                  direction="vertical"
+                  size="middle"
+                  style={{ width: "100%" }}
+                >
+                  <div>
+                    <Title level={3} style={{ marginBottom: 8 }}>
+                      {selectedItem.title}
+                    </Title>
+                    <Text type="secondary">
+                      Organized by {selectedItem.userId}
+                    </Text>
+                  </div>
+
+                  <div>
+                    <Space>
+                      <Tag
+                        color={
+                          selectedItem.status === "published"
+                            ? "green"
+                            : selectedItem.status === "cancelled"
+                            ? "red"
+                            : selectedItem.status === "completed"
+                            ? "blue"
+                            : "orange"
+                        }
+                      >
+                        {selectedItem.status}
+                      </Tag>
+                      {selectedItem.isFree ? (
+                        <Tag color="green">Free Event</Tag>
+                      ) : (
+                        <Tag color="blue">
+                          {selectedItem.entryFee || 0}{" "}
+                          {selectedItem.currency || "XAF"}
+                        </Tag>
+                      )}
+                    </Space>
+                  </div>
+
+                  <div>
+                    <Space direction="vertical" size="small">
+                      <div>
+                        <CalendarOutlined
+                          style={{ marginRight: 8, color: "#1890ff" }}
+                        />
+                        <Text strong>Date: </Text>
+                        <Text>
+                          {selectedItem.eventDate
+                            ? new Date(
+                                selectedItem.eventDate
+                              ).toLocaleDateString()
+                            : "TBD"}
+                        </Text>
+                      </div>
+                      <div>
+                        <EnvironmentOutlined
+                          style={{ marginRight: 8, color: "#52c41a" }}
+                        />
+                        <Text strong>Location: </Text>
+                        <Text>{selectedItem.location || "Online"}</Text>
+                      </div>
+                    </Space>
+                  </div>
+                </Space>
+              </Col>
+            </Row>
+
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="Description">
+                {selectedItem.description}
+              </Descriptions.Item>
+              <Descriptions.Item label="Event Duration">
+                {selectedItem.eventDate && selectedItem.eventEndDate
+                  ? `${new Date(
+                      selectedItem.eventDate
+                    ).toLocaleString()} - ${new Date(
+                      selectedItem.eventEndDate
+                    ).toLocaleString()}`
+                  : selectedItem.eventDate
+                  ? new Date(selectedItem.eventDate).toLocaleString()
+                  : "TBD"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Target Audience">
+                {selectedItem.targetAudience || "General Public"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Language">
+                {selectedItem.language || "English"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Max Attendees">
+                {selectedItem.maxAttendees || "Unlimited"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Current Attendees">
+                {selectedItem.currentAttendees || 0}
+              </Descriptions.Item>
+              <Descriptions.Item label="Registration Required">
+                {selectedItem.registrationRequired ? "Yes" : "No"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Registration Deadline">
+                {selectedItem.registrationDeadline
+                  ? new Date(
+                      selectedItem.registrationDeadline
+                    ).toLocaleDateString()
+                  : "No deadline"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Requirements">
+                {selectedItem.requirements || "None"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Contact">
+                {selectedItem.contactEmail ||
+                  selectedItem.contactPhone ||
+                  "Contact organizer"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created">
+                {selectedItem.createdAt
+                  ? new Date(selectedItem.createdAt).toLocaleDateString()
+                  : "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

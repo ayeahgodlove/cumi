@@ -70,9 +70,13 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         motivation: values.motivation,
         skillsGained: values.skillsGained,
         notes: values.notes,
+        // Set admin-controlled defaults
+        status: "active",
+        paymentStatus: course.isFree ? "free" : "pending",
+        progress: 0,
       };
 
-      const response = await fetch("/api/course-enrollments", {
+      const response = await fetch("/api/enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,47 +119,49 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
       footer={null}
       width={700}
     >
-      <Card size="small" style={{ marginBottom: 24 }}>
-        <Row gutter={[16, 16]}>
-          <Col span={24}>
-            <img
-              src={course.imageUrl || "/img/design-3.jpg"}
-              alt={course.title}
-              style={{
-                width: "100%",
-                height: 150,
-                objectFit: "cover",
-                borderRadius: 8,
-              }}
-            />
-          </Col>
-          <Col span={24}>
-            <Space direction="vertical" size="small">
-              <Title level={4} style={{ margin: 0 }}>
-                {course.title}
-              </Title>
-              <Space>
-                <ClockCircleOutlined />
-                <Text>{course.durationWeeks ? `${course.durationWeeks} weeks` : 'Self-paced'}</Text>
+      <Card style={{ backgroundColor: 'white', border: 'none' }}>
+        <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>
+          <Row gutter={[16, 16]}>
+            <Col span={24}>
+              <img
+                src={course.imageUrl || "/img/design-3.jpg"}
+                alt={course.title}
+                style={{
+                  width: "100%",
+                  height: 150,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                }}
+              />
+            </Col>
+            <Col span={24}>
+              <Space direction="vertical" size="small">
+                <Title level={4} style={{ margin: 0 }}>
+                  {course.title}
+                </Title>
+                <Space>
+                  <ClockCircleOutlined />
+                  <Text>{course.durationWeeks ? `${course.durationWeeks} weeks` : 'Self-paced'}</Text>
+                </Space>
+                <Space>
+                  <StarOutlined />
+                  <Text>{course.level?.charAt(0).toUpperCase() + course.level?.slice(1)} Level</Text>
+                </Space>
+                <Space>
+                  <DollarOutlined />
+                  <Text>{course.isFree ? 'Free' : `${course.price} ${course.currency}`}</Text>
+                </Space>
               </Space>
-              <Space>
-                <StarOutlined />
-                <Text>{course.level?.charAt(0).toUpperCase() + course.level?.slice(1)} Level</Text>
-              </Space>
-              <Space>
-                <DollarOutlined />
-                <Text>{course.isFree ? 'Free' : `${course.price} ${course.currency}`}</Text>
-              </Space>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
+            </Col>
+          </Row>
+        </Card>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleEnrollmentSubmit}
-      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleEnrollmentSubmit}
+          size="large"
+        >
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
@@ -330,7 +336,8 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
             </Button>
           </Space>
         </Form.Item>
-      </Form>
+        </Form>
+      </Card>
     </Modal>
   );
 };

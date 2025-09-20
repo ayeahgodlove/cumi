@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { useShow } from "@refinedev/core";
 import {
@@ -24,6 +24,9 @@ import {
   Select,
   DatePicker,
   message,
+  Input,
+  InputNumber,
+  Switch,
 } from "antd";
 import {
   BookOutlined,
@@ -36,11 +39,12 @@ import {
   ClockCircleOutlined,
   TeamOutlined,
   DeleteOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import { useList, useCreate, useUpdate, useDelete } from "@refinedev/core";
+import { useList, useCreate, useUpdate, useDelete, useNotification } from "@refinedev/core";
 import { ICourse } from "@domain/models/course";
-import { IEnrollment } from "@domain/models/enrollment";
+// import { IEnrollment } from "@domain/models/enrollment";
 import { ILesson } from "@domain/models/lesson";
 import { IQuiz } from "@domain/models/quiz";
 import { IUser } from "@domain/models/user";
@@ -48,13 +52,49 @@ import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
+// CourseDescription Component
+const CourseDescription = ({ description }: { description: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const wordLimit = 400;
+  
+  const words = description.split(' ');
+  const shouldTruncate = words.length > wordLimit;
+  const displayText = isExpanded || !shouldTruncate 
+    ? description 
+    : words.slice(0, wordLimit).join(' ') + '...';
+
+  return (
+    <div>
+      <Text type="secondary" style={{ whiteSpace: 'pre-wrap' }}>
+        {displayText}
+      </Text>
+      {shouldTruncate && (
+        <Button 
+          type="link" 
+          size="small" 
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{ padding: 0, marginLeft: 8 }}
+        >
+          {isExpanded ? 'Show Less' : 'Read More'}
+        </Button>
+      )}
+    </div>
+  );
+};
+
 export default function CourseShow() {
   const router = useRouter();
+  const { open } = useNotification();
   const [isEnrollmentModalVisible, setIsEnrollmentModalVisible] =
     useState(false);
   const [editingEnrollment, setEditingEnrollment] =
-    useState<IEnrollment | null>(null);
+    useState<any | null>(null);
   const [form] = Form.useForm();
+  
+  // Module modal states
+  const [moduleModalVisible, setModuleModalVisible] = useState(false);
+  const [editingModule, setEditingModule] = useState<any | null>(null);
+  const [moduleForm] = Form.useForm();
 
   const { queryResult } = useShow<ICourse>({});
   const { data, isLoading } = queryResult;
@@ -62,7 +102,7 @@ export default function CourseShow() {
 
   // Fetch related data
   const { data: enrollmentsData, refetch: refetchEnrollments } =
-    useList<IEnrollment>({
+    useList<any>({
       resource: "enrollments",
       filters: course
         ? [
@@ -105,10 +145,25 @@ export default function CourseShow() {
     resource: "users",
   });
 
+  // Fetch modules for this course
+  const { data: modulesData } = useList({
+    resource: "modules",
+    filters: course
+      ? [
+          {
+            field: "courseId",
+            operator: "eq",
+            value: course.id,
+          },
+        ]
+      : [],
+  });
+
   const enrollments = enrollmentsData?.data || [];
   const lessons = lessonsData?.data || [];
   const quizes = quizesData?.data || [];
   const users = usersData?.data || [];
+  const modules = modulesData?.data || [];
 
   // Create enrollment mutation
   const { mutate: createEnrollment } = useCreate();
@@ -119,13 +174,18 @@ export default function CourseShow() {
   // Delete enrollment mutation
   const { mutate: deleteEnrollment } = useDelete();
 
+  // Module mutations
+  const { mutate: createModule } = useCreate();
+  const { mutate: updateModule } = useUpdate();
+  const { mutate: deleteModule } = useDelete();
+
   const handleCreateEnrollment = () => {
     setEditingEnrollment(null);
     form.resetFields();
     setIsEnrollmentModalVisible(true);
   };
 
-  const handleEditEnrollment = (enrollment: IEnrollment) => {
+  const handleEditEnrollment = (enrollment: any) => {
     setEditingEnrollment(enrollment);
     form.setFieldsValue({
       userId: enrollment.userId,
@@ -143,11 +203,19 @@ export default function CourseShow() {
       },
       {
         onSuccess: () => {
-          message.success("Enrollment deleted successfully");
+          open?.({
+            type: "success",
+            message: "Success",
+            description: "Enrollment deleted successfully",
+          });
           refetchEnrollments();
         },
         onError: () => {
-          message.error("Failed to delete enrollment");
+          open?.({
+            type: "error",
+            message: "Error",
+            description: "Failed to delete enrollment",
+          });
         },
       }
     );
@@ -173,12 +241,20 @@ export default function CourseShow() {
           },
           {
             onSuccess: () => {
-              message.success("Enrollment updated successfully");
+              open?.({
+                type: "success",
+                message: "Success",
+                description: "Enrollment updated successfully",
+              });
               setIsEnrollmentModalVisible(false);
               refetchEnrollments();
             },
             onError: () => {
-              message.error("Failed to update enrollment");
+              open?.({
+                type: "error",
+                message: "Error",
+                description: "Failed to update enrollment",
+              });
             },
           }
         );
@@ -190,12 +266,20 @@ export default function CourseShow() {
           },
           {
             onSuccess: () => {
-              message.success("Enrollment created successfully");
+              open?.({
+                type: "success",
+                message: "Success",
+                description: "Enrollment created successfully",
+              });
               setIsEnrollmentModalVisible(false);
               refetchEnrollments();
             },
             onError: () => {
-              message.error("Failed to create enrollment");
+              open?.({
+                type: "error",
+                message: "Error",
+                description: "Failed to create enrollment",
+              });
             },
           }
         );
@@ -223,6 +307,203 @@ export default function CourseShow() {
     enrollments.length > 0
       ? (completedEnrollments / enrollments.length) * 100
       : 0;
+
+  // Module handling functions
+  const handleModuleSubmit = async () => {
+    try {
+      const values = await moduleForm.validateFields();
+      
+      // Generate slug from title
+      const slug = values.title
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim('-');
+      
+      const moduleData = {
+        ...values,
+        courseId: course?.id,
+        userId: course?.userId, // Use course owner as module creator
+        slug: slug,
+      };
+
+      if (editingModule) {
+        updateModule(
+          {
+            resource: "modules",
+            id: editingModule.id,
+            values: moduleData,
+          },
+          {
+            onSuccess: () => {
+              open?.({
+                type: "success",
+                message: "Success",
+                description: "Module updated successfully",
+              });
+              setModuleModalVisible(false);
+              setEditingModule(null);
+              moduleForm.resetFields();
+              // Refetch modules
+              window.location.reload();
+            },
+            onError: () => {
+              open?.({
+                type: "error",
+                message: "Error",
+                description: "Failed to update module",
+              });
+            },
+          }
+        );
+      } else {
+        createModule(
+          {
+            resource: "modules",
+            values: moduleData,
+          },
+          {
+            onSuccess: () => {
+              open?.({
+                type: "success",
+                message: "Success",
+                description: "Module created successfully",
+              });
+              setModuleModalVisible(false);
+              moduleForm.resetFields();
+              // Refetch modules
+              window.location.reload();
+            },
+            onError: () => {
+              open?.({
+                type: "error",
+                message: "Error",
+                description: "Failed to create module",
+              });
+            },
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Validation failed:", error);
+    }
+  };
+
+  const handleEditModule = (module: any) => {
+    setEditingModule(module);
+    moduleForm.setFieldsValue(module);
+    setModuleModalVisible(true);
+  };
+
+  const handleDeleteModule = (moduleId: string) => {
+    deleteModule(
+      {
+        resource: "modules",
+        id: moduleId,
+      },
+      {
+        onSuccess: () => {
+          open?.({
+            type: "success",
+            message: "Success",
+            description: "Module deleted successfully",
+          });
+          // Refetch modules
+          window.location.reload();
+        },
+        onError: () => {
+          open?.({
+            type: "error",
+            message: "Error",
+            description: "Failed to delete module",
+          });
+        },
+      }
+    );
+  };
+
+  // Module columns
+  const moduleColumns = [
+    {
+      title: "Order",
+      dataIndex: "moduleOrder",
+      key: "moduleOrder",
+      width: 80,
+      render: (value: number) => <Tag color="blue">{value}</Tag>,
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      ellipsis: true,
+    },
+    {
+      title: "Duration (hrs)",
+      dataIndex: "estimatedDurationHours",
+      key: "estimatedDurationHours",
+      width: 120,
+      render: (value: number) => value ? `${value}h` : '-',
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 100,
+      render: (value: string) => (
+        <Tag color={
+          value === 'published' ? 'green' : 
+          value === 'draft' ? 'orange' : 
+          value === 'archived' ? 'gray' : 'default'
+        }>
+          {value?.charAt(0).toUpperCase() + value?.slice(1)}
+        </Tag>
+      ),
+    },
+    {
+      title: "Locked",
+      dataIndex: "isLocked",
+      key: "isLocked",
+      width: 80,
+      render: (value: boolean) => (
+        <Tag color={value ? 'red' : 'green'}>
+          {value ? 'Locked' : 'Unlocked'}
+        </Tag>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 200,
+      render: (_: any, record: any) => (
+        <Space>
+          <Button 
+            type="primary"
+            size="small" 
+            onClick={() => router.push(`/dashboard/modules/${record.id}`)}
+          >
+            Manage
+          </Button>
+          <Button 
+            icon={<EditOutlined />} 
+            size="small"
+            onClick={() => handleEditModule(record)}
+          />
+          <Button 
+            icon={<DeleteOutlined />} 
+            size="small" 
+            danger
+            onClick={() => handleDeleteModule(record.id)}
+          />
+        </Space>
+      ),
+    },
+  ];
 
   const enrollmentColumns = [
     {
@@ -254,7 +535,7 @@ export default function CourseShow() {
     {
       title: "Status",
       key: "status",
-      render: (record: IEnrollment) => {
+      render: (record: any) => {
         const enrollmentDate = new Date(record.enrollmentDate);
         const completionDate = new Date(record.completionDate);
         const now = new Date();
@@ -276,7 +557,7 @@ export default function CourseShow() {
     {
       title: "Actions",
       key: "actions",
-      render: (record: IEnrollment) => (
+      render: (record: any) => (
         <Space>
           <Button
             type="text"
@@ -300,7 +581,13 @@ export default function CourseShow() {
 
   return (
     <>
-      <PageBreadCrumbs items={["Dashboard", "LMS", "Course Details"]} />
+      <EnhancedBreadcrumb
+        items={[
+          { title: "LMS" },
+          { title: "Course Details" }
+        ]}
+        backButtonText="Back to Dashboard"
+      />
 
       <div
         style={{ padding: "24px", background: "#f5f5f5", minHeight: "100vh" }}
@@ -354,12 +641,9 @@ export default function CourseShow() {
               title="Course Information"
               style={{ borderRadius: 12, marginBottom: 16 }}
             >
-              <Row gutter={[16, 16]}>
-                <Col xs={24} md={12}>
-                  <Title level={4}>{course?.title}</Title>
-                  <Text type="secondary">{course?.description}</Text>
-                </Col>
-                <Col xs={24} md={12}>
+              <Row gutter={[16, 16]} align="top">
+                {/* Course Image - First */}
+                <Col xs={24} md={8}>
                   {course?.imageUrl && (
                     <img
                       src={`${BASE_URL_UPLOADS_MEDIA}/${course.imageUrl}`}
@@ -372,6 +656,11 @@ export default function CourseShow() {
                       }}
                     />
                   )}
+                </Col>
+                {/* Course Details */}
+                <Col xs={24} md={16}>
+                  <Title level={4}>{course?.title}</Title>
+                  <CourseDescription description={course?.description || ""} />
                 </Col>
               </Row>
             </Card>
@@ -437,6 +726,36 @@ export default function CourseShow() {
                 style={{ width: "100%" }}
                 size="middle"
               >
+                <Card
+                  hoverable
+                  onClick={() => {/* Navigate to modules */}
+                  }
+                  style={{ borderRadius: 8, border: "2px solid #52c41a20" }}
+                >
+                  <Row align="middle" gutter={12}>
+                    <Col>
+                      <BookOutlined
+                        style={{ fontSize: 24, color: "#52c41a" }}
+                      />
+                    </Col>
+                    <Col flex={1}>
+                      <Text strong style={{ color: "#52c41a" }}>
+                        Modules
+                      </Text>
+                      <br />
+                      <Text type="secondary">
+                        {modules.length} modules available
+                      </Text>
+                    </Col>
+                    <Col>
+                      <Badge
+                        count={modules.length}
+                        style={{ backgroundColor: "#52c41a" }}
+                      />
+                    </Col>
+                  </Row>
+                </Card>
+
                 <Card
                   hoverable
                   onClick={() =>
@@ -528,6 +847,34 @@ export default function CourseShow() {
           </Col>
         </Row>
 
+        {/* Modules Management */}
+        <Card
+          title={
+            <span>
+              <BookOutlined style={{ marginRight: 8, color: "#1890ff" }} />
+              Course Modules ({modules.length})
+            </span>
+          }
+          style={{ marginTop: 16, borderRadius: 12 }}
+          extra={
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setModuleModalVisible(true)}
+            >
+              Add Module
+            </Button>
+          }
+        >
+          <Table
+            columns={moduleColumns}
+            dataSource={modules}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+            size="middle"
+          />
+        </Card>
+
         {/* Enrollments Management */}
         <Card
           title={
@@ -598,6 +945,128 @@ export default function CourseShow() {
               ]}
             >
               <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Module Modal */}
+        <Modal
+          title={editingModule ? `Edit Module: ${editingModule.title}` : "Add New Module"}
+          open={moduleModalVisible}
+          onCancel={() => {
+            setModuleModalVisible(false);
+            setEditingModule(null);
+            moduleForm.resetFields();
+          }}
+          footer={null}
+          width={800}
+        >
+          <Form
+            form={moduleForm}
+            layout="vertical"
+            onFinish={handleModuleSubmit}
+          >
+            <Form.Item
+              name="title"
+              label="Module Title"
+              rules={[{ required: true, message: "Please enter module title" }]}
+            >
+              <Input size="large" />
+            </Form.Item>
+
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[{ required: true, message: "Please enter module description" }]}
+            >
+              <Input.TextArea rows={3} />
+            </Form.Item>
+
+            <Form.Item
+              name="learningObjectives"
+              label="Learning Objectives"
+            >
+              <Input.TextArea rows={3} placeholder="Enter learning objectives..." />
+            </Form.Item>
+
+            <Form.Item
+              name="prerequisites"
+              label="Prerequisites"
+            >
+              <Input.TextArea rows={3} placeholder="Enter prerequisites..." />
+            </Form.Item>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="moduleOrder"
+                  label="Module Order"
+                  rules={[{ required: true, message: "Please enter module order" }]}
+                  initialValue={1}
+                >
+                  <InputNumber min={1} style={{ width: '100%' }} size="large" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="estimatedDurationHours"
+                  label="Duration (hours)"
+                >
+                  <InputNumber min={1} style={{ width: '100%' }} size="large" />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="status"
+                  label="Status"
+                  rules={[{ required: true, message: "Please select status" }]}
+                  initialValue="draft"
+                >
+                  <Select size="large">
+                    <Select.Option value="draft">Draft</Select.Option>
+                    <Select.Option value="published">Published</Select.Option>
+                    <Select.Option value="archived">Archived</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="isLocked"
+                  label="Lock Module"
+                  valuePropName="checked"
+                  initialValue={false}
+                >
+                  <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item
+              name="unlockDate"
+              label="Unlock Date (if locked)"
+            >
+              <DatePicker style={{ width: '100%' }} />
+            </Form.Item>
+
+            <Form.Item>
+              <Space>
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                >
+                  {editingModule ? "Update Module" : "Create Module"}
+                </Button>
+                <Button onClick={() => {
+                  setModuleModalVisible(false);
+                  setEditingModule(null);
+                  moduleForm.resetFields();
+                }}>
+                  Cancel
+                </Button>
+              </Space>
             </Form.Item>
           </Form>
         </Modal>

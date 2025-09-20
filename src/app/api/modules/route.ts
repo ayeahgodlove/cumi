@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
     const validationErrors = await validate(dto);
     const userId = session.user.id;
 
+    console.log("results: ", validationErrors, body, dto.toData());
     if (validationErrors.length > 0) {
       return NextResponse.json(
         {

@@ -12,7 +12,7 @@ export default function BlogPostCreate() {
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists", "Create"]} />
       <Create saveButtonProps={saveButtonProps}>
-        <Form {...formProps} layout="vertical" form={formProps.form}>
+        <Form {...formProps} layout="vertical" form={formProps.form} size="large">
           <Form.Item
             label={"Title"}
             name={["title"]}

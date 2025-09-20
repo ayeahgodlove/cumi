@@ -40,6 +40,10 @@ export class AssignmentUseCase {
     return this.assignmentRepository.findByModuleId(moduleId);
   }
 
+  async getAssignmentsByLessonId(lessonId: string): Promise<InstanceType<typeof Assignment>[]> {
+    return this.assignmentRepository.findByLessonId(lessonId);
+  }
+
   async updateAssignment(assignment: IAssignment): Promise<InstanceType<typeof Assignment>> {
     return this.assignmentRepository.update(assignment);
   }

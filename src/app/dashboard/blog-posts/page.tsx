@@ -1,6 +1,6 @@
 "use client";
 
-import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DateField,
@@ -35,7 +35,13 @@ export default function BlogPostList() {
 
   return (
     <>
-      <PageBreadCrumbs items={["Blog Posts", "Lists"]} />
+      <EnhancedBreadcrumb
+        items={[
+          { title: "Blog Posts" },
+          { title: "Lists" }
+        ]}
+        backButtonText="Back to Dashboard"
+      />
       <List>
         <Table 
           {...tableProps} 

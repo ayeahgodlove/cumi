@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { PostInteractionUseCase } from "@domain/usecases/post-interaction.usecase";
 import { PostInteractionRepository } from "@data/repositories/impl/post-interaction.repository";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const { userId } = params;
 
     if (!userId) {
       return NextResponse.json(

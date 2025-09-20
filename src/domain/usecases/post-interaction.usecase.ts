@@ -10,8 +10,8 @@ export class PostInteractionUseCase {
 
     if (existingInteraction) {
       if (existingInteraction.action === action) {
-        // User is trying to perform the same action, remove the interaction
-        await this.postInteractionRepository.delete(existingInteraction.id);
+        // User is trying to perform the same action, prevent duplicate
+        throw new Error(`You have already ${action}d this post`);
       } else {
         // User is changing their interaction, update it
         await this.postInteractionRepository.update(existingInteraction.id, { action });

@@ -75,7 +75,23 @@ export class ModuleRequestDto {
     this.prerequisites = data.prerequisites;
     this.estimatedDurationHours = data.estimatedDurationHours;
     this.isLocked = data.isLocked;
-    this.unlockDate = data.unlockDate?.toISOString();
+    // Handle unlockDate - it might be a Date object, string, or null
+    if (data.unlockDate) {
+      if (data.unlockDate instanceof Date) {
+        this.unlockDate = data.unlockDate.toISOString();
+      } else if (typeof data.unlockDate === 'string') {
+        this.unlockDate = data.unlockDate;
+      } else {
+        // Try to convert to Date and then to ISO string
+        try {
+          this.unlockDate = new Date(data.unlockDate).toISOString();
+        } catch (e) {
+          this.unlockDate = undefined;
+        }
+      }
+    } else {
+      this.unlockDate = undefined;
+    }
     this.totalLessons = data.totalLessons;
     this.totalQuizzes = data.totalQuizzes;
     this.totalAssignments = data.totalAssignments;

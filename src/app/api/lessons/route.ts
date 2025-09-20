@@ -10,11 +10,26 @@ import { NextRequest, NextResponse } from "next/server";
 const lessonRepository = new LessonRepository();
 const lessonUseCase = new LessonUseCase(lessonRepository);
 
-export async function GET(request: any) {
+export async function GET(request: NextRequest) {
   try {
-    const lessons = await lessonUseCase.getAll();
+    const { searchParams } = new URL(request.url);
+    const moduleId = searchParams.get('moduleId');
+    const courseId = searchParams.get('courseId');
 
-    return NextResponse.json(lessons);
+    let lessons;
+    if (moduleId) {
+      lessons = await lessonUseCase.getLessonsByModuleId(moduleId);
+    } else if (courseId) {
+      lessons = await lessonUseCase.getLessonsByCourseId(courseId);
+    } else {
+      lessons = await lessonUseCase.getAll();
+    }
+
+    return NextResponse.json({
+      data: lessons,
+      message: "Lessons retrieved successfully",
+      success: true,
+    });
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -75,6 +90,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
+    console.log("error:", error);
     return NextResponse.json(
       {
         data: null,

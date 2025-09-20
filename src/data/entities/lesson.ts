@@ -6,6 +6,8 @@ const Lesson = (sequelize: Sequelize, DataTypes: any) => {
   const LessonModel = sequelize.define(
     "Lesson",
     {
+      // Database insertion order: id, title, slug, description, content, imageUrl, userId, courseId, moduleId, authorName, difficulty, prerequisites, objectives, keywords, reviews, language, rating, created_at, updated_at, duration_minutes, lesson_order, status, lesson_type, video_url, audio_url, download_materials, is_free_preview, requires_completion, estimated_completion_time, practical_examples, resources_needed
+      
       id: {
         type: DataTypes.STRING,
         primaryKey: true,
@@ -20,16 +22,16 @@ const Lesson = (sequelize: Sequelize, DataTypes: any) => {
         allowNull: false,
         unique: true,
       },
-      url: {
-        type: DataTypes.STRING,
+      description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+      content: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       imageUrl: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      description: {
-        type: DataTypes.TEXT,
         allowNull: false,
       },
       userId: {
@@ -48,33 +50,44 @@ const Lesson = (sequelize: Sequelize, DataTypes: any) => {
           key: "id",
         },
       },
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+      moduleId: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+        references: {
+          model: "modules",
+          key: "id",
+        },
+        comment: "Module this lesson belongs to",
       },
-      duration: {
-        type: DataTypes.INTEGER,
+      authorName: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       difficulty: {
         type: DataTypes.STRING(50),
         allowNull: false,
       },
+      // Stored as JSON string in LONGTEXT
       prerequisites: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.TEXT('long'),
         allowNull: false,
+        comment: 'JSON string array',
       },
       objectives: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.TEXT('long'),
         allowNull: false,
+        comment: 'JSON string array',
       },
       keywords: {
-        type: DataTypes.ARRAY(DataTypes.STRING),
+        type: DataTypes.TEXT('long'),
         allowNull: false,
+        comment: 'JSON string array',
       },
-      author: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      // Stored as JSON string in LONGTEXT to match DB
+      reviews: {
+        type: DataTypes.TEXT('long'),
+        allowNull: true,
+        comment: 'JSON string array of reviews',
       },
       language: {
         type: DataTypes.STRING(50),
@@ -94,12 +107,6 @@ const Lesson = (sequelize: Sequelize, DataTypes: any) => {
         defaultValue: DataTypes.NOW,
         field: "updated_at",
       },
-      // New fields from database schema
-      // authorName: {
-      //   type: DataTypes.STRING(255),
-      //   allowNull: false,
-      //   field: 'author_name',
-      // },
       durationMinutes: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -108,35 +115,38 @@ const Lesson = (sequelize: Sequelize, DataTypes: any) => {
       },
       lessonOrder: {
         type: DataTypes.INTEGER,
+        allowNull: false,
         defaultValue: 1,
         field: 'lesson_order',
         comment: 'Order of lesson within course',
       },
       status: {
         type: DataTypes.ENUM('draft', 'published', 'archived'),
+        allowNull: false,
         defaultValue: 'draft',
         comment: 'Lesson status',
       },
       lessonType: {
         type: DataTypes.ENUM('video', 'text', 'audio', 'practical', 'discussion', 'assignment'),
+        allowNull: false,
         defaultValue: 'text',
         field: 'lesson_type',
         comment: 'Type of lesson',
       },
       videoUrl: {
-        type: DataTypes.STRING(500),
+        type: DataTypes.STRING,
         allowNull: true,
         field: 'video_url',
         comment: 'Video lesson URL',
       },
       audioUrl: {
-        type: DataTypes.STRING(500),
+        type: DataTypes.STRING,
         allowNull: true,
         field: 'audio_url',
         comment: 'Audio lesson URL (important for low bandwidth)',
       },
       downloadMaterials: {
-        type: DataTypes.STRING(500),
+        type: DataTypes.STRING,
         allowNull: true,
         field: 'download_materials',
         comment: 'Downloadable materials URL',

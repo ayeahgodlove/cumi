@@ -6,6 +6,11 @@ export const postInteractionAPI = createApi({
   reducerPath: "postInteractionAPI",
   baseQuery: fetchBaseQuery({
     baseUrl: `${BASE_URL}`,
+    credentials: 'same-origin',
+    prepareHeaders: (headers, { getState }) => {
+      headers.set('Content-Type', 'application/json');
+      return headers;
+    },
   }),
   tagTypes: ["PostInteraction"],
   endpoints: (build) => ({
@@ -29,6 +34,13 @@ export const postInteractionAPI = createApi({
     }),
     getUserPostInteractions: build.query<any[], string>({
       query: (userId) => `/posts/interactions/user/${userId}`,
+      transformResponse: (response: any) => {
+        // Handle the API response structure
+        if (response && response.success && response.data) {
+          return response.data;
+        }
+        return response || [];
+      },
       providesTags: (result, error, userId) => [
         { type: "PostInteraction", id: userId },
         { type: "PostInteraction", id: "LIST" },

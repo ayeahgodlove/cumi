@@ -16,11 +16,11 @@ import {
   Input,
   InputNumber,
   Switch,
-  message,
   Spin,
-  Divider,
   Descriptions,
-  Breadcrumb,
+  Select,
+  DatePicker,
+  Popconfirm,
 } from "antd";
 import {
   ArrowLeftOutlined,
@@ -37,6 +37,16 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@refinedev/core";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import CourseHeader from "@components/course/course-header.component";
+import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
+import { 
+  useGetModulesByCourseQuery,
+  useCreateModuleMutation,
+  useUpdateModuleMutation,
+  useDeleteModuleMutation 
+} from "@store/api/module_api";
+import { useGetSingleCourseQuery } from "@store/api/course_api";
+import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
@@ -50,248 +60,314 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { open } = useNotification();
-  const [course, setCourse] = useState<any>(null);
-  const [modules, setModules] = useState<any[]>([]);
-  const [lessons, setLessons] = useState<any[]>([]);
-  const [assignments, setAssignments] = useState<any[]>([]);
-  const [quizes, setQuizes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [moduleModalVisible, setModuleModalVisible] = useState(false);
   const [editingModule, setEditingModule] = useState<any>(null);
   const [moduleForm] = Form.useForm();
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [viewModalData, setViewModalData] = useState<any>(null);
 
-  // Fetch course details and related data
+  // RTK Query hooks
+  const { data: course, isLoading: courseLoading, error: courseError } = useGetSingleCourseQuery(params.id);
+  const { data: modules = [], isLoading: modulesLoading, refetch: refetchModules } = useGetModulesByCourseQuery(params.id);
+  const [createModule, { isLoading: createLoading }] = useCreateModuleMutation();
+  const [updateModule, { isLoading: updateLoading }] = useUpdateModuleMutation();
+  const [deleteModule, { isLoading: deleteLoading }] = useDeleteModuleMutation();
+
+
+  // Handle course error
   useEffect(() => {
-    const fetchCourseData = async () => {
-      try {
-        // Fetch course details
-        const courseResponse = await fetch(`/api/courses/${params.id}`);
-        const courseData = await courseResponse.json();
-        
-        if (!courseResponse.ok) {
-          throw new Error(courseData.message || 'Failed to fetch course');
-        }
-        
-        setCourse(courseData);
-
-        // Fetch modules for this course
-        const modulesResponse = await fetch('/api/modules');
-        const modulesData = await modulesResponse.json();
-        
-        if (modulesResponse.ok) {
-          const courseModules = modulesData.filter((module: any) => module.courseId === params.id);
-          setModules(courseModules);
-        }
-
-        // Fetch lessons for this course
-        const lessonsResponse = await fetch('/api/lessons');
-        const lessonsData = await lessonsResponse.json();
-        
-        if (lessonsResponse.ok) {
-          const courseLessons = lessonsData.filter((lesson: any) => lesson.courseId === params.id);
-          setLessons(courseLessons);
-        }
-
-        // Fetch assignments for this course
-        const assignmentsResponse = await fetch('/api/assignments');
-        const assignmentsData = await assignmentsResponse.json();
-        
-        if (assignmentsResponse.ok) {
-          const courseAssignments = assignmentsData.filter((assignment: any) => assignment.courseId === params.id);
-          setAssignments(courseAssignments);
-        }
-
-        // Fetch quizes for this course
-        const quizesResponse = await fetch('/api/quizes');
-        const quizesData = await quizesResponse.json();
-        
-        if (quizesResponse.ok) {
-          const courseQuizes = quizesData.filter((quiz: any) => quiz.courseId === params.id);
-          setQuizes(courseQuizes);
-        }
-
-      } catch (error: any) {
+    if (courseError) {
         open?.({
           type: "error",
           message: "Error",
-          description: `Failed to fetch course data: ${error.message}`,
-        });
-        router.push('/dashboard/creator');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (params.id) {
-      fetchCourseData();
+        description: "Failed to fetch course data",
+      });
+      router.push("/dashboard/creator");
     }
-  }, [params.id, router, open]);
+  }, [courseError, open, router]);
 
   const handleModuleSubmit = async (values: any) => {
     try {
+      // Generate slug from title
+      const slug = values.title
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim("-");
+
+      // Handle unlockDate properly - convert dayjs to ISO string
+      let unlockDate = null;
+      if (values.unlockDate) {
+        if (dayjs.isDayjs(values.unlockDate)) {
+          unlockDate = values.unlockDate.toISOString();
+        } else if (values.unlockDate instanceof Date) {
+          unlockDate = values.unlockDate.toISOString();
+        } else if (typeof values.unlockDate === 'string') {
+          unlockDate = values.unlockDate;
+        } else {
+          try {
+            unlockDate = new Date(values.unlockDate).toISOString();
+          } catch (e) {
+            unlockDate = null;
+          }
+        }
+      }
+
       const moduleData = {
-        ...values,
+        title: values.title,
+        slug: slug,
+        description: values.description || "",
         courseId: params.id,
+        userId: session?.user?.id || "",
+        moduleOrder: values.moduleOrder || 1,
+        status: values.status || "draft",
+        learningObjectives: values.learningObjectives || "",
+        prerequisites: values.prerequisites || "",
+        estimatedDurationHours: values.estimatedDurationHours || null,
+        isLocked: values.isLocked || false,
+        unlockDate: unlockDate,
+        totalLessons: 0,
+        totalQuizzes: 0,
+        totalAssignments: 0,
       };
+
+      // Validate required data
+      if (!session?.user?.id) {
+        throw new Error("User session not found. Please log in again.");
+      }
+
+      if (!params.id) {
+        throw new Error("Course ID is required.");
+      }
 
       if (editingModule) {
         // Update module
-        const response = await fetch(`/api/modules/${editingModule.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(moduleData),
+        await updateModule({ id: editingModule.id, module: moduleData }).unwrap();
+        open?.({
+          type: "success",
+          message: "Success",
+          description: "Module updated successfully!",
         });
-
-        const result = await response.json();
-        
-        if (response.ok) {
-          message.success("Module updated successfully!");
-          // Update the modules list
-          setModules(modules.map(m => m.id === editingModule.id ? result.data : m));
-        } else {
-          throw new Error(result.message || 'Failed to update module');
-        }
       } else {
         // Create module
-        const response = await fetch('/api/modules', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(moduleData),
+        await createModule(moduleData).unwrap();
+        open?.({
+          type: "success",
+          message: "Success",
+          description: "Module created successfully!",
         });
-
-        const result = await response.json();
-        
-        if (response.ok) {
-          message.success("Module created successfully!");
-          // Add the new module to the list
-          setModules([...modules, result.data]);
-        } else {
-          throw new Error(result.message || 'Failed to create module');
-        }
       }
       
       moduleForm.resetFields();
       setEditingModule(null);
       setModuleModalVisible(false);
     } catch (error: any) {
-      message.error("Failed to save module: " + error.message);
+      // Extract error message from RTK Query error
+      let errorMessage = "Unknown error occurred";
+      if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.data?.validationErrors?.length > 0) {
+        errorMessage = error.data.validationErrors.map((err: any) => err.message).join(", ");
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.status) {
+        errorMessage = `Server error (${error.status})`;
+      }
+
+      open?.({
+        type: "error",
+        message: "Error",
+        description: `Failed to save module: ${errorMessage}`,
+      });
     }
+  };
+
+  const handleViewModule = (module: any) => {
+    setViewModalData(module);
+    setViewModalVisible(true);
   };
 
   const handleEditModule = (module: any) => {
     setEditingModule(module);
-    moduleForm.setFieldsValue(module);
+    moduleForm.setFieldsValue({
+      ...module,
+      unlockDate: module.unlockDate ? dayjs(module.unlockDate) : null,
+    });
     setModuleModalVisible(true);
   };
 
-  const handleDeleteModule = (moduleId: string) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this module?",
-      content: "This action cannot be undone.",
-      onOk: async () => {
-        try {
-          const response = await fetch(`/api/modules/${moduleId}`, {
-            method: 'DELETE',
-          });
-
-          const result = await response.json();
-          
-          if (response.ok) {
-            message.success("Module deleted successfully!");
-            // Remove the module from the list
-            setModules(modules.filter(m => m.id !== moduleId));
-          } else {
-            throw new Error(result.message || 'Failed to delete module');
-          }
+  const handleDeleteModule = async (moduleId: string) => {
+    try {
+      await deleteModule(moduleId).unwrap();
+      open?.({
+        type: "success",
+        message: "Success",
+        description: "Module deleted successfully!",
+      });
         } catch (error: any) {
-          message.error("Failed to delete module: " + error.message);
-        }
-      },
-    });
+      open?.({
+        type: "error",
+        message: "Error",
+        description: `Failed to delete module: ${error.message}`,
+      });
+    }
   };
 
   const moduleColumns = [
     {
-      title: "Order",
-      dataIndex: "order",
-      key: "order",
-      width: 80,
-      render: (value: number) => <Tag color="blue">{value}</Tag>,
+      title: "#",
+      dataIndex: "moduleOrder",
+      key: "moduleOrder",
+      width: 60,
+      render: (value: number) => (
+        <Tag color="blue" style={{ fontWeight: 'bold' }}>
+          {value || 1}
+        </Tag>
+      ),
+      sorter: (a: any, b: any) => (a.moduleOrder || 0) - (b.moduleOrder || 0),
     },
     {
-      title: "Title",
+      title: "Module Title",
       dataIndex: "title",
       key: "title",
+      render: (value: string, record: any) => (
+        <div>
+          <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
+            {value || 'Untitled Module'}
+          </div>
+          <div style={{ fontSize: '12px', color: '#666' }}>
+            ID: {record.id?.substring(0, 8)}...
+          </div>
+        </div>
+      ),
     },
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
       ellipsis: true,
+      render: (value: string) => (
+        <div style={{ maxWidth: 200 }}>
+          {value ? (
+            <Text ellipsis={{ tooltip: value }}>
+              {value}
+            </Text>
+          ) : (
+            <Text type="secondary" italic>No description</Text>
+          )}
+        </div>
+      ),
     },
     {
-      title: "Duration (min)",
-      dataIndex: "duration",
-      key: "duration",
-      width: 120,
-    },
-    {
-      title: "Lessons",
-      key: "lessons",
-      width: 80,
-      render: (_, record: any) => {
-        const moduleLessons = lessons.filter((lesson: any) => lesson.moduleId === record.id);
-        return <Tag color="green">{moduleLessons.length}</Tag>;
-      },
-    },
-    {
-      title: "Assignments",
-      key: "assignments",
+      title: "Duration",
+      dataIndex: "estimatedDurationHours",
+      key: "estimatedDurationHours",
       width: 100,
-      render: (_, record: any) => {
-        const moduleAssignments = assignments.filter((assignment: any) => assignment.moduleId === record.id);
-        return <Tag color="orange">{moduleAssignments.length}</Tag>;
-      },
+      render: (value: number) => (
+        <div style={{ textAlign: 'center' }}>
+          {value ? (
+            <Tag color="blue">
+              <ClockCircleOutlined style={{ marginRight: 4 }} />
+              {value}h
+            </Tag>
+          ) : (
+            <Text type="secondary">-</Text>
+          )}
+        </div>
+      ),
     },
     {
-      title: "Quizzes",
-      key: "quizzes",
-      width: 80,
-      render: (_, record: any) => {
-        const moduleQuizes = quizes.filter((quiz: any) => quiz.moduleId === record.id);
-        return <Tag color="purple">{moduleQuizes.length}</Tag>;
-      },
+      title: "Content Stats",
+      key: "contentStats",
+      width: 150,
+      render: (_: any, record: any) => (
+        <Space size="small">
+          <Tag color="green" icon={<BookOutlined />}>
+            {record.totalLessons || 0}
+          </Tag>
+          <Tag color="orange">
+            {record.totalAssignments || 0}
+          </Tag>
+          <Tag color="purple">
+            {record.totalQuizzes || 0}
+          </Tag>
+        </Space>
+      ),
     },
     {
       title: "Status",
-      dataIndex: "isPublished",
-      key: "isPublished",
+      dataIndex: "status",
+      key: "status",
       width: 100,
-      render: (value: boolean) => (
-        <Tag color={value ? "green" : "orange"}>
-          {value ? "Published" : "Draft"}
-        </Tag>
+      render: (value: string) => {
+        const statusConfig = {
+          published: { color: 'green', text: 'Published' },
+          draft: { color: 'orange', text: 'Draft' },
+          archived: { color: 'gray', text: 'Archived' }
+        };
+        const config = statusConfig[value as keyof typeof statusConfig] || { color: 'default', text: value };
+        
+        return (
+          <Tag color={config.color}>
+            {config.text}
+          </Tag>
+        );
+      },
+      filters: [
+        { text: 'Published', value: 'published' },
+        { text: 'Draft', value: 'draft' },
+        { text: 'Archived', value: 'archived' },
+      ],
+      onFilter: (value: any, record: any) => record.status === value,
+    },
+    {
+      title: "Access",
+      dataIndex: "isLocked",
+      key: "isLocked",
+      width: 80,
+      render: (value: boolean, record: any) => (
+        <div>
+          <Tag color={value ? "red" : "green"}>
+            {value ? "Locked" : "Open"}
+          </Tag>
+          {record.unlockDate && (
+            <div style={{ fontSize: '10px', color: '#666', marginTop: 2 }}>
+              Until: {new Date(record.unlockDate).toLocaleDateString()}
+            </div>
+          )}
+        </div>
       ),
+    },
+    {
+      title: "Created",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      width: 100,
+      render: (value: string) => (
+        <Text style={{ fontSize: '12px' }}>
+          {value ? new Date(value).toLocaleDateString() : '-'}
+        </Text>
+      ),
+      sorter: (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
       title: "Actions",
       key: "actions",
       width: 200,
-      render: (_, record: any) => (
+      render: (_: any, record: any) => (
         <Space>
           <Button 
             icon={<EyeOutlined />} 
             size="small" 
-            onClick={() => {/* View module */}}
+            onClick={() => handleViewModule(record)}
+            title="View Module"
           />
           <Button 
             icon={<EditOutlined />} 
             size="small" 
             onClick={() => handleEditModule(record)}
+            title="Edit Module"
           />
           <Button 
             type="primary"
@@ -301,25 +377,36 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
           >
             Manage
           </Button>
+          <Popconfirm
+            title="Delete Module"
+            description="Are you sure you want to delete this module?"
+            onConfirm={() => handleDeleteModule(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
           <Button 
             icon={<DeleteOutlined />} 
             size="small" 
             danger
-            onClick={() => handleDeleteModule(record.id)}
+              loading={deleteLoading}
+              title="Delete Module"
           />
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
-  if (loading) {
+  if (courseLoading) {
     return (
-      <div style={{ 
+      <div
+        style={{
         display: "flex", 
         justifyContent: "center", 
         alignItems: "center", 
-        height: "100vh" 
-      }}>
+          height: "100vh",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -327,12 +414,14 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
   if (!course) {
     return (
-      <div style={{ 
+      <div
+        style={{
         display: "flex", 
         justifyContent: "center", 
         alignItems: "center", 
-        height: "100vh" 
-      }}>
+          height: "100vh",
+        }}
+      >
         <Text>Course not found</Text>
       </div>
     );
@@ -340,150 +429,242 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
   // Calculate course stats
   const totalModules = modules.length;
-  const publishedModules = modules.filter(m => m.isPublished).length;
-  const totalLessons = lessons.length;
-  const totalAssignments = assignments.length;
-  const totalQuizzes = quizes.length;
-  const totalDuration = modules.reduce((sum, m) => sum + (m.duration || 0), 0);
+  const publishedModules = modules.filter((m) => m.status === 'published').length;
+  const totalLessons = modules.reduce((sum, m) => sum + (m.totalLessons || 0), 0);
+  const totalAssignments = modules.reduce((sum, m) => sum + (m.totalAssignments || 0), 0);
+  const totalQuizzes = modules.reduce((sum, m) => sum + (m.totalQuizzes || 0), 0);
+  const totalDuration = modules.reduce((sum, m) => sum + (m.estimatedDurationHours || 0), 0);
 
   return (
     <div style={{ padding: "24px" }}>
-      {/* Breadcrumb */}
-      <Breadcrumb style={{ marginBottom: 16 }}>
-        <Breadcrumb.Item>
-          <Button 
-            type="link" 
-            icon={<ArrowLeftOutlined />} 
-            onClick={() => router.push('/dashboard/creator')}
-          >
-            Creator Dashboard
-          </Button>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>Course Management</Breadcrumb.Item>
-        <Breadcrumb.Item>{course.title}</Breadcrumb.Item>
-      </Breadcrumb>
+      {/* Enhanced Breadcrumb */}
+      <EnhancedBreadcrumb
+        items={[
+          { title: "Course Management" },
+          { title: course?.title || "Loading..." }
+        ]}
+      />
+
+      {/* Page Title */}
+      <Title level={2} style={{ marginBottom: 24 }}>
+        Course Details
+      </Title>
 
       {/* Course Header */}
-      <Card style={{ marginBottom: 24 }}>
-        <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} md={16}>
-            <Title level={2} style={{ margin: 0 }}>
-              {course.title}
-            </Title>
-            <Text type="secondary" style={{ fontSize: 16 }}>
-              {course.description}
-            </Text>
-          </Col>
-          <Col xs={24} md={8} style={{ textAlign: 'right' }}>
-            <Space>
-              <Tag color={
-                course.status === 'published' ? 'green' :
-                course.status === 'draft' ? 'orange' :
-                course.status === 'archived' ? 'gray' : 'default'
-              }>
-                {course.status?.toUpperCase()}
-              </Tag>
-              <Tag color="blue">
-                {course.level?.toUpperCase()}
-              </Tag>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
+      <CourseHeader course={course} />
 
       {/* Course Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col span={24}>
+          <Title level={4}>Course Statistics</Title>
+        </Col>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Total Modules"
               value={totalModules}
-              prefix={<BookOutlined style={{ color: '#1890ff' }} />}
+              prefix={
+                <span style={{ color: "#1890ff" }}>
+                  <BookOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Published Modules"
               value={publishedModules}
-              prefix={<BookOutlined style={{ color: '#52c41a' }} />}
+              prefix={
+                <span style={{ color: "#52c41a" }}>
+                  <BookOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Total Lessons"
               value={totalLessons}
-              prefix={<BookOutlined style={{ color: '#722ed1' }} />}
+              prefix={
+                <span style={{ color: "#722ed1" }}>
+                  <BookOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Total Duration"
               value={totalDuration}
               suffix="min"
-              prefix={<ClockCircleOutlined style={{ color: '#fa8c16' }} />}
+              prefix={
+                <span style={{ color: "#fa8c16" }}>
+                  <ClockCircleOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Assignments"
               value={totalAssignments}
-              prefix={<TrophyOutlined style={{ color: '#13c2c2' }} />}
+              prefix={
+                <span style={{ color: "#13c2c2" }}>
+                  <TrophyOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Quizzes"
               value={totalQuizzes}
-              prefix={<TrophyOutlined style={{ color: '#eb2f96' }} />}
+              prefix={
+                <span style={{ color: "#eb2f96" }}>
+                  <TrophyOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Enrolled Students"
               value={course.currentStudents || 0}
-              prefix={<UserOutlined style={{ color: '#52c41a' }} />}
+              prefix={
+                <span style={{ color: "#52c41a" }}>
+                  <UserOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
-        <Col xs={12} sm={6}>
-          <Card>
+        <Col sm={6} md={6} span={24}>
+          <Card
+            size="small"
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              border: "none",
+            }}
+          >
             <Statistic
               title="Max Students"
-              value={course.maxStudents || 'Unlimited'}
-              prefix={<UserOutlined style={{ color: '#fa8c16' }} />}
+              value={course.maxStudents || "Unlimited"}
+              prefix={
+                <span style={{ color: "#fa8c16" }}>
+                  <UserOutlined />
+                </span>
+              }
+              valueStyle={{ fontSize: 20 }}
             />
           </Card>
         </Col>
       </Row>
 
       {/* Course Details */}
-      <Card title="Course Details" style={{ marginBottom: 24 }}>
+      <Card
+        title="Course Details"
+        style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          border: "none",
+          marginBottom: 24,
+        }}
+      >
         <Descriptions bordered column={2}>
-          <Descriptions.Item label="Author">{course.authorName}</Descriptions.Item>
+          <Descriptions.Item label="Author">
+            {course.authorName}
+          </Descriptions.Item>
           <Descriptions.Item label="Price">
             {course.isFree ? (
               <Tag color="green">Free</Tag>
             ) : (
-              `${course.price || 0} ${course.currency || 'XAF'}`
+              `${course.price || 0} ${course.currency || "XAF"}`
             )}
           </Descriptions.Item>
-          <Descriptions.Item label="Language">{course.language}</Descriptions.Item>
-          <Descriptions.Item label="Duration">{course.durationWeeks} weeks</Descriptions.Item>
+          <Descriptions.Item label="Language">
+            {course.language}
+          </Descriptions.Item>
+          <Descriptions.Item label="Duration">
+            {course.durationWeeks} weeks
+          </Descriptions.Item>
           <Descriptions.Item label="Created At">
             {new Date(course.createdAt).toLocaleDateString()}
           </Descriptions.Item>
@@ -495,7 +676,18 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
       {/* Modules Management */}
       <Card
-        title="Course Modules"
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Course Modules</span>
+            {modules.length > 0 && (
+              <div style={{ fontSize: '14px', color: '#666', fontWeight: 'normal' }}>
+                {modules.length} module{modules.length !== 1 ? 's' : ''} • {' '}
+                {modules.filter(m => m.status === 'published').length} published • {' '}
+                {modules.reduce((sum, m) => sum + (m.totalLessons || 0), 0)} lessons total
+              </div>
+            )}
+          </div>
+        }
         extra={
           <Button 
             type="primary" 
@@ -505,19 +697,55 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             Add Module
           </Button>
         }
+        style={{
+          backgroundColor: "white",
+          borderRadius: "12px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          border: "none",
+        }}
       >
+        {modules.length === 0 && !modulesLoading ? (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '40px 20px',
+            color: '#666'
+          }}>
+            <BookOutlined style={{ fontSize: '48px', marginBottom: '16px', color: '#d9d9d9' }} />
+            <div style={{ fontSize: '16px', marginBottom: '8px' }}>
+              No modules found for this course
+            </div>
+            <div style={{ fontSize: '14px', color: '#999' }}>
+              Click "Add Module" to create your first module
+            </div>
+          </div>
+        ) : (
         <Table
           dataSource={modules}
           columns={moduleColumns}
           rowKey="id"
-          pagination={false}
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} modules`,
+            }}
           size="small"
+            loading={modulesLoading}
+            scroll={{ x: 1200 }}
+            rowClassName={(record, index) => 
+              index % 2 === 0 ? 'table-row-light' : 'table-row-dark'
+            }
         />
+        )}
       </Card>
 
       {/* Module Modal */}
       <Modal
-        title={editingModule ? `Edit Module: ${editingModule.title}` : "Add New Module"}
+        title={
+          editingModule
+            ? `Edit Module: ${editingModule.title}`
+            : "Add New Module"
+        }
         open={moduleModalVisible}
         onCancel={() => {
           setModuleModalVisible(false);
@@ -526,7 +754,9 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
         }}
         footer={null}
         width={800}
+        // style={{ backgroundColor: "white" }}
       >
+        <Card style={{ backgroundColor: "white" }}>
         <Form
           form={moduleForm}
           layout="vertical"
@@ -543,72 +773,160 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: "Please enter module description" }]}
+              rules={[
+                { required: true, message: "Please enter module description" },
+              ]}
           >
             <Input.TextArea rows={3} />
+          </Form.Item>
+
+            <Form.Item name="learningObjectives" label="Learning Objectives">
+              <Input.TextArea
+                rows={3}
+                placeholder="Enter learning objectives..."
+              />
+            </Form.Item>
+
+            <Form.Item name="prerequisites" label="Prerequisites">
+              <Input.TextArea rows={3} placeholder="Enter prerequisites..." />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="order"
-                label="Order"
-                rules={[{ required: true, message: "Please enter module order" }]}
-              >
-                <InputNumber min={1} style={{ width: '100%' }} size="large" />
+                  name="moduleOrder"
+                  label="Module Order"
+                  rules={[
+                    { required: true, message: "Please enter module order" },
+                  ]}
+                  initialValue={1}
+                >
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
-                name="duration"
-                label="Duration (minutes)"
-                rules={[{ required: true, message: "Please enter duration" }]}
+                  name="estimatedDurationHours"
+                  label="Duration (hours)"
               >
-                <InputNumber min={1} style={{ width: '100%' }} size="large" />
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
               </Form.Item>
             </Col>
           </Row>
 
+            <Row gutter={16}>
+              <Col span={12}>
           <Form.Item
-            name="content"
-            label="Module Content"
-            rules={[{ required: true, message: "Please enter module content" }]}
-          >
-            <RichTextEditor
-              value={moduleForm.getFieldValue("content")}
-              onChange={(html) => moduleForm.setFieldValue("content", html)}
-              placeholder="Enter module content..."
-              height={200}
-            />
+                  name="status"
+                  label="Status"
+                  rules={[{ required: true, message: "Please select status" }]}
+                  initialValue="draft"
+                >
+                  <Select size="large">
+                    <Select.Option value="draft">Draft</Select.Option>
+                    <Select.Option value="published">Published</Select.Option>
+                    <Select.Option value="archived">Archived</Select.Option>
+                  </Select>
           </Form.Item>
-
+              </Col>
+              <Col span={12}>
           <Form.Item
-            name="isPublished"
-            label="Publish Module"
+                  name="isLocked"
+                  label="Lock Module"
             valuePropName="checked"
             initialValue={false}
           >
             <Switch />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item name="unlockDate" label="Unlock Date (if locked)">
+              <DatePicker style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item>
             <Space>
-              <Button 
-                type="primary" 
-                htmlType="submit"
-              >
+                <Button type="primary" htmlType="submit">
                 {editingModule ? "Update Module" : "Create Module"}
               </Button>
-              <Button onClick={() => {
+                <Button
+                  onClick={() => {
                 setModuleModalVisible(false);
                 setEditingModule(null);
                 moduleForm.resetFields();
-              }}>
+                  }}
+                >
                 Cancel
               </Button>
             </Space>
           </Form.Item>
         </Form>
+        </Card>
+      </Modal>
+
+      {/* View Module Modal */}
+      <Modal
+        title={`Module Details: ${viewModalData?.title}`}
+        open={viewModalVisible}
+        onCancel={() => {
+          setViewModalVisible(false);
+          setViewModalData(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => {
+            setViewModalVisible(false);
+            setViewModalData(null);
+          }}>
+            Close
+          </Button>
+        ]}
+        width={800}
+      >
+        {viewModalData && (
+          <Descriptions bordered column={1}>
+            <Descriptions.Item label="Title">{viewModalData.title}</Descriptions.Item>
+            <Descriptions.Item label="Description" span={2}>
+              {viewModalData.description}
+            </Descriptions.Item>
+            <Descriptions.Item label="Learning Objectives" span={2}>
+              {viewModalData.learningObjectives || 'Not specified'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Prerequisites" span={2}>
+              {viewModalData.prerequisites || 'None'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Module Order">{viewModalData.moduleOrder}</Descriptions.Item>
+            <Descriptions.Item label="Duration">
+              {viewModalData.estimatedDurationHours ? `${viewModalData.estimatedDurationHours} hours` : 'Not specified'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Status">
+              <Tag color={
+                viewModalData.status === 'published' ? 'green' :
+                viewModalData.status === 'draft' ? 'orange' :
+                viewModalData.status === 'archived' ? 'gray' : 'default'
+              }>
+                {viewModalData.status?.charAt(0).toUpperCase() + viewModalData.status?.slice(1)}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Locked">
+              <Tag color={viewModalData.isLocked ? 'red' : 'green'}>
+                {viewModalData.isLocked ? 'Locked' : 'Unlocked'}
+              </Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Unlock Date">
+              {viewModalData.unlockDate ? new Date(viewModalData.unlockDate).toLocaleDateString() : 'N/A'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Total Lessons">{viewModalData.totalLessons || 0}</Descriptions.Item>
+            <Descriptions.Item label="Total Assignments">{viewModalData.totalAssignments || 0}</Descriptions.Item>
+            <Descriptions.Item label="Total Quizzes">{viewModalData.totalQuizzes || 0}</Descriptions.Item>
+            <Descriptions.Item label="Created At">
+              {new Date(viewModalData.createdAt).toLocaleString()}
+            </Descriptions.Item>
+            <Descriptions.Item label="Updated At">
+              {new Date(viewModalData.updatedAt).toLocaleString()}
+            </Descriptions.Item>
+          </Descriptions>
+        )}
       </Modal>
     </div>
   );
