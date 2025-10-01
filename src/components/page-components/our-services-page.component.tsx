@@ -3,11 +3,8 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import { serviceAPI } from "@store/api/service_api";
-import { Spin, Row, Col, Typography, Card, Button, Space } from "antd";
-import Link from "next/link";
+import { Row, Col, Typography, Card } from "antd";
 import "swiper/css";
-import ServiceList from "@components/service/service-list.component";
 import { motion } from "framer-motion";
 import {
   RocketOutlined,
@@ -15,36 +12,15 @@ import {
   ThunderboltOutlined,
   HeartOutlined,
   CheckCircleOutlined,
-  ArrowRightOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "@contexts/translation.context";
 import { AppCTA } from "@components/CTA.component";
+import { ServicesSection } from "@components/services/services-section.component";
 
 const { Title, Paragraph, Text } = Typography;
 
 export default function OurServicesPageComponent() {
   const { t } = useTranslation();
-
-  const {
-    data: services,
-    isLoading: isLoadingService,
-    isFetching: isFetchService,
-  } = serviceAPI.useFetchAllServicesQuery(1);
-
-  if (isLoadingService || isFetchService) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
 
   const features = [
     {
@@ -88,62 +64,6 @@ export default function OurServicesPageComponent() {
         breadcrumbs={[{ label: t("nav.services"), uri: "our_services" }]}
         pageTitle={t("nav.services")}
       />
-
-      {/* Hero Section */}
-      {/* <section
-        className="py-5"
-        style={{
-          background: "linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%)",
-        }}
-      >
-        <div className="container">
-          <Row justify="center" align="middle">
-            <Col xs={24} lg={12}>
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <Title level={1} className="mb-4">
-                  {t("services.transform_vision")}
-                </Title>
-                <Paragraph className="fs-5 text-muted mb-4">
-                  {t("services.transform_description")}
-                </Paragraph>
-                <Space size="large">
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<ArrowRightOutlined />}
-                    href="https://wa.me/237681289411"
-                    target="_blank"
-                  >
-                    {t("services.get_started")}
-                  </Button>
-                  <Button size="large" href="/contact_us">
-                    {t("services.learn_more")}
-                  </Button>
-                </Space>
-              </motion.div>
-            </Col>
-            <Col xs={24} lg={12}>
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-center"
-              >
-                <img
-                  className="w-100 img-fluid rounded-3 shadow-lg"
-                  style={{ maxHeight: 400 }}
-                  src="/img/christopher-gower-m_HRfLhgABo-unsplash.jpg"
-                  alt="Digital Solutions"
-                />
-              </motion.div>
-            </Col>
-          </Row>
-        </div>
-      </section> */}
 
       {/* Features Section */}
       <section className="py-5">
@@ -200,7 +120,7 @@ export default function OurServicesPageComponent() {
       </section>
 
       {/* Services List */}
-      <ServiceList services={services} />
+      <ServicesSection />
       {/* CTA Section */}
       <AppCTA />
       {/* Benefits Section */}

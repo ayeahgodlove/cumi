@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IAssignment } from "@domain/models/assignment.model";
 
 interface IAssignmentSearchParams {
@@ -11,12 +10,7 @@ interface IAssignmentSearchParams {
   limit?: number;
 }
 
-export const assignmentAPI = createApi({
-  reducerPath: "assignmentAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Assignment"],
+export const assignmentAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleAssignment: build.query<IAssignment, string>({
       query: (assignmentId) => `/assignments/${assignmentId}`,
@@ -108,6 +102,7 @@ export const assignmentAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

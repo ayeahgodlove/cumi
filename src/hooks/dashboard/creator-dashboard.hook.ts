@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useFetchAllLessonsQuery } from "@store/api/lesson_api"
@@ -159,7 +160,7 @@ export const useCreatorDashboard = (): CreatorDashboardData => {
 
     // Process data
     const courses = coursesData || [];
-    const posts = postsData?.data || [];
+    const posts = postsData || [];
     const events = eventsData || [];
     const courseEnrollments = courseEnrollmentsData?.data || [];
     const lessons = lessonsData?.data || [];

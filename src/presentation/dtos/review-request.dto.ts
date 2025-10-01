@@ -42,8 +42,8 @@ export class ReviewRequestDto {
   isAnonymous?: boolean;
 
   @IsOptional()
-  @IsEnum(['pending', 'approved', 'rejected'])
-  status?: 'pending' | 'approved' | 'rejected';
+  @IsEnum(['pending', 'approved', 'rejected', 'flagged'])
+  status?: 'pending' | 'approved' | 'rejected' | 'flagged';
 
   @IsOptional()
   @IsNumber()
@@ -67,8 +67,12 @@ export class ReviewUpdateStatusDto {
   id!: string;
 
   @IsNotEmpty()
-  @IsEnum(['pending', 'approved', 'rejected'])
-  status!: 'pending' | 'approved' | 'rejected';
+  @IsEnum(['pending', 'approved', 'rejected', 'flagged'])
+  status!: 'pending' | 'approved' | 'rejected' | 'flagged';
+
+  @IsOptional()
+  @IsString()
+  moderatorNotes?: string;
 
   constructor(data: Partial<ReviewUpdateStatusDto>) {
     Object.assign(this, data);
@@ -85,6 +89,24 @@ export class ReviewHelpfulVoteDto {
   userId!: string;
 
   constructor(data: Partial<ReviewHelpfulVoteDto>) {
+    Object.assign(this, data);
+  }
+}
+
+export class ReviewReportDto {
+  @IsNotEmpty()
+  @IsString()
+  id!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  userId!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  reason!: string;
+
+  constructor(data: Partial<ReviewReportDto>) {
     Object.assign(this, data);
   }
 }

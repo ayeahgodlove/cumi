@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { emailService } from "@services/email.service";
-import { userUseCase } from "@domain/usecases/user.usecase";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
 import authOptions from "@lib/options";
 import { getServerSession } from "next-auth";
+
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is admin
-    const currentUser = await userUseCase.getUserByEmail(session.user.email!);
+    const currentUser = await userUseCase.getUserByEmail(session.user.email!) as any;
     if (!currentUser || currentUser.role !== 'admin') {
       return NextResponse.json(
         { error: "Admin access required" },
@@ -38,14 +42,14 @@ export async function POST(request: NextRequest) {
     if (recipientType === 'all') {
       // Get all users
       const allUsers = await userUseCase.getAll();
-      recipients = allUsers.map(user => ({
+      recipients = allUsers.map((user: any) => ({
         email: user.email,
         name: user.fullName || user.username
       }));
     } else if (recipientType === 'specific' && recipientIds && recipientIds.length > 0) {
       // Get specific users
       for (const userId of recipientIds) {
-        const user = await userUseCase.getUserById(userId);
+        const user = await userUseCase.getUserById(userId) as any;
         if (user) {
           recipients.push({
             email: user.email,
@@ -70,8 +74,8 @@ export async function POST(request: NextRequest) {
     // Send bulk email
     const results = await emailService.sendBulkEmail(recipients, subject, html, text);
 
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+    const successCount = results.filter((r: any) => r.success).length;
+    const failureCount = results.filter((r: any) => !r.success).length;
 
     return NextResponse.json({
       message: `Email campaign sent successfully`,
@@ -102,7 +106,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is admin
-    const currentUser = await userUseCase.getUserByEmail(session.user.email!);
+    const currentUser = await userUseCase.getUserByEmail(session.user.email!) as any;
     if (!currentUser || currentUser.role !== 'admin') {
       return NextResponse.json(
         { error: "Admin access required" },
@@ -112,7 +116,7 @@ export async function GET(request: NextRequest) {
 
     // Get all users for mailing list
     const users = await userUseCase.getAll();
-    const mailingList = users.map(user => ({
+    const mailingList = users.map((user: any) => ({
       id: user.id,
       email: user.email,
       name: user.fullName || user.username,

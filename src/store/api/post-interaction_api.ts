@@ -1,18 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IPostInteractionStats } from "@domain/models/post-interaction.model";
 
-export const postInteractionAPI = createApi({
-  reducerPath: "postInteractionAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-    credentials: 'same-origin',
-    prepareHeaders: (headers, { getState }) => {
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
-  tagTypes: ["PostInteraction"],
+export const postInteractionAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getPostStats: build.query<IPostInteractionStats, { postId: string; userId?: string }>({
       query: ({ postId, userId }) => `/posts/interactions/stats?postId=${postId}&userId=${userId || ''}`,
@@ -47,6 +36,7 @@ export const postInteractionAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

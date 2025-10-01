@@ -34,8 +34,11 @@ export default function QuizList() {
           <Table.Column
             dataIndex="answers"
             title={"Answers"}
-            render={(_, record: IQuiz) =>
-              record.answers.map((rec, index) => (
+            render={(_, record: IQuiz) => {
+              const answers = Array.isArray(record.answers) 
+                ? record.answers 
+                : JSON.parse(record.answers || '[]');
+              return answers.map((rec: string, index: number) => (
                 <Tag
                   key={rec}
                   color={
@@ -44,8 +47,8 @@ export default function QuizList() {
                 >
                   {rec}
                 </Tag>
-              ))
-            }
+              ));
+            }}
           />
           <Table.Column dataIndex="correctAnswerIndex" title={"Correct Answer"} />
          

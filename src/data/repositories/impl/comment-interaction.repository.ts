@@ -96,7 +96,7 @@ export class CommentInteractionRepository implements ICommentInteractionReposito
       if (userId) {
         const userInteractionRecord = await CommentInteraction.findOne({
           where: { commentId, userId },
-        });
+        }) as any;
         userInteraction = userInteractionRecord?.interactionType || null;
       }
 

@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface DashboardStats {
   overview: {
@@ -52,18 +51,14 @@ export interface DashboardStats {
   lastUpdated: string;
 }
 
-export const statsAPI = createApi({
-  reducerPath: "statsAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Stats"],
+export const statsAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getDashboardStats: build.query<DashboardStats, void>({
       query: () => `/stats`,
       providesTags: ["Stats"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const { useGetDashboardStatsQuery } = statsAPI;

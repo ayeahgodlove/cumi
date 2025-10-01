@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { 
@@ -12,9 +13,7 @@ import {
 import { 
   useFetchAllCourseEnrollmentsQuery,
 } from "@store/api/course-enrollment_api";
-import { 
-  useFetchAllUsersQuery,
-} from "@store/api/user_api";
+import { userAPI } from "@store/api/user_api";
 import { ICourse } from "@domain/models/course";
 import { IPost } from "@domain/models/post.model";
 import { IEvent } from "@domain/models/event.model";
@@ -83,7 +82,7 @@ export const useGeneralDashboard = (): GeneralDashboardData => {
   const { 
     data: usersData, 
     isLoading: isLoadingUsers 
-  } = useFetchAllUsersQuery(1);
+  } = userAPI.useFetchAllUsersQuery(1);
 
   const { 
     data: courseEnrollmentsData, 
@@ -92,14 +91,14 @@ export const useGeneralDashboard = (): GeneralDashboardData => {
 
   // Process data
   const courses = coursesData || [];
-  const posts = postsData?.data || [];
+  const posts = postsData || [];
   const events = eventsData || [];
   const users = usersData || [];
   const courseEnrollments = courseEnrollmentsData?.data || [];
 
   // Calculate statistics
   const stats = useMemo(() => {
-    const activeUsers = users.filter((u: IUser) => u.isActive).length;
+    const activeUsers = users.filter((u: IUser) => u.accountStatus === 'active').length;
     const completedCourses = courseEnrollments.filter((e: ICourseEnrollment) => 
       e.status === 'completed'
     ).length;
@@ -156,8 +155,9 @@ export const useGeneralDashboard = (): GeneralDashboardData => {
       )
       .slice(0, 5),
     recentUsers: users
+      .filter((u: IUser) => u.createdAt)
       .sort((a: IUser, b: IUser) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
       )
       .slice(0, 5),
     recentEnrollments: courseEnrollments

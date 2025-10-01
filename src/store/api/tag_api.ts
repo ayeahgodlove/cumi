@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ITag } from "@domain/models/tag";
 
-export const tagAPI = createApi({
-  reducerPath: "tagAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Tag"],
+export const tagAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleTag: build.query<ITag, string>({
       query: (tagId) => `/tags/${tagId}`,
@@ -16,4 +10,5 @@ export const tagAPI = createApi({
       query: (page = 1) => `/tags?page=${page}`,
     }),
   }),
+  overrideExisting: false,
 });

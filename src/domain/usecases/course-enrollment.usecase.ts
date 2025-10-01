@@ -119,12 +119,12 @@ export class CourseEnrollmentUseCase {
 
   async getUserActiveEnrollments(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
-    return enrollments.filter(enrollment => enrollment.status === 'active');
+    return enrollments.filter((enrollment: any) => enrollment.status === 'active');
   }
 
   async getUserCompletedEnrollments(userId: string): Promise<InstanceType<typeof CourseEnrollment>[]> {
     const enrollments = await this.courseEnrollmentRepository.findByUserId(userId);
-    return enrollments.filter(enrollment => enrollment.status === 'completed');
+    return enrollments.filter((enrollment: any) => enrollment.status === 'completed');
   }
 
   private async calculateCourseProgress(enrollmentId: string, userId: string): Promise<number> {

@@ -1,5 +1,9 @@
 import { emailService } from "@services/email.service";
-import { userUseCase } from "@domain/usecases/user.usecase";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
+
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
 
 export interface NotificationData {
   userId: string;
@@ -20,7 +24,7 @@ export interface BulkNotificationData {
 class NotificationService {
   async sendEmailNotification(data: NotificationData): Promise<boolean> {
     try {
-      const user = await userUseCase.getUserById(data.userId);
+      const user = await userUseCase.getUserById(data.userId) as any;
       if (!user) {
         console.error(`User not found: ${data.userId}`);
         return false;
@@ -203,28 +207,6 @@ class NotificationService {
       message: `A new contact message has been received from ${name} (${email}).\n\nSubject: ${subject || 'No subject'}\nMessage: ${message}\n\nPhone: ${phone || 'Not provided'}`,
       actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/contact-messages`,
       type: 'system'
-    });
-  }
-
-  // Course completion notifications
-  async notifyCourseCompletion(userId: string, courseTitle: string, certificateUrl?: string): Promise<boolean> {
-    return this.sendEmailNotification({
-      userId,
-      title: "Course Completed!",
-      message: `Congratulations! You have successfully completed the course "${courseTitle}". Your certificate is now available for download.`,
-      actionUrl: certificateUrl,
-      type: 'course'
-    });
-  }
-
-  // Event reminders
-  async notifyEventReminder(userId: string, eventTitle: string, eventDate: string, eventUrl?: string): Promise<boolean> {
-    return this.sendEmailNotification({
-      userId,
-      title: "Event Reminder",
-      message: `This is a reminder that you have an upcoming event "${eventTitle}" on ${eventDate}. Don't miss it!`,
-      actionUrl: eventUrl,
-      type: 'event'
     });
   }
 

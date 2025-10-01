@@ -18,9 +18,9 @@ export async function GET(
 ) {
   try {
     const id = params.id;
-    const module = await moduleUseCase.getModuleById(id);
+    const moduleItem = await moduleUseCase.getModuleById(id);
     
-    if (!module) {
+    if (!moduleItem) {
       return NextResponse.json(
         {
           data: null,
@@ -32,7 +32,7 @@ export async function GET(
       );
     }
     
-    const moduleDTO = moduleMapper.toDTO(module);
+    const moduleDTO = moduleMapper.toDTO(moduleItem);
     return NextResponse.json(moduleDTO);
   } catch (error: any) {
     return NextResponse.json(

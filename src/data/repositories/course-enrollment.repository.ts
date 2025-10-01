@@ -1,9 +1,9 @@
 import CourseEnrollmentEntity from "@data/entities/course-enrollment.entity";
-import { ICourseEnrollment, CourseEnrollmentCreationAttributes } from "@domain/models/course-enrollment.model";
+import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
 
 export class CourseEnrollmentRepository {
-  async create(data: CourseEnrollmentCreationAttributes): Promise<ICourseEnrollment> {
-    const courseEnrollment = await CourseEnrollmentEntity.create(data);
+  async create(data: Partial<ICourseEnrollment>): Promise<ICourseEnrollment> {
+    const courseEnrollment = await CourseEnrollmentEntity.create(data as any);
     return courseEnrollment.dataValues || courseEnrollment;
   }
 

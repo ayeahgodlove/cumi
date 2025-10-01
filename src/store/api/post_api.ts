@@ -1,6 +1,5 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseAPI } from "./base-api";
 import { IPost } from "@domain/models/post.model";
-import { BASE_URL } from "@constants/api-url";
 
 interface ISearchParams {
   searchTitle?: string;
@@ -9,12 +8,7 @@ interface ISearchParams {
   limit?: number;
 }
 
-export const postAPI = createApi({
-  reducerPath: "postAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Post"],
+export const postAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSinglePost: build.query<IPost, string>({
       query: (postId) => `/posts/${postId}`,
@@ -42,6 +36,7 @@ export const postAPI = createApi({
       providesTags: (result) => ["Post"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

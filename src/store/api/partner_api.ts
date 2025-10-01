@@ -1,16 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseAPI } from './base-api';
 import { IPartner } from '@domain/models/partner.model';
 
-export const partnerAPI = createApi({
-  reducerPath: 'partnerAPI',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api',
-    prepareHeaders: (headers) => {
-      // Add auth headers if needed
-      return headers;
-    },
-  }),
-  tagTypes: ['Partner'],
+export const partnerAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     getAllPartners: builder.query<IPartner[], void>({
       query: () => '/public-partners',
@@ -49,6 +40,7 @@ export const partnerAPI = createApi({
       providesTags: ['Partner'],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

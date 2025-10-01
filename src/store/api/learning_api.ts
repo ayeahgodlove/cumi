@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface IModule {
   id: string;
@@ -161,18 +160,7 @@ export interface ILessonProgress {
   updatedAt: Date;
 }
 
-export const learningAPI = createApi({
-  reducerPath: "learningAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-    credentials: 'include',
-    prepareHeaders: (headers, { getState }) => {
-      // Add any additional headers if needed
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
-  tagTypes: ["CourseModules", "LessonProgress"],
+export const learningAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     // Get course modules with lessons, assignments, and quizzes
     getCourseModules: build.query<IModule[], string>({
@@ -274,6 +262,7 @@ export const learningAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

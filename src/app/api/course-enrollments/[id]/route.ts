@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import CourseEnrollmentUsecase from "@domain/usecases/course-enrollment.usecase";
+import { CourseEnrollmentRepository } from "@data/repositories/impl/course-enrollment.repository";
 import { CourseEnrollmentMapper } from "@presentation/mappers/course-enrollment.mapper";
 
-const courseEnrollmentUsecase = new CourseEnrollmentUsecase();
+const courseEnrollmentRepository = new CourseEnrollmentRepository();
+const courseEnrollmentUsecase = new CourseEnrollmentUsecase(courseEnrollmentRepository);
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const courseEnrollment = await courseEnrollmentUsecase.getCourseEnrollmentById(params.id);
+    const courseEnrollment = await courseEnrollmentUsecase.getEnrollmentById(params.id);
 
     if (!courseEnrollment) {
       return NextResponse.json(
@@ -20,7 +22,7 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      data: CourseEnrollmentMapper.toDto(courseEnrollment),
+      data: CourseEnrollmentMapper.toDto(courseEnrollment as any),
     });
   } catch (error) {
     console.error('Error fetching course enrollment:', error);
@@ -38,7 +40,7 @@ export async function PUT(
   try {
     const body = await request.json();
     
-    const courseEnrollment = await courseEnrollmentUsecase.updateCourseEnrollment(params.id, body);
+    const courseEnrollment = await courseEnrollmentUsecase.updateEnrollment(params.id, body);
 
     if (!courseEnrollment) {
       return NextResponse.json(
@@ -49,7 +51,7 @@ export async function PUT(
 
     return NextResponse.json({
       success: true,
-      data: CourseEnrollmentMapper.toDto(courseEnrollment),
+      data: CourseEnrollmentMapper.toDto(courseEnrollment as any),
       message: 'Course enrollment updated successfully',
     });
   } catch (error) {
@@ -66,14 +68,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const success = await courseEnrollmentUsecase.deleteCourseEnrollment(params.id);
-
-    if (!success) {
-      return NextResponse.json(
-        { success: false, error: 'Course enrollment not found' },
-        { status: 404 }
-      );
-    }
+    await courseEnrollmentUsecase.deleteEnrollment(params.id);
 
     return NextResponse.json({
       success: true,

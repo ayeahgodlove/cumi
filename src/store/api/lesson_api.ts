@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ILesson } from "@domain/models/lesson";
 
 interface ILessonSearchParams {
@@ -10,12 +9,7 @@ interface ILessonSearchParams {
   limit?: number;
 }
 
-export const lessonAPI = createApi({
-  reducerPath: "lessonAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Lesson"],
+export const lessonAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleLesson: build.query<ILesson, string>({
       query: (lessonId) => `/lessons/${lessonId}`,
@@ -98,6 +92,7 @@ export const lessonAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

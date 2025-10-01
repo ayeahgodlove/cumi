@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IComment } from "@domain/models/comment.model";
 
-export const commentAPI = createApi({
-  reducerPath: "commentAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Comment"],
+export const commentAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getCommentsByPostId: build.query<IComment[], string>({
       query: (postId) => `/comments?postId=${postId}`,
@@ -59,6 +53,7 @@ export const commentAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

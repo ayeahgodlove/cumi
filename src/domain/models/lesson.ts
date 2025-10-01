@@ -68,8 +68,6 @@ export const emptyLesson: ILesson = {
   isFreePreview: false,
   requiresCompletion: true,
   estimatedCompletionTime: 0,
-  practicalExamples: [],
-  resourcesNeeded: [],
 };
 
 export interface ILessonState extends IBaseState {

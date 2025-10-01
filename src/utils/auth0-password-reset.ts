@@ -130,6 +130,7 @@ export const getAuth0ConfigStatus = () => {
   };
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   sendPasswordResetEmail,
   redirectToAuth0PasswordReset,

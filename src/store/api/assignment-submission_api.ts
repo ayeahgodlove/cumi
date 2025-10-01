@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface IAssignmentSubmissionResponse {
   id: string;
@@ -87,17 +86,7 @@ export interface IAssignmentStatistics {
   passRate: number;
 }
 
-export const assignmentSubmissionAPI = createApi({
-  reducerPath: "assignmentSubmissionAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-    credentials: 'include',
-    prepareHeaders: (headers) => {
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
-  tagTypes: ["AssignmentSubmission", "UserAssignmentSubmissions", "CourseAssignmentSubmissions"],
+export const assignmentSubmissionAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     // Submit an assignment
     submitAssignment: build.mutation<IAssignmentSubmissionResponse, IAssignmentSubmissionRequest>({
@@ -222,6 +211,7 @@ export const assignmentSubmissionAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

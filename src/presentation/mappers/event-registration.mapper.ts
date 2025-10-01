@@ -11,8 +11,6 @@ export class EventRegistrationMapper {
       email: eventRegistration.email,
       phone: eventRegistration.phone,
       company: eventRegistration.company,
-      dietaryRequirements: eventRegistration.dietaryRequirements,
-      additionalNotes: eventRegistration.additionalNotes,
       registrationDate: eventRegistration.registrationDate.toISOString(),
       status: eventRegistration.status,
       paymentStatus: eventRegistration.paymentStatus,
@@ -32,8 +30,6 @@ export class EventRegistrationMapper {
       email: dto.email,
       phone: dto.phone,
       company: dto.company,
-      dietaryRequirements: dto.dietaryRequirements,
-      additionalNotes: dto.additionalNotes,
       paymentAmount: dto.paymentAmount,
       paymentMethod: dto.paymentMethod,
     };

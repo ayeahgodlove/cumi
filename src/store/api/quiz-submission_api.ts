@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface IQuizSubmissionResponse {
   id: string;
@@ -74,17 +73,7 @@ export interface IQuizStatistics {
   passRate: number;
 }
 
-export const quizSubmissionAPI = createApi({
-  reducerPath: "quizSubmissionAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-    credentials: 'include',
-    prepareHeaders: (headers) => {
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
-  tagTypes: ["QuizSubmission", "UserQuizSubmissions", "CourseQuizSubmissions"],
+export const quizSubmissionAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     // Submit a quiz
     submitQuiz: build.mutation<IQuizSubmissionResponse, IQuizSubmissionRequest>({
@@ -167,6 +156,7 @@ export const quizSubmissionAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

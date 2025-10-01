@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -189,9 +190,9 @@ export const useLearningPage = () => {
         let targetLesson = null;
         
         if (lastAccessedLesson?.lessonId) {
-          for (const module of courseData.modules) {
-            if (Array.isArray(module.lessons)) {
-              const foundLesson = module.lessons.find(lesson => lesson.id === lastAccessedLesson.lessonId);
+          for (const moduleItem of courseData.modules) {
+            if (Array.isArray(moduleItem.lessons)) {
+              const foundLesson = moduleItem.lessons.find(lesson => lesson.id === lastAccessedLesson.lessonId);
               if (foundLesson) {
                 targetLesson = foundLesson;
                 break;
@@ -202,7 +203,7 @@ export const useLearningPage = () => {
         
         if (!targetLesson) {
           const allLessons = courseData.modules
-            .flatMap(module => module.lessons || [])
+            .flatMap(moduleItem => moduleItem.lessons || [])
             .sort((a, b) => (a.lessonOrder || 0) - (b.lessonOrder || 0));
           
           if (allLessons.length > 0) {

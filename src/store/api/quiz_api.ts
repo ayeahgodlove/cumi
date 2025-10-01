@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IQuiz } from "@domain/models/quiz";
 
 interface IQuizSearchParams {
@@ -11,12 +10,7 @@ interface IQuizSearchParams {
   limit?: number;
 }
 
-export const quizAPI = createApi({
-  reducerPath: "quizAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Quiz"],
+export const quizAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleQuiz: build.query<IQuiz, string>({
       query: (quizId) => `/quizes/${quizId}`,
@@ -108,6 +102,7 @@ export const quizAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

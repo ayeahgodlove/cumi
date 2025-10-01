@@ -129,18 +129,6 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
           showRemoveIcon: true,
           showDownloadIcon: false,
         }}
-        previewFile={(file) => {
-          if (file.url) {
-            return (
-              <Image
-                src={file.url}
-                alt="preview"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            );
-          }
-          return null;
-        }}
       >
         {fileList.length >= 1 ? null : uploadButton}
       </Upload>

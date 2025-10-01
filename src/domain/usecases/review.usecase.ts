@@ -54,7 +54,7 @@ export class ReviewUseCase {
     try {
       const existingReview = await this.reviewRepository.findById(review.id);
       if (!existingReview) {
-        throw new NotFoundException(`Review with id ${review.id} not found`);
+        throw new NotFoundException(`Review with id ${review.id} not found`, "REVIEW_NOT_FOUND");
       }
 
       // Validate rating
@@ -76,7 +76,7 @@ export class ReviewUseCase {
     try {
       const existingReview = await this.reviewRepository.findById(id);
       if (!existingReview) {
-        throw new NotFoundException(`Review with id ${id} not found`);
+        throw new NotFoundException(`Review with id ${id} not found`, "REVIEW_NOT_FOUND");
       }
 
       // Check if user owns this review
@@ -95,7 +95,7 @@ export class ReviewUseCase {
     try {
       const review = await this.reviewRepository.findById(id);
       if (!review) {
-        throw new NotFoundException(`Review with id ${id} not found`);
+        throw new NotFoundException(`Review with id ${id} not found`, "REVIEW_NOT_FOUND");
       }
       return review;
     } catch (error) {
@@ -167,6 +167,28 @@ export class ReviewUseCase {
     }
   }
 
+  async flagReview(id: string, moderatorNotes?: string): Promise<InstanceType<typeof Review> | null> {
+    try {
+      return await this.reviewRepository.updateStatus(id, 'flagged', moderatorNotes);
+    } catch (error) {
+      console.error("Error in flagReview use case:", error);
+      throw error;
+    }
+  }
+
+  async reportReview(id: string): Promise<InstanceType<typeof Review> | null> {
+    try {
+      const review = await this.reviewRepository.findById(id);
+      if (!review) {
+        throw new NotFoundException(`Review with id ${id} not found`, "REVIEW_NOT_FOUND");
+      }
+      // Mark review as flagged for admin review
+      return await this.reviewRepository.updateStatus(id, 'flagged', 'Reported by user');
+    } catch (error) {
+      console.error("Error in reportReview use case:", error);
+      throw error;
+    }
+  }
 
   async markReviewHelpful(id: string): Promise<InstanceType<typeof Review> | null> {
     try {

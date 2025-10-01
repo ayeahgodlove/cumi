@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface IReviewResponse {
   id: string;
@@ -52,17 +51,7 @@ export interface IReviewRequest {
   language?: 'french' | 'english' | 'both';
 }
 
-export const reviewAPI = createApi({
-  reducerPath: "reviewAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-    credentials: 'include',
-    prepareHeaders: (headers) => {
-      headers.set('Content-Type', 'application/json');
-      return headers;
-    },
-  }),
-  tagTypes: ["Review", "CourseReviews", "UserReviews"],
+export const reviewAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     // Create a new review
     createReview: build.mutation<IReviewResponse, IReviewRequest>({
@@ -223,6 +212,7 @@ export const reviewAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

@@ -62,12 +62,13 @@ export async function POST(request: NextRequest) {
       );
     }
     const userResponse = await userUseCase.createUser(dto.toData());
+    const userItem = userResponse.toJSON()
 
     // Send welcome email
     try {
       await emailService.sendRegistrationConfirmationEmail(
-        userResponse.email,
-        userResponse.fullName || userResponse.username
+        userItem.email,
+        userItem.fullName || userItem.username
       );
     } catch (emailError) {
       console.error("Failed to send welcome email:", emailError);

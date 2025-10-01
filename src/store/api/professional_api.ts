@@ -1,16 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { baseAPI } from './base-api';
 import { IProfessional } from '@domain/models/professional.model';
 
-export const professionalAPI = createApi({
-  reducerPath: 'professionalAPI',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/api/professionals',
-    prepareHeaders: (headers) => {
-      // Add auth headers if needed
-      return headers;
-    },
-  }),
-  tagTypes: ['Professional'],
+export const professionalAPI = baseAPI.injectEndpoints({
   endpoints: (builder) => ({
     getAllProfessionals: builder.query<IProfessional[], void>({
       query: () => '',
@@ -60,6 +51,7 @@ export const professionalAPI = createApi({
       providesTags: ['Professional'],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

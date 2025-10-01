@@ -87,7 +87,7 @@ export class PostInteractionRepository implements IPostInteractionRepository {
     try {
       const existingInteraction = await PostInteraction.findByPk(id);
       if (!existingInteraction) {
-        throw new NotFoundException("Post interaction not found");
+        throw new NotFoundException("Post interaction not found", "POST_INTERACTION_NOT_FOUND");
       }
 
       await existingInteraction.update(interaction);
@@ -101,7 +101,7 @@ export class PostInteractionRepository implements IPostInteractionRepository {
     try {
       const interaction = await PostInteraction.findByPk(id);
       if (!interaction) {
-        throw new NotFoundException("Post interaction not found");
+        throw new NotFoundException("Post interaction not found", "POST_INTERACTION_NOT_FOUND");
       }
       await interaction.destroy();
     } catch (error) {
@@ -146,7 +146,7 @@ export class PostInteractionRepository implements IPostInteractionRepository {
       if (userId) {
         const userInteractionRecord = await PostInteraction.findOne({
           where: { postId, userId },
-        });
+        }) as any;
         userInteraction = userInteractionRecord ? userInteractionRecord.action : null;
       }
 

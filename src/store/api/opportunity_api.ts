@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IOpportunity } from "@domain/models/opportunity.model";
 
-export const opportunityAPI = createApi({
-  reducerPath: "opportunityAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Opportunity"],
+export const opportunityAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleOpportunity: build.query<IOpportunity, string>({
       query: (opportunityId) => `/opportunities/${opportunityId}`,
@@ -19,4 +13,5 @@ export const opportunityAPI = createApi({
       query: (page = 1) => `/opportunities?page=${page}`,
     }),
   }),
+  overrideExisting: false,
 });

@@ -113,7 +113,8 @@ export async function POST(request: NextRequest) {
     // Try to fetch the created comment with user information, but don't fail if it doesn't work
     let createdComment = comment;
     try {
-      createdComment = await commentUseCase.getCommentById(comment.id);
+      const fetchedComment = await commentUseCase.getCommentById(comment.id);
+      if (fetchedComment) createdComment = fetchedComment;
     } catch (fetchError) {
       console.warn("Could not fetch comment with user info:", fetchError);
       // Use the original comment if fetching fails

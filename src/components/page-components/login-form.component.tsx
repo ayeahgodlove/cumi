@@ -423,7 +423,7 @@ export default function LoginFormComponent() {
               {/* Signup Link */}
               <div style={{ textAlign: "center", marginTop: "2rem" }}>
                 <Text style={{ color: "#666", fontSize: "16px" }}>
-                  Don't have an account?{" "}
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/register"
                     style={{

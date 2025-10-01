@@ -21,8 +21,8 @@ import {
   Divider,
 } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import { useForm } from "@refinedev/antd";
-import { useSelect } from "@refinedev/antd";
+import { useForm, useSelect } from "@refinedev/antd";
+import { useUpdate, useCreate, useDelete } from "@refinedev/core";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
 import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
@@ -59,58 +59,12 @@ export default function CourseManagementModal({
   const [editingModule, setEditingModule] = useState<any>(null);
 
   // Course form mutation
-  const { mutate: updateCourse, isLoading: updatingCourse } = useForm({
-    resource: "courses",
-    action: "edit",
-    id: courseId,
-    onSuccess: () => {
-      message.success("Course updated successfully!");
-    },
-    onError: (error) => {
-      message.error("Failed to update course: " + error.message);
-    },
-  });
+  const { mutate: updateCourse, isLoading: updatingCourse } = useUpdate();
 
-  // Module form mutation
-  const { mutate: createModule, isLoading: creatingModule } = useForm({
-    resource: "modules",
-    action: "create",
-    onSuccess: () => {
-      message.success("Module created successfully!");
-      moduleForm.resetFields();
-      setEditingModule(null);
-      // Refetch modules would go here
-    },
-    onError: (error) => {
-      message.error("Failed to create module: " + error.message);
-    },
-  });
-
-  const { mutate: updateModule, isLoading: updatingModule } = useForm({
-    resource: "modules",
-    action: "edit",
-    onSuccess: () => {
-      message.success("Module updated successfully!");
-      moduleForm.resetFields();
-      setEditingModule(null);
-      // Refetch modules would go here
-    },
-    onError: (error) => {
-      message.error("Failed to update module: " + error.message);
-    },
-  });
-
-  const { mutate: deleteModule, isLoading: deletingModule } = useForm({
-    resource: "modules",
-    action: "delete",
-    onSuccess: () => {
-      message.success("Module deleted successfully!");
-      // Refetch modules would go here
-    },
-    onError: (error) => {
-      message.error("Failed to delete module: " + error.message);
-    },
-  });
+  // Module form mutations
+  const { mutate: createModule, isLoading: creatingModule } = useCreate();
+  const { mutate: updateModuleMutation, isLoading: updatingModule } = useUpdate();
+  const { mutate: deleteModule, isLoading: deletingModule } = useDelete();
 
   // Mock modules data - in real implementation, this would come from API
   const [modules, setModules] = useState([
@@ -145,28 +99,39 @@ export default function CourseManagementModal({
 
   const handleCourseUpdate = (values: any) => {
     updateCourse({
-      values: {
-        ...values,
-        id: courseId,
-      },
+      resource: "courses",
+      id: courseId!,
+      values,
+    }, {
+      onSuccess: () => message.success("Course updated successfully!"),
+      onError: (error) => message.error("Failed to update course: " + error.message),
     });
   };
 
   const handleModuleSubmit = (values: ModuleFormData) => {
     if (editingModule) {
-      updateModule({
-        values: {
-          ...values,
-          id: editingModule.id,
-          courseId: courseId,
+      updateModuleMutation({
+        resource: "modules",
+        id: editingModule.id,
+        values: { ...values, courseId },
+      }, {
+        onSuccess: () => {
+          message.success("Module updated successfully!");
+          moduleForm.resetFields();
+          setEditingModule(null);
         },
+        onError: (error) => message.error("Failed to update module: " + error.message),
       });
     } else {
       createModule({
-        values: {
-          ...values,
-          courseId: courseId,
+        resource: "modules",
+        values: { ...values, courseId },
+      }, {
+        onSuccess: () => {
+          message.success("Module created successfully!");
+          moduleForm.resetFields();
         },
+        onError: (error) => message.error("Failed to create module: " + error.message),
       });
     }
   };
@@ -183,7 +148,11 @@ export default function CourseManagementModal({
       content: "This action cannot be undone.",
       onOk: () => {
         deleteModule({
+          resource: "modules",
           id: moduleId,
+        }, {
+          onSuccess: () => message.success("Module deleted successfully!"),
+          onError: (error) => message.error("Failed to delete module: " + error.message),
         });
       },
     });
@@ -229,7 +198,7 @@ export default function CourseManagementModal({
       title: "Actions",
       key: "actions",
       width: 150,
-      render: (_, record: any) => (
+      render: (_: any, record: any) => (
         <Space>
           <Button 
             icon={<EyeOutlined />} 

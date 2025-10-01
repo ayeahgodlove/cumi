@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ICourseEnrollment } from "@domain/models/course-enrollment.model";
 
 interface ICourseEnrollmentSearchParams {
@@ -11,12 +10,7 @@ interface ICourseEnrollmentSearchParams {
   limit?: number;
 }
 
-export const courseEnrollmentAPI = createApi({
-  reducerPath: "courseEnrollmentAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["CourseEnrollment"],
+export const courseEnrollmentAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleCourseEnrollment: build.query<ICourseEnrollment, string>({
       query: (enrollmentId) => `/course-enrollments/${enrollmentId}`,
@@ -99,6 +93,7 @@ export const courseEnrollmentAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

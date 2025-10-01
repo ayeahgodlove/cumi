@@ -1,4 +1,5 @@
 import { ReviewRepository } from "@data/repositories/impl/review.repository";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { ReviewUseCase } from "@domain/usecases/review.usecase";
 import { ReviewMapper } from "@presentation/mappers/mapper";
 import { getServerSession } from "next-auth";
@@ -6,7 +7,8 @@ import authOptions from "@lib/options";
 import { NextRequest, NextResponse } from "next/server";
 
 const reviewRepository = new ReviewRepository();
-const reviewUseCase = new ReviewUseCase(reviewRepository);
+const courseRepository = new CourseRepository();
+const reviewUseCase = new ReviewUseCase(reviewRepository, courseRepository);
 const reviewMapper = new ReviewMapper();
 
 export async function GET(

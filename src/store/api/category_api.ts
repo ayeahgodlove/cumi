@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ICategory } from "@domain/models/category";
 
-export const categoryAPI = createApi({
-  reducerPath: "categoryAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Category"],
+export const categoryAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleCategory: build.query<ICategory, string>({
       query: (categoryId) => `/categories/${categoryId}`,
@@ -16,4 +10,5 @@ export const categoryAPI = createApi({
       query: (page = 1) => `/categories?page=${page}`,
     }),
   }),
+  overrideExisting: false,
 });

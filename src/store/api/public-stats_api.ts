@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface PublicStats {
   totalProjects: number;
@@ -10,18 +9,14 @@ export interface PublicStats {
   totalUsers: number;
 }
 
-export const publicStatsAPI = createApi({
-  reducerPath: "publicStatsAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["PublicStats"],
+export const publicStatsAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getPublicStats: build.query<PublicStats, void>({
       query: () => `/public-stats`,
       providesTags: ["PublicStats"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const { useGetPublicStatsQuery } = publicStatsAPI;

@@ -32,6 +32,10 @@ export class UserUseCase {
     return this.userRepository.findByEmail(email);
   }
 
+  async getUserByUsername(username: string): Promise<InstanceType<typeof User> | null> {
+    return this.userRepository.findByUsername(username);
+  }
+
   async getUserByResetToken(token: string): Promise<InstanceType<typeof User> | null> {
     return this.userRepository.findByResetToken(token);
   }

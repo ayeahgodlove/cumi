@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IProject } from "@domain/models/project.model";
 
-export const projectAPI = createApi({
-  reducerPath: "projectAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Project"],
+export const projectAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleProject: build.query<IProject, string>({
       query: (projectId) => `/projects/${projectId}`,
@@ -19,4 +13,5 @@ export const projectAPI = createApi({
       query: (page = 1) => `/projects?page=${page}`,
     }),
   }),
+  overrideExisting: false,
 });

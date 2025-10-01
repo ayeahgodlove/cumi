@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ICourseProgress } from "@domain/models/course-progress.model";
 
 interface ICourseProgressSearchParams {
@@ -14,12 +13,7 @@ interface ICourseProgressSearchParams {
   limit?: number;
 }
 
-export const courseProgressAPI = createApi({
-  reducerPath: "courseProgressAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["CourseProgress"],
+export const courseProgressAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleCourseProgress: build.query<ICourseProgress, string>({
       query: (progressId) => `/course-progress/${progressId}`,
@@ -114,6 +108,7 @@ export const courseProgressAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

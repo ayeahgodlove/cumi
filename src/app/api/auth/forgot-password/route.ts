@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { userUseCase } from "@domain/usecases/user.usecase";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
 import { emailService } from "@services/email.service";
 import crypto from "crypto";
+
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const user = await userUseCase.getUserByEmail(email);
+    const user = await userUseCase.getUserByEmail(email) as any;
     if (!user) {
       // Don't reveal if email exists or not for security
       return NextResponse.json(
@@ -33,7 +37,7 @@ export async function POST(request: NextRequest) {
       ...user,
       resetToken,
       resetTokenExpiry
-    });
+    } as any);
 
     // Send password reset email
     await emailService.sendPasswordResetEmail(

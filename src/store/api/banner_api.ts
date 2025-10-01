@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IBanner } from "@domain/models/banner.model";
 
-export const bannerAPI = createApi({
-  reducerPath: "bannerAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Banner"],
+export const bannerAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleBanner: build.query<IBanner, string>({
       query: (bannerId) => `/banners/${bannerId}`,
@@ -16,4 +10,5 @@ export const bannerAPI = createApi({
       query: (page = 1) => `/banners?page=${page}`,
     }),
   }),
+  overrideExisting: false,
 });

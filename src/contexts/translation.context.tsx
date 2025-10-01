@@ -497,6 +497,12 @@ const translations = {
     'partners.no_partners': 'No partners available yet',
     'partners.total_partners': 'Trusted Partners',
     
+    // Services Section
+    'services_section.title': 'Our Services',
+    'services_section.subtitle': 'Comprehensive technology solutions tailored to transform your business and drive growth.',
+    'services_section.learn_more': 'Learn More',
+    'services_section.view_all': 'View All Services',
+    
     'creator.course_deleted_success': 'Course deleted successfully!',
     'creator.post_deleted_success': 'Post deleted successfully!',
     'creator.event_deleted_success': 'Event deleted successfully!',
@@ -1486,6 +1492,12 @@ const translations = {
     'partners.no_results': 'Aucun partenaire trouvé',
     'partners.no_partners': 'Aucun partenaire disponible',
     'partners.total_partners': 'Partenaires de Confiance',
+    
+    // Services Section
+    'services_section.title': 'Nos Services',
+    'services_section.subtitle': 'Solutions technologiques complètes pour transformer votre entreprise et stimuler la croissance.',
+    'services_section.learn_more': 'En Savoir Plus',
+    'services_section.view_all': 'Voir Tous',
     
     'creator.course_deleted_success': 'Cours supprimé avec succès !',
     'creator.post_deleted_success': 'Article supprimé avec succès !',

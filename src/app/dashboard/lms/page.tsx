@@ -34,7 +34,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useList } from "@refinedev/core";
 import { ICourse } from "@domain/models/course";
-import { IEnrollment } from "@domain/models/enrollment";
+import { ICourseEnrollment as IEnrollment } from "@domain/models/course-enrollment.model";
 import { ILesson } from "@domain/models/lesson";
 import { IQuiz } from "@domain/models/quiz";
 
@@ -73,15 +73,15 @@ export default function LMSDashboard() {
   const totalQuizes = quizes.length;
   const activeEnrollments = enrollments.filter(e => {
     const enrollmentDate = new Date(e.enrollmentDate);
-    const completionDate = new Date(e.completionDate);
     const now = new Date();
-    return now >= enrollmentDate && now < completionDate;
+    return now >= enrollmentDate && (!e.completedAt || now < new Date(e.completedAt));
   }).length;
 
   const completedEnrollments = enrollments.filter(e => {
-    const completionDate = new Date(e.completionDate);
+    if (!e.completedAt) return false;
+    const completedAt = new Date(e.completedAt);
     const now = new Date();
-    return now >= completionDate;
+    return now >= completedAt;
   }).length;
 
   const completionRate = totalEnrollments > 0 ? (completedEnrollments / totalEnrollments) * 100 : 0;
@@ -93,15 +93,17 @@ export default function LMSDashboard() {
       ...course,
       enrollmentCount: courseEnrollments.length,
       completionCount: courseEnrollments.filter(e => {
-        const completionDate = new Date(e.completionDate);
+        if (!e.completedAt) return false;
+        const completedAt = new Date(e.completedAt);
         const now = new Date();
-        return now >= completionDate;
+        return now >= completedAt;
       }).length,
       completionRate: courseEnrollments.length > 0 ? 
         (courseEnrollments.filter(e => {
-          const completionDate = new Date(e.completionDate);
+          if (!e.completedAt) return false;
+          const completedAt = new Date(e.completedAt);
           const now = new Date();
-          return now >= completionDate;
+          return now >= completedAt;
         }).length / courseEnrollments.length) * 100 : 0
     };
   }).sort((a, b) => b.enrollmentCount - a.enrollmentCount);
@@ -291,21 +293,21 @@ export default function LMSDashboard() {
                 renderItem={(course) => (
                   <List.Item
                     actions={[
-                      <Tooltip title="View Course">
+                      <Tooltip key="view" title="View Course">
                         <Button 
                           type="text" 
                           icon={<EyeOutlined />}
                           onClick={() => router.push(`/dashboard/courses/show/${course.id}`)}
                         />
                       </Tooltip>,
-                      <Tooltip title="Edit Course">
+                      <Tooltip key="edit" title="Edit Course">
                         <Button 
                           type="text" 
                           icon={<EditOutlined />}
                           onClick={() => router.push(`/dashboard/courses/edit/${course.id}`)}
                         />
                       </Tooltip>,
-                      <Tooltip title="Manage Lessons">
+                      <Tooltip key="manage" title="Manage Lessons">
                         <Button 
                           type="text" 
                           icon={<PlayCircleOutlined />}
@@ -372,13 +374,13 @@ export default function LMSDashboard() {
             renderItem={(enrollment) => {
               const course = courses.find(c => c.id === enrollment.courseId);
               const enrollmentDate = new Date(enrollment.enrollmentDate);
-              const completionDate = new Date(enrollment.completionDate);
+              const completedAt = enrollment.completedAt ? new Date(enrollment.completedAt) : null;
               const now = new Date();
               
               let status = "Pending";
               let color = "orange";
               
-              if (now >= completionDate) {
+              if (completedAt && now >= completedAt) {
                 status = "Completed";
                 color = "green";
               } else if (now >= enrollmentDate) {
@@ -399,8 +401,8 @@ export default function LMSDashboard() {
                     description={
                       <Text type="secondary">
                         Enrolled on {enrollmentDate.toLocaleDateString()}
-                        {status === "Completed" && (
-                          <span> • Completed on {completionDate.toLocaleDateString()}</span>
+                        {status === "Completed" && completedAt && (
+                          <span> • Completed on {completedAt.toLocaleDateString()}</span>
                         )}
                       </Text>
                     }

@@ -1,4 +1,5 @@
 import { ReviewRepository } from "@data/repositories/impl/review.repository";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { ReviewUseCase } from "@domain/usecases/review.usecase";
 import { ReviewMapper } from "@presentation/mappers/mapper";
 import { ReviewUpdateStatusDto, ReviewHelpfulVoteDto, ReviewReportDto } from "@presentation/dtos/review-request.dto";
@@ -8,7 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { validate } from "class-validator";
 
 const reviewRepository = new ReviewRepository();
-const reviewUseCase = new ReviewUseCase(reviewRepository);
+const courseRepository = new CourseRepository();
+const reviewUseCase = new ReviewUseCase(reviewRepository, courseRepository);
 const reviewMapper = new ReviewMapper();
 
 export async function POST(

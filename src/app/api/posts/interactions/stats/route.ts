@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { PostInteractionUseCase } from "@domain/usecases/post-interaction.usecase";
 import { PostInteractionRepository } from "@data/repositories/impl/post-interaction.repository";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);

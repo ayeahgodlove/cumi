@@ -1,18 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseAPI } from "./base-api";
 import { IEvent } from "@domain/models/event.model";
-import { BASE_URL } from "@constants/api-url";
 
 interface ISort {
   searchTitle: string;
   sortBy?: "date" | "title" | "category";
 }
 
-export const eventAPI = createApi({
-  reducerPath: "eventAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Event"],
+export const eventAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleEvent: build.query<IEvent, string>({
       query: (eventId) => `/events/${eventId}`,
@@ -28,6 +22,7 @@ export const eventAPI = createApi({
       providesTags: (result) => ["Event"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

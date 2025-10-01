@@ -1,5 +1,5 @@
 import { IComment } from "../../domain/models/comment.model";
-import { CommentRequestDto } from "../dtos/comment-request.dto";
+import { CommentRequestDto } from "@presentation/dtos/comment-request.dto";
 
 export interface ICommentRepository {
   create(comment: CommentRequestDto, userId: string): Promise<IComment>;

@@ -32,7 +32,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useList } from "@refinedev/core";
 import { ICourse } from "@domain/models/course";
-import { IEnrollment } from "@domain/models/enrollment";
+import { ICourseEnrollment as IEnrollment } from "@domain/models/course-enrollment.model";
 import { ILesson } from "@domain/models/lesson";
 
 const { Title, Text } = Typography;
@@ -81,7 +81,7 @@ export default function StudentCourseBrowser() {
 
   const CourseCard = ({ course, isEnrolled }: { course: ICourse; isEnrolled: boolean }) => {
     const courseLessons = lessons.filter(lesson => lesson.courseId === course.id);
-    const totalDuration = courseLessons.reduce((acc, lesson) => acc + lesson.duration, 0);
+    const totalDuration = courseLessons.reduce((acc, lesson) => acc + (lesson.durationMinutes || 0), 0);
 
     return (
       <Card
@@ -101,7 +101,7 @@ export default function StudentCourseBrowser() {
           )
         }
         actions={[
-          <Tooltip title="View Course Details">
+          <Tooltip key="view" title="View Course Details">
             <Button 
               type="text" 
               icon={<EyeOutlined />}
@@ -109,7 +109,7 @@ export default function StudentCourseBrowser() {
             />
           </Tooltip>,
           isEnrolled ? (
-            <Tooltip title="Continue Learning">
+            <Tooltip key="continue" title="Continue Learning">
               <Button 
                 type="primary" 
                 icon={<PlayCircleOutlined />}
@@ -119,7 +119,7 @@ export default function StudentCourseBrowser() {
               </Button>
             </Tooltip>
           ) : (
-            <Tooltip title="Enroll in Course">
+            <Tooltip key="enroll" title="Enroll in Course">
               <Button 
                 type="primary" 
                 icon={<UserOutlined />}
@@ -141,7 +141,7 @@ export default function StudentCourseBrowser() {
           }
           description={
             <Space direction="vertical" size="small" style={{ width: "100%" }}>
-              <Text type="secondary" ellipsis={{ rows: 2 }}>
+              <Text type="secondary" ellipsis>
                 {course.description}
               </Text>
               <Space wrap>

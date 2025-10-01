@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { emailService } from "@services/email.service";
-import { userUseCase } from "@domain/usecases/user.usecase";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
 import authOptions from "@lib/options";
 import { getServerSession } from "next-auth";
+
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user details
-    const user = await userUseCase.getUserById(userId);
+    const user = await userUseCase.getUserById(userId) as any;
     if (!user) {
       return NextResponse.json(
         { error: "User not found" },
@@ -81,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get current user
-    const currentUser = await userUseCase.getUserByEmail(session.user.email!);
+    const currentUser = await userUseCase.getUserByEmail(session.user.email!) as any;
     if (!currentUser) {
       return NextResponse.json(
         { error: "User not found" },

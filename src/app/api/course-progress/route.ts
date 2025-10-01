@@ -8,12 +8,18 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { notificationService } from "@services/notification.service";
-import { courseUseCase } from "@domain/usecases/course.usecase";
-import { lessonUseCase } from "@domain/usecases/lesson.usecase";
+import { CourseUseCase } from "@domain/usecases/course.usecase";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
+import { LessonUseCase } from "@domain/usecases/lesson.usecase";
+import { LessonRepository } from "@data/repositories/impl/lesson.repository";
 
 const courseProgressRepository = new CourseProgressRepository();
 const courseProgressUseCase = new CourseProgressUseCase(courseProgressRepository);
 const courseProgressMapper = new CourseProgressMapper();
+const courseRepository = new CourseRepository();
+const courseUseCase = new CourseUseCase(courseRepository);
+const lessonRepository = new LessonRepository();
+const lessonUseCase = new LessonUseCase(lessonRepository);
 
 export async function GET(request: any) {
   try {
@@ -75,9 +81,9 @@ export async function POST(request: NextRequest) {
     try {
       const progressData = dto.toData();
       
-      if (progressData.progressType === 'lesson_completed') {
-        const lesson = await lessonUseCase.getLessonById(progressData.lessonId);
-        const course = await courseUseCase.getCourseById(progressData.courseId);
+      if (progressData.progressType === 'lesson' && progressData.lessonId) {
+        const lesson = await lessonUseCase.getLessonById(progressData.lessonId) as any;
+        const course = await courseUseCase.getCourseById(progressData.courseId) as any;
         
         if (lesson && course) {
           await notificationService.notifyLessonCompletion(
@@ -87,8 +93,8 @@ export async function POST(request: NextRequest) {
             `/courses/${course.id}/lessons/${lesson.id}`
           );
         }
-      } else if (progressData.progressType === 'course_completed') {
-        const course = await courseUseCase.getCourseById(progressData.courseId);
+      } else if (progressData.progressType === 'course') {
+        const course = await courseUseCase.getCourseById(progressData.courseId) as any;
         
         if (course) {
           await notificationService.notifyCourseCompletion(
@@ -97,14 +103,14 @@ export async function POST(request: NextRequest) {
             `/courses/${course.id}/certificate`
           );
         }
-      } else if (progressData.progressType === 'quiz_completed') {
-        const course = await courseUseCase.getCourseById(progressData.courseId);
+      } else if (progressData.progressType === 'quiz') {
+        const course = await courseUseCase.getCourseById(progressData.courseId) as any;
         
         if (course) {
           await notificationService.notifyQuizCompletion(
             userId,
             'Quiz',
-            progressData.progress || 0,
+            (progressData as any).progress || 0,
             course.title
           );
         }

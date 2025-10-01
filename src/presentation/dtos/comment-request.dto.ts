@@ -4,11 +4,11 @@ import { nanoid } from "nanoid";
 export class CreateCommentDto {
   @IsString()
   @IsNotEmpty()
-  content: string;
+  content!: string;
 
   @IsString()
   @IsNotEmpty()
-  postId: string;
+  postId!: string;
 
   @IsString()
   @IsOptional()
@@ -30,14 +30,14 @@ export class UpdateCommentDto {
 }
 
 export class CommentResponseDto {
-  id: string;
-  content: string;
-  postId: string;
-  userId: string;
+  id!: string;
+  content!: string;
+  postId!: string;
+  userId!: string;
   parentId?: string;
-  isApproved: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  isApproved!: boolean;
+  createdAt!: Date;
+  updatedAt!: Date;
   user?: {
     id: string;
     name: string;
@@ -53,11 +53,11 @@ export class CommentResponseDto {
 }
 
 export class CommentRequestDto {
-  id: string;
-  content: string;
-  postId: string;
+  id!: string;
+  content!: string;
+  postId!: string;
   parentId?: string;
-  isApproved: boolean;
+  isApproved!: boolean;
 
   constructor(data: any) {
     this.id = nanoid(10);

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { 
@@ -74,7 +75,7 @@ export const useUserDashboard = (): UserDashboardData => {
   const { 
     data: eventRegistrationsData, 
     isLoading: isLoadingEventRegistrations 
-  } = useGetUserEventRegistrationsQuery(undefined, {
+  } = useGetUserEventRegistrationsQuery(currentUser?.id || '', {
     skip: !currentUser?.id
   });
 

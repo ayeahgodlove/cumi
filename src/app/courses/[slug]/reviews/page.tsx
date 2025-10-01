@@ -341,6 +341,7 @@ export default function CourseReviewsPage() {
                   }}
                   actions={[
                     <Button
+                      key="helpful"
                       type="text"
                       icon={<HeartOutlined />}
                       onClick={() => handleMarkHelpful(review.id)}

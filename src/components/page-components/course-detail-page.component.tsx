@@ -273,7 +273,7 @@ export default function CourseDetailPageComponent({
               <div style={{ textAlign: "center" }}>
                 <Title level={3}>Course Not Found</Title>
                 <Paragraph>
-                  The course "{courseSlug}" could not be found.
+                  The course &ldquo;{courseSlug}&rdquo; could not be found.
                 </Paragraph>
                 <Button
                   type="primary"

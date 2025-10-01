@@ -115,7 +115,7 @@ export default function ForgotPasswordComponent() {
                     Check Your Email
                   </Title>
                   <Text style={{ color: "#666", fontSize: "16px" }}>
-                    We've sent password reset instructions to your email
+                    We&apos;ve sent password reset instructions to your email
                   </Text>
                 </div>
 
@@ -125,7 +125,7 @@ export default function ForgotPasswordComponent() {
                   description={
                     <div>
                       <p>
-                        We've sent password reset instructions to <strong>{email}</strong>
+                        We&apos;ve sent password reset instructions to <strong>{email}</strong>
                       </p>
                       <p style={{ marginBottom: 0 }}>
                         Please check your email and follow the instructions to reset your password.
@@ -146,7 +146,7 @@ export default function ForgotPasswordComponent() {
                 {/* Instructions */}
                 <div style={{ marginBottom: "2rem" }}>
                   <Title level={4} style={{ color: "#1a1a1a", marginBottom: "1rem" }}>
-                    What's Next?
+                    What&apos;s Next?
                   </Title>
                   <div style={{ color: "#666", fontSize: "14px", lineHeight: "1.6" }}>
                     <ol style={{ paddingLeft: "1.5rem", margin: 0 }}>
@@ -220,7 +220,7 @@ export default function ForgotPasswordComponent() {
                 {/* Help Text */}
                 <div style={{ textAlign: "center", marginTop: "2rem" }}>
                   <Text style={{ color: "#999", fontSize: "14px" }}>
-                    Didn't receive the email? Check your spam folder or{" "}
+                    Didn&apos;t receive the email? Check your spam folder or{" "}
                     <Link
                       href="/contact"
                       style={{
@@ -294,7 +294,7 @@ export default function ForgotPasswordComponent() {
                   Forgot Password?
                 </Title>
                 <Text style={{ color: "#666", fontSize: "16px" }}>
-                  Enter your email address and we'll send you a link to reset your password
+                  Enter your email address and we&apos;ll send you a link to reset your password
                 </Text>
               </div>
 
@@ -442,8 +442,8 @@ export default function ForgotPasswordComponent() {
                   </Text>
                 </div>
                 <Text style={{ color: "#666", fontSize: "14px", lineHeight: "1.5" }}>
-                  If you're having trouble resetting your password, please check your spam folder or contact our support team. 
-                  We're here to help you regain access to your account.
+                  If you&apos;re having trouble resetting your password, please check your spam folder or contact our support team. 
+                  We&apos;re here to help you regain access to your account.
                 </Text>
               </div>
             </Card>

@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 
 export interface IEventRegistration {
   id: string;
@@ -20,12 +19,7 @@ export interface IEventRegistration {
   updatedAt: string;
 }
 
-export const eventRegistrationAPI = createApi({
-  reducerPath: "eventRegistrationAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["EventRegistration"],
+export const eventRegistrationAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getUserEventRegistrations: build.query<IEventRegistration[], string>({
       query: (userId) => `/event-registrations?userId=${userId}`,
@@ -55,6 +49,7 @@ export const eventRegistrationAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const { 

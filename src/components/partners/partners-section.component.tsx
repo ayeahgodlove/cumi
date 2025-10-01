@@ -49,7 +49,7 @@ export const PartnersSection = () => {
     <section
       style={{
         padding: "80px 0",
-        background: "linear-gradient(180deg, #ffffff 0%, #f8fafb 100%)",
+        // background: "linear-gradient(180deg, #ffffff 0%, #f8fafb 100%)",
         position: "relative",
         overflow: "hidden",
       }}

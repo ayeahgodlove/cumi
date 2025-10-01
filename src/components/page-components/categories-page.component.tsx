@@ -15,7 +15,7 @@ export default function CategoriesPageComponent() {
     isFetching,
   } = postAPI.useFetchAllPostsQuery({});
 
-  const posts = postsResponse?.data || [];
+  const posts = postsResponse || [];
 
   const {
     data: categories,

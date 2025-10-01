@@ -117,7 +117,7 @@ export default function CourseLessonsPage({ params }: CourseLessonsPageProps) {
         <Space direction="vertical" size={4}>
           <Text strong>{title}</Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            Duration: {record.duration} minutes
+            Duration: {record.durationMinutes} minutes
           </Text>
         </Space>
       ),

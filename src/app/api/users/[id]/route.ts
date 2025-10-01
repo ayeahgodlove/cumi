@@ -78,12 +78,13 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       );
     }
 
+    const userItem = existingUser.toJSON()
     // Create DTO with existing data and new updates
     const dto = new UserRequestDto({
-      ...existingUser.toJSON(),
+      ...userItem,
       ...body,
       // Don't allow changing password through this endpoint
-      password: existingUser.password,
+      password: userItem.password,
     });
 
     const validationErrors = await validate(dto);
@@ -137,13 +138,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
       );
     }
 
-    const deleted = await userUseCase.deleteUser(params.id);
-    if (!deleted) {
-      return NextResponse.json(
-        { message: "User not found", success: false, data: null, validationErrors: [] },
-        { status: 404 }
-      );
-    }
+    await userUseCase.deleteUser(params.id);
 
     return NextResponse.json(
       { message: "User deleted successfully!", success: true, data: null, validationErrors: [] },

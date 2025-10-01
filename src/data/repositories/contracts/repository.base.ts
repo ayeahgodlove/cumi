@@ -58,6 +58,7 @@ export interface IPostRepository
   findBySlug(slug: string): Promise<InstanceType<typeof Post> | null>;
   findByCategory(category: string): Promise<InstanceType<typeof Post>[] | null>;
   findByTag(tag: string): Promise<InstanceType<typeof Post>[] | null>;
+  findPublished(): Promise<InstanceType<typeof Post>[]>;
 }
 
 export interface ICourseRepository
@@ -91,6 +92,9 @@ export interface IQuizRepository
   extends IRepository<IQuiz, InstanceType<typeof Quiz>> {
   findByQuestion(question: string): Promise<InstanceType<typeof Quiz> | null>;
   findBySlug(slug: string): Promise<InstanceType<typeof Quiz> | null>;
+  findByLessonId(lessonId: string): Promise<InstanceType<typeof Quiz>[]>;
+  findByModuleId(moduleId: string): Promise<InstanceType<typeof Quiz>[]>;
+  findByCourseId(courseId: string): Promise<InstanceType<typeof Quiz>[]>;
 }
 
 export interface IOpportunityRepository

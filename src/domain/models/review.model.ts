@@ -9,7 +9,7 @@ export interface IReview {
   wouldRecommend: boolean;
   difficulty?: 'very_easy' | 'easy' | 'medium' | 'hard' | 'very_hard';
   isAnonymous: boolean;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'flagged';
   helpfulVotes: number;
   language: 'french' | 'english' | 'both';
   createdAt: Date;

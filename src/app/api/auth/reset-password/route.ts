@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { userUseCase } from "@domain/usecases/user.usecase";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
 import bcrypt from "bcrypt";
+
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by reset token
-    const user = await userUseCase.getUserByResetToken(token);
+    const user = await userUseCase.getUserByResetToken(token) as any;
     if (!user) {
       return NextResponse.json(
         { error: "Invalid or expired reset token" },
@@ -47,7 +51,7 @@ export async function POST(request: NextRequest) {
       resetToken: null,
       resetTokenExpiry: null,
       lastPasswordChange: new Date()
-    });
+    } as any);
 
     return NextResponse.json(
       { message: "Password has been reset successfully" },

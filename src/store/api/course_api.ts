@@ -1,18 +1,12 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseAPI } from "./base-api";
 import { ICourse } from "@domain/models/course";
-import { BASE_URL } from "@constants/api-url";
 
 interface ISort {
   searchTitle: string;
   sortBy?: "date" | "title" | "category" | "level";
 }
 
-export const courseAPI = createApi({
-  reducerPath: "courseAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Course"],
+export const courseAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleCourse: build.query<ICourse, string>({
       query: (courseId) => `/courses/${courseId}`,
@@ -32,6 +26,7 @@ export const courseAPI = createApi({
       providesTags: (result) => ["Course"],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

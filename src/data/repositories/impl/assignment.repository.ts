@@ -5,7 +5,7 @@ import { IAssignmentRepository } from "@data/repositories/contracts/repository.b
 export class AssignmentRepository implements IAssignmentRepository {
   async create(data: IAssignment): Promise<InstanceType<typeof Assignment>> {
     try {
-      const assignment = await Assignment.create(data);
+      const assignment = await Assignment.create(data as any);
       return assignment;
     } catch (error) {
       throw error;
@@ -47,7 +47,7 @@ export class AssignmentRepository implements IAssignmentRepository {
 
   async update(data: IAssignment): Promise<InstanceType<typeof Assignment>> {
     try {
-      const [affectedCount] = await Assignment.update(data, {
+      const [affectedCount] = await Assignment.update(data as any, {
         where: { id: data.id }
       });
       
@@ -148,8 +148,6 @@ export class AssignmentRepository implements IAssignmentRepository {
 
   async findByLessonId(lessonId: string): Promise<InstanceType<typeof Assignment>[]> {
     try {
-      console.log("AssignmentRepository: Finding assignments for lessonId:", lessonId);
-      
       const assignments = await Assignment.findAll({
         where: { lessonId },
         include: [
@@ -161,17 +159,8 @@ export class AssignmentRepository implements IAssignmentRepository {
         order: [['assignmentOrder', 'ASC']],
       });
       
-      console.log("AssignmentRepository: Found assignments:", assignments.length);
-      console.log("AssignmentRepository: Assignment details:", assignments.map(a => ({
-        id: a.id,
-        title: a.title,
-        lessonId: a.lessonId,
-        status: a.status
-      })));
-      
       return assignments;
     } catch (error) {
-      console.error("AssignmentRepository: Error finding assignments by lessonId:", error);
       throw error;
     }
   }

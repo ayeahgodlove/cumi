@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
             <MailOutlined style={{ fontSize: 48, color: '#52c41a' }} />
             <Title level={3}>Check Your Email</Title>
             <Text>
-              We've sent a password reset link to your email address. 
+              We&apos;ve sent a password reset link to your email address. 
               Please check your inbox and follow the instructions to reset your password.
             </Text>
             <Text type="secondary">
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
             <LockOutlined style={{ fontSize: 48, color: '#1890ff' }} />
             <Title level={2}>Forgot Password?</Title>
             <Text type="secondary">
-              Enter your email address and we'll send you a link to reset your password.
+              Enter your email address and we&apos;ll send you a link to reset your password.
             </Text>
           </div>
 

@@ -16,7 +16,7 @@ export default function TagsPageComponent() {
     isFetching,
   } = postAPI.useFetchAllPostsQuery({});
 
-  const posts = postsResponse?.data || [];
+  const posts = postsResponse || [];
 
   const {
     data: tags,

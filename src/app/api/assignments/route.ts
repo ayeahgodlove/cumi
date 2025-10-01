@@ -8,11 +8,14 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { notificationService } from "@services/notification.service";
-import { courseUseCase } from "@domain/usecases/course.usecase";
+import { CourseUseCase } from "@domain/usecases/course.usecase";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
 
 const assignmentRepository = new AssignmentRepository();
 const assignmentUseCase = new AssignmentUseCase(assignmentRepository);
 const assignmentMapper = new AssignmentMapper();
+const courseRepository = new CourseRepository();
+const courseUseCase = new CourseUseCase(courseRepository);
 
 export async function GET(request: NextRequest) {
   try {
@@ -105,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Send assignment submission notification email
     try {
       const assignmentData = dto.toData();
-      const course = await courseUseCase.getCourseById(assignmentData.courseId);
+      const course = await courseUseCase.getCourseById(assignmentData.courseId) as any;
       
       if (course) {
         await notificationService.notifyAssignmentSubmission(

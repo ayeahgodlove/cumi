@@ -5,8 +5,8 @@ import { IModuleRepository } from "@data/repositories/contracts/repository.base"
 export class ModuleRepository implements IModuleRepository {
   async create(data: IModule): Promise<InstanceType<typeof Module>> {
     try {
-      const module = await Module.create(data as any);
-      return module;
+      const moduleItem = await Module.create(data as any);
+      return moduleItem;
     } catch (error) {
       throw error;
     }
@@ -14,13 +14,13 @@ export class ModuleRepository implements IModuleRepository {
 
   async findById(id: string): Promise<InstanceType<typeof Module> | null> {
     try {
-      const module = await Module.findByPk(id, {
+      const moduleItem = await Module.findByPk(id, {
         include: [
           { model: Course, as: "moduleCourse" },
           { model: User, as: "instructor" },
         ],
       });
-      return module;
+      return moduleItem;
     } catch (error) {
       throw error;
     }
@@ -74,14 +74,14 @@ export class ModuleRepository implements IModuleRepository {
 
   async findByTitle(title: string): Promise<InstanceType<typeof Module> | null> {
     try {
-      const module = await Module.findOne({
+      const moduleItem = await Module.findOne({
         where: { title },
         include: [
           { model: Course, as: "moduleCourse" },
           { model: User, as: "instructor" },
         ],
       });
-      return module;
+      return moduleItem;
     } catch (error) {
       throw error;
     }
@@ -89,14 +89,14 @@ export class ModuleRepository implements IModuleRepository {
 
   async findBySlug(slug: string): Promise<InstanceType<typeof Module> | null> {
     try {
-      const module = await Module.findOne({
+      const moduleItem = await Module.findOne({
         where: { slug },
         include: [
           { model: Course, as: "moduleCourse" },
           { model: User, as: "instructor" },
         ],
       });
-      return module;
+      return moduleItem;
     } catch (error) {
       throw error;
     }

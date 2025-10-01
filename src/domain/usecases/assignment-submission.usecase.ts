@@ -52,7 +52,7 @@ export class AssignmentSubmissionUseCase {
     try {
       const submission = await this.assignmentSubmissionRepository.findById(id);
       if (!submission) {
-        throw new NotFoundException(`Assignment submission with id ${id} not found`);
+        throw new NotFoundException(`Assignment submission with id ${id} not found`, "ASSIGNMENT_SUBMISSION_NOT_FOUND");
       }
       return submission;
     } catch (error) {
@@ -123,7 +123,7 @@ export class AssignmentSubmissionUseCase {
     try {
       const existingSubmission = await this.assignmentSubmissionRepository.findById(submission.id);
       if (!existingSubmission) {
-        throw new NotFoundException(`Assignment submission with id ${submission.id} not found`);
+        throw new NotFoundException(`Assignment submission with id ${submission.id} not found`, "ASSIGNMENT_SUBMISSION_NOT_FOUND");
       }
 
       return await this.assignmentSubmissionRepository.update(submission);
@@ -137,7 +137,7 @@ export class AssignmentSubmissionUseCase {
     try {
       const existingSubmission = await this.assignmentSubmissionRepository.findById(id);
       if (!existingSubmission) {
-        throw new NotFoundException(`Assignment submission with id ${id} not found`);
+        throw new NotFoundException(`Assignment submission with id ${id} not found`, "ASSIGNMENT_SUBMISSION_NOT_FOUND");
       }
 
       // Check if user owns this submission

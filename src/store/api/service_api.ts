@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IService } from "@domain/models/service.model";
 
-export const serviceAPI = createApi({
-  reducerPath: "serviceAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Service"],
+export const serviceAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleService: build.query<IService, string>({
       query: (serviceId) => `/services/${serviceId}`,
@@ -20,4 +14,5 @@ export const serviceAPI = createApi({
       providesTags: ["Service"],
     }),
   }),
+  overrideExisting: false,
 });

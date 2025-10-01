@@ -16,7 +16,7 @@ export async function GET(
 ) {
   try {
     const lesson = await lessonUseCase.getLessonById(params.id);
-    
+
     if (!lesson) {
       return NextResponse.json(
         {
@@ -92,10 +92,10 @@ export async function PUT(
       );
     }
 
-    const updatedLesson = await lessonUseCase.updateLesson(
-      params.id,
-      dto.toUpdateData(existingLesson)
-    );
+    const updatedLesson = await lessonUseCase.updateLesson({
+      ...dto.toUpdateData(existingLesson as any),
+      id: params.id,
+    });
 
     return NextResponse.json({
       data: updatedLesson,
@@ -133,7 +133,7 @@ export async function DELETE(
 
   try {
     await lessonUseCase.deleteLesson(params.id);
-    
+
     return NextResponse.json({
       data: null,
       message: "Lesson deleted successfully",

@@ -93,11 +93,11 @@ export class UserRequestDto {
     this.accountStatus = data.accountStatus;
     this.address = data.address;
     this.role = data.role;
-    this.verified = data.verified;
+    this.verified = data.verified ? Boolean(data.verified) : undefined;
     this.timezone = data.timezone;
     this.locale = data.locale;
-    this.emailNotifications = data.emailNotifications;
-    this.smsNotifications = data.smsNotifications;
+    this.emailNotifications = data.emailNotifications ? Boolean(data.emailNotifications) : undefined;
+    this.smsNotifications = data.smsNotifications ? Boolean(data.smsNotifications) : undefined;
   }
 
   toData(): IUser {

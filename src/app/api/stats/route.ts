@@ -163,9 +163,9 @@ export async function GET(request: NextRequest) {
     if (isCreator && session?.user?.id) {
       try {
         // Get creator's courses
-        const creatorCourses = await courseRepository.getAll().then(courses => 
+        const creatorCourses = (await courseRepository.getAll().then(courses => 
           courses.filter((c: any) => c.userId === userId)
-        ).catch(() => []);
+        ).catch(() => [])) as any[];
         
         // Calculate course-related stats
         totalCourseEnrollments = creatorCourses.length; // This would need enrollment tracking

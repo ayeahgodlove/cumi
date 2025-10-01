@@ -10,6 +10,7 @@ import { AppNav } from "@components/nav/nav.component";
 import { AppHero } from "@components/hero/hero.component";
 import { AppService } from "@components/service/service.component";
 import { PartnersSection } from "@components/partners/partners-section.component";
+import { ServicesSection } from "@components/services/services-section.component";
 
 export default function HomePageComponent() {
   return (
@@ -27,6 +28,9 @@ export default function HomePageComponent() {
 
       {/* feature section */}
       <FeatureSection />
+
+      {/* services carousel section */}
+      <ServicesSection showViewAllButton={true} showContainer={true} />
 
       {/* service section */}
       <AppService />

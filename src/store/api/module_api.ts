@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { IModule } from "@domain/models/module.model";
 
 interface IModuleSearchParams {
@@ -9,12 +8,7 @@ interface IModuleSearchParams {
   limit?: number;
 }
 
-export const moduleAPI = createApi({
-  reducerPath: "moduleAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["Module"],
+export const moduleAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getSingleModule: build.query<IModule, string>({
       query: (moduleId) => `/modules/${moduleId}`,
@@ -88,6 +82,7 @@ export const moduleAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

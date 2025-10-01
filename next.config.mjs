@@ -37,17 +37,6 @@ const nextConfig = withNextIntl({
   crossOrigin: "anonymous",
   poweredByHeader: false,
   
-  // Module configuration
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: "babel-loader",
-        exclude: /node_modules\/(?!sequelize)/,
-      },
-    ],
-  },
-  
   // Experimental features for performance
   experimental: {
     optimizeCss: true,

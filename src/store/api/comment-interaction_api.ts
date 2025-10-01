@@ -1,13 +1,7 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@constants/api-url";
+import { baseAPI } from "./base-api";
 import { ICommentInteractionStats } from "@domain/models/comment-interaction.model";
 
-export const commentInteractionAPI = createApi({
-  reducerPath: "commentInteractionAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${BASE_URL}`,
-  }),
-  tagTypes: ["CommentInteraction"],
+export const commentInteractionAPI = baseAPI.injectEndpoints({
   endpoints: (build) => ({
     getCommentStats: build.query<ICommentInteractionStats, { commentId: string; userId?: string }>({
       query: ({ commentId, userId }) => `/comments/interactions/stats?commentId=${commentId}&userId=${userId || ''}`,
@@ -35,6 +29,7 @@ export const commentInteractionAPI = createApi({
       ],
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

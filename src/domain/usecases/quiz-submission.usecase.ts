@@ -38,7 +38,7 @@ export class QuizSubmissionUseCase {
     try {
       const submission = await this.quizSubmissionRepository.findById(id);
       if (!submission) {
-        throw new NotFoundException(`Quiz submission with id ${id} not found`);
+        throw new NotFoundException(`Quiz submission with id ${id} not found`, "QUIZ_SUBMISSION_NOT_FOUND");
       }
       return submission;
     } catch (error) {
@@ -109,7 +109,7 @@ export class QuizSubmissionUseCase {
     try {
       const existingSubmission = await this.quizSubmissionRepository.findById(submission.id);
       if (!existingSubmission) {
-        throw new NotFoundException(`Quiz submission with id ${submission.id} not found`);
+        throw new NotFoundException(`Quiz submission with id ${submission.id} not found`, "QUIZ_SUBMISSION_NOT_FOUND");
       }
 
       return await this.quizSubmissionRepository.update(submission);
@@ -123,7 +123,7 @@ export class QuizSubmissionUseCase {
     try {
       const existingSubmission = await this.quizSubmissionRepository.findById(id);
       if (!existingSubmission) {
-        throw new NotFoundException(`Quiz submission with id ${id} not found`);
+        throw new NotFoundException(`Quiz submission with id ${id} not found`, "QUIZ_SUBMISSION_NOT_FOUND");
       }
 
       // Check if user owns this submission

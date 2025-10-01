@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-export async function up(knex) {
+export async function up(knex: import("knex").Knex) {
   return knex.schema.createTable('post_interactions', function (table) {
     table.string('id', 10).primary();
     table.string('postId', 10).notNullable();
@@ -27,6 +27,6 @@ export async function up(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-export async function down(knex) {
+export async function down(knex: import("knex").Knex) {
   return knex.schema.dropTable('post_interactions');
 }
