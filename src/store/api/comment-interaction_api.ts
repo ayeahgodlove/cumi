@@ -9,6 +9,7 @@ export const commentInteractionAPI = baseAPI.injectEndpoints({
         { type: "CommentInteraction", id: commentId },
         { type: "CommentInteraction", id: "LIST" },
       ],
+      keepUnusedDataFor: 90, // Cache for 90 seconds
     }),
     handleCommentInteraction: build.mutation<ICommentInteractionStats, { commentId: string; action: 'like' | 'dislike' }>({
       query: ({ commentId, action }) => ({
@@ -29,7 +30,7 @@ export const commentInteractionAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

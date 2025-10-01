@@ -9,6 +9,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { validate } from "class-validator";
 import { nanoid } from "nanoid";
 
+export const dynamic = 'force-dynamic';
+
 const reviewRepository = new ReviewRepository();
 const courseRepository = new CourseRepository();
 const reviewUseCase = new ReviewUseCase(reviewRepository, courseRepository);
@@ -260,3 +262,4 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+

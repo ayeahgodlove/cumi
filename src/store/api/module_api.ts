@@ -82,7 +82,7 @@ export const moduleAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

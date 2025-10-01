@@ -156,7 +156,7 @@ export const quizSubmissionAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

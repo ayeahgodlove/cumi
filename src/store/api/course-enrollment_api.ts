@@ -93,7 +93,7 @@ export const courseEnrollmentAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

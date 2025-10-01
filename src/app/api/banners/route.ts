@@ -7,6 +7,8 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const bannerRepository = new BannerRepository();
 const bannerUseCase = new BannerUseCase(bannerRepository);
 
@@ -97,3 +99,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

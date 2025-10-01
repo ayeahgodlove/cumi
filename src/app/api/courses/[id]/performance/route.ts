@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import authOptions from "@lib/options";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const quizSubmissionRepository = new QuizSubmissionRepository();
 const assignmentSubmissionRepository = new AssignmentSubmissionRepository();
 const quizSubmissionUseCase = new QuizSubmissionUseCase(quizSubmissionRepository);

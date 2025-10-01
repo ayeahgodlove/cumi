@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { UserUseCase } from "@domain/usecases/user.usecase";
 import { UserRepository } from "@data/repositories/impl/user.repository";
 import { emailService } from "@services/email.service";
-import crypto from "crypto";
+import { nanoid } from "nanoid";
 
 const userRepository = new UserRepository();
 const userUseCase = new UserUseCase(userRepository);
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const user = await userUseCase.getUserByEmail(email) as any;
+    const user = await userUseCase.getUserByEmail(email);
     if (!user) {
       // Don't reveal if email exists or not for security
       return NextResponse.json(
@@ -29,31 +29,51 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = nanoid(32);
     const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
+
+    // Get user data
+    const userData = user.toJSON ? user.toJSON() : user;
 
     // Update user with reset token
     await userUseCase.updateUser({
-      ...user,
+      ...userData,
       resetToken,
       resetTokenExpiry
     } as any);
 
     // Send password reset email
-    await emailService.sendPasswordResetEmail(
-      user.email,
-      user.fullName || user.username,
+    const emailSent = await emailService.sendPasswordResetEmail(
+      userData.email,
+      userData.fullName || userData.username,
       resetToken
-    );
+    ).catch((emailError) => {
+      console.error("Email service error:", emailError);
+      return null;
+    });
 
     return NextResponse.json(
-      { message: "If the email exists, a password reset link has been sent" },
+      { 
+        message: "Password reset link has been sent to your email",
+        ...(process.env.NODE_ENV === 'development' && {
+          resetToken,
+          resetUrl,
+          emailSent: !!emailSent,
+          note: 'Development mode: Copy the reset URL above'
+        })
+      },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in password reset request:", error);
+    console.error("Error in password reset:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { 
+        error: error instanceof Error ? error.message : "Failed to process password reset",
+        ...(process.env.NODE_ENV === 'development' && {
+          details: error instanceof Error ? error.stack : String(error)
+        })
+      },
       { status: 500 }
     );
   }

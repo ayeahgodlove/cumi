@@ -72,6 +72,7 @@ export default function CourseReviewsPage() {
     },
     {
       skip: !courseId,
+      pollingInterval: 45000, // Poll every 45 seconds for new reviews
     }
   );
 

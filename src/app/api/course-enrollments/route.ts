@@ -8,6 +8,8 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { notificationService } from "@services/notification.service";
 import { CourseUseCase } from "@domain/usecases/course.usecase";
+
+export const dynamic = 'force-dynamic';
 import { UserRepository } from "@data/repositories/impl/user.repository";
 import { UserUseCase } from "@domain/usecases/user.usecase";
 import { CourseRepository } from "@data/repositories/impl/course.repository";

@@ -138,6 +138,7 @@ export default function CourseDetailPageComponent({
   const { data: enrollments, isLoading: enrollmentsLoading } =
     useGetCourseEnrollmentsByCourseQuery(course?.id || "", {
       skip: !course?.id,
+      pollingInterval: 60000, // Poll every 60 seconds for new enrollments
     });
 
   // Check enrollment status when course loads

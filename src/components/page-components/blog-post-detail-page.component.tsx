@@ -86,7 +86,10 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     isLoading: loadingStats,
   } = postInteractionAPI.useGetPostStatsQuery(
     { postId: post?.id || '', userId: session?.user?.id },
-    { skip: !post?.id }
+    { 
+      skip: !post?.id,
+      pollingInterval: 15000, // Poll every 15 seconds for updated stats
+    }
   );
 
   // Provide default values for postStats with proper null/undefined handling

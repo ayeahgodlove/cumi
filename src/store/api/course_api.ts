@@ -26,7 +26,7 @@ export const courseAPI = baseAPI.injectEndpoints({
       providesTags: (result) => ["Course"],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

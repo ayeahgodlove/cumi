@@ -262,7 +262,7 @@ export const learningAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

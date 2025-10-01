@@ -14,5 +14,5 @@ export const serviceAPI = baseAPI.injectEndpoints({
       providesTags: ["Service"],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });

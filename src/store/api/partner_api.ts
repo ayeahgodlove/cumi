@@ -40,7 +40,7 @@ export const partnerAPI = baseAPI.injectEndpoints({
       providesTags: ['Partner'],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

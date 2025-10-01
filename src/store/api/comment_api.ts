@@ -19,6 +19,7 @@ export const commentAPI = baseAPI.injectEndpoints({
         { type: "Comment", id: postId },
         { type: "Comment", id: "LIST" },
       ],
+      keepUnusedDataFor: 120, // Keep comments cached for 2 minutes
     }),
     createComment: build.mutation<IComment, { content: string; postId: string; parentId?: string }>({
       query: (comment) => ({
@@ -53,7 +54,7 @@ export const commentAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

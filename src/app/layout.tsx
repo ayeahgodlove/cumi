@@ -4,6 +4,7 @@ import React, { Suspense } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import "../styles/app.scss";
 import "../styles/home.scss";
+import "../styles/nav-responsive.css";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { RefineContext } from "@contexts/refine-context";
@@ -14,6 +15,7 @@ import {
   defaultImages,
 } from "../lib/seo";
 import Script from "next/script";
+import ServiceWorkerProvider from "@components/service-worker-provider";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "CUMI - Leading Software Development & Digital Solutions Company",
@@ -84,6 +86,36 @@ export default async function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+        {/* Preload critical resources */}
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          as="style"
+        />
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+          as="style"
+        />
+        <link
+          rel="preload"
+          href="/cumi-green.jpg"
+          as="image"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://www.googletagmanager.com"
+        />
+
         {/* SEO metadata */}
         <meta name="robots" content="index, follow" />
         <meta name="theme-color" content="#15b9a1" />
@@ -91,6 +123,13 @@ export default async function RootLayout({
           name="google-site-verification"
           content="EwAFsxtAXhVOAGglKgaihgaEa3YiI9yB7cOzQc4qBw4"
         />
+        
+        {/* PWA manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="application-name" content="CUMI" />
+        <meta name="apple-mobile-web-app-title" content="CUMI" />
         {/* Apple Touch Icons */}
         <link
           rel="apple-touch-icon"
@@ -195,32 +234,34 @@ export default async function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           ></iframe>
         </noscript>
-        <Suspense
-          fallback={
-            <Spin
-              size="large"
-              indicator={
-                <LoadingOutlined
-                  style={{
-                    fontSize: 48,
-                  }}
-                  spin
-                />
-              }
-              style={{
-                minHeight: "65vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              fullscreen
-            />
-          }
-        >
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <RefineContext defaultMode={defaultMode}>{children}</RefineContext>
-          </NextIntlClientProvider>
-        </Suspense>
+        <ServiceWorkerProvider>
+          <Suspense
+            fallback={
+              <Spin
+                size="large"
+                indicator={
+                  <LoadingOutlined
+                    style={{
+                      fontSize: 48,
+                    }}
+                    spin
+                  />
+                }
+                style={{
+                  minHeight: "65vh",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                fullscreen
+              />
+            }
+          >
+            <NextIntlClientProvider locale={locale} messages={messages}>
+              <RefineContext defaultMode={defaultMode}>{children}</RefineContext>
+            </NextIntlClientProvider>
+          </Suspense>
+        </ServiceWorkerProvider>
 
         <script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

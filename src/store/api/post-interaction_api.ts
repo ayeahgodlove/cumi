@@ -9,6 +9,7 @@ export const postInteractionAPI = baseAPI.injectEndpoints({
         { type: "PostInteraction", id: postId },
         { type: "PostInteraction", id: "LIST" },
       ],
+      keepUnusedDataFor: 90, // Cache for 90 seconds (interactions change frequently)
     }),
     handlePostInteraction: build.mutation<IPostInteractionStats, { postId: string; action: 'like' | 'dislike' }>({
       query: ({ postId, action }) => ({
@@ -36,7 +37,7 @@ export const postInteractionAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

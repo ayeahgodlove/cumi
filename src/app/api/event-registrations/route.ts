@@ -5,6 +5,8 @@ import { EventRegistration } from "@data/entities/index";
 import { nanoid } from "nanoid";
 import sequelize from "@database/db-sequelize.config";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
 

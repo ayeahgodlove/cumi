@@ -67,7 +67,9 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     data: commentsData,
     isLoading: loading,
     refetch: refetchComments,
-  } = commentAPI.useGetCommentsByPostIdQuery(postId);
+  } = commentAPI.useGetCommentsByPostIdQuery(postId, {
+    pollingInterval: 30000, // Poll every 30 seconds for new comments
+  });
 
   const [createComment, { isLoading: submitting }] = commentAPI.useCreateCommentMutation();
   const [handleCommentInteraction] = commentInteractionAPI.useHandleCommentInteractionMutation();

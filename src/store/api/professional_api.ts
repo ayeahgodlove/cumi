@@ -51,7 +51,7 @@ export const professionalAPI = baseAPI.injectEndpoints({
       providesTags: ['Professional'],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

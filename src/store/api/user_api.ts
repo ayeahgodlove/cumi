@@ -13,5 +13,5 @@ export const userAPI = baseAPI.injectEndpoints({
       query: (page = 1) => `/users?page=${page}`,
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });

@@ -125,6 +125,7 @@ export const reviewAPI = baseAPI.injectEndpoints({
         { type: "CourseReviews", id: courseId },
         ...(result?.reviews || []).map(({ id }) => ({ type: "Review" as const, id })),
       ],
+      keepUnusedDataFor: 180, // Cache reviews for 3 minutes
     }),
 
     // Get user's reviews
@@ -212,7 +213,7 @@ export const reviewAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

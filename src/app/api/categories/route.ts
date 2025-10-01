@@ -7,6 +7,8 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const categoryRepository = new CategoryRepository();
 const categoryUseCase = new CategoryUseCase(categoryRepository);
 
@@ -92,3 +94,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

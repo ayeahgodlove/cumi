@@ -2,6 +2,8 @@ import { CourseEnrollmentRepository } from "@data/repositories/impl/course-enrol
 import { CourseEnrollmentUseCase } from "@domain/usecases/course-enrollment.usecase";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const courseEnrollmentRepository = new CourseEnrollmentRepository();
 const courseEnrollmentUseCase = new CourseEnrollmentUseCase(courseEnrollmentRepository);
 
@@ -43,3 +45,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

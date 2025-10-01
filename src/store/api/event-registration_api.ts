@@ -49,7 +49,7 @@ export const eventRegistrationAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const { 

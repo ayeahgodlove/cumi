@@ -16,7 +16,7 @@ export const publicStatsAPI = baseAPI.injectEndpoints({
       providesTags: ["PublicStats"],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const { useGetPublicStatsQuery } = publicStatsAPI;

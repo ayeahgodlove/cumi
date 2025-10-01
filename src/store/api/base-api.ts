@@ -8,6 +8,11 @@ export const baseAPI = createApi({
     baseUrl: `${BASE_URL}`,
     credentials: 'include',
   }),
+  // Cache configuration
+  keepUnusedDataFor: 60, // Keep cache for 60 seconds
+  refetchOnMountOrArgChange: 30, // Refetch if data is older than 30 seconds
+  refetchOnFocus: false, // Don't refetch when window regains focus
+  refetchOnReconnect: true, // Refetch when reconnecting
   tagTypes: [
     "Post",
     "Course",

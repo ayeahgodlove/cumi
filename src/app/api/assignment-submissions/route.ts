@@ -8,6 +8,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { validate } from "class-validator";
 import { nanoid } from "nanoid";
 
+export const dynamic = 'force-dynamic';
+
 const assignmentSubmissionRepository = new AssignmentSubmissionRepository();
 const assignmentSubmissionUseCase = new AssignmentSubmissionUseCase(assignmentSubmissionRepository);
 const assignmentSubmissionMapper = new AssignmentSubmissionMapper();
@@ -277,3 +279,4 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+

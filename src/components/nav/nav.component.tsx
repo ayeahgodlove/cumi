@@ -152,42 +152,59 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
           transition: "box-shadow 0.3s ease",
         }}
       >
-        <div className="container-fluid" style={{ width: "100%", maxWidth: "none", paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px", paddingBottom: "8px" }}>
-          <Link href={"/"}>
-            <Image
-              src={`${logoPath || '/'}cumi-green.jpg`}
-              height={70}
-              width={140}
-              quality={100}
-              alt="CumiTech Logo"
-              priority
-              style={{ 
-                marginRight: 15,
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                transition: 'transform 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-              }}
-            />
-          </Link>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-6" style={{ gap: "8px" }}>
+        <div className="container-fluid" style={{ 
+          width: "100%", 
+          maxWidth: "none", 
+          padding: "8px 16px"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "nowrap"
+          }}>
+            <Link href={"/"} style={{ flexShrink: 0, order: 1 }}>
+              <Image
+                src={`${logoPath || '/'}cumi-green.jpg`}
+                height={60}
+                width={120}
+                quality={100}
+                alt="CumiTech Logo"
+                priority
+                style={{ 
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              />
+            </Link>
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+              style={{ flexShrink: 0, order: 2, marginLeft: 'auto' }}
+            >
+              <span className="navbar-toggler-icon"></span>
+            </button>
+          </div>
+          <div className="collapse navbar-collapse" id="navbarSupportedContent" style={{ overflow: "hidden" }}>
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0" style={{ 
+              gap: "4px",
+              flexWrap: "nowrap",
+              overflow: "auto",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none"
+            }}>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
@@ -197,10 +214,12 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     color: pathname === "/" ? "#20b2aa" : "inherit",
                     fontWeight: pathname === "/" ? "600" : "500",
                     letterSpacing: "0.3px",
-                    padding: "8px 16px",
+                    padding: "8px 12px",
                     borderRadius: "8px",
                     transition: "all 0.3s ease",
                     position: "relative",
+                    whiteSpace: "nowrap",
+                    fontSize: "15px",
                   }}
                   aria-current="page"
                   href="/"
@@ -235,8 +254,10 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     className={getLinkClassName(path)}
                     style={{
                       ...getLinkStyle(path),
-                      padding: "8px 16px",
+                      padding: "8px 12px",
                       borderRadius: "8px",
+                      whiteSpace: "nowrap",
+                      fontSize: "15px",
                     }}
                     href={path}
                     onMouseEnter={(e) => {
@@ -257,8 +278,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                 </li>
               ))}
             </ul>
-            <div className="d-flex flex-sm-column flex-md-row align-items-center">
-              <Space size="middle">
+            <div className="d-flex flex-sm-column flex-md-row align-items-center" style={{ flexShrink: 0 }}>
+              <Space size="small">
                 <LanguageSelector />
                 {status === "loading" ? (
                   <Button 

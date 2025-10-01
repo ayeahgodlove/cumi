@@ -11,6 +11,8 @@ import { notificationService } from "@services/notification.service";
 import { CourseUseCase } from "@domain/usecases/course.usecase";
 import { CourseRepository } from "@data/repositories/impl/course.repository";
 
+export const dynamic = 'force-dynamic';
+
 const assignmentRepository = new AssignmentRepository();
 const assignmentUseCase = new AssignmentUseCase(assignmentRepository);
 const assignmentMapper = new AssignmentMapper();
@@ -143,3 +145,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

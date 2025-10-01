@@ -13,5 +13,5 @@ export const opportunityAPI = baseAPI.injectEndpoints({
       query: (page = 1) => `/opportunities?page=${page}`,
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });

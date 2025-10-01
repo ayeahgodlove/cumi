@@ -13,5 +13,5 @@ export const projectAPI = baseAPI.injectEndpoints({
       query: (page = 1) => `/projects?page=${page}`,
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });

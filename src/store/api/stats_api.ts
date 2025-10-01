@@ -58,7 +58,7 @@ export const statsAPI = baseAPI.injectEndpoints({
       providesTags: ["Stats"],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const { useGetDashboardStatsQuery } = statsAPI;

@@ -4,6 +4,8 @@ import authOptions from "@lib/options";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const commentInteractionRepository = new CommentInteractionRepository();
 const commentInteractionUseCase = new CommentInteractionUseCase(commentInteractionRepository);
 
@@ -121,3 +123,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

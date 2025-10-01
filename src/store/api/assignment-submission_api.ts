@@ -211,7 +211,7 @@ export const assignmentSubmissionAPI = baseAPI.injectEndpoints({
       ],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

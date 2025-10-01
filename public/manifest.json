@@ -10,6 +10,8 @@
   "scope": "/",
   "lang": "en",
   "categories": ["business", "productivity", "technology"],
+  "prefer_related_applications": false,
+  "offline_enabled": true,
   "icons": [
     {
       "src": "/android-icon-36x36.png",

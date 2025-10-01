@@ -9,7 +9,7 @@ import { useNotification } from "@refinedev/core";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
-import { sendPasswordResetEmail, redirectToAuth0PasswordReset, isValidEmail } from "@utils/auth0-password-reset";
+import { isValidEmail } from "@utils/auth0-password-reset";
 
 const { Title, Text } = Typography;
 
@@ -30,22 +30,27 @@ export default function ForgotPasswordComponent() {
         throw new Error('Please enter a valid email address');
       }
 
-      // Send password reset email using Auth0
-      const result = await sendPasswordResetEmail({
-        email: values.email,
-        connection: 'Username-Password-Authentication'
+      // Send password reset request to custom API
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: values.email }),
       });
 
-      if (result.success) {
+      console.log(response);
+
+      const result = await response.json();
+
+      if (response.ok) {
         setEmailSent(true);
         open?.({
           type: "success",
           message: "Password reset email sent!",
-          description: result.message,
+          description: result.message || "Check your email for password reset instructions.",
           key: "password-reset-success",
         });
       } else {
-        throw new Error(result.error || result.message);
+        throw new Error(result.error || result.message || "Failed to send reset email");
       }
     } catch (error) {
       console.error('Password reset error:', error);
@@ -382,37 +387,6 @@ export default function ForgotPasswordComponent() {
                     {loading ? "Sending..." : "Send Reset Link"}
                   </Button>
                 </Form.Item>
-
-                {/* Alternative Method */}
-                <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-                  <Text style={{ color: "#999", fontSize: "14px", marginRight: "8px" }}>
-                    Or
-                  </Text>
-                  <Button
-                    type="link"
-                    onClick={() => {
-                      try {
-                        redirectToAuth0PasswordReset();
-                      } catch (error) {
-                        open?.({
-                          type: "error",
-                          message: "Unable to redirect to password reset",
-                          description: "Please try the email method above or contact support.",
-                          key: "redirect-error",
-                        });
-                      }
-                    }}
-                    style={{
-                      color: "var(--cumi-primary)",
-                      fontSize: "14px",
-                      fontWeight: "500",
-                      padding: 0,
-                      height: "auto",
-                    }}
-                  >
-                    Use Auth0 Password Reset Page
-                  </Button>
-                </div>
               </Form>
 
               {/* Back to Login */}

@@ -48,7 +48,8 @@ export default function EventDetailsPage({ params }: EventDetailsPageProps) {
   const { data: eventResponse, isLoading: eventLoading, error: eventError } = eventAPI.useGetSingleEventQuery(params.id);
   const event = (eventResponse as any)?.data || eventResponse;
   const { data: eventRegistrations = [], isLoading: registrationsLoading } = eventRegistrationAPI.useGetEventRegistrationsByEventQuery(
-    params.id
+    params.id,
+    { pollingInterval: 45000 } // Poll every 45 seconds for new registrations
   );
 
   // Debug logging

@@ -6,6 +6,8 @@ import { getServerSession } from "next-auth";
 import authOptions from "@lib/options";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const courseProgressRepository = new CourseProgressRepository();
 const courseProgressUseCase = new CourseProgressUseCase(courseProgressRepository);
 const courseProgressMapper = new CourseProgressMapper();

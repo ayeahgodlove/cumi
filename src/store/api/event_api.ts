@@ -22,7 +22,7 @@ export const eventAPI = baseAPI.injectEndpoints({
       providesTags: (result) => ["Event"],
     }),
   }),
-  overrideExisting: false,
+  overrideExisting: true,
 });
 
 export const {

@@ -7,6 +7,8 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 const lessonRepository = new LessonRepository();
 const lessonUseCase = new LessonUseCase(lessonRepository);
 
@@ -102,3 +104,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
