@@ -33,6 +33,7 @@ import { IEvent } from "@domain/models/event.model";
 import { useTranslation } from "@contexts/translation.context";
 import { useRouter } from "next/navigation";
 import EventRegistrationModal from "@components/shared/event-registration-modal.component";
+import { RegisterButton, ViewDetailsButton } from "@components/shared/modern-button-styles";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -284,23 +285,69 @@ export default function EventsPageComponent() {
                       </div>
                     }
                     actions={[
-                      <Button
+                      <RegisterButton
                         key="register"
-                        type="primary"
                         icon={<CalendarOutlined />}
                         onClick={() => handleRegisterEvent(event)}
+                        style={{
+                          background: 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)',
+                          border: 'none',
+                          borderRadius: '12px',
+                          fontWeight: 600,
+                          fontSize: '14px',
+                          height: '44px',
+                          padding: '0 24px',
+                          boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(34, 197, 94, 0.4)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(34, 197, 94, 0.3)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
                       >
                         Register
-                      </Button>,
-                      <Button
+                      </RegisterButton>,
+                      <ViewDetailsButton
                         key="view"
                         icon={<EyeOutlined />}
                         onClick={() => {
                           router.push(`/events/${event.slug}`);
                         }}
+                        style={{
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                          border: '2px solid #667eea',
+                          color: '#667eea',
+                          borderRadius: '12px',
+                          fontWeight: 600,
+                          fontSize: '14px',
+                          height: '44px',
+                          padding: '0 24px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                          e.currentTarget.style.color = '#ffffff';
+                          e.currentTarget.style.borderColor = '#667eea';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)';
+                          e.currentTarget.style.color = '#667eea';
+                          e.currentTarget.style.borderColor = '#667eea';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
                       >
                         View Details
-                      </Button>,
+                      </ViewDetailsButton>,
                     ]}
                   >
                     <Card.Meta

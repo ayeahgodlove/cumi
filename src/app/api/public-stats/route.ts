@@ -6,10 +6,13 @@ import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { ProjectRepository } from "@data/repositories/impl/project.repository";
 import { ServiceRepository } from "@data/repositories/impl/service.repository";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     console.log('Public Stats API called');
-    
+
     // Initialize repositories
     const postRepository = new PostRepository();
     const userRepository = new UserRepository();
@@ -18,7 +21,7 @@ export async function GET(request: NextRequest) {
     const projectRepository = new ProjectRepository();
     const serviceRepository = new ServiceRepository();
 
-    // Fetch all counts in parallel with error handling
+    // Fetch counts - only public data
     const [
       totalUsers,
       totalPosts,
@@ -28,7 +31,7 @@ export async function GET(request: NextRequest) {
       totalServices
     ] = await Promise.all([
       userRepository.getAll().then(users => users.length).catch(() => 0),
-      postRepository.getAll().then(posts => posts.length).catch(() => 0),
+      postRepository.getAll().then(posts => posts.filter((p: any) => p.status === 'published').length).catch(() => 0),
       eventRepository.getAll().then(events => events.length).catch(() => 0),
       courseRepository.getAll().then(courses => courses.length).catch(() => 0),
       projectRepository.getAll().then(projects => projects.length).catch(() => 0),
@@ -36,31 +39,30 @@ export async function GET(request: NextRequest) {
     ]);
 
     const stats = {
-      totalUsers,
+      totalProjects,
+      totalServices,
       totalPosts,
       totalEvents,
       totalCourses,
-      totalProjects,
-      totalServices
+      totalUsers
     };
 
     console.log('Public stats retrieved successfully:', stats);
     
-    return NextResponse.json({
-      success: true,
-      message: "Public stats retrieved successfully",
-      data: stats
-    });
+    return NextResponse.json(stats);
 
   } catch (error: any) {
     console.error('Error fetching public stats:', error);
     return NextResponse.json(
       {
-        success: false,
-        message: error.message || "Failed to fetch public stats",
-        data: null,
+        totalProjects: 0,
+        totalServices: 0,
+        totalPosts: 0,
+        totalEvents: 0,
+        totalCourses: 0,
+        totalUsers: 0
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Card, Space, Typography } from "antd";
+import { Card, Space, Typography, Button } from "antd";
 import React from "react";
 import { IPost } from "@domain/models/post.model";
 import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
@@ -10,6 +10,9 @@ import { CiCalendarDate, CiFolderOn } from "react-icons/ci";
 import { format } from "@utils/format";
 import useWindowSize from "@hooks/windows-resize/window-resize.hook";
 import Image from "next/image";
+import { ReadMoreButton } from "@components/shared/modern-button-styles";
+import { EyeOutlined } from "@ant-design/icons";
+import { useTranslation } from "@contexts/translation.context";
 
 const { Meta } = Card;
 const { Title } = Typography;
@@ -24,6 +27,7 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
   const categoryDescription = categories?.find((c) => c.id === post.categoryId);
   const userDescription = users?.find((c) => c.id === post.authorId);
   const { width } = useWindowSize();
+  const { t } = useTranslation();
   return (
     <Card
       hoverable
@@ -49,6 +53,38 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
           />
         </Link>
       }
+      actions={[
+        <ReadMoreButton
+          key="read-more"
+          icon={<EyeOutlined />}
+          onClick={() => window.location.href = `/blog_posts/${post.slug}`}
+          style={{
+            background: 'transparent',
+            border: '2px solid rgba(102, 126, 234, 0.3)',
+            color: '#667eea',
+            borderRadius: '12px',
+            fontWeight: 500,
+            fontSize: '14px',
+            height: '40px',
+            padding: '0 20px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(102, 126, 234, 0.1)';
+            e.currentTarget.style.borderColor = '#667eea';
+            e.currentTarget.style.color = '#667eea';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.borderColor = 'rgba(102, 126, 234, 0.3)';
+            e.currentTarget.style.color = '#667eea';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          {t("blog.read_more")}
+        </ReadMoreButton>
+      ]}
     >
       <Meta
         title={

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Form, Input, Button, message, Card, Row, Col } from "antd";
+import { Form, Input, Button, notification, Card, Row, Col, Space, Typography } from "antd";
+import { SendOutlined, MailOutlined, PhoneOutlined, UserOutlined, MessageOutlined } from "@ant-design/icons";
 import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
@@ -11,11 +12,13 @@ import PhoneNumberInput from "@components/shared/phone-number-input.component";
 import { validatePhoneNumber } from "@utils/country-codes";
 
 const { TextArea } = Input;
+const { Title, Paragraph, Text } = Typography;
 
 export default function ContactUsPageComponent() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const handleSubmit = async (values: any) => {
     setLoading(true);
@@ -28,20 +31,26 @@ export default function ContactUsPageComponent() {
         body: JSON.stringify(values),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to send message");
+        throw new Error(data.error || data.message || "Failed to send message");
       }
 
-      message.success("Message sent successfully! We'll get back to you soon.");
+      api.success({
+        message: t('contact.success_title'),
+        description: t('contact.success_message'),
+        placement: 'topRight',
+        duration: 4,
+      });
       form.resetFields();
     } catch (error) {
       console.error("Error sending message:", error);
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to send message. Please try again."
-      );
+      api.error({
+        message: t('contact.error_title'),
+        description: error instanceof Error ? error.message : t('contact.error_message'),
+        placement: 'topRight',
+      });
     } finally {
       setLoading(false);
     }
@@ -49,6 +58,7 @@ export default function ContactUsPageComponent() {
 
   return (
     <>
+      {contextHolder}
       <div className="container-fluid" style={{ width: "100%", backgroundColor: "white" }}>
         <AppNav logoPath="/" />
       </div>
@@ -59,22 +69,40 @@ export default function ContactUsPageComponent() {
         pageTitle={t('nav.contact_us')}
       />
 
-      <section className="py-5" style={{ backgroundColor: "white" }}>
+      <section className="py-5">
         <div className="container">
-          <Row justify="center">
+          <Row justify="center" gutter={[24, 24]}>
             <Col xs={24} lg={16}>
               <Card
                 style={{
-                  backgroundColor: "white",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  borderRadius: "12px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+                  borderRadius: "16px",
+                  border: "none",
                 }}
               >
-                <div className="text-center mb-4">
-                  <h2 className="mb-3">Get In Touch</h2>
-                  <p className="text-muted">
-                    Have a project in mind? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
-                  </p>
+                <div className="text-center mb-5">
+                  <Space direction="vertical" size="small">
+                    <div
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        width: "60px",
+                        height: "60px",
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        marginBottom: "16px",
+                      }}
+                    >
+                      <MailOutlined style={{ fontSize: "28px", color: "white" }} />
+                    </div>
+                    <Title level={2} style={{ marginBottom: "8px", color: "#1a1a1a" }}>
+                      {t('contact.get_in_touch')}
+                    </Title>
+                    <Paragraph style={{ fontSize: "16px", color: "#666", maxWidth: "500px", margin: "0 auto" }}>
+                      {t('contact.contact_description')}
+                    </Paragraph>
+                  </Space>
                 </div>
 
                 <Form
@@ -89,11 +117,15 @@ export default function ContactUsPageComponent() {
                         name="name"
                         label={t('contact.full_name')}
                         rules={[
-                          { required: true, message: "Please enter your full name" },
-                          { min: 2, message: "Name must be at least 2 characters" },
+                          { required: true, message: t('contact.name_required') },
+                          { min: 2, message: t('contact.name_min_length') },
                         ]}
                       >
-                        <Input placeholder="John Doe" />
+                        <Input 
+                          prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
+                          placeholder={t('contact.name_placeholder')}
+                          style={{ borderRadius: "8px" }}
+                        />
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={12}>
@@ -101,38 +133,50 @@ export default function ContactUsPageComponent() {
                         name="email"
                         label={t('contact.working_mail')}
                         rules={[
-                          { required: true, message: "Please enter your email" },
-                          { type: "email", message: "Please enter a valid email" },
+                          { required: true, message: t('contact.email_required') },
+                          { type: "email", message: t('contact.email_valid') },
                         ]}
                       >
-                        <Input placeholder="john.doe@email.com" />
+                        <Input 
+                          prefix={<MailOutlined style={{ color: '#bfbfbf' }} />}
+                          placeholder={t('contact.email_placeholder')}
+                          style={{ borderRadius: "8px" }}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
+
+                  {/* Hidden field for country code */}
+                  <Form.Item name="countryCode" initialValue="CM" hidden>
+                    <Input />
+                  </Form.Item>
 
                   <Row gutter={16}>
                     <Col xs={24} md={12}>
                       <Form.Item
                         name="phone"
-                        label="Phone Number"
+                        label={t('contact.phone_number')}
                         rules={[
                           {
                             validator: (_, value) => {
                               if (!value) return Promise.resolve();
                               const countryCode = form.getFieldValue('countryCode') || 'CM';
+                              console.log('Validating phone with country code:', countryCode, 'Phone:', value);
                               if (validatePhoneNumber(countryCode, value)) {
                                 return Promise.resolve();
                               }
-                              return Promise.reject(new Error("Please enter a valid phone number"));
+                              return Promise.reject(new Error(t('contact.phone_valid')));
                             },
                           },
                         ]}
                       >
                         <PhoneNumberInput
-                          placeholder="Enter your phone number"
+                          placeholder={t('contact.phone_placeholder')}
                           showMoneyServices={true}
-                          onCountryCodeChange={(countryCode) => {
-                            form.setFieldValue('countryCode', countryCode);
+                          countryCode="CM"
+                          onCountryCodeChange={(code) => {
+                            console.log('Country code changed to:', code);
+                            form.setFieldValue('countryCode', code);
                           }}
                         />
                       </Form.Item>
@@ -140,23 +184,27 @@ export default function ContactUsPageComponent() {
                     <Col xs={24} md={12}>
                       <Form.Item
                         name="subject"
-                        label="Subject"
+                        label={t('contact.subject')}
                         rules={[
-                          { required: true, message: "Please enter a subject" },
-                          { min: 5, message: "Subject must be at least 5 characters" },
+                          { required: true, message: t('contact.subject_required') },
+                          { min: 5, message: t('contact.subject_min_length') },
                         ]}
                       >
-                        <Input placeholder="Project Inquiry" />
+                        <Input 
+                          prefix={<MessageOutlined style={{ color: '#bfbfbf' }} />}
+                          placeholder={t('contact.subject_placeholder')}
+                          style={{ borderRadius: "8px" }}
+                        />
                       </Form.Item>
                     </Col>
                   </Row>
 
                   <Form.Item
                     name="message"
-                    label={t('contact.anything_else')}
+                    label={t('contact.message')}
                     rules={[
-                      { required: true, message: "Please enter your message" },
-                      { min: 10, message: "Message must be at least 10 characters" },
+                      { required: true, message: t('contact.message_required') },
+                      { min: 10, message: t('contact.message_min_length') },
                     ]}
                   >
                     <TextArea
@@ -164,24 +212,29 @@ export default function ContactUsPageComponent() {
                       placeholder={t('contact.message_placeholder')}
                       showCount
                       maxLength={1000}
+                      style={{ borderRadius: "8px" }}
                     />
                   </Form.Item>
 
-                  <Form.Item className="text-center">
+                  <Form.Item className="text-center" style={{ marginBottom: 0 }}>
                     <Button
                       type="primary"
                       htmlType="submit"
                       loading={loading}
                       size="large"
+                      icon={<SendOutlined />}
                       style={{
-                        backgroundColor: "#1890ff",
-                        borderColor: "#1890ff",
-                        borderRadius: "8px",
-                        padding: "0 40px",
-                        height: "48px",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        borderColor: "transparent",
+                        borderRadius: "10px",
+                        padding: "0 48px",
+                        height: "52px",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        boxShadow: "0 4px 16px rgba(102, 126, 234, 0.3)",
                       }}
                     >
-                      {t('contact.submit')}
+                      {t('contact.send_message')}
                     </Button>
                   </Form.Item>
                 </Form>

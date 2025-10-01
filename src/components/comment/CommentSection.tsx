@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from "react";
 import {
   Card,
-  List,
   Avatar,
   Button,
   Input,
   Form,
-  App,
   Space,
   Typography,
   Divider,
@@ -16,6 +14,8 @@ import {
   Empty,
   Dropdown,
   Modal,
+  Badge,
+  notification,
 } from "antd";
 import {
   MessageOutlined,
@@ -35,15 +35,17 @@ import { formatDistanceToNow } from "date-fns";
 import { commentAPI } from "@store/api/comment_api";
 import { commentInteractionAPI } from "@store/api/comment-interaction_api";
 import { IComment } from "@domain/models/comment.model";
+import { useTranslation } from "@contexts/translation.context";
 
 interface CommentWithStats extends IComment {
   likesCount?: number;
   dislikesCount?: number;
   userInteraction?: 'like' | 'dislike' | null;
+  replies?: CommentWithStats[];
 }
 
 const { TextArea } = Input;
-const { Text, Title } = Typography;
+const { Text, Title, Paragraph } = Typography;
 
 interface CommentSectionProps {
   postId: string;
@@ -53,9 +55,11 @@ interface CommentSectionProps {
 
 export default function CommentSection({ postId, postTitle, postSlug }: CommentSectionProps) {
   const { data: session } = useSession();
-  const { message } = App.useApp();
+  const [api, contextHolder] = notification.useNotification();
+  const { t } = useTranslation();
   const [shareModalVisible, setShareModalVisible] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyingToUsername, setReplyingToUsername] = useState<string | null>(null);
   const [form] = Form.useForm();
 
   // Redux Toolkit Query hooks
@@ -92,40 +96,48 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl);
-      message.success('Link copied to clipboard!');
+      api.success({
+        message: t('comments.copy_success'),
+        description: t('comments.link_copied'),
+        placement: 'topRight',
+      });
     } catch (err) {
-      message.error('Failed to copy link');
+      api.error({
+        message: t('common.error'),
+        description: t('comments.copy_failed'),
+        placement: 'topRight',
+      });
     }
   };
 
   const shareMenuItems = [
     {
       key: 'facebook',
-      label: 'Share on Facebook',
+      label: t('comments.share_facebook'),
       icon: <FacebookOutlined style={{ color: '#1877F2' }} />,
       onClick: shareToFacebook,
     },
     {
       key: 'twitter',
-      label: 'Share on Twitter',
+      label: t('comments.share_twitter'),
       icon: <TwitterOutlined style={{ color: '#1DA1F2' }} />,
       onClick: shareToTwitter,
     },
     {
       key: 'linkedin',
-      label: 'Share on LinkedIn',
+      label: t('comments.share_linkedin'),
       icon: <LinkedinOutlined style={{ color: '#0077B5' }} />,
       onClick: shareToLinkedIn,
     },
     {
       key: 'copy',
-      label: 'Copy Link',
+      label: t('comments.copy_link'),
       icon: <CopyOutlined />,
       onClick: copyToClipboard,
     },
   ];
 
-  // Process comments with stats
+  // Process comments with stats - backend already provides tree structure
   const comments: CommentWithStats[] = React.useMemo(() => {
     if (!commentsData) return [];
     
@@ -139,27 +151,72 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
       return [];
     }
     
-    return commentsArray.map((comment: IComment) => ({
-      ...comment,
-      likesCount: 0,
-      dislikesCount: 0,
-      userInteraction: null,
-    }));
+    // Log the raw data for debugging
+    console.log('Comments data received:', {
+      totalComments: commentsArray.length,
+      sample: commentsArray[0],
+      hasReplies: commentsArray.some((c: any) => c.replies && c.replies.length > 0)
+    });
+    
+    // Recursively add stats to comments and their replies
+    const addStatsToComment = (comment: IComment): CommentWithStats => {
+      const withStats = {
+        ...comment,
+        likesCount: 0,
+        dislikesCount: 0,
+        userInteraction: null,
+        // Recursively process replies if they exist
+        replies: comment.replies 
+          ? comment.replies.map((reply: any) => addStatsToComment(reply))
+          : undefined,
+      };
+      
+      // Log if this comment has replies
+      if (comment.replies && comment.replies.length > 0) {
+        console.log(`Comment ${comment.id} has ${comment.replies.length} replies`);
+      }
+      
+      return withStats;
+    };
+    
+    // Backend returns comments already in tree structure with replies nested
+    // We just need to add stats to each comment and its replies
+    const processedComments = commentsArray.map(comment => addStatsToComment(comment));
+    
+    console.log('Processed comments:', {
+      rootCommentsCount: processedComments.length,
+      totalWithReplies: processedComments.filter((c: any) => c.replies && c.replies.length > 0).length
+    });
+    
+    return processedComments;
   }, [commentsData]);
 
   // Handle like/dislike
   const handleLikeDislike = async (commentId: string, action: 'like' | 'dislike') => {
     if (!session?.user?.id) {
-      message.error("Please log in to interact with comments");
+      api.warning({
+        message: t('comments.auth_required'),
+        description: t('comments.login_to_interact'),
+        placement: 'topRight',
+      });
       return;
     }
 
     try {
       await handleCommentInteraction({ commentId, action }).unwrap();
-      message.success(`Comment ${action}d successfully!`);
+      api.success({
+        message: t('common.success'),
+        description: t(`comments.${action}_success`),
+        placement: 'topRight',
+        duration: 2,
+      });
     } catch (error: any) {
       console.error("Error updating interaction:", error);
-      message.error(error?.data?.message || "Failed to update interaction");
+      api.error({
+        message: t('common.error'),
+        description: error?.data?.message || t('comments.interaction_failed'),
+        placement: 'topRight',
+      });
     }
   };
 
@@ -167,7 +224,11 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
   // Submit comment or reply
   const handleSubmit = async (values: { content: string }) => {
     if (!session?.user?.id) {
-      message.error("Please log in to comment");
+      api.warning({
+        message: t('comments.auth_required'),
+        description: t('comments.login_to_comment'),
+        placement: 'topRight',
+      });
       return;
     }
 
@@ -181,117 +242,214 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
         parentId: parentId,
       }).unwrap();
       
-      message.success(`${isReply ? 'Reply' : 'Comment'} posted successfully!`);
+      api.success({
+        message: t('common.success'),
+        description: t(isReply ? 'comments.reply_success' : 'comments.comment_success'),
+        placement: 'topRight',
+        duration: 3,
+      });
       form.resetFields();
       setReplyingTo(null);
+      setReplyingToUsername(null);
     } catch (error: any) {
       console.error(`Error posting ${isReply ? 'reply' : 'comment'}:`, error);
       
       if (error?.data?.message?.includes("not available yet")) {
-        message.warning("Comments feature is coming soon! Please check back later.");
+        api.info({
+          message: t('comments.coming_soon_title'),
+          description: t('comments.coming_soon'),
+          placement: 'topRight',
+          duration: 4,
+        });
       } else {
-        message.error(error?.data?.message || `Failed to post ${isReply ? 'reply' : 'comment'}`);
+        api.error({
+          message: t('common.error'),
+          description: error?.data?.message || t(isReply ? 'comments.reply_failed' : 'comments.comment_failed'),
+          placement: 'topRight',
+        });
       }
     }
   };
 
-  // Render comment item
-  const renderComment = (comment: CommentWithStats) => (
-    <List.Item
-      key={comment.id}
-      style={{ 
-        padding: "16px 0", 
-        borderBottom: "1px solid #f0f0f0",
-        opacity: comment.id.startsWith('temp-') ? 0.7 : 1,
-        backgroundColor: comment.id.startsWith('temp-') ? '#f9f9f9' : 'transparent'
-      }}
-    >
-      <List.Item.Meta
-        avatar={
-          <Avatar
-            src={comment.user?.image}
-            icon={<UserOutlined />}
-            size="small"
-          />
-        }
-        title={
-          <Space>
-            <Text strong>{comment.user?.name || 'Anonymous'}</Text>
-            <Text type="secondary" style={{ fontSize: "12px" }}>
-              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-            </Text>
-          </Space>
-        }
-        description={
-          <div>
-            <Text>{comment.content}</Text>
+  // Calculate total comment count including replies
+  const getTotalCommentCount = (comments: CommentWithStats[]): number => {
+    return comments.reduce((total, comment) => {
+      let count = 1; // Count the comment itself
+      if (comment.replies && comment.replies.length > 0) {
+        count += getTotalCommentCount(comment.replies);
+      }
+      return total + count;
+    }, 0);
+  };
+
+  const totalCommentCount = getTotalCommentCount(comments);
+
+  // Render comment item with proper nesting
+  const renderComment = (comment: CommentWithStats, depth: number = 0, isLastReply: boolean = false) => {
+    const maxDepth = 3; // Limit nesting depth for better UX
+    const effectiveDepth = Math.min(depth, maxDepth);
+    const replyCount = comment.replies?.length || 0;
+    
+    return (
+      <div
+        key={comment.id}
+        style={{ 
+          marginBottom: depth === 0 ? "20px" : "12px",
+          paddingBottom: depth === 0 ? "20px" : "0",
+          borderBottom: depth === 0 ? "1px solid #f0f0f0" : "none",
+        }}
+      >
+        <div style={{ 
+          display: "flex",
+          gap: "12px",
+          opacity: comment.id.startsWith('temp-') ? 0.7 : 1,
+          padding: depth > 0 ? "12px" : "0",
+          backgroundColor: depth > 0 ? (depth % 2 === 1 ? "#fafafa" : "#f5f5f5") : "transparent",
+          borderRadius: depth > 0 ? "8px" : "0",
+          transition: "all 0.2s ease",
+        }}>
+          <div style={{ flexShrink: 0 }}>
+            <Avatar
+              src={comment.user?.image}
+              icon={<UserOutlined />}
+              size={effectiveDepth === 0 ? 40 : effectiveDepth === 1 ? 32 : 28}
+            />
+          </div>
+          
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {/* Header with user info and timestamp */}
+            <div style={{ marginBottom: "8px" }}>
+              <Space size={4} wrap>
+                <Text strong style={{ fontSize: effectiveDepth > 1 ? "13px" : "14px" }}>
+                  {comment.user?.name || t('comments.anonymous')}
+                </Text>
+                <Text type="secondary" style={{ fontSize: "12px" }}>
+                  •
+                </Text>
+                <Text type="secondary" style={{ fontSize: "12px" }}>
+                  {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                </Text>
+                {depth > 0 && (
+                  <>
+                    <Text type="secondary" style={{ fontSize: "12px" }}>
+                      •
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: "12px", fontStyle: "italic" }}>
+                      {t('comments.reply')}
+                    </Text>
+                  </>
+                )}
+              </Space>
+            </div>
+            
+            {/* Comment content */}
+            <div style={{ 
+              marginBottom: "10px",
+              fontSize: effectiveDepth > 1 ? "13px" : "14px",
+              lineHeight: "1.6",
+              wordBreak: "break-word"
+            }}>
+              <Text style={{ whiteSpace: "pre-wrap" }}>{comment.content}</Text>
+            </div>
+            
             {comment.id.startsWith('temp-') && (
-              <Text type="secondary" style={{ fontSize: '12px', fontStyle: 'italic' }}>
-                Posting...
-              </Text>
+              <div style={{ marginBottom: "8px" }}>
+                <Text type="secondary" style={{ fontSize: '12px', fontStyle: 'italic' }}>
+                  {t('comments.posting')}
+                </Text>
+              </div>
             )}
-            <div style={{ marginTop: "8px" }}>
-              <Space size="small">
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<LikeOutlined />}
-                  style={{ 
-                    color: comment.userInteraction === 'like' ? "#1890ff" : "#666",
-                    backgroundColor: comment.userInteraction === 'like' ? "#e6f7ff" : "transparent"
-                  }}
-                  onClick={() => handleLikeDislike(comment.id, 'like')}
-                  disabled={!session?.user?.id}
-                >
-                  {comment.likesCount || 0}
-                </Button>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<DislikeOutlined />}
-                  style={{ 
-                    color: comment.userInteraction === 'dislike' ? "#ff4d4f" : "#666",
-                    backgroundColor: comment.userInteraction === 'dislike' ? "#fff2f0" : "transparent"
-                  }}
-                  onClick={() => handleLikeDislike(comment.id, 'dislike')}
-                  disabled={!session?.user?.id}
-                >
-                  {comment.dislikesCount || 0}
-                </Button>
+            
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <Button
+                type="text"
+                size="small"
+                icon={<LikeOutlined />}
+                style={{ 
+                  color: comment.userInteraction === 'like' ? "#1890ff" : "#666",
+                  backgroundColor: comment.userInteraction === 'like' ? "#e6f7ff" : "transparent",
+                  padding: "0 8px",
+                  height: "28px",
+                  borderRadius: "4px",
+                  fontSize: "12px"
+                }}
+                onClick={() => handleLikeDislike(comment.id, 'like')}
+                disabled={!session?.user?.id}
+              >
+                {comment.likesCount || 0}
+              </Button>
+              
+              <Button
+                type="text"
+                size="small"
+                icon={<DislikeOutlined />}
+                style={{ 
+                  color: comment.userInteraction === 'dislike' ? "#ff4d4f" : "#666",
+                  backgroundColor: comment.userInteraction === 'dislike' ? "#fff2f0" : "transparent",
+                  padding: "0 8px",
+                  height: "28px",
+                  borderRadius: "4px",
+                  fontSize: "12px"
+                }}
+                onClick={() => handleLikeDislike(comment.id, 'dislike')}
+                disabled={!session?.user?.id}
+              >
+                {comment.dislikesCount || 0}
+              </Button>
+              
+              {depth < maxDepth && (
                 <Button
                   type="text"
                   size="small"
                   icon={<MessageOutlined />}
-                  style={{ color: "#666" }}
-                  onClick={() => setReplyingTo(comment.id)}
+                  style={{ 
+                    color: "#1890ff",
+                    padding: "0 8px",
+                    height: "28px",
+                    borderRadius: "4px",
+                    fontSize: "12px"
+                  }}
+                  onClick={() => {
+                    setReplyingTo(comment.id);
+                    setReplyingToUsername(comment.user?.name || t('comments.anonymous'));
+                  }}
                   disabled={!session?.user?.id}
                 >
-                  Reply
+                  {t('comments.reply')} {replyCount > 0 && `(${replyCount})`}
                 </Button>
-              </Space>
+              )}
             </div>
           </div>
-        }
-      />
-      
-      {/* Render replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div style={{ marginLeft: "20px", marginTop: "12px", paddingLeft: "20px", borderLeft: "2px solid #f0f0f0" }}>
-          {comment.replies.map((reply) => renderComment(reply))}
         </div>
-      )}
-      
-    </List.Item>
-  );
+        
+        {/* Render nested replies */}
+        {comment.replies && comment.replies.length > 0 && (
+          <div style={{ 
+            marginLeft: effectiveDepth === 0 ? "clamp(32px, 52px, 52px)" : effectiveDepth === 1 ? "clamp(24px, 44px, 44px)" : "clamp(20px, 40px, 40px)",
+            marginTop: "12px",
+            paddingLeft: "12px",
+            borderLeft: `2px solid ${effectiveDepth === 0 ? "#d9d9d9" : effectiveDepth === 1 ? "#e8e8e8" : "#f0f0f0"}`,
+          }}>
+            {comment.replies.map((reply, index) => 
+              renderComment(reply, depth + 1, index === comment.replies!.length - 1)
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <Card
-      title={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Space>
-            <MessageOutlined />
-            <span>Comments ({comments.length})</span>
-          </Space>
+    <>
+      {contextHolder}
+      <Card
+        title={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Space>
+              <MessageOutlined />
+              <span>{t('comments.title')} ({totalCommentCount})</span>
+            </Space>
           <Dropdown
             menu={{ items: shareMenuItems }}
             trigger={['click']}
@@ -302,99 +460,130 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
               icon={<ShareAltOutlined />}
               style={{ color: '#1890ff' }}
             >
-              Share Post
+              {t('comments.share_post')}
             </Button>
           </Dropdown>
         </div>
       }
-      style={{ marginTop: "24px" }}
+      style={{ marginTop: "24px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
     >
       {/* Comment Form */}
       {session?.user && (
         <Form form={form} onFinish={handleSubmit} layout="vertical" size="large">
           {replyingTo && (
-            <div style={{ marginBottom: "16px", padding: "8px", backgroundColor: "#f0f8ff", borderRadius: "4px", border: "1px solid #d6e4ff" }}>
-              <Text type="secondary" style={{ fontSize: "12px" }}>
-                Replying to comment
-              </Text>
+            <div style={{ 
+              marginBottom: "16px", 
+              padding: "12px 16px", 
+              backgroundColor: "#f0f8ff", 
+              borderRadius: "8px", 
+              border: "1px solid #d6e4ff",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <Space>
+                <MessageOutlined style={{ color: "#1890ff" }} />
+                <Text style={{ fontSize: "14px" }}>
+                  {t('comments.replying_to')} <Text strong>{replyingToUsername}</Text>
+                </Text>
+              </Space>
               <Button 
                 type="link" 
                 size="small" 
-                onClick={() => setReplyingTo(null)}
+                onClick={() => {
+                  setReplyingTo(null);
+                  setReplyingToUsername(null);
+                }}
                 style={{ padding: 0, height: "auto" }}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
             </div>
           )}
           <Form.Item
             name="content"
             rules={[
-              { required: true, message: "Please enter your comment" },
-              { max: 1000, message: "Comment cannot exceed 1000 characters" },
+              { required: true, message: t('comments.content_required') },
+              { max: 1000, message: t('comments.content_max_length') },
             ]}
           >
             <TextArea
               rows={4}
-              placeholder={replyingTo ? "Write your reply..." : "Share your thoughts..."}
+              placeholder={replyingTo ? t('comments.reply_placeholder') : t('comments.comment_placeholder')}
               maxLength={1000}
               showCount
+              style={{ borderRadius: "8px" }}
             />
           </Form.Item>
-          <Form.Item>
+          <Form.Item style={{ marginBottom: 0 }}>
             <Button
               type="primary"
               htmlType="submit"
               loading={submitting}
               icon={<SendOutlined />}
               size="large"
+              style={{ borderRadius: "8px" }}
             >
-              {replyingTo ? "Post Reply" : "Post Comment"}
+              {replyingTo ? t('comments.post_reply') : t('comments.post_comment')}
             </Button>
           </Form.Item>
         </Form>
       )}
 
       {!session?.user && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <Text type="secondary">
-            Please{" "}
-            <Button type="link" href="/login" style={{ padding: 0 }}>
-              log in
-            </Button>{" "}
-            to post comments
-          </Text>
+        <div style={{ 
+          textAlign: "center", 
+          padding: "32px", 
+          backgroundColor: "#fafafa",
+          borderRadius: "8px",
+          border: "1px dashed #d9d9d9"
+        }}>
+          <Space direction="vertical" size="small">
+            <UserOutlined style={{ fontSize: "32px", color: "#bfbfbf" }} />
+            <Text type="secondary">
+              {t('comments.login_prompt')}{" "}
+              <Button type="link" href="/login" style={{ padding: 0 }}>
+                {t('nav.login')}
+              </Button>
+            </Text>
+          </Space>
         </div>
       )}
 
-      <Divider />
+      <Divider style={{ margin: "24px 0" }} />
 
       {/* Comments List */}
       {loading ? (
         <div style={{ textAlign: "center", padding: "40px" }}>
-          <Spin size="large" />
+          <Spin size="large" tip={t('comments.loading')} />
         </div>
       ) : comments.length === 0 ? (
         <Empty
-          description="No comments yet. Be the first to comment!"
+          description={t('comments.no_comments')}
           image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{ padding: "40px 20px" }}
         />
       ) : (
-        <List
-          dataSource={comments}
-          renderItem={renderComment}
-          pagination={{
-            pageSize: 10,
-            showSizeChanger: false,
-            showQuickJumper: false,
-            showTotal: (total) => `Total ${total} comments`,
-          }}
-        />
+        <div style={{ marginTop: "8px" }}>
+          {comments.map((comment) => renderComment(comment, 0, false))}
+          {totalCommentCount > 0 && (
+            <div style={{ 
+              marginTop: "24px", 
+              paddingTop: "16px", 
+              borderTop: "1px solid #f0f0f0",
+              textAlign: "center" 
+            }}>
+              <Text type="secondary" style={{ fontSize: "13px" }}>
+                {t('comments.total_count', { count: totalCommentCount })}
+              </Text>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Share Modal */}
       <Modal
-        title="Share this post"
+        title={t('comments.share_post')}
         open={shareModalVisible}
         onCancel={() => setShareModalVisible(false)}
         footer={null}
@@ -440,12 +629,13 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
                 onClick={copyToClipboard}
                 size="large"
               >
-                Copy Link
+                {t('comments.copy_link')}
               </Button>
             </Space>
           </Space>
         </Card>
       </Modal>
-    </Card>
+      </Card>
+    </>
   );
 }

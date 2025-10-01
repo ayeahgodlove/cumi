@@ -65,14 +65,14 @@ export class CommentInteractionUseCase {
     if (existingInteraction) {
       if (existingInteraction.interactionType === action) {
         // User is trying to perform the same action, remove the interaction
-        await this.commentInteractionRepository.delete(existingInteraction.id);
+        await this.commentInteractionRepository.delete(commentId, userId);
       } else {
         // User is changing their interaction, update it
-        await this.commentInteractionRepository.update(existingInteraction.id, { action });
+        await this.commentInteractionRepository.update(commentId, userId, action);
       }
     } else {
       // User doesn't have an interaction, create a new one
-      await this.commentInteractionRepository.create({ commentId, action }, userId);
+      await this.commentInteractionRepository.create({ commentId, interactionType: action }, userId);
     }
 
     // Return updated stats

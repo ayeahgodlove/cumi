@@ -112,6 +112,12 @@ const Module = (sequelizeInstance: Sequelize, DataTypes: any) => {
     }
   );
 
+  // Add toJSON method to ensure proper serialization
+  ModuleModel.prototype.toJSON = function() {
+    const values = Object.assign({}, this.get());
+    return values;
+  };
+
   return ModuleModel;
 };
 

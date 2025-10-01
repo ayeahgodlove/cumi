@@ -41,7 +41,10 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
 
   const getLinkStyle = (path: string) => ({
     color: pathname === path ? "#20b2aa" : "inherit",
-    fontWeight: pathname === path ? "bold" : "normal"
+    fontWeight: pathname === path ? "600" : "500",
+    letterSpacing: "0.3px",
+    transition: "all 0.3s ease",
+    position: "relative" as const,
   });
 
   const getLinkClassName = (path: string) => 
@@ -53,23 +56,26 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       label: (
         <div
           style={{
-            padding: "8px 12px",
-            fontWeight: "bold",
+            padding: "12px 16px",
+            fontWeight: "600",
             color: "#1890ff",
             borderBottom: "1px solid #f0f0f0",
-            marginBottom: "4px",
+            marginBottom: "8px",
+            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+            borderRadius: "8px 8px 0 0",
           }}
         >
-          <div style={{ fontSize: "14px", fontWeight: "bold" }}>
-            {session?.user?.name || session?.user?.email || "User"}
+          <div style={{ fontSize: "15px", fontWeight: "600", letterSpacing: "0.3px" }}>
+            {session?.user?.name || session?.user?.email || t('nav.user')}
           </div>
           {session?.user?.role && (
             <div
               style={{
                 fontSize: "12px",
                 color: "#666",
-                fontWeight: "normal",
+                fontWeight: "500",
                 textTransform: "capitalize",
+                marginTop: "4px",
               }}
             >
               {session.user.role}
@@ -82,24 +88,57 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     {
       type: "divider" as const,
     },
-    {
+    // Only show dashboard link for non-user roles
+    ...(session?.user?.role !== 'user' ? [{
       key: "dashboard",
-      icon: <DashboardOutlined />,
-      label: <Link href="/dashboard">{t('nav.dashboard')}</Link>,
-    },
+      icon: <DashboardOutlined style={{ fontSize: "16px" }} />,
+      label: (
+        <Link 
+          href="/dashboard" 
+          style={{ 
+            fontWeight: "500",
+            letterSpacing: "0.3px",
+            fontSize: "14px"
+          }}
+        >
+          {t('nav.dashboard')}
+        </Link>
+      ),
+    }] : []),
     {
       key: "settings",
-      icon: <SettingOutlined />,
-      label: <Link href="/dashboard/settings">{t('nav.settings')}</Link>,
+      icon: <SettingOutlined style={{ fontSize: "16px" }} />,
+      label: (
+        <Link 
+          href="/dashboard/settings"
+          style={{ 
+            fontWeight: "500",
+            letterSpacing: "0.3px",
+            fontSize: "14px"
+          }}
+        >
+          {t('nav.settings')}
+        </Link>
+      ),
     },
     {
       type: "divider" as const,
     },
     {
       key: "logout",
-      icon: <LogoutOutlined />,
-      label: t('nav.logout'),
+      icon: <LogoutOutlined style={{ fontSize: "16px" }} />,
+      label: (
+        <span style={{ 
+          fontWeight: "500",
+          letterSpacing: "0.3px",
+          fontSize: "14px",
+          color: "#ff4d4f"
+        }}>
+          {t('nav.logout')}
+        </span>
+      ),
       onClick: handleLogout,
+      danger: true,
     },
   ];
   return (
@@ -107,11 +146,13 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       <nav 
         className="navbar navbar-expand-lg navbar-full-width" 
         style={{ 
-          backgroundColor: "white", 
-          // boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+          backgroundColor: "white",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
+          transition: "box-shadow 0.3s ease",
         }}
       >
-        <div className="container-fluid" style={{ width: "100%", maxWidth: "none", paddingLeft: "15px", paddingRight: "15px" }}>
+        <div className="container-fluid" style={{ width: "100%", maxWidth: "none", paddingLeft: "20px", paddingRight: "20px", paddingTop: "8px", paddingBottom: "8px" }}>
           <Link href={"/"}>
             <Image
               src={`${logoPath || '/'}cumi-green.jpg`}
@@ -146,7 +187,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-6">
+            <ul className="navbar-nav me-auto mb-2 mb-lg-0 fs-6" style={{ gap: "8px" }}>
               <li className="nav-item">
                 <Link
                   className={`nav-link  ${
@@ -154,109 +195,122 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                   }`}
                   style={{
                     color: pathname === "/" ? "#20b2aa" : "inherit",
-                    fontWeight: pathname === "/" ? "bold" : "normal"
+                    fontWeight: pathname === "/" ? "600" : "500",
+                    letterSpacing: "0.3px",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    transition: "all 0.3s ease",
+                    position: "relative",
                   }}
                   aria-current="page"
                   href="/"
+                  onMouseEnter={(e) => {
+                    if (pathname !== "/") {
+                      e.currentTarget.style.backgroundColor = "#f5f5f5";
+                      e.currentTarget.style.color = "#20b2aa";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (pathname !== "/") {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "inherit";
+                    }
+                  }}
                 >
                   {t('nav.welcome')}
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/our_services")}
-                  style={getLinkStyle("/our_services")}
-                  href="/our_services"
-                >
-                  {t('nav.services')}
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/projects")}
-                  style={getLinkStyle("/projects")}
-                  href="/projects"
-                >
-                  {t('nav.projects')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/blog_posts")}
-                  style={getLinkStyle("/blog_posts")}
-                  href="/blog_posts"
-                >
-                  {t('nav.blog_posts')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/opportunities")}
-                  style={getLinkStyle("/opportunities")}
-                  href="/opportunities"
-                >
-                  {t('nav.opportunities')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/events")}
-                  style={getLinkStyle("/events")}
-                  href="/events"
-                >
-                  {t('nav.events')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/courses")}
-                  style={getLinkStyle("/courses")}
-                  href="/courses"
-                >
-                  {t('nav.courses')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/about_us")}
-                  style={getLinkStyle("/about_us")}
-                  aria-disabled="true"
-                  href="/about_us"
-                >
-                  {t('nav.about_us')}
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  className={getLinkClassName("/contact_us")}
-                  style={getLinkStyle("/contact_us")}
-                  aria-disabled="true"
-                  href="/contact_us"
-                >
-                  {t('nav.contact_us')}
-                </Link>
-              </li>
+              {[
+                { path: "/our_services", label: t('nav.services') },
+                { path: "/projects", label: t('nav.projects') },
+                { path: "/blog_posts", label: t('nav.blog_posts') },
+                { path: "/opportunities", label: t('nav.opportunities') },
+                { path: "/events", label: t('nav.events') },
+                { path: "/courses", label: t('nav.courses') },
+                { path: "/about_us", label: t('nav.about_us') },
+                { path: "/contact_us", label: t('nav.contact_us') },
+              ].map(({ path, label }) => (
+                <li className="nav-item" key={path}>
+                  <Link
+                    className={getLinkClassName(path)}
+                    style={{
+                      ...getLinkStyle(path),
+                      padding: "8px 16px",
+                      borderRadius: "8px",
+                    }}
+                    href={path}
+                    onMouseEnter={(e) => {
+                      if (pathname !== path) {
+                        e.currentTarget.style.backgroundColor = "#f5f5f5";
+                        e.currentTarget.style.color = "#20b2aa";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (pathname !== path) {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "inherit";
+                      }
+                    }}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
             <div className="d-flex flex-sm-column flex-md-row align-items-center">
               <Space size="middle">
                 <LanguageSelector />
                 {status === "loading" ? (
-                  <Button loading size="large" shape="round">
+                  <Button 
+                    loading 
+                    size="large" 
+                    shape="round"
+                    style={{
+                      fontWeight: "500",
+                      letterSpacing: "0.3px",
+                      height: "42px",
+                      padding: "0 24px",
+                    }}
+                  >
                     {t('common.loading')}
                   </Button>
                 ) : session ? (
                   <Dropdown
-                    menu={{ items: userMenuItems }}
+                    menu={{ 
+                      items: userMenuItems,
+                      style: {
+                        borderRadius: "10px",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+                        padding: "4px",
+                        minWidth: "200px"
+                      }
+                    }}
                     placement="bottomRight"
-                    arrow
+                    arrow={{ pointAtCenter: true }}
                   >
-                    <Space className="cursor-pointer">
+                    <Space 
+                      className="cursor-pointer"
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: "24px",
+                        transition: "all 0.3s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#f5f5f5";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
                       <Avatar
-                        size="large"
+                        size={44}
                         src={session.user?.image}
                         icon={<UserOutlined />}
-                        style={{ backgroundColor: "#1890ff" }}
+                        style={{ 
+                          backgroundColor: "#1890ff",
+                          border: "2px solid #f0f0f0",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                        }}
                       />
                     </Space>
                   </Dropdown>
@@ -266,6 +320,22 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     shape="round"
                     href="/login"
                     size="large"
+                    style={{
+                      fontWeight: "500",
+                      letterSpacing: "0.3px",
+                      height: "42px",
+                      padding: "0 28px",
+                      boxShadow: "0 2px 8px rgba(32, 178, 170, 0.2)",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(32, 178, 170, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(32, 178, 170, 0.2)";
+                    }}
                   >
                     {t('nav.login')}
                   </Button>

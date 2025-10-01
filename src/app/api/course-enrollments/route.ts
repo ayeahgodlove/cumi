@@ -7,10 +7,17 @@ import { validate } from "class-validator";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { notificationService } from "@services/notification.service";
-import { courseUseCase } from "@domain/usecases/course.usecase";
+import { CourseUseCase } from "@domain/usecases/course.usecase";
+import { UserRepository } from "@data/repositories/impl/user.repository";
+import { UserUseCase } from "@domain/usecases/user.usecase";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
 
 const courseEnrollmentRepository = new CourseEnrollmentRepository();
 const courseEnrollmentUseCase = new CourseEnrollmentUseCase(courseEnrollmentRepository);
+const userRepository = new UserRepository();
+const userUseCase = new UserUseCase(userRepository);
+const courseRepository = new CourseRepository();
+const courseUseCase = new CourseUseCase(courseRepository);
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -94,14 +101,30 @@ export async function POST(request: NextRequest) {
       userId,
     });
 
+    // Update user role to student if not already
+    let roleUpdated = false;
+    try {
+      const user = await userUseCase.getUserById(userId);
+      if (user && user.getDataValue('role') !== "student") {
+        await userUseCase.updateUser({
+          ...user.toJSON(),
+          role: "student",
+        });
+        roleUpdated = true;
+      }
+    } catch (roleUpdateError) {
+      console.error("Failed to update user role:", roleUpdateError);
+      // Don't fail the enrollment if role update fails
+    }
+
     // Send enrollment notification email
     try {
       const course = await courseUseCase.getCourseById(dto.toData().courseId);
       if (course) {
         await notificationService.notifyCourseEnrollment(
           userId,
-          course.title,
-          `/courses/${course.id}`
+          course.getDataValue('title'),
+          `/courses/${course.getDataValue('id')}`
         );
       }
     } catch (emailError) {
@@ -115,6 +138,7 @@ export async function POST(request: NextRequest) {
         message: "Enrollment created successfully!",
         validationErrors: [],
         success: true,
+        roleUpdated,
       },
       { status: 201 }
     );

@@ -4,7 +4,7 @@ import { IPartner } from '@domain/models/partner.model';
 export const partnerAPI = createApi({
   reducerPath: 'partnerAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api/partners',
+    baseUrl: '/api',
     prepareHeaders: (headers) => {
       // Add auth headers if needed
       return headers;
@@ -13,16 +13,17 @@ export const partnerAPI = createApi({
   tagTypes: ['Partner'],
   endpoints: (builder) => ({
     getAllPartners: builder.query<IPartner[], void>({
-      query: () => '',
+      query: () => '/public-partners',
       providesTags: ['Partner'],
+      transformResponse: (response: any) => response?.data || response || [],
     }),
     getPartnerById: builder.query<IPartner, string>({
-      query: (id) => `/${id}`,
+      query: (id) => `/partners/${id}`,
       providesTags: ['Partner'],
     }),
     createPartner: builder.mutation<IPartner, Partial<IPartner>>({
       query: (partner) => ({
-        url: '',
+        url: '/partners',
         method: 'POST',
         body: partner,
       }),
@@ -30,7 +31,7 @@ export const partnerAPI = createApi({
     }),
     updatePartner: builder.mutation<IPartner, { id: string; partner: Partial<IPartner> }>({
       query: ({ id, partner }) => ({
-        url: `/${id}`,
+        url: `/partners/${id}`,
         method: 'PUT',
         body: partner,
       }),
@@ -38,13 +39,13 @@ export const partnerAPI = createApi({
     }),
     deletePartner: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/${id}`,
+        url: `/partners/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Partner'],
     }),
     getPartnersByLocation: builder.query<IPartner[], string>({
-      query: (location) => `/location/${location}`,
+      query: (location) => `/partners/location/${location}`,
       providesTags: ['Partner'],
     }),
   }),

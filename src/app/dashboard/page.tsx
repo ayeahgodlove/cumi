@@ -56,7 +56,7 @@ export default function AdminDashboard() {
         const roleDashboards = {
           creator: "/dashboard/creator",
           student: "/dashboard/student", 
-          user: "/dashboard/user",
+          user: "/dashboard/student", // Redirect user role to student dashboard
         };
         
         const targetDashboard = roleDashboards[userRole as keyof typeof roleDashboards];

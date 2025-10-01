@@ -14,20 +14,25 @@ export async function GET(
 ) {
   try {
     const tag = params.tag;
+    
+    console.log(`Fetching posts for tag: ${tag}`);
 
     const posts = await postUseCase.getPostByTag(tag);
-    const postsDTO = postMapper.toDTOs(posts!);
+    
+    // If no posts found, return empty array instead of error
+    if (!posts || posts.length === 0) {
+      console.log(`No posts found for tag: ${tag}`);
+      return NextResponse.json([]);
+    }
+
+    const postsDTO = postMapper.toDTOs(posts);
+    console.log(`Found ${postsDTO.length} posts for tag: ${tag}`);
 
     return NextResponse.json(postsDTO);
   } catch (error: any) {
-    return NextResponse.json(
-      {
-        data: null,
-        message: error.message,
-        validationErrors: [error],
-        success: false,
-      },
-      { status: 400 }
-    );
+    console.error(`Error fetching posts for tag ${params.tag}:`, error);
+    
+    // Return empty array instead of error for better UX
+    return NextResponse.json([]);
   }
 }

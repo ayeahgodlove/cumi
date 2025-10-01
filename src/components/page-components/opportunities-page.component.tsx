@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { opportunityAPI } from "@store/api/opportunity_api";
 import { useTranslation } from "@contexts/translation.context";
+import { ApplyButton, ViewDetailsButton } from "@components/shared/modern-button-styles";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -266,20 +267,65 @@ export default function OpportunitiesPageComponent() {
                           overflow: "hidden",
                         }}
                         actions={[
-                          <Link
+                          <ViewDetailsButton
                             key="view"
-                            href={`/opportunities/${opportunity.slug}`}
+                            onClick={() => window.location.href = `/opportunities/${opportunity.slug}`}
+                            style={{
+                              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                              border: '2px solid #667eea',
+                              color: '#667eea',
+                              borderRadius: '12px',
+                              fontWeight: 600,
+                              fontSize: '14px',
+                              height: '44px',
+                              padding: '0 24px',
+                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                              e.currentTarget.style.color = '#ffffff';
+                              e.currentTarget.style.borderColor = '#667eea';
+                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)';
+                              e.currentTarget.style.color = '#667eea';
+                              e.currentTarget.style.borderColor = '#667eea';
+                              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                            }}
                           >
                             View Details
-                          </Link>,
-                          <a
+                          </ViewDetailsButton>,
+                          <ApplyButton
                             key="apply"
-                            href={opportunity.applicationLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            onClick={() => window.open(opportunity.applicationLink, '_blank')}
+                            style={{
+                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                              border: 'none',
+                              borderRadius: '12px',
+                              fontWeight: 600,
+                              fontSize: '14px',
+                              height: '44px',
+                              padding: '0 24px',
+                              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #d97706 0%, #b45309 100%)';
+                              e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.4)';
+                              e.currentTarget.style.transform = 'translateY(-2px)';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
+                              e.currentTarget.style.transform = 'translateY(0)';
+                            }}
                           >
                             Apply Now
-                          </a>,
+                          </ApplyButton>,
                         ]}
                       >
                         <div className="d-flex justify-content-between align-items-start mb-3">

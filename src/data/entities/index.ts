@@ -154,7 +154,7 @@ Course.belongsTo(User, { foreignKey: "userId", as: "instructor" });
 
 // Module associations
 Course.hasMany(Module, { foreignKey: "courseId", as: "modules" });
-Module.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+Module.belongsTo(Course, { foreignKey: "courseId", as: "moduleCourse" });
 
 User.hasMany(Module, { foreignKey: "userId", as: "modules" });
 Module.belongsTo(User, { foreignKey: "userId", as: "instructor" });
@@ -165,7 +165,7 @@ Lesson.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
 
 // Assignment associations
 Course.hasMany(Assignment, { foreignKey: "courseId", as: "assignments" });
-Assignment.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+Assignment.belongsTo(Course, { foreignKey: "courseId", as: "assignmentCourse" });
 
 Module.hasMany(Assignment, { foreignKey: "moduleId", as: "assignments" });
 Assignment.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
@@ -185,7 +185,7 @@ CourseEnrollment.hasMany(CourseProgress, { foreignKey: "enrollmentId", as: "cour
 CourseProgress.belongsTo(CourseEnrollment, { foreignKey: "enrollmentId", as: "enrollment" });
 
 Course.hasMany(CourseProgress, { foreignKey: "courseId", as: "courseProgress" });
-CourseProgress.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+CourseProgress.belongsTo(Course, { foreignKey: "courseId", as: "progressCourse" });
 
 User.hasMany(CourseProgress, { foreignKey: "userId", as: "courseProgress" });
 CourseProgress.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -211,13 +211,11 @@ EventRegistration.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 // Review associations
 Course.hasMany(Review, { foreignKey: "courseId", as: "reviews" });
-Review.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+Review.belongsTo(Course, { foreignKey: "courseId", as: "reviewCourse" });
 
 User.hasMany(Review, { foreignKey: "userId", as: "reviews" });
 Review.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-CourseEnrollment.hasMany(Review, { foreignKey: "enrollmentId", as: "reviews" });
-Review.belongsTo(CourseEnrollment, { foreignKey: "enrollmentId", as: "enrollment" });
 
 // Quiz Submission associations
 User.hasMany(QuizSubmission, { foreignKey: "userId", as: "quizSubmissions" });
@@ -230,7 +228,7 @@ Lesson.hasMany(QuizSubmission, { foreignKey: "lessonId", as: "quizSubmissions" }
 QuizSubmission.belongsTo(Lesson, { foreignKey: "lessonId", as: "lesson" });
 
 Course.hasMany(QuizSubmission, { foreignKey: "courseId", as: "quizSubmissions" });
-QuizSubmission.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+QuizSubmission.belongsTo(Course, { foreignKey: "courseId", as: "quizSubmissionCourse" });
 
 Module.hasMany(QuizSubmission, { foreignKey: "moduleId", as: "quizSubmissions" });
 QuizSubmission.belongsTo(Module, { foreignKey: "moduleId", as: "module" });
@@ -243,7 +241,7 @@ Assignment.hasMany(AssignmentSubmission, { foreignKey: "assignmentId", as: "subm
 AssignmentSubmission.belongsTo(Assignment, { foreignKey: "assignmentId", as: "assignment" });
 
 Course.hasMany(AssignmentSubmission, { foreignKey: "courseId", as: "assignmentSubmissions" });
-AssignmentSubmission.belongsTo(Course, { foreignKey: "courseId", as: "course" });
+AssignmentSubmission.belongsTo(Course, { foreignKey: "courseId", as: "assignmentSubmissionCourse" });
 
 Module.hasMany(AssignmentSubmission, { foreignKey: "moduleId", as: "assignmentSubmissions" });
 AssignmentSubmission.belongsTo(Module, { foreignKey: "moduleId", as: "module" });

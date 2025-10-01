@@ -11,10 +11,12 @@ import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
 import { userAPI } from "@store/api/user_api";
-import { Row, Col, Layout, Empty, Spin } from "antd";
+import { useTranslation } from "@contexts/translation.context";
+import { Row, Col, Layout, Empty, Spin, Typography } from "antd";
 import { motion } from "framer-motion";
 
 const { Content } = Layout;
+const { Title, Text } = Typography;
 
 interface TagDetailPageComponentProps {
   tag: string;
@@ -23,6 +25,7 @@ interface TagDetailPageComponentProps {
 export default function TagDetailPageComponent({
   tag,
 }: TagDetailPageComponentProps) {
+  const { t } = useTranslation();
   const {
     data: posts,
     error,
@@ -67,7 +70,7 @@ export default function TagDetailPageComponent({
           alignItems: "center",
         }}
       >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
+        <Spin size="large" tip={t('tag_detail.loading')} fullscreen spinning />
       </div>
     );
   }
@@ -81,13 +84,18 @@ export default function TagDetailPageComponent({
       {/* banner */}
       <BannerComponent
         breadcrumbs={[
-          { label: "Tags", uri: "tags" },
+          { label: t('tag_detail.tags'), uri: "tags" },
           { label: tag, uri: "#" },
         ]}
-        pageTitle="Blog Posts"
+        pageTitle={t('tag_detail.blog_posts')}
       />
       <div className="container mb-5">
-        {error && <h1>Something wrong...</h1>}
+        {error && (
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <Title level={4} type="danger">{t('tag_detail.error_loading')}</Title>
+            <Text type="secondary">{t('tag_detail.error_message')}</Text>
+          </div>
+        )}
 
         <Content>
           {(isLoading || isFetching) && (
@@ -138,15 +146,22 @@ export default function TagDetailPageComponent({
                   tags={isFetchTag || isLoadingTag ? [] : tags}
                   posts={isLoading || isFetching ? [] : posts}
                   categories={
-                    isFetchCategory || isLoadingCategory ? [] : categories?.data || []
+                    isFetchCategory || isLoadingCategory ? [] : categories || []
                   }
                 />
               </div>
             </div>
           ) : (
             <Col span={24}>
-              <div className="empty-wrap">
-                <Empty />
+              <div className="empty-wrap" style={{ padding: '60px 20px', textAlign: 'center' }}>
+                <Empty 
+                  description={
+                    <div>
+                      <Title level={4}>{t('tag_detail.no_posts')}</Title>
+                      <Text type="secondary">{t('tag_detail.no_posts_desc')}</Text>
+                    </div>
+                  }
+                />
               </div>
             </Col>
           )}

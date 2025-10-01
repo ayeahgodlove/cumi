@@ -11,7 +11,7 @@ import {
   Typography,
   Input,
   Button,
-  message,
+  notification,
 } from "antd";
 import {
   CalendarOutlined,
@@ -40,11 +40,16 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   const { data: session } = useSession();
   const [form] = Form.useForm();
   const [isRegistering, setIsRegistering] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const handleRegistrationSubmit = async (values: any) => {
     try {
       if (!event || !session?.user?.id) {
-        message.error("Please log in to register for events");
+        api.warning({
+          message: "Authentication Required",
+          description: "Please log in to register for events",
+          placement: 'topRight',
+        });
         return;
       }
 
@@ -74,22 +79,28 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         body: JSON.stringify(registrationData),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Registration failed");
+        throw new Error(data.message || "Registration failed");
       }
 
-      message.success("Successfully registered for the event!");
+      api.success({
+        message: "Registration Successful!",
+        description: "Successfully registered for the event! We'll send you a confirmation email shortly.",
+        placement: 'topRight',
+        duration: 4,
+      });
       form.resetFields();
       onCancel();
       onSuccess?.();
     } catch (error) {
       console.error("Registration error:", error);
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "Registration failed. Please try again."
-      );
+      api.error({
+        message: "Registration Failed",
+        description: error instanceof Error ? error.message : "Registration failed. Please try again.",
+        placement: 'topRight',
+      });
     } finally {
       setIsRegistering(false);
     }
@@ -107,14 +118,16 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
   if (!event) return null;
 
   return (
-    <Modal
-      title={`Register for ${event.title}`}
-      open={visible}
-      onCancel={onCancel}
-      footer={null}
-      width={600}
-    >
-      <Card style={{ backgroundColor: 'white', border: 'none' }}>
+    <>
+      {contextHolder}
+      <Modal
+        title={`Register for ${event.title}`}
+        open={visible}
+        onCancel={onCancel}
+        footer={null}
+        width={600}
+      >
+        <Card style={{ backgroundColor: 'white', border: 'none' }}>
         <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>
           <Row gutter={[16, 16]}>
             <Col span={24}>
@@ -156,9 +169,15 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           initialValues={{
             name: session?.user?.name || "",
             email: session?.user?.email || "",
+            countryCode: "CM",
           }}
           size="large"
         >
+        {/* Hidden field for country code */}
+        <Form.Item name="countryCode" initialValue="CM" hidden>
+          <Input />
+        </Form.Item>
+
         <Form.Item
           name="name"
           label="Full Name"
@@ -189,6 +208,7 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
               validator: (_, value) => {
                 if (!value) return Promise.resolve();
                 const countryCode = form.getFieldValue('countryCode') || 'CM';
+                console.log('Validating event registration phone with country code:', countryCode, 'Phone:', value);
                 if (validatePhoneNumber(countryCode, value)) {
                   return Promise.resolve();
                 }
@@ -200,8 +220,10 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
           <PhoneNumberInput
             placeholder="Enter your phone number"
             showMoneyServices={true}
-            onCountryCodeChange={(countryCode) => {
-              form.setFieldValue('countryCode', countryCode);
+            countryCode="CM"
+            onCountryCodeChange={(code) => {
+              console.log('Event: Country code changed to:', code);
+              form.setFieldValue('countryCode', code);
             }}
           />
         </Form.Item>
@@ -241,6 +263,7 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         </Form>
       </Card>
     </Modal>
+    </>
   );
 };
 

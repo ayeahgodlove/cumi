@@ -5,7 +5,7 @@ import {
   Form, 
   Input, 
   Button, 
-  message, 
+  notification, 
   Space, 
   Typography, 
   Divider, 
@@ -54,6 +54,7 @@ export default function SettingsPage() {
   const [passwordForm] = Form.useForm();
   const [preferencesForm] = Form.useForm();
   const [activeTab, setActiveTab] = useState('profile');
+  const [api, contextHolder] = notification.useNotification();
 
   // Mock user data - in real app, this would come from API
   const [userData, setUserData] = useState({
@@ -61,7 +62,7 @@ export default function SettingsPage() {
     email: session?.user?.email || '',
     fullName: session?.user?.name || '',
     phoneNumber: '',
-    countryCode: '+1',
+    countryCode: 'CM', // Default to Cameroon
     bio: '',
     dateOfBirth: null as Date | null,
     gender: undefined as 'male' | 'female' | 'other' | 'prefer_not_to_say' | undefined,
@@ -90,7 +91,7 @@ export default function SettingsPage() {
           email: result.email || '',
           fullName: result.fullName || '',
           phoneNumber: result.phoneNumber || '',
-          countryCode: result.countryCode || '+1',
+          countryCode: result.countryCode || 'CM', // Default to Cameroon
           bio: result.bio || '',
           dateOfBirth: result.dateOfBirth ? new Date(result.dateOfBirth) : null,
           gender: result.gender,
@@ -123,7 +124,7 @@ export default function SettingsPage() {
       email: userData.email,
       fullName: userData.fullName,
       phoneNumber: userData.phoneNumber,
-      countryCode: userData.countryCode,
+      countryCode: userData.countryCode || 'CM',
       bio: userData.bio,
       dateOfBirth: userData.dateOfBirth ? dayjs(userData.dateOfBirth) : null,
       gender: userData.gender,
@@ -136,6 +137,9 @@ export default function SettingsPage() {
       emailNotifications: userData.emailNotifications,
       smsNotifications: userData.smsNotifications,
     });
+    
+    // Log for debugging
+    console.log('Settings form initialized with countryCode:', userData.countryCode || 'CM');
   }, [userData, profileForm, preferencesForm]);
 
   const handleUpdateProfile = async (values: any) => {
@@ -168,7 +172,12 @@ export default function SettingsPage() {
       };
       
       setUserData(updatedData);
-      message.success("Profile updated successfully!");
+      api.success({
+        message: "Profile Updated!",
+        description: "Profile updated successfully!",
+        placement: 'topRight',
+        duration: 3,
+      });
       
       // Update the session if needed
       await update({
@@ -180,7 +189,11 @@ export default function SettingsPage() {
         },
       });
     } catch (error: any) {
-      message.error(error.message || "Failed to update profile");
+      api.error({
+        message: "Update Failed",
+        description: error.message || "Failed to update profile",
+        placement: 'topRight',
+      });
       console.error("Profile update error:", error);
     } finally {
       setLoading(false);
@@ -207,10 +220,19 @@ export default function SettingsPage() {
         throw new Error(result.message || 'Failed to change password');
       }
 
-      message.success("Password changed successfully!");
+      api.success({
+        message: "Password Changed!",
+        description: "Password changed successfully!",
+        placement: 'topRight',
+        duration: 3,
+      });
       passwordForm.resetFields();
     } catch (error: any) {
-      message.error(error.message || "Failed to change password");
+      api.error({
+        message: "Password Change Failed",
+        description: error.message || "Failed to change password",
+        placement: 'topRight',
+      });
       console.error("Password change error:", error);
     } finally {
       setLoading(false);
@@ -236,9 +258,18 @@ export default function SettingsPage() {
 
       const updatedData = { ...userData, ...values };
       setUserData(updatedData);
-      message.success("Preferences updated successfully!");
+      api.success({
+        message: "Preferences Updated!",
+        description: "Preferences updated successfully!",
+        placement: 'topRight',
+        duration: 3,
+      });
     } catch (error: any) {
-      message.error(error.message || "Failed to update preferences");
+      api.error({
+        message: "Update Failed",
+        description: error.message || "Failed to update preferences",
+        placement: 'topRight',
+      });
       console.error("Preferences update error:", error);
     } finally {
       setLoading(false);
@@ -307,6 +338,11 @@ export default function SettingsPage() {
                 onFinish={handleUpdateProfile}
                 size="large"
               >
+                {/* Hidden field for country code */}
+                <Form.Item name="countryCode" initialValue="CM" hidden>
+                  <Input />
+                </Form.Item>
+
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
@@ -356,6 +392,7 @@ export default function SettingsPage() {
                       validator: (_, value) => {
                         if (!value) return Promise.resolve();
                         const countryCode = profileForm.getFieldValue('countryCode') || 'CM';
+                        console.log('Validating settings phone with country code:', countryCode, 'Phone:', value);
                         if (validatePhoneNumber(countryCode, value)) {
                           return Promise.resolve();
                         }
@@ -367,8 +404,10 @@ export default function SettingsPage() {
                   <PhoneNumberInput
                     placeholder="Enter your phone number"
                     showMoneyServices={true}
-                    onCountryCodeChange={(countryCode) => {
-                      profileForm.setFieldValue('countryCode', countryCode);
+                    countryCode={userData.countryCode || 'CM'}
+                    onCountryCodeChange={(code) => {
+                      console.log('Settings: Country code changed to:', code);
+                      profileForm.setFieldValue('countryCode', code);
                     }}
                   />
                 </Form.Item>
@@ -683,8 +722,10 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div style={{ padding: "24px", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      <PageBreadCrumbs items={["Dashboard", "Settings"]} />
+    <>
+      {contextHolder}
+      <div style={{ padding: "24px", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+        <PageBreadCrumbs items={["Dashboard", "Settings"]} />
       
       <div style={{ marginBottom: 24 }}>
         <Title level={2} style={{ margin: 0 }}>
@@ -703,6 +744,7 @@ export default function SettingsPage() {
           size="large"
         />
       </Card>
-    </div>
+      </div>
+    </>
   );
 }

@@ -18,11 +18,12 @@ import { format } from "@utils/format";
 import { postInteractionAPI } from "@store/api/post-interaction_api";
 import slugify from "slugify";
 import { useSession } from "next-auth/react";
-import { Layout, Spin, Card, Row, Col, Typography, Avatar, Tag, Space, Divider, Button, App } from "antd";
+import { Layout, Spin, Card, Row, Col, Typography, Avatar, Tag, Space, Divider, Button, notification } from "antd";
 import Link from "next/link";
 import { FaRegClock, FaRegFolder, FaRegUserCircle, FaEye, FaHeart, FaShareAlt } from "react-icons/fa";
 import { LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
+import { useTranslation } from "@contexts/translation.context";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -33,7 +34,8 @@ interface BlogPostDetailPageComponentProps {
 
 export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPageComponentProps) {
   const { data: session } = useSession();
-  const { message } = App.useApp();
+  const [api, contextHolder] = notification.useNotification();
+  const { t } = useTranslation();
   const {
     data: post,
     isLoading,
@@ -87,11 +89,11 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     { skip: !post?.id }
   );
 
-  // Provide default values for postStats
-  const postStats = postStatsData || {
-    likesCount: 0,
-    dislikesCount: 0,
-    userInteraction: null as 'like' | 'dislike' | null
+  // Provide default values for postStats with proper null/undefined handling
+  const postStats = {
+    likesCount: postStatsData?.likesCount ?? 0,
+    dislikesCount: postStatsData?.dislikesCount ?? 0,
+    userInteraction: postStatsData?.userInteraction ?? null as 'like' | 'dislike' | null
   };
 
   const [handlePostInteraction] = postInteractionAPI.useHandlePostInteractionMutation();
@@ -99,7 +101,11 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
   // Handle post like/dislike
   const handlePostLikeDislike = async (action: 'like' | 'dislike') => {
     if (!session?.user?.id) {
-      message.error("Please log in to interact with posts");
+      api.warning({
+        message: t('blog_detail.auth_required'),
+        description: t('blog_detail.login_to_interact'),
+        placement: 'topRight',
+      });
       return;
     }
 
@@ -107,10 +113,19 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
 
     try {
       await handlePostInteraction({ postId: post.id, action }).unwrap();
-      message.success(`${action === 'like' ? 'Liked' : 'Disliked'} post successfully!`);
+      api.success({
+        message: t('common.success'),
+        description: t(action === 'like' ? 'blog_detail.liked_success' : 'blog_detail.disliked_success'),
+        placement: 'topRight',
+        duration: 2,
+      });
     } catch (error: any) {
       console.error("Error updating post interaction:", error);
-      message.error(error?.data?.message || "Failed to update interaction");
+      api.error({
+        message: t('common.error'),
+        description: error?.data?.message || t('blog_detail.interaction_failed'),
+        placement: 'topRight',
+      });
     }
   };
 
@@ -137,12 +152,13 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
           alignItems: "center",
         }}
       >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
+        <Spin size="large" tip={t("blog_detail.loading")} fullscreen spinning />
       </div>
     );
   }
   return (
     <>
+      {contextHolder}
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
@@ -151,11 +167,11 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
           banner={banners ? (banners.length > 0 ? banners[0].image : "") : ""}
           breadcrumb={[
             {
-              title: "Blog Posts",
+              title: t('nav.blog_posts'),
               link: "/blog_posts",
             },
             {
-              title: "Details",
+              title: t('blog_detail.details'),
             },
           ]}
         />
@@ -292,7 +308,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                                   onClick={() => handlePostLikeDislike('like')}
                                   disabled={!session?.user?.id}
                                 >
-                                  {postStats.likesCount} Likes
+                                  {postStats.likesCount || 0} {t('blog_detail.likes')}
                                 </Button>
                                 <Button
                                   type="text"
@@ -304,13 +320,13 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                                   onClick={() => handlePostLikeDislike('dislike')}
                                   disabled={!session?.user?.id}
                                 >
-                                  {postStats.dislikesCount} Dislikes
+                                  {postStats.dislikesCount || 0} {t('blog_detail.dislikes')}
                                 </Button>
                               </Space>
                             </Col>
                             <Col>
                               <Text type="secondary" style={{ fontSize: "0.9rem" }}>
-                                {postStats.likesCount + postStats.dislikesCount} total interactions
+                                {(postStats.likesCount || 0) + (postStats.dislikesCount || 0)} {t('blog_detail.total_interactions')}
                               </Text>
                             </Col>
                           </Row>
@@ -348,14 +364,14 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                             background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
                             border: "none",
                           }}
-                          bodyStyle={{ padding: "1.5rem" }}
+                          styles={{ body: { padding: "1.5rem" } }}
                         >
                           <Row align="middle" justify="space-between">
                             <Col>
                               <Space>
                                 <FaShareAlt style={{ color: "#1890ff", fontSize: "1.2rem" }} />
                                 <Text strong style={{ fontSize: "1.1rem" }}>
-                                  Share this article
+                                  {t("blog_detail.share_article")}
                                 </Text>
                               </Space>
                             </Col>
@@ -388,7 +404,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
 
               {/* Related Posts Section */}
               {similarPosts && similarPosts.length > 0 && (
-                <section style={{ marginTop: "4rem" }}>
+                <section style={{ margin: "4rem 0" }}>
                   <Row justify="center">
                     <Col xs={24} lg={20}>
                       <div style={{ textAlign: "center", marginBottom: "3rem" }}>
@@ -398,10 +414,10 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           color: "#1a1a1a",
                           marginBottom: "0.5rem"
                         }}>
-                          Related Articles
+                          {t('blog_detail.related_articles')}
                         </Title>
                         <Text type="secondary" style={{ fontSize: "1.1rem" }}>
-                          Discover more insights and stories
+                          {t('blog_detail.discover_more')}
                         </Text>
                       </div>
                       

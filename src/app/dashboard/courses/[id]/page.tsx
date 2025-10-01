@@ -47,6 +47,8 @@ import {
 } from "@store/api/module_api";
 import { useGetSingleCourseQuery } from "@store/api/course_api";
 import dayjs from "dayjs";
+import { useTranslation } from "@contexts/translation.context";
+import { notification } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -60,6 +62,8 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { open } = useNotification();
+  const { t } = useTranslation();
+  const [api, contextHolder] = notification.useNotification();
   const [moduleModalVisible, setModuleModalVisible] = useState(false);
   const [editingModule, setEditingModule] = useState<any>(null);
   const [moduleForm] = Form.useForm();
@@ -77,14 +81,14 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
   // Handle course error
   useEffect(() => {
     if (courseError) {
-        open?.({
-          type: "error",
-          message: "Error",
-        description: "Failed to fetch course data",
+      api.error({
+        message: t('common.error'),
+        description: t('course_manage.fetch_course_failed'),
+        placement: 'topRight',
       });
       router.push("/dashboard/creator");
     }
-  }, [courseError, open, router]);
+  }, [courseError, api, router, t]);
 
   const handleModuleSubmit = async (values: any) => {
     try {
@@ -144,18 +148,20 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       if (editingModule) {
         // Update module
         await updateModule({ id: editingModule.id, module: moduleData }).unwrap();
-        open?.({
-          type: "success",
-          message: "Success",
-          description: "Module updated successfully!",
+        api.success({
+          message: t('common.success'),
+          description: t('course_manage.module_updated_success'),
+          placement: 'topRight',
+          duration: 2,
         });
       } else {
         // Create module
         await createModule(moduleData).unwrap();
-        open?.({
-          type: "success",
-          message: "Success",
-          description: "Module created successfully!",
+        api.success({
+          message: t('common.success'),
+          description: t('course_manage.module_created_success'),
+          placement: 'topRight',
+          duration: 2,
         });
       }
       
@@ -164,7 +170,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       setModuleModalVisible(false);
     } catch (error: any) {
       // Extract error message from RTK Query error
-      let errorMessage = "Unknown error occurred";
+      let errorMessage = t('course_manage.unknown_error');
       if (error?.data?.message) {
         errorMessage = error.data.message;
       } else if (error?.data?.validationErrors?.length > 0) {
@@ -172,13 +178,13 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       } else if (error?.message) {
         errorMessage = error.message;
       } else if (error?.status) {
-        errorMessage = `Server error (${error.status})`;
+        errorMessage = `${t('course_manage.server_error')} (${error.status})`;
       }
 
-      open?.({
-        type: "error",
-        message: "Error",
-        description: `Failed to save module: ${errorMessage}`,
+      api.error({
+        message: t('common.error'),
+        description: t('course_manage.module_save_failed', { message: errorMessage }),
+        placement: 'topRight',
       });
     }
   };
@@ -200,16 +206,17 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
   const handleDeleteModule = async (moduleId: string) => {
     try {
       await deleteModule(moduleId).unwrap();
-      open?.({
-        type: "success",
-        message: "Success",
-        description: "Module deleted successfully!",
+      api.success({
+        message: t('common.success'),
+        description: t('course_manage.module_deleted_success'),
+        placement: 'topRight',
+        duration: 2,
       });
-        } catch (error: any) {
-      open?.({
-        type: "error",
-        message: "Error",
-        description: `Failed to delete module: ${error.message}`,
+    } catch (error: any) {
+      api.error({
+        message: t('common.error'),
+        description: t('course_manage.module_delete_failed', { message: error.message }),
+        placement: 'topRight',
       });
     }
   };
@@ -228,13 +235,13 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       sorter: (a: any, b: any) => (a.moduleOrder || 0) - (b.moduleOrder || 0),
     },
     {
-      title: "Module Title",
+      title: t('course_manage.module_title'),
       dataIndex: "title",
       key: "title",
       render: (value: string, record: any) => (
         <div>
           <div style={{ fontWeight: 'bold', marginBottom: 4 }}>
-            {value || 'Untitled Module'}
+            {value || t('course_manage.untitled_module')}
           </div>
           <div style={{ fontSize: '12px', color: '#666' }}>
             ID: {record.id?.substring(0, 8)}...
@@ -243,7 +250,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       ),
     },
     {
-      title: "Description",
+      title: t('common.description'),
       dataIndex: "description",
       key: "description",
       ellipsis: true,
@@ -254,13 +261,13 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
               {value}
             </Text>
           ) : (
-            <Text type="secondary" italic>No description</Text>
+            <Text type="secondary" italic>{t('course_manage.no_description')}</Text>
           )}
         </div>
       ),
     },
     {
-      title: "Duration",
+      title: t('course_manage.duration'),
       dataIndex: "estimatedDurationHours",
       key: "estimatedDurationHours",
       width: 100,
@@ -278,7 +285,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       ),
     },
     {
-      title: "Content Stats",
+      title: t('course_manage.content_stats'),
       key: "contentStats",
       width: 150,
       render: (_: any, record: any) => (
@@ -296,51 +303,52 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       ),
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       width: 100,
       render: (value: string) => {
+        const statusLower = value?.toLowerCase();
         const statusConfig = {
-          published: { color: 'green', text: 'Published' },
-          draft: { color: 'orange', text: 'Draft' },
-          archived: { color: 'gray', text: 'Archived' }
+          published: { color: 'green' },
+          draft: { color: 'orange' },
+          archived: { color: 'gray' }
         };
-        const config = statusConfig[value as keyof typeof statusConfig] || { color: 'default', text: value };
+        const config = statusConfig[statusLower as keyof typeof statusConfig] || { color: 'default' };
         
         return (
           <Tag color={config.color}>
-            {config.text}
+            {t(`common.${statusLower}`)}
           </Tag>
         );
       },
       filters: [
-        { text: 'Published', value: 'published' },
-        { text: 'Draft', value: 'draft' },
-        { text: 'Archived', value: 'archived' },
+        { text: t('common.published'), value: 'published' },
+        { text: t('common.draft'), value: 'draft' },
+        { text: t('common.archived'), value: 'archived' },
       ],
       onFilter: (value: any, record: any) => record.status === value,
     },
     {
-      title: "Access",
+      title: t('course_manage.access'),
       dataIndex: "isLocked",
       key: "isLocked",
       width: 80,
       render: (value: boolean, record: any) => (
         <div>
           <Tag color={value ? "red" : "green"}>
-            {value ? "Locked" : "Open"}
+            {value ? t('course_manage.locked') : t('course_manage.open')}
           </Tag>
           {record.unlockDate && (
             <div style={{ fontSize: '10px', color: '#666', marginTop: 2 }}>
-              Until: {new Date(record.unlockDate).toLocaleDateString()}
+              {t('course_manage.until')}: {new Date(record.unlockDate).toLocaleDateString()}
             </div>
           )}
         </div>
       ),
     },
     {
-      title: "Created",
+      title: t('course_manage.created'),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 100,
@@ -352,44 +360,63 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       sorter: (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
-      width: 200,
+      width: 280,
       render: (_: any, record: any) => (
         <Space>
           <Button 
             icon={<EyeOutlined />} 
-            size="small" 
+            size="middle" 
             onClick={() => handleViewModule(record)}
-            title="View Module"
+            title={t('course_manage.view_module')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button 
             icon={<EditOutlined />} 
-            size="small" 
+            size="middle" 
             onClick={() => handleEditModule(record)}
-            title="Edit Module"
+            title={t('course_manage.edit_module')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button 
             type="primary"
-            size="small" 
+            size="middle" 
             onClick={() => router.push(`/dashboard/modules/${record.id}`)}
-            title="Manage Module"
+            title={t('course_manage.manage_module')}
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+              fontWeight: 500,
+            }}
           >
-            Manage
+            {t('creator.manage')}
           </Button>
           <Popconfirm
-            title="Delete Module"
-            description="Are you sure you want to delete this module?"
+            title={t('course_manage.delete_module_title')}
+            description={t('course_manage.delete_module_confirm')}
             onConfirm={() => handleDeleteModule(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
           <Button 
             icon={<DeleteOutlined />} 
-            size="small" 
+            size="middle" 
             danger
               loading={deleteLoading}
-              title="Delete Module"
+              title={t('course_manage.delete_module')}
+              style={{
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(255,77,79,0.3)',
+              }}
           />
           </Popconfirm>
         </Space>
@@ -437,17 +464,18 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
   return (
     <div style={{ padding: "24px" }}>
+      {contextHolder}
       {/* Enhanced Breadcrumb */}
       <EnhancedBreadcrumb
         items={[
-          { title: "Course Management" },
-          { title: course?.title || "Loading..." }
+          { title: t('course_manage.course_management') },
+          { title: course?.title || t('common.loading') }
         ]}
       />
 
       {/* Page Title */}
       <Title level={2} style={{ marginBottom: 24 }}>
-        Course Details
+        {t('course_manage.course_details')}
       </Title>
 
       {/* Course Header */}
@@ -456,7 +484,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       {/* Course Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={24}>
-          <Title level={4}>Course Statistics</Title>
+          <Title level={4}>{t('course_manage.course_statistics')}</Title>
         </Col>
         <Col sm={6} md={6} span={24}>
           <Card
@@ -469,7 +497,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Total Modules"
+              title={t('course_manage.total_modules')}
               value={totalModules}
               prefix={
                 <span style={{ color: "#1890ff" }}>
@@ -491,7 +519,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Published Modules"
+              title={t('course_manage.published_modules')}
               value={publishedModules}
               prefix={
                 <span style={{ color: "#52c41a" }}>
@@ -513,7 +541,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Total Lessons"
+              title={t('course_manage.total_lessons')}
               value={totalLessons}
               prefix={
                 <span style={{ color: "#722ed1" }}>
@@ -535,9 +563,9 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Total Duration"
+              title={t('course_manage.total_duration')}
               value={totalDuration}
-              suffix="min"
+              suffix={t('course_manage.hours')}
               prefix={
                 <span style={{ color: "#fa8c16" }}>
                   <ClockCircleOutlined />
@@ -558,7 +586,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Assignments"
+              title={t('course_manage.assignments')}
               value={totalAssignments}
               prefix={
                 <span style={{ color: "#13c2c2" }}>
@@ -580,7 +608,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Quizzes"
+              title={t('course_manage.quizzes')}
               value={totalQuizzes}
               prefix={
                 <span style={{ color: "#eb2f96" }}>
@@ -602,7 +630,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Enrolled Students"
+              title={t('course_manage.enrolled_students')}
               value={course.currentStudents || 0}
               prefix={
                 <span style={{ color: "#52c41a" }}>
@@ -624,8 +652,8 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Max Students"
-              value={course.maxStudents || "Unlimited"}
+              title={t('course_manage.max_students')}
+              value={course.maxStudents || t('creator.unlimited')}
               prefix={
                 <span style={{ color: "#fa8c16" }}>
                   <UserOutlined />
@@ -639,7 +667,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
       {/* Course Details */}
       <Card
-        title="Course Details"
+        title={t('course_manage.course_information')}
         style={{
           backgroundColor: "white",
           borderRadius: "12px",
@@ -649,26 +677,26 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
         }}
       >
         <Descriptions bordered column={2}>
-          <Descriptions.Item label="Author">
+          <Descriptions.Item label={t('common.author')}>
             {course.authorName}
           </Descriptions.Item>
-          <Descriptions.Item label="Price">
+          <Descriptions.Item label={t('common.price')}>
             {course.isFree ? (
-              <Tag color="green">Free</Tag>
+              <Tag color="green">{t('common.free')}</Tag>
             ) : (
               `${course.price || 0} ${course.currency || "XAF"}`
             )}
           </Descriptions.Item>
-          <Descriptions.Item label="Language">
+          <Descriptions.Item label={t('common.language')}>
             {course.language}
           </Descriptions.Item>
-          <Descriptions.Item label="Duration">
-            {course.durationWeeks} weeks
+          <Descriptions.Item label={t('course_manage.duration')}>
+            {course.durationWeeks} {t('course_manage.weeks')}
           </Descriptions.Item>
-          <Descriptions.Item label="Created At">
+          <Descriptions.Item label={t('common.created_at')}>
             {new Date(course.createdAt).toLocaleDateString()}
           </Descriptions.Item>
-          <Descriptions.Item label="Updated At">
+          <Descriptions.Item label={t('common.updated_at')}>
             {new Date(course.updatedAt).toLocaleDateString()}
           </Descriptions.Item>
         </Descriptions>
@@ -678,12 +706,12 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       <Card
         title={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>Course Modules</span>
+            <span>{t('course_manage.course_modules')}</span>
             {modules.length > 0 && (
               <div style={{ fontSize: '14px', color: '#666', fontWeight: 'normal' }}>
-                {modules.length} module{modules.length !== 1 ? 's' : ''} • {' '}
-                {modules.filter(m => m.status === 'published').length} published • {' '}
-                {modules.reduce((sum, m) => sum + (m.totalLessons || 0), 0)} lessons total
+                {modules.length} {t('course_manage.module')}{modules.length !== 1 ? 's' : ''} • {' '}
+                {modules.filter(m => m.status === 'published').length} {t('common.published').toLowerCase()} • {' '}
+                {modules.reduce((sum, m) => sum + (m.totalLessons || 0), 0)} {t('course_manage.lessons_total')}
               </div>
             )}
           </div>
@@ -693,8 +721,18 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             type="primary" 
             icon={<PlusOutlined />}
             onClick={() => setModuleModalVisible(true)}
+            size="large"
+            style={{
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none',
+              height: '42px',
+              padding: '0 24px',
+              fontWeight: 600,
+              boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
+            }}
           >
-            Add Module
+            {t('course_manage.add_module')}
           </Button>
         }
         style={{
@@ -712,10 +750,10 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
           }}>
             <BookOutlined style={{ fontSize: '48px', marginBottom: '16px', color: '#d9d9d9' }} />
             <div style={{ fontSize: '16px', marginBottom: '8px' }}>
-              No modules found for this course
+              {t('course_manage.no_modules_found')}
             </div>
             <div style={{ fontSize: '14px', color: '#999' }}>
-              Click "Add Module" to create your first module
+              {t('course_manage.click_add_module')}
             </div>
           </div>
         ) : (
@@ -743,8 +781,8 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
       <Modal
         title={
           editingModule
-            ? `Edit Module: ${editingModule.title}`
-            : "Add New Module"
+            ? `${t('course_manage.edit_module')}: ${editingModule.title}`
+            : t('course_manage.add_new_module')
         }
         open={moduleModalVisible}
         onCancel={() => {
@@ -754,50 +792,50 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
         }}
         footer={null}
         width={800}
-        // style={{ backgroundColor: "white" }}
       >
         <Card style={{ backgroundColor: "white" }}>
         <Form
           form={moduleForm}
           layout="vertical"
           onFinish={handleModuleSubmit}
+          size="large"
         >
           <Form.Item
             name="title"
-            label="Module Title"
-            rules={[{ required: true, message: "Please enter module title" }]}
+            label={t('course_manage.module_title')}
+            rules={[{ required: true, message: t('forms.please_enter', { field: t('course_manage.module_title').toLowerCase() }) }]}
           >
             <Input size="large" />
           </Form.Item>
 
           <Form.Item
             name="description"
-            label="Description"
+            label={t('common.description')}
               rules={[
-                { required: true, message: "Please enter module description" },
+                { required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) },
               ]}
           >
             <Input.TextArea rows={3} />
           </Form.Item>
 
-            <Form.Item name="learningObjectives" label="Learning Objectives">
+            <Form.Item name="learningObjectives" label={t('course_manage.learning_objectives')}>
               <Input.TextArea
                 rows={3}
-                placeholder="Enter learning objectives..."
+                placeholder={t('course_manage.enter_learning_objectives')}
               />
             </Form.Item>
 
-            <Form.Item name="prerequisites" label="Prerequisites">
-              <Input.TextArea rows={3} placeholder="Enter prerequisites..." />
+            <Form.Item name="prerequisites" label={t('course_manage.prerequisites')}>
+              <Input.TextArea rows={3} placeholder={t('course_manage.enter_prerequisites')} />
           </Form.Item>
 
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                   name="moduleOrder"
-                  label="Module Order"
+                  label={t('course_manage.module_order')}
                   rules={[
-                    { required: true, message: "Please enter module order" },
+                    { required: true, message: t('forms.please_enter', { field: t('course_manage.module_order').toLowerCase() }) },
                   ]}
                   initialValue={1}
                 >
@@ -807,7 +845,7 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             <Col span={12}>
               <Form.Item
                   name="estimatedDurationHours"
-                  label="Duration (hours)"
+                  label={t('course_manage.duration_hours')}
               >
                   <InputNumber min={1} style={{ width: "100%" }} size="large" />
               </Form.Item>
@@ -818,21 +856,21 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
               <Col span={12}>
           <Form.Item
                   name="status"
-                  label="Status"
-                  rules={[{ required: true, message: "Please select status" }]}
+                  label={t('common.status')}
+                  rules={[{ required: true, message: t('forms.please_select', { field: t('common.status').toLowerCase() }) }]}
                   initialValue="draft"
                 >
                   <Select size="large">
-                    <Select.Option value="draft">Draft</Select.Option>
-                    <Select.Option value="published">Published</Select.Option>
-                    <Select.Option value="archived">Archived</Select.Option>
+                    <Select.Option value="draft">{t('common.draft')}</Select.Option>
+                    <Select.Option value="published">{t('common.published')}</Select.Option>
+                    <Select.Option value="archived">{t('common.archived')}</Select.Option>
                   </Select>
           </Form.Item>
               </Col>
               <Col span={12}>
           <Form.Item
                   name="isLocked"
-                  label="Lock Module"
+                  label={t('course_manage.lock_module')}
             valuePropName="checked"
             initialValue={false}
           >
@@ -841,25 +879,55 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
               </Col>
             </Row>
 
-            <Form.Item name="unlockDate" label="Unlock Date (if locked)">
-              <DatePicker style={{ width: "100%" }} />
+            <Form.Item name="unlockDate" label={t('course_manage.unlock_date')}>
+              <DatePicker style={{ width: "100%" }} size="large" />
           </Form.Item>
 
           <Form.Item>
-            <Space>
-                <Button type="primary" htmlType="submit">
-                {editingModule ? "Update Module" : "Create Module"}
-              </Button>
-                <Button
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end', 
+              gap: '12px',
+              paddingTop: '24px',
+              borderTop: '1px solid #e5e7eb'
+            }}>
+                <Button 
                   onClick={() => {
                 setModuleModalVisible(false);
                 setEditingModule(null);
                 moduleForm.resetFields();
                   }}
+                  size="large"
+                  style={{
+                    borderRadius: "8px",
+                    border: "2px solid #e5e7eb",
+                    color: "#6b7280",
+                    fontWeight: "500",
+                    padding: "8px 24px",
+                    height: "auto"
+                  }}
                 >
-                Cancel
+                {t('common.cancel')}
               </Button>
-            </Space>
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  size="large"
+                  loading={createLoading || updateLoading}
+                  style={{
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "500",
+                    padding: "8px 24px",
+                    height: "auto",
+                    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+                  }}
+                >
+                {createLoading || updateLoading ? t('forms.saving') : (editingModule ? t('course_manage.update_module') : t('course_manage.create_module'))}
+              </Button>
+            </div>
           </Form.Item>
         </Form>
         </Card>
@@ -867,62 +935,72 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
 
       {/* View Module Modal */}
       <Modal
-        title={`Module Details: ${viewModalData?.title}`}
+        title={`${t('course_manage.module_details')}: ${viewModalData?.title}`}
         open={viewModalVisible}
         onCancel={() => {
           setViewModalVisible(false);
           setViewModalData(null);
         }}
         footer={[
-          <Button key="close" onClick={() => {
-            setViewModalVisible(false);
-            setViewModalData(null);
-          }}>
-            Close
+          <Button 
+            key="close" 
+            onClick={() => {
+              setViewModalVisible(false);
+              setViewModalData(null);
+            }}
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
           </Button>
         ]}
         width={800}
       >
         {viewModalData && (
           <Descriptions bordered column={1}>
-            <Descriptions.Item label="Title">{viewModalData.title}</Descriptions.Item>
-            <Descriptions.Item label="Description" span={2}>
+            <Descriptions.Item label={t('common.title')}>{viewModalData.title}</Descriptions.Item>
+            <Descriptions.Item label={t('common.description')} span={2}>
               {viewModalData.description}
             </Descriptions.Item>
-            <Descriptions.Item label="Learning Objectives" span={2}>
-              {viewModalData.learningObjectives || 'Not specified'}
+            <Descriptions.Item label={t('course_manage.learning_objectives')} span={2}>
+              {viewModalData.learningObjectives || t('course_manage.not_specified')}
             </Descriptions.Item>
-            <Descriptions.Item label="Prerequisites" span={2}>
-              {viewModalData.prerequisites || 'None'}
+            <Descriptions.Item label={t('course_manage.prerequisites')} span={2}>
+              {viewModalData.prerequisites || t('course_manage.none')}
             </Descriptions.Item>
-            <Descriptions.Item label="Module Order">{viewModalData.moduleOrder}</Descriptions.Item>
-            <Descriptions.Item label="Duration">
-              {viewModalData.estimatedDurationHours ? `${viewModalData.estimatedDurationHours} hours` : 'Not specified'}
+            <Descriptions.Item label={t('course_manage.module_order')}>{viewModalData.moduleOrder}</Descriptions.Item>
+            <Descriptions.Item label={t('course_manage.duration')}>
+              {viewModalData.estimatedDurationHours ? `${viewModalData.estimatedDurationHours} ${t('course_manage.hours_full')}` : t('course_manage.not_specified')}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('common.status')}>
               <Tag color={
                 viewModalData.status === 'published' ? 'green' :
                 viewModalData.status === 'draft' ? 'orange' :
                 viewModalData.status === 'archived' ? 'gray' : 'default'
               }>
-                {viewModalData.status?.charAt(0).toUpperCase() + viewModalData.status?.slice(1)}
+                {t(`common.${viewModalData.status?.toLowerCase()}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Locked">
+            <Descriptions.Item label={t('course_manage.locked_status')}>
               <Tag color={viewModalData.isLocked ? 'red' : 'green'}>
-                {viewModalData.isLocked ? 'Locked' : 'Unlocked'}
+                {viewModalData.isLocked ? t('course_manage.locked') : t('course_manage.unlocked')}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Unlock Date">
-              {viewModalData.unlockDate ? new Date(viewModalData.unlockDate).toLocaleDateString() : 'N/A'}
+            <Descriptions.Item label={t('course_manage.unlock_date')}>
+              {viewModalData.unlockDate ? new Date(viewModalData.unlockDate).toLocaleDateString() : t('course_manage.na')}
             </Descriptions.Item>
-            <Descriptions.Item label="Total Lessons">{viewModalData.totalLessons || 0}</Descriptions.Item>
-            <Descriptions.Item label="Total Assignments">{viewModalData.totalAssignments || 0}</Descriptions.Item>
-            <Descriptions.Item label="Total Quizzes">{viewModalData.totalQuizzes || 0}</Descriptions.Item>
-            <Descriptions.Item label="Created At">
+            <Descriptions.Item label={t('course_manage.total_lessons')}>{viewModalData.totalLessons || 0}</Descriptions.Item>
+            <Descriptions.Item label={t('course_manage.total_assignments')}>{viewModalData.totalAssignments || 0}</Descriptions.Item>
+            <Descriptions.Item label={t('course_manage.total_quizzes')}>{viewModalData.totalQuizzes || 0}</Descriptions.Item>
+            <Descriptions.Item label={t('common.created_at')}>
               {new Date(viewModalData.createdAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Updated At">
+            <Descriptions.Item label={t('common.updated_at')}>
               {new Date(viewModalData.updatedAt).toLocaleString()}
             </Descriptions.Item>
           </Descriptions>

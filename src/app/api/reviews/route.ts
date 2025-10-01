@@ -1,4 +1,5 @@
 import { ReviewRepository } from "@data/repositories/impl/review.repository";
+import { CourseRepository } from "@data/repositories/impl/course.repository";
 import { ReviewUseCase } from "@domain/usecases/review.usecase";
 import { ReviewMapper } from "@presentation/mappers/mapper";
 import { ReviewRequestDto } from "@presentation/dtos/review-request.dto";
@@ -9,7 +10,8 @@ import { validate } from "class-validator";
 import { nanoid } from "nanoid";
 
 const reviewRepository = new ReviewRepository();
-const reviewUseCase = new ReviewUseCase(reviewRepository);
+const courseRepository = new CourseRepository();
+const reviewUseCase = new ReviewUseCase(reviewRepository, courseRepository);
 const reviewMapper = new ReviewMapper();
 
 export async function POST(request: NextRequest) {
@@ -45,15 +47,16 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
+    console.log("Review submission body:", body);
+    console.log("User ID:", session.user.id);
+    
     // Create DTO and validate
     const reviewDto = new ReviewRequestDto({
       ...body,
       id: nanoid(20),
       userId: session.user.id,
-      isVerifiedPurchase: true,
       status: 'pending',
       helpfulVotes: 0,
-      reportedCount: 0,
     });
 
     const errors = await validate(reviewDto);

@@ -26,7 +26,7 @@ export const postAPI = createApi({
       query: (category) => `/posts/categories/${category}`,
     }),
     getPostsByTag: build.query<IPost[], string>({
-      query: (tag) => `/posts/categories/${tag}`,
+      query: (tag) => `/posts/tags/${tag}`,
     }),
     fetchAllPosts: build.query<IPost[], ISearchParams>({
       query: (params = {}) => {

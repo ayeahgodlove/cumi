@@ -1,11 +1,11 @@
-import { CourseProgress } from "@data/entities/index";
+import { CourseProgress, CourseEnrollment, User, Module, Lesson, Quiz, Assignment, Course } from "@data/entities/index";
 import { ICourseProgress } from "@domain/models/course-progress.model";
 import { ICourseProgressRepository } from "@data/repositories/contracts/repository.base";
 
 export class CourseProgressRepository implements ICourseProgressRepository {
   async create(data: ICourseProgress): Promise<InstanceType<typeof CourseProgress>> {
     try {
-      const progress = await CourseProgress.create(data);
+      const progress = await CourseProgress.create(data as any);
       return progress;
     } catch (error) {
       throw error;
@@ -16,13 +16,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
     try {
       const progress = await CourseProgress.findByPk(id, {
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
       });
       return progress;
@@ -35,13 +35,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
     try {
       const progresses = await CourseProgress.findAll({
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -87,13 +87,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { enrollmentId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -108,13 +108,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { courseId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -129,13 +129,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { userId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -150,13 +150,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { moduleId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -171,13 +171,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { lessonId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -192,13 +192,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { quizId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -213,13 +213,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { assignmentId },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -234,13 +234,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { status },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });
@@ -255,13 +255,13 @@ export class CourseProgressRepository implements ICourseProgressRepository {
       const progresses = await CourseProgress.findAll({
         where: { progressType },
         include: [
-          { model: CourseProgress.associations.enrollment.target, as: "enrollment" },
-          { model: CourseProgress.associations.course.target, as: "course" },
-          { model: CourseProgress.associations.user.target, as: "user" },
-          { model: CourseProgress.associations.module.target, as: "module" },
-          { model: CourseProgress.associations.lesson.target, as: "lesson" },
-          { model: CourseProgress.associations.quiz.target, as: "quiz" },
-          { model: CourseProgress.associations.assignment.target, as: "assignment" },
+          { model: CourseEnrollment, as: "enrollment" },
+          { model: Course, as: "progressCourse" },
+          { model: User, as: "user" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: Quiz, as: "quiz" },
+          { model: Assignment, as: "assignment" },
         ],
         order: [['lastAccessedAt', 'DESC']],
       });

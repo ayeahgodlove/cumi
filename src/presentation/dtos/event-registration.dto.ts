@@ -8,8 +8,6 @@ export interface EventRegistrationDto {
   email: string;
   phone: string;
   company?: string;
-  dietaryRequirements?: string;
-  additionalNotes?: string;
   registrationDate: string;
   status: 'pending' | 'confirmed' | 'cancelled';
   paymentStatus: 'pending' | 'paid' | 'refunded';
@@ -27,8 +25,6 @@ export interface CreateEventRegistrationDto {
   email: string;
   phone: string;
   company?: string;
-  dietaryRequirements?: string;
-  additionalNotes?: string;
   paymentAmount?: number;
   paymentMethod?: string;
 }
@@ -38,8 +34,6 @@ export interface UpdateEventRegistrationDto {
   email?: string;
   phone?: string;
   company?: string;
-  dietaryRequirements?: string;
-  additionalNotes?: string;
   status?: 'pending' | 'confirmed' | 'cancelled';
   paymentStatus?: 'pending' | 'paid' | 'refunded';
   paymentAmount?: number;
@@ -57,8 +51,6 @@ export class EventRegistrationMapper {
       email: eventRegistration.email,
       phone: eventRegistration.phone,
       company: eventRegistration.company,
-      dietaryRequirements: eventRegistration.dietaryRequirements,
-      additionalNotes: eventRegistration.additionalNotes,
       registrationDate: eventRegistration.registrationDate.toISOString(),
       status: eventRegistration.status,
       paymentStatus: eventRegistration.paymentStatus,
@@ -78,8 +70,6 @@ export class EventRegistrationMapper {
       email: dto.email,
       phone: dto.phone,
       company: dto.company,
-      dietaryRequirements: dto.dietaryRequirements,
-      additionalNotes: dto.additionalNotes,
       paymentAmount: dto.paymentAmount,
       paymentMethod: dto.paymentMethod,
     };

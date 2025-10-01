@@ -36,7 +36,7 @@ export class AssignmentSubmissionRepository implements IAssignmentSubmissionRepo
           },
           {
             model: Course,
-            as: "course",
+            as: "assignmentSubmissionCourse",
             attributes: ["id", "title", "slug"],
           },
           {
@@ -73,7 +73,7 @@ export class AssignmentSubmissionRepository implements IAssignmentSubmissionRepo
           },
           {
             model: Course,
-            as: "course",
+            as: "assignmentSubmissionCourse",
             attributes: ["id", "title"],
           },
         ],
@@ -134,7 +134,7 @@ export class AssignmentSubmissionRepository implements IAssignmentSubmissionRepo
           },
           {
             model: Course,
-            as: "course",
+            as: "assignmentSubmissionCourse",
             attributes: ["id", "title"],
           },
           {
@@ -264,7 +264,7 @@ export class AssignmentSubmissionRepository implements IAssignmentSubmissionRepo
           },
           {
             model: Course,
-            as: "course",
+            as: "assignmentSubmissionCourse",
             attributes: ["id", "title"],
           },
         ],
@@ -293,7 +293,7 @@ export class AssignmentSubmissionRepository implements IAssignmentSubmissionRepo
           },
           {
             model: Course,
-            as: "course",
+            as: "assignmentSubmissionCourse",
             attributes: ["id", "title"],
           },
         ],

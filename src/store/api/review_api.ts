@@ -5,46 +5,28 @@ export interface IReviewResponse {
   id: string;
   userId: string;
   courseId: string;
-  enrollmentId?: string;
   rating: number;
-  title: string;
   comment: string;
-  pros?: string;
-  cons?: string;
   wouldRecommend: boolean;
   difficulty?: 'very_easy' | 'easy' | 'medium' | 'hard' | 'very_hard';
-  instructorRating?: number;
-  contentQuality?: number;
-  valueForMoney?: number;
-  completionPercentage: number;
-  isVerifiedPurchase: boolean;
   isAnonymous: boolean;
-  status: 'pending' | 'approved' | 'rejected' | 'flagged';
-  moderatorNotes?: string;
+  status: 'pending' | 'approved' | 'rejected';
   helpfulVotes: number;
-  reportedCount: number;
   language: 'french' | 'english' | 'both';
-  tags?: string[];
   createdAt: string;
   updatedAt: string;
   // Populated fields
   user?: {
     id: string;
-    name: string;
+    fullname: string;
     username: string;
-    avatar?: string;
+    email?: string;
   };
   course?: {
     id: string;
     title: string;
     slug: string;
     imageUrl?: string;
-  };
-  enrollment?: {
-    id: string;
-    status: string;
-    enrolledAt: string;
-    completedAt?: string;
   };
 }
 
@@ -62,21 +44,12 @@ export interface ICourseReviewsResponse {
 
 export interface IReviewRequest {
   courseId: string;
-  enrollmentId?: string;
   rating: number;
-  title: string;
   comment: string;
-  pros?: string;
-  cons?: string;
   wouldRecommend: boolean;
   difficulty?: 'very_easy' | 'easy' | 'medium' | 'hard' | 'very_hard';
-  instructorRating?: number;
-  contentQuality?: number;
-  valueForMoney?: number;
-  completionPercentage: number;
   isAnonymous?: boolean;
   language?: 'french' | 'english' | 'both';
-  tags?: string[];
 }
 
 export const reviewAPI = createApi({
@@ -211,24 +184,6 @@ export const reviewAPI = createApi({
       ],
     }),
 
-    // Report a review
-    reportReview: build.mutation<IReviewResponse, { id: string; reason?: string }>({
-      query: ({ id, reason }) => ({
-        url: `/reviews/${id}/actions`,
-        method: "POST",
-        body: { action: "report", reason },
-      }),
-      transformResponse: (response: any) => {
-        if (response && response.success && response.data) {
-          return response.data;
-        }
-        return response || null;
-      },
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Review", id },
-      ],
-    }),
-
     // Admin: Approve review
     approveReview: build.mutation<IReviewResponse, { id: string; moderatorNotes?: string }>({
       query: ({ id, moderatorNotes }) => ({
@@ -267,25 +222,6 @@ export const reviewAPI = createApi({
         { type: "CourseReviews", id: "LIST" },
       ],
     }),
-
-    // Admin: Flag review
-    flagReview: build.mutation<IReviewResponse, { id: string; moderatorNotes?: string }>({
-      query: ({ id, moderatorNotes }) => ({
-        url: `/reviews/${id}/actions`,
-        method: "POST",
-        body: { action: "flag", moderatorNotes },
-      }),
-      transformResponse: (response: any) => {
-        if (response && response.success && response.data) {
-          return response.data;
-        }
-        return response || null;
-      },
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Review", id },
-        { type: "CourseReviews", id: "LIST" },
-      ],
-    }),
   }),
 });
 
@@ -297,8 +233,6 @@ export const {
   useGetUserReviewsQuery,
   useGetReviewQuery,
   useMarkReviewHelpfulMutation,
-  useReportReviewMutation,
   useApproveReviewMutation,
   useRejectReviewMutation,
-  useFlagReviewMutation,
 } = reviewAPI;

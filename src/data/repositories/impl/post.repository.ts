@@ -64,34 +64,34 @@ export class PostRepository implements IPostRepository {
     try {
       const categoryItem = await Category.findOne({
         where: { slug: category },
-        include: [
-          {
-            model: Post,
-            as: "posts", // Use the alias defined in associations
-          },
-        ],
       });
 
       if (!categoryItem) {
-        throw new Error("Category does not exists!");
+        console.warn(`Category not found with slug: ${category}`);
+        return [];
       }
       const item = categoryItem.toJSON<ICategory>();
 
       const posts = await Post.findAll({
-        where: { categoryId: item.id },
+        where: { 
+          categoryId: item.id,
+          status: 'PUBLISHED' // Only return published posts
+        },
         include: [
           {
             model: Category,
-            as: "category", // Use the alias defined in associations
+            as: "category",
           },
           {
             model: Tag,
             as: "tags",
           },
         ],
+        order: [['publishedAt', 'DESC']],
       });
       return posts;
     } catch (error) {
+      console.error('Error in findByCategory:', error);
       throw error;
     }
   }
@@ -102,28 +102,36 @@ export class PostRepository implements IPostRepository {
     try {
       const tagItem = await Tag.findOne({
         where: { slug: tag },
-      });
-
-      if (!tagItem) {
-        throw new Error("Tag does not exists!");
-      }
-      const item = tagItem.toJSON<ITag>();
-
-      const posts = await Post.findAll({
-        where: { tagId: item.id },
         include: [
           {
-            model: Category,
-            as: "category", // Use the alias defined in associations
-          },
-          {
-            model: Tag,
-            as: "tags",
+            model: Post,
+            as: "posts",
+            where: { status: 'PUBLISHED' }, // Only published posts
+            required: false, // LEFT JOIN to get tag even if no posts
+            include: [
+              {
+                model: Category,
+                as: "category",
+              },
+              {
+                model: Tag,
+                as: "tags",
+              },
+            ],
           },
         ],
       });
-      return posts;
+
+      if (!tagItem) {
+        console.warn(`Tag not found with slug: ${tag}`);
+        return [];
+      }
+
+      // Return the posts associated with this tag
+      const item = tagItem.toJSON<any>();
+      return item.posts || [];
     } catch (error) {
+      console.error('Error in findByTag:', error);
       throw error;
     }
   }

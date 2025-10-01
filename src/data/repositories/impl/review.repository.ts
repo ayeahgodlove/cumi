@@ -2,15 +2,17 @@
 
 import { IReview } from "@domain/models/review.model";
 import { IReviewRepository } from "../contracts/repository.base";
-import { Review, User, Course, CourseEnrollment } from "../../entities/index";
+import { Review, User, Course } from "../../entities/index";
 import { Op } from "sequelize";
 
 export class ReviewRepository implements IReviewRepository {
   async create(review: IReview): Promise<InstanceType<typeof Review>> {
     try {
+      console.log("Repository creating review with data:", review);
       return await Review.create(review as any);
     } catch (error) {
       console.error("Error creating review:", error);
+      console.error("Review data that failed:", review);
       throw error;
     }
   }
@@ -22,17 +24,12 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
+            attributes: ["id", "fullname", "username", "email"],
           },
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
-          },
-          {
-            model: CourseEnrollment,
-            as: "enrollment",
-            attributes: ["id", "status", "enrolledAt", "completedAt"],
           },
         ],
       });
@@ -49,11 +46,11 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
+            attributes: ["id", "fullname", "username", "email"],
           },
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
           },
         ],
@@ -110,12 +107,7 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
-          },
-          {
-            model: CourseEnrollment,
-            as: "enrollment",
-            attributes: ["id", "status", "enrolledAt", "completedAt"],
+            attributes: ["id", "fullname", "username", "email"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -133,13 +125,8 @@ export class ReviewRepository implements IReviewRepository {
         include: [
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
-          },
-          {
-            model: CourseEnrollment,
-            as: "enrollment",
-            attributes: ["id", "status", "enrolledAt", "completedAt"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -158,17 +145,12 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
+            attributes: ["id", "fullname", "username", "email"],
           },
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
-          },
-          {
-            model: CourseEnrollment,
-            as: "enrollment",
-            attributes: ["id", "status", "enrolledAt", "completedAt"],
           },
         ],
       });
@@ -186,11 +168,11 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
+            attributes: ["id", "fullname", "username", "email"],
           },
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
           },
         ],
@@ -210,11 +192,11 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
+            attributes: ["id", "fullname", "username", "email"],
           },
           {
             model: Course,
-            as: "course",
+            as: "reviewCourse",
             attributes: ["id", "title", "slug", "imageUrl"],
           },
         ],
@@ -237,12 +219,7 @@ export class ReviewRepository implements IReviewRepository {
           {
             model: User,
             as: "user",
-            attributes: ["id", "name", "username", "avatar"],
-          },
-          {
-            model: CourseEnrollment,
-            as: "enrollment",
-            attributes: ["id", "status", "enrolledAt", "completedAt"],
+            attributes: ["id", "fullname", "username", "email"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -297,27 +274,6 @@ export class ReviewRepository implements IReviewRepository {
     }
   }
 
-  async incrementReportedCount(id: string): Promise<InstanceType<typeof Review> | null> {
-    try {
-      const [updatedRowsCount] = await Review.update(
-        {
-          reportedCount: Review.sequelize!.literal('reported_count + 1'),
-        },
-        {
-          where: { id },
-        }
-      );
-
-      if (updatedRowsCount === 0) {
-        throw new Error(`Review with id ${id} not found`);
-      }
-
-      return await this.findById(id);
-    } catch (error) {
-      console.error("Error incrementing reported count:", error);
-      throw error;
-    }
-  }
 
   async getAverageRatingByCourseId(courseId: string): Promise<number> {
     try {

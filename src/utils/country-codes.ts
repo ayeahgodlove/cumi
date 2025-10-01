@@ -449,9 +449,18 @@ export const formatPhoneNumber = (countryCode: string, phoneNumber: string): str
 
 export const validatePhoneNumber = (countryCode: string, phoneNumber: string): boolean => {
   const country = getCountryByCode(countryCode);
-  if (!country) return false;
+  if (!country) {
+    console.warn(`Country not found for code: ${countryCode}`);
+    return false;
+  }
   
-  // Basic validation - remove country code and check if remaining digits are valid
-  const cleanNumber = phoneNumber.replace(/^\+?\d{1,4}/, '');
-  return /^\d{6,15}$/.test(cleanNumber); // 6-15 digits for African countries
+  // Basic validation - remove country code, spaces, and check if remaining digits are valid
+  const cleanNumber = phoneNumber
+    .replace(/^\+?\d{1,4}/, '') // Remove country code prefix
+    .replace(/[\s\-\(\)]/g, ''); // Remove spaces, dashes, parentheses
+  
+  const isValid = /^\d{6,15}$/.test(cleanNumber);
+  console.log(`Phone validation: Country=${countryCode}, Input="${phoneNumber}", Clean="${cleanNumber}", Valid=${isValid}`);
+  
+  return isValid; // 6-15 digits for African countries
 };

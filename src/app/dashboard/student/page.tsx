@@ -56,6 +56,7 @@ import { format } from "@utils/format";
 import { useRouter } from "next/navigation";
 import { nanoid } from "nanoid";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
+import { showLoginRequiredNotificationSimple, getCurrentUrlForRedirect } from "@components/shared/login-required-notification";
 
 const { Title, Text } = Typography;
 
@@ -270,10 +271,10 @@ export default function StudentDashboard() {
   // Handle course enrollment
   const handleEnrollCourse = async (courseId: string, courseTitle: string) => {
     if (!session?.user?.id) {
-      open?.({
-        type: "error",
+      showLoginRequiredNotificationSimple({
         message: "Authentication Required",
-        description: "Please log in to enroll in courses.",
+        description: `Please log in to enroll in "${courseTitle}" and start your learning journey.`,
+        redirectUrl: getCurrentUrlForRedirect()
       });
       return;
     }
@@ -282,7 +283,7 @@ export default function StudentDashboard() {
     if (enrolledCourses.has(courseId)) {
       open?.({
         type: "success",
-        message: "Already Enrolled",
+        message: t("student_dashboard.already_enrolled"),
         description: "You are already enrolled in this course! 📚",
       });
       return;
@@ -315,7 +316,7 @@ export default function StudentDashboard() {
 
         open?.({
           type: "success",
-          message: "Enrollment Successful! 🎓",
+          message: t("student_dashboard.enrollment_successful"),
           description: `Successfully enrolled in "${courseTitle}"!`,
         });
 
@@ -330,13 +331,13 @@ export default function StudentDashboard() {
           setEnrolledCourses((prev) => new Set([...prev, courseId]));
           open?.({
             type: "success",
-            message: "Already Enrolled",
+            message: t("student_dashboard.already_enrolled"),
             description: "You are already enrolled in this course! 📚",
           });
         } else {
           open?.({
             type: "error",
-            message: "Enrollment Failed",
+            message: t("student_dashboard.enrollment_failed"),
             description: result.message || "Failed to enroll in course.",
           });
         }
@@ -345,7 +346,7 @@ export default function StudentDashboard() {
       console.error("Enrollment error:", error);
       open?.({
         type: "error",
-        message: "Enrollment Failed",
+        message: t("student_dashboard.enrollment_failed"),
         description: "Failed to enroll in course. Please try again.",
       });
     }
@@ -726,7 +727,13 @@ export default function StudentDashboard() {
                         <Button
                           icon={<EyeOutlined />}
                           size="small"
-                          style={{ borderRadius: 6 }}
+                          style={{ 
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            border: '1px solid #e8e8e8',
+                            backgroundColor: '#fafafa',
+                            transition: 'all 0.3s ease'
+                          }}
                           onClick={() => handleViewCourse(course)}
                         />
                       </Tooltip>
@@ -736,7 +743,14 @@ export default function StudentDashboard() {
                           size="small"
                           icon={<TrophyOutlined />}
                           disabled
-                          style={{ borderRadius: 6, flex: 1 }}
+                          style={{ 
+                            borderRadius: 8, 
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #faad14 0%, #ffc53d 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(250, 173, 20, 0.3)',
+                            fontWeight: '600'
+                          }}
                         >
                           Completed
                         </Button>
@@ -749,7 +763,15 @@ export default function StudentDashboard() {
                           onClick={() =>
                             handleContinueCourse(course.id, course.title)
                           }
-                          style={{ borderRadius: 6, flex: 1 }}
+                          style={{ 
+                            borderRadius: 8, 
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #1890ff 0%, #40a9ff 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(24, 144, 255, 0.3)',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease'
+                          }}
                         >
                           Continue
                         </Button>
@@ -760,7 +782,15 @@ export default function StudentDashboard() {
                           onClick={() =>
                             handleEnrollCourse(course.id, course.title)
                           }
-                          style={{ borderRadius: 6, flex: 1 }}
+                          style={{ 
+                            borderRadius: 8, 
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #52c41a 0%, #73d13d 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(82, 196, 26, 0.3)',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease'
+                          }}
                         >
                           Enroll
                         </Button>
@@ -906,7 +936,13 @@ export default function StudentDashboard() {
                       <Button
                         icon={<EyeOutlined />}
                         size="small"
-                        style={{ borderRadius: 6 }}
+                        style={{ 
+                          borderRadius: 8,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                          border: '1px solid #e8e8e8',
+                          backgroundColor: '#fafafa',
+                          transition: 'all 0.3s ease'
+                        }}
                         onClick={() => handleViewPost(post)}
                       />
                     </Tooltip>
@@ -924,7 +960,7 @@ export default function StudentDashboard() {
                       disabled={likedPosts.has(post.id)}
                       onClick={() => handleLikePost(post.id, post.title)}
                       style={{
-                        borderRadius: 6,
+                        borderRadius: 8,
                         flex: 1,
                         backgroundColor: likedPosts.has(post.id)
                           ? "#ff4d4f"
@@ -933,6 +969,11 @@ export default function StudentDashboard() {
                           ? "#ff4d4f"
                           : undefined,
                         color: likedPosts.has(post.id) ? "white" : undefined,
+                        boxShadow: likedPosts.has(post.id) 
+                          ? '0 4px 12px rgba(255, 77, 79, 0.3)'
+                          : '0 2px 8px rgba(0,0,0,0.1)',
+                        fontWeight: '600',
+                        transition: 'all 0.3s ease'
                       }}
                     >
                       {likedPosts.has(post.id) ? "Liked" : "Like"}
@@ -1098,7 +1139,13 @@ export default function StudentDashboard() {
                         <Button
                           icon={<EyeOutlined />}
                           size="small"
-                          style={{ borderRadius: 6 }}
+                          style={{ 
+                            borderRadius: 8,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            border: '1px solid #e8e8e8',
+                            backgroundColor: '#fafafa',
+                            transition: 'all 0.3s ease'
+                          }}
                           onClick={() => handleViewEvent(event)}
                         />
                       </Tooltip>
@@ -1108,7 +1155,14 @@ export default function StudentDashboard() {
                           size="small"
                           icon={<CheckCircleOutlined />}
                           disabled
-                          style={{ borderRadius: 6, flex: 1 }}
+                          style={{ 
+                            borderRadius: 8, 
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #13c2c2 0%, #36cfc9 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(19, 194, 194, 0.3)',
+                            fontWeight: '600'
+                          }}
                         >
                           Registered
                         </Button>
@@ -1120,7 +1174,15 @@ export default function StudentDashboard() {
                           onClick={() =>
                             handleRegisterEvent(event.id, event.title)
                           }
-                          style={{ borderRadius: 6, flex: 1 }}
+                          style={{ 
+                            borderRadius: 8, 
+                            flex: 1,
+                            background: 'linear-gradient(135deg, #722ed1 0%, #9254de 100%)',
+                            border: 'none',
+                            boxShadow: '0 4px 12px rgba(114, 46, 209, 0.3)',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease'
+                          }}
                         >
                           Register
                         </Button>
@@ -1168,29 +1230,50 @@ export default function StudentDashboard() {
     );
   }
 
+  // Calculate real student stats from backend data
+  const enrollments = Array.isArray(userEnrollments) 
+    ? userEnrollments 
+    : (userEnrollments as any)?.data || [];
+  
+  const registrations = Array.isArray(userEventRegistrations)
+    ? userEventRegistrations
+    : (userEventRegistrations as any)?.data || [];
+
+  const coursesEnrolled = enrollments.filter((enrollment: any) => 
+    enrollment.status === "active" || enrollment.status === "completed"
+  ).length;
+
+  const coursesCompleted = enrollments.filter((enrollment: any) => 
+    enrollment.status === "completed" || enrollment.progress >= 100
+  ).length;
+
+  const eventsAttended = registrations.filter((registration: any) => 
+    registration.status === "confirmed" || registration.status === "completed"
+  ).length;
+
   // Student-specific stats
   const studentStats = [
     {
-      title: "Courses Enrolled",
-      value: 0, // This would need to be fetched from course progress
+      title: t("student_dashboard.courses_enrolled"),
+      value: coursesEnrolled,
       icon: <BookOutlined />,
       color: "#1890ff",
     },
     {
-      title: "Courses Completed",
-      value: 0, // This would need to be fetched from course progress
+      title: t("student_dashboard.courses_completed"),
+      value: coursesCompleted,
       icon: <TrophyOutlined />,
       color: "#52c41a",
     },
     {
-      title: "My Comments",
+      title: t("student_dashboard.my_comments"),
       value: stats.totalUserComments,
       icon: <UserOutlined />,
       color: "#722ed1",
     },
     {
-      title: "Events Attended",
-      value: 0, // This would need to be fetched from event attendance
+      title: t("student_dashboard.events_attended"),
+      value: eventsAttended,
       icon: <CalendarOutlined />,
       color: "#13c2c2",
     },
@@ -1272,7 +1355,7 @@ export default function StudentDashboard() {
   return (
     <div>
       <EnhancedBreadcrumb
-        items={[{ title: "Student Dashboard" }]}
+        items={[{ title: t("student_dashboard.title") }]}
         showBackButton
       />
 
@@ -1287,10 +1370,10 @@ export default function StudentDashboard() {
         }}
       >
         <Title level={1} style={{ color: "white", marginBottom: "8px" }}>
-          🎓 Student Learning Hub
+          🎓 {t("student_dashboard.learning_hub")}
         </Title>
         <Text style={{ color: "rgba(255,255,255,0.9)", fontSize: "18px" }}>
-          Welcome back, {session?.user?.name}! Ready to continue learning?
+          {t("student_dashboard.welcome_back")}, {session?.user?.name}! {t("student_dashboard.ready_to_learn")}
         </Text>
       </div>
 
@@ -1299,10 +1382,10 @@ export default function StudentDashboard() {
         <Col span={24}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
             <Title level={3} style={{ color: "#2c3e50", marginBottom: "8px" }}>
-              📊 Your Learning Analytics
+              📊 {t("student_dashboard.learning_analytics")}
             </Title>
             <Text style={{ color: "#7f8c8d", fontSize: "16px" }}>
-              Track your progress and achievements
+              {t("student_dashboard.track_progress")}
             </Text>
           </div>
         </Col>
@@ -1376,10 +1459,10 @@ export default function StudentDashboard() {
           <div style={{ padding: "24px" }}>
             <div style={{ marginBottom: "24px", textAlign: "center" }}>
               <Title level={3} style={{ marginBottom: "8px" }}>
-                📚 My Enrolled Courses
+                📚 {t("student_dashboard.my_enrolled_courses")}
               </Title>
               <Text style={{ fontSize: "16px" }}>
-                Continue your learning journey
+                {t("student_dashboard.continue_learning_journey")}
               </Text>
             </div>
 
@@ -1387,7 +1470,7 @@ export default function StudentDashboard() {
               <div style={{ padding: "40px 0", textAlign: "center" }}>
                 <Spin size="large" style={{ marginBottom: "16px" }} />
                 <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "16px" }}>
-                  Loading your enrolled courses...
+                  {t("student_dashboard.loading_enrolled_courses")}
                 </div>
               </div>
             ) : (
@@ -1441,7 +1524,7 @@ export default function StudentDashboard() {
                                 fontWeight: "bold",
                               }}
                             >
-                              {course.progress || 0}% Complete
+                              {course.progress || 0}% {t("student_dashboard.complete")}
                             </Text>
                           </div>
                         </div>
@@ -1486,22 +1569,32 @@ export default function StudentDashboard() {
                           }
                           loading={continuingCourse === course.id}
                           style={{
-                            borderRadius: "8px",
-                            height: "48px",
+                            borderRadius: "12px",
+                            height: "52px",
                             fontSize: "16px",
                             fontWeight: "600",
                             background:
                               "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                             border: "none",
-                            boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+                            boxShadow: "0 6px 20px rgba(102, 126, 234, 0.4)",
+                            transition: "all 0.3s ease",
+                            transform: "translateY(0)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-2px)";
+                            e.currentTarget.style.boxShadow = "0 8px 25px rgba(102, 126, 234, 0.5)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = "0 6px 20px rgba(102, 126, 234, 0.4)";
                           }}
                         >
-                          Continue Learning
+                          {t("student_dashboard.continue_learning")}
                         </Button>
                       </div>
                     </Card>
                   </Col>
-                  ))}
+                ))}
               </Row>
             )}
           </div>
@@ -1672,14 +1765,24 @@ export default function StudentDashboard() {
                             block
                             onClick={() => handleViewEvent(event)}
                             style={{
-                              borderRadius: "8px",
-                              height: "48px",
+                              borderRadius: "12px",
+                              height: "52px",
                               fontSize: "16px",
                               fontWeight: "600",
                               background:
                                 "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
                               border: "none",
-                              boxShadow: "0 4px 12px rgba(250, 112, 154, 0.4)",
+                              boxShadow: "0 6px 20px rgba(250, 112, 154, 0.4)",
+                              transition: "all 0.3s ease",
+                              transform: "translateY(0)",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform = "translateY(-2px)";
+                              e.currentTarget.style.boxShadow = "0 8px 25px rgba(250, 112, 154, 0.5)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = "translateY(0)";
+                              e.currentTarget.style.boxShadow = "0 6px 20px rgba(250, 112, 154, 0.4)";
                             }}
                           >
                             View Event Details

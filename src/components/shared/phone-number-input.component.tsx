@@ -28,7 +28,7 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   value = "",
   onChange,
   placeholder = "Enter phone number",
-  size = "middle",
+  size = "large",
   disabled = false,
   showMoneyServices = true,
   countryCode = DEFAULT_COUNTRY.code,
@@ -36,19 +36,48 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   style,
   className,
 }) => {
+  const [internalCountryCode, setInternalCountryCode] =
+    React.useState(countryCode);
+  const [isInitialized, setIsInitialized] = React.useState(false);
+
   const selectedCountry =
-    AFRICAN_COUNTRY_CODES.find((country) => country.code === countryCode) ||
-    DEFAULT_COUNTRY;
+    AFRICAN_COUNTRY_CODES.find(
+      (country) => country.code === internalCountryCode
+    ) || DEFAULT_COUNTRY;
+
+  // Auto-add country code on mount if field is empty
+  React.useEffect(() => {
+    if (!isInitialized && !value && onChange) {
+      const initialCountry = AFRICAN_COUNTRY_CODES.find(
+        (c) => c.code === countryCode
+      ) || DEFAULT_COUNTRY;
+      
+      onChange(`${initialCountry.phonePrefix} `);
+      setIsInitialized(true);
+    }
+  }, [countryCode, value, onChange, isInitialized]);
 
   const handleCountryChange = (newCountryCode: string) => {
+    setInternalCountryCode(newCountryCode);
+
     if (onCountryCodeChange) {
       onCountryCodeChange(newCountryCode);
     }
 
-    // Auto-format phone number with new country code
-    if (value && onChange) {
-      const formattedNumber = formatPhoneNumber(newCountryCode, value);
-      onChange(formattedNumber);
+    const newCountry = AFRICAN_COUNTRY_CODES.find(
+      (c) => c.code === newCountryCode
+    );
+
+    // Auto-add country code prefix to the phone number
+    if (newCountry && onChange) {
+      // Remove any existing country code prefix and spaces
+      let cleanNumber = value.replace(/^\+\d+\s*/, "").trim();
+
+      // Add the new country code prefix
+      const numberWithPrefix = cleanNumber 
+        ? `${newCountry.phonePrefix} ${cleanNumber}`
+        : `${newCountry.phonePrefix} `;
+      onChange(numberWithPrefix);
     }
   };
 
@@ -86,11 +115,15 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   };
 
   return (
-    <Input.Group compact style={style} className={className}>
+    <Input.Group
+      compact
+      style={{ width: "100%", ...style }}
+      className={className}
+    >
       <Select
-        value={countryCode}
+        value={internalCountryCode}
         onChange={handleCountryChange}
-        style={{ width: "20%" }}
+        style={{ width: "30%" }}
         size={size}
         disabled={disabled}
         showSearch
@@ -103,11 +136,7 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
                 country.phonePrefix.includes(input)
             : false;
         }}
-        dropdownRender={(menu) => (
-          <div>
-            {menu}
-          </div>
-        )}
+        dropdownRender={(menu) => <div>{menu}</div>}
       >
         {AFRICAN_COUNTRY_CODES.map(renderCountryOption)}
       </Select>
@@ -132,7 +161,7 @@ export const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
           },
         }}
         style={{
-          width: "65%",
+          width: "70%",
         }}
         size={size}
         disabled={disabled}

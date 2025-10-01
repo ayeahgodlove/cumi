@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, ConfigProvider, Input } from "antd";
+import { Button, ConfigProvider, Input, notification } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
 import styles from "./footer.module.css";
 import Link from "next/link";
@@ -13,12 +13,63 @@ type Props = {
 };
 export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
   const { t } = useTranslation();
 
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      api.warning({
+        message: t('subscribe.invalid_title'),
+        description: t('subscribe.invalid_email'),
+        placement: 'topRight',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/subscribers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, name: email.split('@')[0] }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || "Failed to subscribe");
+      }
+
+      api.success({
+        message: t('subscribe.success_title'),
+        description: t('subscribe.success_message'),
+        placement: 'topRight',
+        duration: 4,
+      });
+      setEmail("");
+    } catch (error) {
+      console.error("Error subscribing:", error);
+      api.error({
+        message: t('subscribe.error_title'),
+        description: error instanceof Error ? error.message : t('subscribe.error_message'),
+        placement: 'topRight',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <footer className={`section ${styles.section}`}>
-      <div className="container">
-        <div className={styles.content}>
+    <>
+      {contextHolder}
+      <footer className={`section ${styles.section}`}>
+        <div className="container">
+          <div className={styles.content}>
           <div className={styles.content_group_logo}>
             <Image
               src={`${logoPath || '/'}cumi-green.jpg`}
@@ -63,25 +114,30 @@ export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
             <p className={styles.subheading}>
               {t('footer.mailing_description')}
             </p>
-            <form>
+            <form onSubmit={handleSubscribe}>
               <ConfigProvider theme={THEME}>
                 <Input
+                  type="email"
                   placeholder={t('footer.email_placeholder')}
                   size="large"
                   addonAfter={
                     <Button
                       type="link"
+                      htmlType="submit"
+                      loading={loading}
                       icon={<ArrowRightOutlined style={{ color: "#81ce89" }} />}
                     />
                   }
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </ConfigProvider>
             </form>
           </div>
         </div>
       </div>
-    </footer>
+      </footer>
+    </>
   );
 };

@@ -4,6 +4,7 @@ import { IPost } from "@domain/models/post.model";
 import { ITag } from "@domain/models/tag";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "@contexts/translation.context";
 
 const PostSidebar = ({
   tags,
@@ -15,6 +16,7 @@ const PostSidebar = ({
   posts: IPost[] | undefined;
 }) => {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const allCategories: string[] =
     posts && posts.length > 0 ? posts.map((p) => p.categoryId) : [];
   const allTags = posts && posts.length > 0 
@@ -26,7 +28,7 @@ const PostSidebar = ({
     <>
       {/* <!-- categories --> */}
       <div className="mb-4">
-        <h5 className="mb-3">Categories</h5>
+        <h5 className="mb-3">{t("blog.categories")}</h5>
         <div className="rounded bg-light p-5">
           <ul className="navbar-nav">
             {categories?.length ? (
@@ -59,7 +61,7 @@ const PostSidebar = ({
       </div>
       {/* <!-- tags --> */}
       <div className="mb-4">
-        <h5 className="mb-3">Tags</h5>
+        <h5 className="mb-3">{t("blog.tags")}</h5>
         <div className="rounded bg-light p-4 px-5">
           <ul className="nav justify-content-start">
             {tags?.length ? (

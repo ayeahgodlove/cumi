@@ -9,19 +9,24 @@ import { useSelect } from "@refinedev/antd";
 import { ITag } from "@domain/models/tag";
 import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import { useTranslation } from "@contexts/translation.context";
+import dayjs from "dayjs";
 
 interface EventCreateModalProps {
   visible: boolean;
   onCancel: () => void;
   onSuccess: () => void;
+  editingEvent?: any;
 }
 
-export default function EventCreateModal({ visible, onCancel, onSuccess }: EventCreateModalProps) {
+export default function EventCreateModal({ visible, onCancel, onSuccess, editingEvent }: EventCreateModalProps) {
   const [form] = Form.useForm();
   const { open } = useNotification();
+  const { t } = useTranslation();
   const { formProps, saveButtonProps } = useForm({
     resource: "events",
-    action: "create",
+    action: editingEvent ? "edit" : "create",
+    id: editingEvent?.id,
     redirect: false, // Prevent automatic redirect
   });
 
@@ -46,8 +51,8 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
       // Show success notification
       open?.({
         type: "success",
-        message: "Success",
-        description: "Event created successfully!",
+        message: t('common.success'),
+        description: editingEvent ? t('creator.event_updated_success') : t('creator.event_created_success'),
       });
       
       // Reset form and close modal
@@ -59,8 +64,8 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
       // Show error notification
       open?.({
         type: "error",
-        message: "Error",
-        description: "Failed to create event: " + error.message,
+        message: t('common.error'),
+        description: t('forms.event_create_failed', { message: error.message }),
       });
       
       // Don't close modal on error - let user fix the issues
@@ -98,6 +103,54 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
     }
   }, [fileList, form]);
 
+  // Preload form when editing
+  useEffect(() => {
+    if (editingEvent && visible) {
+      // Parse the eventDate safely
+      let parsedEventDate = null;
+      if (editingEvent.eventDate) {
+        try {
+          parsedEventDate = dayjs(editingEvent.eventDate);
+          // Verify it's valid
+          if (!parsedEventDate.isValid()) {
+            parsedEventDate = null;
+          }
+        } catch (e) {
+          console.error('Error parsing event date:', e);
+          parsedEventDate = null;
+        }
+      }
+
+      form.setFieldsValue({
+        title: editingEvent.title,
+        category: editingEvent.category,
+        status: editingEvent.status,
+        eventDate: parsedEventDate,
+        location: editingEvent.location,
+        maxAttendees: editingEvent.maxAttendees,
+        registrationFee: editingEvent.registrationFee || editingEvent.entryFee,
+        description: editingEvent.description,
+        content: editingEvent.content,
+        tags: editingEvent.tags || [],
+        imageUrl: editingEvent.imageUrl,
+      });
+      
+      // Set file list if there's an existing image
+      if (editingEvent.imageUrl) {
+        setFileList([{
+          uid: '-1',
+          name: 'existing-image',
+          status: 'done',
+          url: editingEvent.imageUrl,
+        }]);
+      }
+    } else if (!editingEvent && visible) {
+      // Reset form for new event
+      form.resetFields();
+      setFileList([]);
+    }
+  }, [editingEvent, visible, form, setFileList]);
+
   const handleCancel = () => {
     form.resetFields();
     setFileList([]);
@@ -114,7 +167,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
           textAlign: "center",
           padding: "16px 0"
         }}>
-          Create New Event
+          {editingEvent ? `${t('forms.edit_event')}: ${editingEvent.title}` : t('forms.create_new_event')}
         </div>
       }
       open={visible}
@@ -144,8 +197,8 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
       >
         <Form.Item
           name="title"
-          label="Event Title"
-          rules={[{ required: true, message: "Please enter event title" }]}
+          label={t('forms.event_title')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.event_title').toLowerCase() }) }]}
         >
           <Input size="large" />
         </Form.Item>
@@ -154,37 +207,37 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
           <Col xs={24} md={12}>
             <Form.Item
               name="category"
-              label="Category"
-              rules={[{ required: true, message: "Please select a category" }]}
+              label={t('common.category')}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('common.category').toLowerCase() }) }]}
             >
               <Select
-                placeholder="Select category"
+                placeholder={t('forms.select_category')}
                 size="large"
               >
-                <Select.Option value="workshop">Workshop</Select.Option>
-                <Select.Option value="seminar">Seminar</Select.Option>
-                <Select.Option value="conference">Conference</Select.Option>
-                <Select.Option value="training">Training</Select.Option>
-                <Select.Option value="meeting">Meeting</Select.Option>
-                <Select.Option value="social">Social</Select.Option>
-                <Select.Option value="religious">Religious</Select.Option>
-                <Select.Option value="cultural">Cultural</Select.Option>
-                <Select.Option value="sports">Sports</Select.Option>
-                <Select.Option value="business">Business</Select.Option>
+                <Select.Option value="workshop">{t('forms.workshop')}</Select.Option>
+                <Select.Option value="seminar">{t('forms.seminar')}</Select.Option>
+                <Select.Option value="conference">{t('forms.conference')}</Select.Option>
+                <Select.Option value="training">{t('forms.training')}</Select.Option>
+                <Select.Option value="meeting">{t('forms.meeting')}</Select.Option>
+                <Select.Option value="social">{t('forms.social')}</Select.Option>
+                <Select.Option value="religious">{t('forms.religious')}</Select.Option>
+                <Select.Option value="cultural">{t('forms.cultural')}</Select.Option>
+                <Select.Option value="sports">{t('forms.sports')}</Select.Option>
+                <Select.Option value="business">{t('forms.business')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
               name="status"
-              label="Status"
+              label={t('common.status')}
               initialValue="draft"
             >
               <Select size="large">
-                <Select.Option value="draft">Draft</Select.Option>
-                <Select.Option value="published">Published</Select.Option>
-                <Select.Option value="cancelled">Cancelled</Select.Option>
-                <Select.Option value="completed">Completed</Select.Option>
+                <Select.Option value="draft">{t('common.draft')}</Select.Option>
+                <Select.Option value="published">{t('common.published')}</Select.Option>
+                <Select.Option value="cancelled">{t('common.cancelled')}</Select.Option>
+                <Select.Option value="completed">{t('common.completed')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -194,8 +247,8 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
           <Col xs={24} md={12}>
             <Form.Item
               name="eventDate"
-              label="Event Date"
-              rules={[{ required: true, message: "Please select event date" }]}
+              label={t('forms.event_date')}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('forms.event_date').toLowerCase() }) }]}
             >
               <DatePicker
                 showTime
@@ -208,10 +261,10 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
           <Col xs={24} md={12}>
             <Form.Item
               name="location"
-              label="Location"
-              rules={[{ required: true, message: "Please enter event location" }]}
+              label={t('creator.location')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('creator.location').toLowerCase() }) }]}
             >
-              <Input size="large" placeholder="Event location" />
+              <Input size="large" placeholder={t('forms.event_location')} />
             </Form.Item>
           </Col>
         </Row>
@@ -220,20 +273,20 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
           <Col xs={24} md={12}>
             <Form.Item
               name="maxAttendees"
-              label="Maximum Attendees"
+              label={t('forms.max_attendees')}
             >
               <InputNumber
                 min={1}
                 style={{ width: '100%' }}
                 size="large"
-                placeholder="Unlimited"
+                placeholder={t('creator.unlimited')}
               />
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
               name="registrationFee"
-              label="Registration Fee"
+              label={t('forms.registration_fee')}
             >
               <InputNumber
                 min={0}
@@ -247,32 +300,32 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
 
         <Form.Item
           name="description"
-          label="Description"
-          rules={[{ required: true, message: "Please enter event description" }]}
+          label={t('common.description')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
 
         <Form.Item
           name="content"
-          label="Event Details"
-          rules={[{ required: true, message: "Please enter event details" }]}
+          label={t('forms.event_details')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.event_details').toLowerCase() }) }]}
         >
           <RichTextEditor
             value={form.getFieldValue("content")}
             onChange={(html) => form.setFieldValue("content", html)}
-            placeholder="Enter event details..."
+            placeholder={t('forms.enter_event_details')}
             height={300}
           />
         </Form.Item>
 
         <Form.Item
           name="tags"
-          label="Tags"
+          label={t('forms.tags')}
         >
           <Select
             mode="tags"
-            placeholder="Select tags"
+            placeholder={t('forms.select_tags')}
             size="large"
             options={
               tags && Array.isArray(tags)
@@ -287,16 +340,16 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
 
         <Form.Item
           name="imageUrl"
-          label="Event Image"
+          label={t('forms.event_image')}
           rules={[
-            { required: true, message: "Please upload an event image" },
+            { required: true, message: t('forms.please_upload', { field: t('forms.event_image').toLowerCase() }) },
             {
               validator: (_, value) => {
                 // Check if we have a valid URL string
                 if (typeof value === 'string' && value.trim() !== '') {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Please upload an image'));
+                return Promise.reject(new Error(t('forms.please_upload', { field: 'image' })));
               }
             }
           ]}
@@ -312,9 +365,9 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
             beforeUpload={beforeUpload}
             onRemove={handleRemove}
           >
-            <p className="ant-upload-text">Drag & drop an event image here</p>
+            <p className="ant-upload-text">{t('forms.drag_drop_event_image')}</p>
             <p className="ant-upload-hint">
-              Support for single upload. Maximum file size: 1MB
+              {t('forms.upload_hint')}
             </p>
           </Upload.Dragger>
         </Form.Item>
@@ -340,7 +393,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
                 height: "auto"
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="primary"
@@ -359,7 +412,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess }: Event
                 boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
               }}
             >
-              {saveButtonProps?.loading ? 'Creating...' : 'Create Event'}
+              {saveButtonProps?.loading ? t('forms.saving') : (editingEvent ? t('forms.update_event') : t('forms.create_event'))}
             </Button>
           </div>
         </Form.Item>

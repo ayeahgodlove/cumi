@@ -9,6 +9,7 @@ import AboutNote from "@components/about-note/about-note";
 import { AppNav } from "@components/nav/nav.component";
 import { AppHero } from "@components/hero/hero.component";
 import { AppService } from "@components/service/service.component";
+import { PartnersSection } from "@components/partners/partners-section.component";
 
 export default function HomePageComponent() {
   return (
@@ -29,6 +30,9 @@ export default function HomePageComponent() {
 
       {/* service section */}
       <AppService />
+
+      {/* partners section */}
+      <PartnersSection />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

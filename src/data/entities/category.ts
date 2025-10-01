@@ -36,6 +36,12 @@ const Category = (sequelize: Sequelize, DataTypes: any) => {
     }
   );
 
+  // Add toJSON method to ensure proper serialization
+  CategoryModel.prototype.toJSON = function() {
+    const values = Object.assign({}, this.get());
+    return values;
+  };
+
   return CategoryModel;
 };
 

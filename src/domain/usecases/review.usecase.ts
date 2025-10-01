@@ -2,14 +2,27 @@
 
 import { IReview } from "@domain/models/review.model";
 import { IReviewRepository } from "@data/repositories/contracts/repository.base";
+import { ICourseRepository } from "@data/repositories/contracts/repository.base";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { Review } from "@data/entities/index";
 
 export class ReviewUseCase {
-  constructor(private readonly reviewRepository: IReviewRepository) {}
+  constructor(
+    private readonly reviewRepository: IReviewRepository,
+    private readonly courseRepository: ICourseRepository
+  ) {}
 
   async createReview(review: IReview): Promise<InstanceType<typeof Review>> {
     try {
+      console.log("Creating review with data:", review);
+      
+      // First, verify that the course exists
+      const course = await this.courseRepository.findById(review.courseId);
+      if (!course) {
+        throw new Error(`Course with ID ${review.courseId} does not exist.`);
+      }
+      console.log("Course found:", course.getDataValue('title'));
+      
       // Check if user already has a review for this course
       const existingReview = await this.reviewRepository.findByUserAndCourse(
         review.userId, 
@@ -25,16 +38,11 @@ export class ReviewUseCase {
         throw new Error("Rating must be between 1 and 5 stars");
       }
 
-      // Validate completion percentage
-      if (review.completionPercentage < 0 || review.completionPercentage > 100) {
-        throw new Error("Completion percentage must be between 0 and 100");
-      }
-
       // Set default status for new reviews
       review.status = 'pending';
       review.helpfulVotes = 0;
-      review.reportedCount = 0;
 
+      console.log("About to create review in repository with:", review);
       return await this.reviewRepository.create(review);
     } catch (error) {
       console.error("Error in createReview use case:", error);
@@ -56,7 +64,6 @@ export class ReviewUseCase {
 
       // Reset status to pending when review is updated
       review.status = 'pending';
-      review.moderatorNotes = "";
 
       return await this.reviewRepository.update(review);
     } catch (error) {
@@ -160,14 +167,6 @@ export class ReviewUseCase {
     }
   }
 
-  async flagReview(id: string, moderatorNotes?: string): Promise<InstanceType<typeof Review> | null> {
-    try {
-      return await this.reviewRepository.updateStatus(id, 'flagged', moderatorNotes);
-    } catch (error) {
-      console.error("Error in flagReview use case:", error);
-      throw error;
-    }
-  }
 
   async markReviewHelpful(id: string): Promise<InstanceType<typeof Review> | null> {
     try {
@@ -178,21 +177,6 @@ export class ReviewUseCase {
     }
   }
 
-  async reportReview(id: string): Promise<InstanceType<typeof Review> | null> {
-    try {
-      const review = await this.reviewRepository.incrementReportedCount(id);
-      
-      // Auto-flag if reported too many times
-      if (review && review.getDataValue('reportedCount') >= 5) {
-        return await this.flagReview(id, "Auto-flagged due to multiple reports");
-      }
-
-      return review;
-    } catch (error) {
-      console.error("Error in reportReview use case:", error);
-      throw error;
-    }
-  }
 
   async getCourseReviewStats(courseId: string): Promise<{
     totalReviews: number;

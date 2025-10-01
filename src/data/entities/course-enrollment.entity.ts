@@ -101,4 +101,10 @@ CourseEnrollmentEntity.init(
   }
 );
 
+// Add toJSON method to ensure proper serialization
+CourseEnrollmentEntity.prototype.toJSON = function() {
+  const values = Object.assign({}, this.get());
+  return values;
+};
+
 export default CourseEnrollmentEntity;

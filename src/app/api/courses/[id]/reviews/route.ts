@@ -47,12 +47,14 @@ export async function GET(
     );
   } catch (error: any) {
     console.error("Error fetching course reviews:", error);
+    console.error("Error stack:", error.stack);
     return NextResponse.json(
       {
         data: null,
         message: error.message || "Failed to fetch course reviews",
         success: false,
-        validationErrors: [],
+        validationErrors: [error.message],
+        error: error.toString(),
       },
       { status: 500 }
     );

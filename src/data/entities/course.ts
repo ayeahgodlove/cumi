@@ -137,6 +137,12 @@ const Course = (sequelize: Sequelize, DataTypes: any) => {
     }
   );
 
+  // Add toJSON method to ensure proper serialization
+  CourseModel.prototype.toJSON = function() {
+    const values = Object.assign({}, this.get());
+    return values;
+  };
+
   return CourseModel;
 };
 

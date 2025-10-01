@@ -1,11 +1,11 @@
-import { Module } from "@data/entities/index";
+import { Module, Course, User, Lesson, Assignment, Quiz } from "@data/entities/index";
 import { IModule } from "@domain/models/module.model";
 import { IModuleRepository } from "@data/repositories/contracts/repository.base";
 
 export class ModuleRepository implements IModuleRepository {
   async create(data: IModule): Promise<InstanceType<typeof Module>> {
     try {
-      const module = await Module.create(data);
+      const module = await Module.create(data as any);
       return module;
     } catch (error) {
       throw error;
@@ -16,8 +16,8 @@ export class ModuleRepository implements IModuleRepository {
     try {
       const module = await Module.findByPk(id, {
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
       });
       return module;
@@ -30,8 +30,8 @@ export class ModuleRepository implements IModuleRepository {
     try {
       const modules = await Module.findAll({
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
         order: [['moduleOrder', 'ASC']],
       });
@@ -77,8 +77,8 @@ export class ModuleRepository implements IModuleRepository {
       const module = await Module.findOne({
         where: { title },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
       });
       return module;
@@ -92,8 +92,8 @@ export class ModuleRepository implements IModuleRepository {
       const module = await Module.findOne({
         where: { slug },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
       });
       return module;
@@ -107,8 +107,8 @@ export class ModuleRepository implements IModuleRepository {
       const modules = await Module.findAll({
         where: { courseId },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
         order: [['moduleOrder', 'ASC']],
       });
@@ -123,8 +123,8 @@ export class ModuleRepository implements IModuleRepository {
       const modules = await Module.findAll({
         where: { userId },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
         order: [['createdAt', 'DESC']],
       });
@@ -139,8 +139,8 @@ export class ModuleRepository implements IModuleRepository {
       const modules = await Module.findAll({
         where: { status },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
         ],
         order: [['moduleOrder', 'ASC']],
       });
@@ -152,8 +152,6 @@ export class ModuleRepository implements IModuleRepository {
 
   async findByCourseIdWithLessons(courseId: string): Promise<InstanceType<typeof Module>[]> {
     try {
-      // Import the models we need for associations
-      const { Lesson, Assignment, Quiz } = require("@data/entities/index");
       
       const modules = await Module.findAll({
         where: { 
@@ -161,8 +159,8 @@ export class ModuleRepository implements IModuleRepository {
           status: 'published'
         },
         include: [
-          { model: Module.associations.course.target, as: "course" },
-          { model: Module.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "moduleCourse" },
+          { model: User, as: "instructor" },
           { 
             model: Lesson, 
             as: "lessons",

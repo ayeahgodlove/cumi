@@ -51,6 +51,10 @@ import {
   GlobalOutlined,
   TeamOutlined,
   UserOutlined,
+  SoundOutlined,
+  PauseCircleOutlined,
+  ToolOutlined,
+  BulbOutlined,
 } from "@ant-design/icons";
 // import { EnhancedBreadcrumb } from "@/components/enhanced-breadcrumb";
 import styles from "./page.module.css";
@@ -87,6 +91,134 @@ const { Content, Sider } = Layout;
 const { Title, Text, Paragraph } = Typography;
 const { Panel } = Collapse;
 const { TabPane } = Tabs;
+
+// Custom Audio Player Component with brand colors
+interface CustomAudioPlayerProps {
+  audioUrl: string;
+  title: string;
+  onProgress: (percentage: number) => void;
+}
+
+const CustomAudioPlayer: React.FC<CustomAudioPlayerProps> = ({ audioUrl, title, onProgress }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const audioRef = React.useRef<HTMLAudioElement>(null);
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+      setCurrentTime(current);
+      setDuration(total);
+      
+      if (total > 0) {
+        const percentage = (current / total) * 100;
+        onProgress(percentage);
+      }
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) {
+      const seekTime = (parseFloat(e.target.value) / 100) * duration;
+      audioRef.current.currentTime = seekTime;
+      setCurrentTime(seekTime);
+    }
+  };
+
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <Card style={{ 
+      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      border: "none",
+      borderRadius: "12px",
+      color: "white"
+    }}>
+      <div style={{ padding: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+          <SoundOutlined style={{ fontSize: "24px", marginRight: "12px" }} />
+          <Title level={4} style={{ color: "white", margin: 0 }}>{title}</Title>
+        </div>
+        
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={() => {
+            if (audioRef.current) {
+              setDuration(audioRef.current.duration);
+            }
+          }}
+          onEnded={() => {
+            setIsPlaying(false);
+            setCurrentTime(0);
+            onProgress(100);
+          }}
+        />
+        
+        <div style={{ marginBottom: "16px" }}>
+          <Button
+            type="primary"
+            size="large"
+            icon={isPlaying ? <PauseCircleOutlined /> : <PlayCircleOutlined />}
+            onClick={handlePlayPause}
+            style={{
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+              color: "white",
+              marginRight: "16px"
+            }}
+          >
+            {isPlaying ? "Pause" : "Play"}
+          </Button>
+          
+          <Text style={{ color: "white", fontSize: "14px" }}>
+            {formatTime(currentTime)} / {formatTime(duration)}
+          </Text>
+        </div>
+        
+        <div style={{ marginBottom: "8px" }}>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={duration > 0 ? (currentTime / duration) * 100 : 0}
+            onChange={handleSeek}
+            style={{
+              width: "100%",
+              height: "6px",
+              background: "rgba(255, 255, 255, 0.3)",
+              outline: "none",
+              borderRadius: "3px"
+            }}
+          />
+        </div>
+        
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "rgba(255, 255, 255, 0.8)" }}>
+          <span>0:00</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+      </div>
+    </Card>
+  );
+};
 
 // Custom Video Player Component with brand colors
 interface CustomVideoPlayerProps {
@@ -241,6 +373,102 @@ const LearningPage: React.FC<LearningPageProps> = () => {
   
   const courseId = params.courseId as string;
 
+  // Define all hooks before any early returns
+  const shouldSkipAPICalls = status !== "authenticated" || !session?.user?.id;
+  
+  const { data: modules, isLoading: modulesLoading, error: modulesError, refetch: refetchModules } = useGetCourseModulesQuery(courseId, {
+    skip: shouldSkipAPICalls,
+    refetchOnMountOrArgChange: true,
+  });
+  
+  const { data: progressData, refetch: refetchProgress } = useGetUserCourseProgressQuery(courseId, {
+    skip: shouldSkipAPICalls,
+    refetchOnMountOrArgChange: true,
+  });
+  
+  const { data: userEnrollments, refetch: refetchEnrollments } = courseEnrollmentAPI.useGetCourseEnrollmentsByUserQuery(session?.user?.id || "", {
+    skip: shouldSkipAPICalls,
+    refetchOnMountOrArgChange: true,
+  });
+
+  // Review API calls
+  const { data: courseReviews, refetch: refetchReviews } = reviewAPI.useGetCourseReviewsQuery({
+    courseId,
+    userId: session?.user?.id,
+    includeStats: true,
+  }, {
+    skip: shouldSkipAPICalls,
+  });
+
+  const [createReview] = reviewAPI.useCreateReviewMutation();
+  const [updateReview] = reviewAPI.useUpdateReviewMutation();
+  const [deleteReview] = reviewAPI.useDeleteReviewMutation();
+  const [markHelpful] = reviewAPI.useMarkReviewHelpfulMutation();
+
+  // Submission API calls
+  const { data: userQuizSubmissions } = quizSubmissionAPI.useGetUserQuizSubmissionsQuery({
+    userId: session?.user?.id || "",
+    courseId,
+  }, {
+    skip: shouldSkipAPICalls,
+  });
+
+  const { data: userAssignmentSubmissions } = assignmentSubmissionAPI.useGetUserAssignmentSubmissionsQuery({
+    userId: session?.user?.id || "",
+    courseId,
+  }, {
+    skip: shouldSkipAPICalls,
+  });
+
+  const [submitQuiz] = quizSubmissionAPI.useSubmitQuizMutation();
+  const [submitAssignment] = assignmentSubmissionAPI.useSubmitAssignmentMutation();
+  const [updateLessonProgress] = useUpdateLessonProgressMutation();
+
+  // Get last accessed lesson for continue functionality
+  const { data: lastAccessedLesson } = useGetLastAccessedLessonQuery(courseId, {
+    skip: shouldSkipAPICalls,
+  });
+
+  // State management
+  const [currentLesson, setCurrentLesson] = useState<ILesson | null>(null);
+  const [activeTab, setActiveTab] = useState("media");
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [lessonLoading, setLessonLoading] = useState(false);
+  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  const [enrollmentId, setEnrollmentId] = useState<string>("");
+  const [quizVisible, setQuizVisible] = useState(false);
+  const [currentQuiz, setCurrentQuiz] = useState<any>(null);
+  const [quizAnswers, setQuizAnswers] = useState<{[key: string]: string}>({});
+  const [quizResultsVisible, setQuizResultsVisible] = useState(false);
+  const [currentQuizResults, setCurrentQuizResults] = useState<any>(null);
+  const [reviewVisible, setReviewVisible] = useState(false);
+  const [reviewForm] = Form.useForm();
+
+  // Get assignments and quizzes for the current lesson
+  const { 
+    data: lessonAssignments, 
+    isLoading: assignmentsLoading, 
+    error: assignmentsError,
+    refetch: refetchAssignments 
+  } = assignmentAPI.useGetAssignmentsByLessonQuery(
+    currentLesson?.id || "", 
+    {
+      skip: !currentLesson?.id || shouldSkipAPICalls,
+    }
+  );
+
+  const { 
+    data: lessonQuizzes, 
+    isLoading: quizzesLoading, 
+    refetch: refetchQuizzes 
+  } = quizAPI.useGetQuizzesByLessonQuery(
+    currentLesson?.id || "", 
+    {
+      skip: !currentLesson?.id || shouldSkipAPICalls,
+    }
+  );
+
   // Authentication check
   React.useEffect(() => {
     if (status === "loading") return; // Still loading session
@@ -259,6 +487,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Access Denied",
         description: "Unable to verify your identity. Please log in again.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
       router.push("/auth/signin");
       return;
@@ -332,125 +564,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
     );
   }
 
-  // API calls - only when authenticated and session is fully loaded
-  const shouldSkipAPICalls = status !== "authenticated" || !session?.user?.id;
-  
-  const { data: modules, isLoading: modulesLoading, error: modulesError, refetch: refetchModules } = useGetCourseModulesQuery(courseId, {
-    skip: shouldSkipAPICalls,
-    refetchOnMountOrArgChange: true,
-  });
-  
-  const { data: progressData, refetch: refetchProgress } = useGetUserCourseProgressQuery(courseId, {
-    skip: shouldSkipAPICalls,
-    refetchOnMountOrArgChange: true,
-  });
-  
-  const { data: userEnrollments, refetch: refetchEnrollments } = courseEnrollmentAPI.useGetCourseEnrollmentsByUserQuery(session?.user?.id || "", {
-    skip: shouldSkipAPICalls,
-    refetchOnMountOrArgChange: true,
-  });
-
-  // Review API calls
-  const { data: courseReviews, refetch: refetchReviews } = reviewAPI.useGetCourseReviewsQuery({
-    courseId,
-    userId: session?.user?.id,
-    includeStats: true,
-  }, {
-    skip: shouldSkipAPICalls,
-  });
-
-  const [createReview] = reviewAPI.useCreateReviewMutation();
-  const [updateReview] = reviewAPI.useUpdateReviewMutation();
-  const [deleteReview] = reviewAPI.useDeleteReviewMutation();
-  const [markHelpful] = reviewAPI.useMarkReviewHelpfulMutation();
-
-  // Submission API calls
-  const { data: userQuizSubmissions } = quizSubmissionAPI.useGetUserQuizSubmissionsQuery({
-    userId: session?.user?.id || "",
-    courseId,
-  }, {
-    skip: shouldSkipAPICalls,
-  });
-
-  const { data: userAssignmentSubmissions } = assignmentSubmissionAPI.useGetUserAssignmentSubmissionsQuery({
-    userId: session?.user?.id || "",
-    courseId,
-  }, {
-    skip: shouldSkipAPICalls,
-  });
-
-  const [submitQuiz] = quizSubmissionAPI.useSubmitQuizMutation();
-  const [submitAssignment] = assignmentSubmissionAPI.useSubmitAssignmentMutation();
-  const [updateLessonProgress] = useUpdateLessonProgressMutation();
-
-  // Get last accessed lesson for continue functionality
-  const { data: lastAccessedLesson } = useGetLastAccessedLessonQuery(courseId, {
-    skip: shouldSkipAPICalls,
-  });
-
-
-  // Debug logging
-  React.useEffect(() => {
-    console.log("Learning Page Debug:", {
-      courseId,
-      sessionStatus: status,
-      hasSession: !!session,
-      userId: session?.user?.id,
-      modulesCount: modules?.length || 0,
-      modulesLoading,
-      hasModulesError: !!modulesError,
-      progressDataCount: progressData?.length || 0,
-      enrollmentsCount: userEnrollments ? (Array.isArray(userEnrollments) ? userEnrollments.length : (userEnrollments as any)?.data?.length || 0) : 0
-    });
-    
-    if (modulesError) {
-      console.error("Modules Error:", modulesError);
-      console.error("Modules Error Details:", {
-        error: modulesError,
-        status: (modulesError as any)?.status,
-        data: (modulesError as any)?.data,
-        message: (modulesError as any)?.message
-      });
-    }
-  }, [courseId, status, session, modules, modulesLoading, modulesError, progressData, userEnrollments]);
-
-  // State management
-  const [currentLesson, setCurrentLesson] = useState<ILesson | null>(null);
-  const [activeTab, setActiveTab] = useState("video");
-  const [sidebarVisible, setSidebarVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [lessonLoading, setLessonLoading] = useState(false);
-  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
-  const [enrollmentId, setEnrollmentId] = useState<string>("");
-  const [quizVisible, setQuizVisible] = useState(false);
-  const [currentQuiz, setCurrentQuiz] = useState<any>(null);
-  const [quizAnswers, setQuizAnswers] = useState<{[key: string]: string}>({});
-  const [reviewVisible, setReviewVisible] = useState(false);
-  const [reviewForm] = Form.useForm();
-
-  // Get assignments and quizzes for the current lesson
-  const { 
-    data: lessonAssignments, 
-    isLoading: assignmentsLoading, 
-    refetch: refetchAssignments 
-  } = assignmentAPI.useGetAssignmentsByLessonQuery(
-    currentLesson?.id || "", 
-    {
-      skip: !currentLesson?.id || shouldSkipAPICalls,
-    }
-  );
-
-  const { 
-    data: lessonQuizzes, 
-    isLoading: quizzesLoading, 
-    refetch: refetchQuizzes 
-  } = quizAPI.useGetQuizzesByLessonQuery(
-    currentLesson?.id || "", 
-    {
-      skip: !currentLesson?.id || shouldSkipAPICalls,
-    }
-  );
-
   // Compute course data from modules with defensive coding
   const courseData = React.useMemo(() => {
     if (!modules || !Array.isArray(modules) || modules.length === 0) {
@@ -491,6 +604,46 @@ const LearningPage: React.FC<LearningPageProps> = () => {
     
     return result;
   }, [modules, courseId]);
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log("Learning Page Debug:", {
+      courseId,
+      sessionStatus: status,
+      hasSession: !!session,
+      userId: session?.user?.id,
+      modulesCount: modules?.length || 0,
+      modulesLoading,
+      hasModulesError: !!modulesError,
+      progressDataCount: progressData?.length || 0,
+      enrollmentsCount: userEnrollments ? (Array.isArray(userEnrollments) ? userEnrollments.length : (userEnrollments as any)?.data?.length || 0) : 0
+    });
+    
+    if (modulesError) {
+      console.error("Modules Error:", modulesError);
+      console.error("Modules Error Details:", {
+        error: modulesError,
+        status: (modulesError as any)?.status,
+        data: (modulesError as any)?.data,
+        message: (modulesError as any)?.message
+      });
+    }
+  }, [courseId, status, session, modules, modulesLoading, modulesError, progressData, userEnrollments]);
+
+  // Debug assignments API call
+  React.useEffect(() => {
+    if (currentLesson?.id) {
+      console.log("Assignments API Debug:", {
+        lessonId: currentLesson.id,
+        lessonTitle: currentLesson.title,
+        assignmentsLoading,
+        assignmentsError,
+        lessonAssignments,
+        shouldSkipAPICalls,
+        apiCallSkipped: !currentLesson?.id || shouldSkipAPICalls
+      });
+    }
+  }, [currentLesson?.id, assignmentsLoading, assignmentsError, lessonAssignments, shouldSkipAPICalls]);
 
   // Initialize completed lessons from progress data with defensive coding
   React.useEffect(() => {
@@ -563,6 +716,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
             description: "You need to enroll in this course to access the learning content.",
             placement: "topRight",
             duration: 5,
+            style: {
+              backgroundColor: '#fffbe6',
+              border: '1px solid #faad14',
+            }
           });
           
           // Redirect to course details page or dashboard after a delay
@@ -576,6 +733,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Access Verification Failed",
         description: "Unable to verify your course enrollment. Please try again.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     }
   }, [userEnrollments, courseId, session?.user?.id, api, router]);
@@ -597,6 +758,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
             : "Authentication required. Please log in to continue.",
           placement: "topRight",
           duration: 8,
+          style: {
+            backgroundColor: '#fffbe6',
+            border: '1px solid #faad14',
+          },
           btn: (
             <Space>
               <Button 
@@ -633,7 +798,15 @@ const LearningPage: React.FC<LearningPageProps> = () => {
 
   // Initialize with last accessed lesson or first lesson with defensive coding
   React.useEffect(() => {
-    if (courseData && Array.isArray(courseData.modules) && courseData.modules.length > 0) {
+    console.log("Lesson initialization effect running:", {
+      hasCourseData: !!courseData,
+      modulesLength: courseData?.modules?.length || 0,
+      hasCurrentLesson: !!currentLesson,
+      currentLessonId: currentLesson?.id
+    });
+    
+    if (courseData && Array.isArray(courseData.modules) && courseData.modules.length > 0 && !currentLesson) {
+      console.log("Initializing lesson - no current lesson exists");
       try {
         // First, try to find the last accessed lesson
         let targetLesson = null;
@@ -645,38 +818,49 @@ const LearningPage: React.FC<LearningPageProps> = () => {
               const foundLesson = module.lessons.find(lesson => lesson.id === lastAccessedLesson.lessonId);
               if (foundLesson) {
                 targetLesson = foundLesson;
-                console.log("Continuing from last accessed lesson:", foundLesson.title);
+                console.log("Continuing from last accessed lesson:", foundLesson.title, "Completion:", lastAccessedLesson.completionPercentage + "%");
                 break;
               }
             }
           }
         }
         
-        // If no last accessed lesson found, use the first lesson
+        // If no last accessed lesson found, use the first lesson by order
         if (!targetLesson) {
-          const firstModule = courseData.modules[0];
-          if (firstModule && Array.isArray(firstModule.lessons) && firstModule.lessons.length > 0) {
-            const firstLesson = firstModule.lessons[0];
-            if (firstLesson && firstLesson.id) {
-              targetLesson = firstLesson;
-              console.log("Starting with first lesson:", firstLesson.title);
-            }
+          // Get all lessons sorted by lessonOrder and find the first one
+          const allLessons = courseData.modules
+            .flatMap(module => module.lessons || [])
+            .sort((a, b) => (a.lessonOrder || 0) - (b.lessonOrder || 0));
+          
+          if (allLessons.length > 0) {
+            targetLesson = allLessons[0];
+            console.log("Starting with first lesson by order:", targetLesson.title, "Order:", targetLesson.lessonOrder);
           }
         }
         
+        // Set the lesson and appropriate tab
         if (targetLesson) {
           setCurrentLesson(targetLesson);
+          // Set the appropriate tab based on lesson type
+          if (targetLesson.lessonType === 'video' && targetLesson.videoUrl) {
+            setActiveTab("media");
+          } else if (targetLesson.lessonType === 'audio' && targetLesson.audioUrl) {
+            setActiveTab("media");
+          } else {
+            setActiveTab("content");
+          }
         }
       } catch (error) {
         console.error("Error initializing lesson:", error);
         setCurrentLesson(null);
       }
     }
-  }, [courseData, lastAccessedLesson]);
+  }, [courseData]);
 
   // Refetch assignments and quizzes when lesson changes
   React.useEffect(() => {
     if (currentLesson?.id && !shouldSkipAPICalls) {
+      console.log("Refetching assignments and quizzes for lesson:", currentLesson.id, currentLesson.title);
       refetchAssignments();
       refetchQuizzes();
     }
@@ -684,8 +868,20 @@ const LearningPage: React.FC<LearningPageProps> = () => {
 
   // Handle lesson selection with loading and progress tracking
   const handleLessonSelect = async (lesson: any) => {
-    if (!lesson || lesson.id === currentLesson?.id) return;
+    console.log("handleLessonSelect called with:", lesson?.title, "ID:", lesson?.id);
+    console.log("Current lesson:", currentLesson?.title, "ID:", currentLesson?.id);
     
+    if (!lesson) {
+      console.log("No lesson provided, returning");
+      return;
+    }
+    
+    if (lesson.id === currentLesson?.id) {
+      console.log("Same lesson ID, returning early");
+      return;
+    }
+    
+    console.log("Proceeding with lesson selection:", lesson.title, "ID:", lesson.id);
     setLessonLoading(true);
     try {
       // Track lesson view and update last accessed time
@@ -700,8 +896,18 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         }).unwrap();
       }
       
+      console.log("Setting current lesson to:", lesson.title);
       setCurrentLesson(lesson);
-      setActiveTab("video");
+      
+      // Set the appropriate tab based on lesson type
+      if (lesson.lessonType === 'video' && lesson.videoUrl) {
+        setActiveTab("media");
+      } else if (lesson.lessonType === 'audio' && lesson.audioUrl) {
+        setActiveTab("media");
+      } else {
+        setActiveTab("content");
+      }
+      
       setSidebarVisible(false);
       
       // Small delay for UX
@@ -718,6 +924,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Error",
         description: "Enrollment information not found.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
       return;
     }
@@ -737,11 +947,19 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.success({
         message: "Lesson Completed! 🎉",
         description: "Great job! You've completed this lesson.",
+        style: {
+          backgroundColor: '#f6ffed',
+          border: '1px solid #52c41a',
+        }
       });
     } catch (error) {
       api.error({
         message: "Error",
         description: "Failed to mark lesson as complete.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     } finally {
       setLoading(false);
@@ -768,6 +986,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           message: "Lesson Completed! 🎉",
           description: "You've watched the entire video lesson.",
           placement: "topRight",
+          style: {
+            backgroundColor: '#f6ffed',
+            border: '1px solid #52c41a',
+          }
         });
       }
     } catch (error) {
@@ -782,6 +1004,15 @@ const LearningPage: React.FC<LearningPageProps> = () => {
     setQuizVisible(true);
   };
 
+  const handleViewQuizResults = (quiz: any) => {
+    const submission = getQuizSubmissionStatus(quiz.id);
+    if (submission) {
+      setCurrentQuiz(quiz);
+      setCurrentQuizResults(submission);
+      setQuizResultsVisible(true);
+    }
+  };
+
   const handleQuizSubmit = async () => {
     if (!currentQuiz || !currentLesson || !enrollmentId) return;
     
@@ -794,6 +1025,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         api.warning({
           message: "Please select an answer",
           description: "You must select an answer before submitting the quiz.",
+          style: {
+            backgroundColor: '#fffbe6',
+            border: '1px solid #faad14',
+          }
         });
         setLoading(false);
         return;
@@ -852,6 +1087,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
             : currentQuiz.explanation || "Great job! You got the right answer.",
           placement: "topRight",
           duration: 5,
+          style: {
+            backgroundColor: '#f6ffed',
+            border: '1px solid #52c41a',
+          }
         });
       } else {
         api.error({
@@ -861,6 +1100,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
             : `Attempt ${attemptNumber}. The correct answer was "${correctAnswer}". You can retake the quiz to improve your score.`,
           placement: "topRight",
           duration: 8,
+          style: {
+            backgroundColor: '#fff2f0',
+            border: '1px solid #ff4d4f',
+          }
         });
       }
       
@@ -872,6 +1115,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Error submitting quiz",
         description: "Please try again later.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     } finally {
       setLoading(false);
@@ -880,33 +1127,31 @@ const LearningPage: React.FC<LearningPageProps> = () => {
 
   // Review handlers
   const handleSubmitReview = async (values: any) => {
-    if (!session?.user?.id || !enrollmentId) {
+    if (!session?.user?.id) {
       api.error({
         message: "Unable to submit review",
-        description: "Please ensure you're logged in and enrolled in this course.",
+        description: "Please ensure you're logged in.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
       return;
     }
+
+    console.log("Submitting review with courseId:", courseId);
+    console.log("Review data:", values);
 
     setLoading(true);
     try {
       const reviewData: IReviewRequest = {
         courseId,
-        enrollmentId,
         rating: values.rating,
-        title: values.title,
         comment: values.comment,
-        pros: values.pros,
-        cons: values.cons,
         wouldRecommend: values.wouldRecommend ?? true,
         difficulty: values.difficulty,
-        instructorRating: values.instructorRating,
-        contentQuality: values.contentQuality,
-        valueForMoney: values.valueForMoney,
-        completionPercentage: courseData?.progress || 0,
         isAnonymous: values.isAnonymous ?? false,
         language: values.language || 'english',
-        tags: values.tags || [],
       };
 
       if (courseReviews?.userReview) {
@@ -916,6 +1161,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           message: "Review Updated! ⭐",
           description: "Your review has been updated and will be reviewed by our team.",
           placement: "topRight",
+          style: {
+            backgroundColor: '#f6ffed',
+            border: '1px solid #52c41a',
+          }
         });
       } else {
         // Create new review
@@ -924,6 +1173,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           message: "Review Submitted! ⭐",
           description: "Thank you for your feedback! Your review will be published after moderation.",
           placement: "topRight",
+          style: {
+            backgroundColor: '#f6ffed',
+            border: '1px solid #52c41a',
+          }
         });
       }
 
@@ -935,6 +1188,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Failed to submit review",
         description: error.data?.message || "Please try again later.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     } finally {
       setLoading(false);
@@ -955,6 +1212,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         message: "Review Deleted",
         description: "Your review has been removed successfully.",
         placement: "topRight",
+        style: {
+          backgroundColor: '#f6ffed',
+          border: '1px solid #52c41a',
+        }
       });
       
       refetchReviews();
@@ -963,6 +1224,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Failed to delete review",
         description: error.data?.message || "Please try again later.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     } finally {
       setLoading(false);
@@ -976,6 +1241,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         message: "Thank you!",
         description: "Your feedback helps other students.",
         placement: "topRight",
+        style: {
+          backgroundColor: '#f6ffed',
+          border: '1px solid #52c41a',
+        }
       });
       refetchReviews();
     } catch (error: any) {
@@ -983,6 +1252,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       api.error({
         message: "Action failed",
         description: "Please try again later.",
+        style: {
+          backgroundColor: '#fff2f0',
+          border: '1px solid #ff4d4f',
+        }
       });
     }
   };
@@ -992,12 +1265,30 @@ const LearningPage: React.FC<LearningPageProps> = () => {
     if (!currentLesson || !courseData) return;
     
     try {
-      const allLessons = courseData.modules.flatMap(module => module.lessons || []);
+      console.log("Current lesson:", currentLesson.title, "ID:", currentLesson.id);
+      // Get all lessons sorted by lessonOrder
+      const allLessons = courseData.modules
+        .flatMap(module => module.lessons || [])
+        .sort((a, b) => (a.lessonOrder || 0) - (b.lessonOrder || 0));
+      
+      console.log("All lessons (sorted by order):", allLessons.map(l => ({ 
+        id: l.id, 
+        title: l.title, 
+        order: l.lessonOrder 
+      })));
+      
       const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLesson.id);
+      console.log("Current index:", currentIndex, "Total lessons:", allLessons.length);
       
       if (currentIndex < allLessons.length - 1) {
         const nextLesson = allLessons[currentIndex + 1];
+        console.log("Next lesson:", nextLesson.title, "ID:", nextLesson.id, "Order:", nextLesson.lessonOrder);
+        console.log("Next lesson object reference:", nextLesson);
+        console.log("Current lesson object reference:", currentLesson);
+        console.log("Are they the same object?", nextLesson === currentLesson);
         await handleLessonSelect(nextLesson);
+      } else {
+        console.log("Already at last lesson");
       }
     } catch (error) {
       console.error("Error navigating to next lesson:", error);
@@ -1008,12 +1299,27 @@ const LearningPage: React.FC<LearningPageProps> = () => {
     if (!currentLesson || !courseData) return;
     
     try {
-      const allLessons = courseData.modules.flatMap(module => module.lessons || []);
+      console.log("Current lesson:", currentLesson.title, "ID:", currentLesson.id);
+      // Get all lessons sorted by lessonOrder
+      const allLessons = courseData.modules
+        .flatMap(module => module.lessons || [])
+        .sort((a, b) => (a.lessonOrder || 0) - (b.lessonOrder || 0));
+      
+      console.log("All lessons (sorted by order):", allLessons.map(l => ({ 
+        id: l.id, 
+        title: l.title, 
+        order: l.lessonOrder 
+      })));
+      
       const currentIndex = allLessons.findIndex(lesson => lesson.id === currentLesson.id);
+      console.log("Current index:", currentIndex, "Total lessons:", allLessons.length);
       
       if (currentIndex > 0) {
         const prevLesson = allLessons[currentIndex - 1];
+        console.log("Previous lesson:", prevLesson.title, "ID:", prevLesson.id, "Order:", prevLesson.lessonOrder);
         await handleLessonSelect(prevLesson);
+      } else {
+        console.log("Already at first lesson");
       }
     } catch (error) {
       console.error("Error navigating to previous lesson:", error);
@@ -1039,11 +1345,11 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           size="large"
           items={[
             {
-              key: "video",
+              key: "media",
               label: (
                 <span>
                   <VideoCameraOutlined />
-                  Video Content
+                  Media Content
                 </span>
               ),
               children: (
@@ -1069,6 +1375,12 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                   ) : currentLesson.lessonType === "video" && currentLesson.videoUrl ? (
                     <CustomVideoPlayer 
                       videoUrl={currentLesson.videoUrl}
+                      title={currentLesson.title}
+                      onProgress={(percentage) => handleVideoProgress(percentage)}
+                    />
+                  ) : currentLesson.lessonType === "audio" && currentLesson.audioUrl ? (
+                    <CustomAudioPlayer 
+                      audioUrl={currentLesson.audioUrl}
                       title={currentLesson.title}
                       onProgress={(percentage) => handleVideoProgress(percentage)}
                     />
@@ -1121,6 +1433,85 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                         </li>
                       ))}
                       </ul>
+                    </>
+                  )}
+
+                  {currentLesson.practicalExamples && (
+                    <>
+                      <Divider />
+                      <Title level={4}>
+                        <BulbOutlined style={{ marginRight: "8px", color: "#667eea" }} />
+                        Practical Examples
+                      </Title>
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: currentLesson.practicalExamples }}
+                        style={{ 
+                          lineHeight: 1.8,
+                          fontSize: "15px",
+                          color: "#555",
+                          background: "#f8f9fa",
+                          padding: "16px",
+                          borderRadius: "8px",
+                          border: "1px solid #e9ecef"
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {currentLesson.resourcesNeeded && (
+                    <>
+                      <Divider />
+                      <Title level={4}>
+                        <ToolOutlined style={{ marginRight: "8px", color: "#667eea" }} />
+                        Resources Needed
+                      </Title>
+                      <div 
+                        dangerouslySetInnerHTML={{ __html: currentLesson.resourcesNeeded }}
+                        style={{ 
+                          lineHeight: 1.8,
+                          fontSize: "15px",
+                          color: "#555",
+                          background: "#fff3cd",
+                          padding: "16px",
+                          borderRadius: "8px",
+                          border: "1px solid #ffeaa7"
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {currentLesson.estimatedCompletionTime && (
+                    <>
+                      <Divider />
+                      <Title level={4}>
+                        <ClockCircleOutlined style={{ marginRight: "8px", color: "#667eea" }} />
+                        Estimated Completion Time
+                      </Title>
+                      <Text style={{ fontSize: "16px", color: "#666" }}>
+                        {currentLesson.estimatedCompletionTime} minutes
+                      </Text>
+                    </>
+                  )}
+
+                  {currentLesson.downloadMaterials && (
+                    <>
+                      <Divider />
+                      <Title level={4}>
+                        <DownloadOutlined style={{ marginRight: "8px", color: "#667eea" }} />
+                        Download Materials
+                      </Title>
+                      <Button 
+                        type="primary"
+                        icon={<DownloadOutlined />}
+                        href={currentLesson.downloadMaterials}
+                        target="_blank"
+                        style={{
+                          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                          border: "none"
+                        }}
+                      >
+                        Download Resources
+                      </Button>
                     </>
                   )}
                 </Card>
@@ -1222,25 +1613,10 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                     >
                       <div style={{ marginBottom: "12px" }}>
                         <Rate disabled value={courseReviews.userReview.rating} style={{ fontSize: "16px" }} />
-                        <Text strong style={{ marginLeft: "12px", fontSize: "16px" }}>
-                          {courseReviews.userReview.title}
-                        </Text>
                       </div>
                       <Text style={{ display: "block", marginBottom: "12px" }}>
                         {courseReviews.userReview.comment}
                       </Text>
-                      {courseReviews.userReview.pros && (
-                        <div style={{ marginBottom: "8px" }}>
-                          <Text strong style={{ color: "#52c41a" }}>Pros: </Text>
-                          <Text>{courseReviews.userReview.pros}</Text>
-                        </div>
-                      )}
-                      {courseReviews.userReview.cons && (
-                        <div style={{ marginBottom: "8px" }}>
-                          <Text strong style={{ color: "#ff4d4f" }}>Cons: </Text>
-                          <Text>{courseReviews.userReview.cons}</Text>
-                        </div>
-                      )}
                       <div style={{ marginTop: "12px", fontSize: "12px", color: "#999" }}>
                         Submitted on {new Date(courseReviews.userReview.createdAt).toLocaleDateString()}
                       </div>
@@ -1272,7 +1648,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                           <List.Item.Meta
                             avatar={
                               <Avatar 
-                                src={review.user?.avatar} 
                                 icon={<UserOutlined />}
                                 style={{ backgroundColor: "#667eea" }}
                               />
@@ -1280,7 +1655,7 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                             title={
                               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                                 <Text strong>
-                                  {review.isAnonymous ? "Anonymous Student" : review.user?.name || "Student"}
+                                  {review.isAnonymous ? "Anonymous Student" : review.user?.fullname || "Student"}
                                 </Text>
                                 <Rate disabled value={review.rating} style={{ fontSize: "14px" }} />
                                 {review.wouldRecommend && (
@@ -1290,29 +1665,12 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                             }
                             description={
                               <div>
-                                <Text strong style={{ fontSize: "14px", display: "block", marginBottom: "8px" }}>
-                                  {review.title}
-                                </Text>
                                 <Text style={{ display: "block", marginBottom: "8px" }}>
                                   {review.comment}
                                 </Text>
-                                {review.pros && (
-                                  <div style={{ marginBottom: "4px" }}>
-                                    <Text strong style={{ color: "#52c41a", fontSize: "12px" }}>Pros: </Text>
-                                    <Text style={{ fontSize: "12px" }}>{review.pros}</Text>
-                                  </div>
-                                )}
-                                {review.cons && (
-                                  <div style={{ marginBottom: "4px" }}>
-                                    <Text strong style={{ color: "#ff4d4f", fontSize: "12px" }}>Cons: </Text>
-                                    <Text style={{ fontSize: "12px" }}>{review.cons}</Text>
-                                  </div>
-                                )}
                                 <div style={{ marginTop: "8px", fontSize: "11px", color: "#999" }}>
                                   <Space>
                                     <span>Difficulty: {review.difficulty?.replace('_', ' ') || 'Not specified'}</span>
-                                    <span>•</span>
-                                    <span>Progress: {review.completionPercentage}%</span>
                                     <span>•</span>
                                     <span>{new Date(review.createdAt).toLocaleDateString()}</span>
                                   </Space>
@@ -1628,6 +1986,7 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                               size="small" 
                               type="default"
                               ghost
+                              onClick={() => handleViewQuizResults(quiz)}
                               style={{ borderColor: "#52c41a", color: "#52c41a" }}
                             >
                               View Result
@@ -1772,7 +2131,11 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                           avatar={
                             <Avatar 
                               size="small" 
-                              icon={lesson.lessonType === 'video' ? <VideoCameraOutlined /> : <BookOutlined />}
+                              icon={
+                                lesson.lessonType === 'video' ? <VideoCameraOutlined /> : 
+                                lesson.lessonType === 'audio' ? <SoundOutlined /> : 
+                                <BookOutlined />
+                              }
                               style={{ 
                                 backgroundColor: completedLessons.has(lesson.id) ? "#52c41a" : "#1890ff" 
                               }}
@@ -2314,6 +2677,245 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         )}
       </Modal>
 
+      {/* Quiz Results Modal */}
+      <Modal
+        title={
+          <div style={{ 
+            textAlign: "center",
+            padding: "16px 0",
+            background: "linear-gradient(135deg, #52c41a 0%, #389e0d 100%)",
+            margin: "-24px -24px 24px -24px",
+            color: "white",
+            borderRadius: "8px 8px 0 0"
+          }}>
+            <TrophyOutlined style={{ marginRight: "8px", fontSize: "20px" }} />
+            Quiz Results
+          </div>
+        }
+        open={quizResultsVisible}
+        onCancel={() => setQuizResultsVisible(false)}
+        width={800}
+        style={{ maxWidth: "95vw" }}
+        footer={[
+          <Button 
+            key="close" 
+            onClick={() => setQuizResultsVisible(false)}
+            size="large"
+          >
+            Close
+          </Button>,
+          <Button
+            key="retake"
+            type="primary"
+            onClick={() => {
+              setQuizResultsVisible(false);
+              handleStartQuiz(currentQuiz);
+            }}
+            size="large"
+            style={{
+              background: "linear-gradient(135deg, #faad14 0%, #d48806 100%)",
+              border: "none"
+            }}
+          >
+            Retake Quiz
+          </Button>
+        ]}
+      >
+        {currentQuiz && currentQuizResults && (
+          <div style={{ maxHeight: "60vh", overflowY: "auto", padding: "16px 0" }}>
+            {/* Quiz Info Header */}
+            <div style={{ 
+              marginBottom: "24px", 
+              padding: "20px", 
+              background: "linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%)", 
+              borderRadius: "12px",
+              border: "1px solid #b7eb8f"
+            }}>
+              <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                <Title level={4} style={{ margin: 0, color: "#389e0d" }}>
+                  {currentQuiz.title}
+                </Title>
+                <Text style={{ color: "#666", fontSize: "14px" }}>
+                  Quiz Results Summary
+                </Text>
+              </div>
+              
+              <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: currentQuizResults.isPassed ? "#52c41a" : "#ff4d4f" }}>
+                    {currentQuizResults.isPassed ? "✅" : "❌"}
+                  </div>
+                  <Text style={{ fontSize: "12px", color: "#666" }}>Status</Text>
+                  <div style={{ fontSize: "14px", fontWeight: "bold", color: currentQuizResults.isPassed ? "#52c41a" : "#ff4d4f" }}>
+                    {currentQuizResults.isPassed ? "PASSED" : "FAILED"}
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "#1890ff" }}>
+                    {(currentQuizResults.score * 100).toFixed(0)}%
+                  </div>
+                  <Text style={{ fontSize: "12px", color: "#666" }}>Score</Text>
+                  <div style={{ fontSize: "14px", color: "#666" }}>
+                    {currentQuizResults.score}/{currentQuizResults.maxScore || 1}
+                  </div>
+                </div>
+                
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "bold", color: "#722ed1" }}>
+                    {currentQuizResults.attemptNumber || 1}
+                  </div>
+                  <Text style={{ fontSize: "12px", color: "#666" }}>Attempt</Text>
+                  <div style={{ fontSize: "14px", color: "#666" }}>
+                    {new Date(currentQuizResults.submittedAt).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quiz Question and Answer */}
+            <Card style={{ marginBottom: "16px" }}>
+              <Title level={5} style={{ marginBottom: "16px" }}>
+                Question
+              </Title>
+              <Text style={{ fontSize: "16px", marginBottom: "20px", display: "block" }}>
+                {currentQuiz.question}
+              </Text>
+              
+              <Title level={5} style={{ marginBottom: "12px" }}>
+                Answer Options
+              </Title>
+              {(() => {
+                try {
+                  const answers = typeof currentQuiz.answers === 'string' 
+                    ? JSON.parse(currentQuiz.answers) 
+                    : currentQuiz.answers || [];
+                  
+                  return answers.map((option: string, optIndex: number) => {
+                    const isCorrect = optIndex === currentQuiz.correctAnswerIndex;
+                    const isUserAnswer = option === currentQuizResults.userAnswer;
+                    
+                    let buttonStyle: React.CSSProperties = {
+                      width: "100%",
+                      marginBottom: "8px",
+                      textAlign: "left" as const,
+                      height: "auto",
+                      padding: "12px 16px",
+                      border: "1px solid #d9d9d9",
+                      background: "#fff",
+                      color: "#000"
+                    };
+                    
+                    if (isCorrect) {
+                      buttonStyle.border = "2px solid #52c41a";
+                      buttonStyle.background = "#f6ffed";
+                      buttonStyle.color = "#389e0d";
+                    } else if (isUserAnswer && !isCorrect) {
+                      buttonStyle.border = "2px solid #ff4d4f";
+                      buttonStyle.background = "#fff2f0";
+                      buttonStyle.color = "#cf1322";
+                    }
+                    
+                    return (
+                      <div key={optIndex} style={{ marginBottom: "8px" }}>
+                        <Button
+                          style={buttonStyle}
+                          disabled
+                        >
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
+                            <span>
+                              {String.fromCharCode(65 + optIndex)}. {option}
+                            </span>
+                            <div>
+                              {isCorrect && <span style={{ color: "#52c41a", fontWeight: "bold" }}>✓ Correct</span>}
+                              {isUserAnswer && !isCorrect && <span style={{ color: "#ff4d4f", fontWeight: "bold" }}>✗ Your Answer</span>}
+                              {isUserAnswer && isCorrect && <span style={{ color: "#52c41a", fontWeight: "bold" }}>✓ Your Answer</span>}
+                            </div>
+                          </div>
+                        </Button>
+                      </div>
+                    );
+                  });
+                } catch (error) {
+                  console.error("Error parsing quiz answers:", error);
+                  return (
+                    <Alert
+                      message="Quiz Data Error"
+                      description="Unable to load quiz options. Please contact support."
+                      type="error"
+                      showIcon
+                    />
+                  );
+                }
+              })()}
+            </Card>
+
+            {/* Explanation */}
+            {currentQuiz.explanation && (
+              <Card style={{ marginBottom: "16px" }}>
+                <Title level={5} style={{ marginBottom: "12px" }}>
+                  <BulbOutlined style={{ marginRight: "8px", color: "#faad14" }} />
+                  Explanation
+                </Title>
+                <Text style={{ fontSize: "14px", lineHeight: 1.6 }}>
+                  {currentQuiz.explanation}
+                </Text>
+              </Card>
+            )}
+
+            {/* Local Example */}
+            {currentQuiz.localExample && (
+              <Card style={{ marginBottom: "16px" }}>
+                <Title level={5} style={{ marginBottom: "12px" }}>
+                  <GlobalOutlined style={{ marginRight: "8px", color: "#1890ff" }} />
+                  Local Example
+                </Title>
+                <Text style={{ fontSize: "14px", lineHeight: 1.6 }}>
+                  {currentQuiz.localExample}
+                </Text>
+              </Card>
+            )}
+
+            {/* Quiz Details */}
+            <Card>
+              <Title level={5} style={{ marginBottom: "12px" }}>
+                Quiz Details
+              </Title>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <Text strong>Quiz Type:</Text>
+                  <br />
+                  <Text style={{ fontSize: "14px", color: "#666" }}>
+                    {currentQuiz.quizType?.replace('_', ' ').toUpperCase() || 'MULTIPLE CHOICE'}
+                  </Text>
+                </div>
+                <div>
+                  <Text strong>Points:</Text>
+                  <br />
+                  <Text style={{ fontSize: "14px", color: "#666" }}>
+                    {currentQuiz.points || 1} point{currentQuiz.points !== 1 ? 's' : ''}
+                  </Text>
+                </div>
+                <div>
+                  <Text strong>Time Limit:</Text>
+                  <br />
+                  <Text style={{ fontSize: "14px", color: "#666" }}>
+                    {currentQuiz.timeLimitMinutes || 30} minutes
+                  </Text>
+                </div>
+                <div>
+                  <Text strong>Difficulty:</Text>
+                  <br />
+                  <Text style={{ fontSize: "14px", color: "#666" }}>
+                    {currentQuiz.difficulty?.toUpperCase() || 'MEDIUM'}
+                  </Text>
+                </div>
+              </div>
+            </Card>
+          </div>
+        )}
+      </Modal>
+
       {/* Review Modal */}
       <Modal
         title={
@@ -2379,15 +2981,9 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           onFinish={handleSubmitReview}
           initialValues={{
             rating: courseReviews?.userReview?.rating || 5,
-            title: courseReviews?.userReview?.title || "",
             comment: courseReviews?.userReview?.comment || "",
-            pros: courseReviews?.userReview?.pros || "",
-            cons: courseReviews?.userReview?.cons || "",
             wouldRecommend: courseReviews?.userReview?.wouldRecommend ?? true,
             difficulty: courseReviews?.userReview?.difficulty || "medium",
-            instructorRating: courseReviews?.userReview?.instructorRating || 5,
-            contentQuality: courseReviews?.userReview?.contentQuality || 5,
-            valueForMoney: courseReviews?.userReview?.valueForMoney || 5,
             isAnonymous: courseReviews?.userReview?.isAnonymous || false,
             language: courseReviews?.userReview?.language || "english",
           }}
@@ -2415,18 +3011,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           </Row>
 
           <Form.Item
-            label="Review Title"
-            name="title"
-            rules={[
-              { required: true, message: "Please enter a title" },
-              { min: 3, message: "Title must be at least 3 characters" },
-              { max: 255, message: "Title must be less than 255 characters" }
-            ]}
-          >
-            <Input placeholder="Summarize your experience in a few words" />
-          </Form.Item>
-
-          <Form.Item
             label="Your Review"
             name="comment"
             rules={[
@@ -2444,33 +3028,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           </Form.Item>
 
           <Row gutter={16}>
-            <Col xs={24} md={12}>
-              <Form.Item
-                label="What did you like? (Pros)"
-                name="pros"
-              >
-                <Input.TextArea
-                  rows={3}
-                  placeholder="What were the best parts of this course?"
-                  maxLength={1000}
-                />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item
-                label="What could be improved? (Cons)"
-                name="cons"
-              >
-                <Input.TextArea
-                  rows={3}
-                  placeholder="What could be better about this course?"
-                  maxLength={1000}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
             <Col xs={24} md={8}>
               <Form.Item
                 label="Course Difficulty"
@@ -2483,33 +3040,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                   <Select.Option value="hard">Hard</Select.Option>
                   <Select.Option value="very_hard">Very Hard</Select.Option>
                 </Select>
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label="Instructor Rating"
-                name="instructorRating"
-              >
-                <Rate allowHalf />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label="Content Quality"
-                name="contentQuality"
-              >
-                <Rate allowHalf />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col xs={24} md={8}>
-              <Form.Item
-                label="Value for Money"
-                name="valueForMoney"
-              >
-                <Rate allowHalf />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>

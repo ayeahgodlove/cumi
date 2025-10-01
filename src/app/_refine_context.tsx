@@ -25,26 +25,14 @@ export const App = (props: any) => {
   const to = usePathname();
   const t = useTranslations();
   const { menus } = useMenu();
-
-  if (status === "loading") {
-    return (
-      <Spin
-        size="large"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      />
-    );
-  }
+  const locale = useLocale();
+  const notificationProvider = useNotificationProvider();
 
   const i18nProvider = {
     translate: (key: any, options: any) => {
       return t(key, options);
     },
-    getLocale: useLocale,
+    getLocale: () => locale,
     changeLocale: setUserLocale,
   };
 
@@ -146,6 +134,20 @@ export const App = (props: any) => {
     return true;
   });
 
+  if (status === "loading") {
+    return (
+      <Spin
+        size="large"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <RefineKbarProvider>
@@ -166,7 +168,7 @@ export const App = (props: any) => {
                   },
                   options: {},
                 }}
-                notificationProvider={useNotificationProvider}
+                notificationProvider={notificationProvider}
                 authProvider={authProvider}
                 i18nProvider={i18nProvider}
                 resources={filteredMenus}

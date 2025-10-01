@@ -12,6 +12,7 @@ import {
   Input,
   Select,
   App,
+  Empty,
 } from "antd";
 import {
   CalendarOutlined,
@@ -23,6 +24,7 @@ import {
 } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { courseAPI } from "@store/api/course_api";
+import { courseEnrollmentAPI } from "@store/api/course-enrollment_api";
 import { motion } from "framer-motion";
 import { ICourse } from "@domain/models/course";
 import { useTranslation } from "@contexts/translation.context";
@@ -34,6 +36,8 @@ import {
   EmptyState,
   CourseEnrollmentModal 
 } from "@components/shared";
+import { showLoginRequiredNotificationSimple, getCurrentUrlForRedirect } from "@components/shared/login-required-notification";
+import { EnrollButton, ViewDetailsButton } from "@components/shared/modern-button-styles";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -50,6 +54,7 @@ export default function CoursesPageComponent() {
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [enrollmentModalVisible, setEnrollmentModalVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<ICourse | null>(null);
+  const [enrolledCourses, setEnrolledCourses] = useState<Set<string>>(new Set());
 
   const {
     data: courses,
@@ -61,6 +66,15 @@ export default function CoursesPageComponent() {
     sortBy: "date",
   });
 
+  // Fetch user enrollments
+  const {
+    data: userEnrollments,
+    isLoading: isLoadingEnrollments,
+    refetch: refetchEnrollments,
+  } = courseEnrollmentAPI.useGetCourseEnrollmentsByUserQuery(session?.user?.id || "", {
+    skip: !session?.user?.id,
+  });
+
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -69,6 +83,14 @@ export default function CoursesPageComponent() {
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  // Update enrolled courses when user enrollments change
+  useEffect(() => {
+    if (userEnrollments && Array.isArray(userEnrollments)) {
+      const enrolledCourseIds = userEnrollments.map(enrollment => enrollment.courseId);
+      setEnrolledCourses(new Set(enrolledCourseIds));
+    }
+  }, [userEnrollments]);
 
   const filteredCourses =
     courses?.filter((course) => {
@@ -82,12 +104,32 @@ export default function CoursesPageComponent() {
   const handleEnrollCourse = (course: ICourse) => {
     // Check if user is logged in
     if (!session?.user?.id) {
-      message.error('Please log in to enroll in courses');
+      showLoginRequiredNotificationSimple({
+        message: "Authentication Required",
+        description: `Please log in to enroll in "${course.title}" and start your learning journey.`,
+        redirectUrl: getCurrentUrlForRedirect()
+      });
+      return;
+    }
+
+    // Check if already enrolled
+    if (enrolledCourses.has(course.id)) {
+      message.info({
+        content: "You are already enrolled in this course!",
+        duration: 3,
+      });
       return;
     }
 
     setSelectedCourse(course);
     setEnrollmentModalVisible(true);
+  };
+
+  const handleEnrollmentSuccess = () => {
+    // Refresh enrollments after successful enrollment
+    refetchEnrollments();
+    setEnrollmentModalVisible(false);
+    setSelectedCourse(null);
   };
 
   const formatDate = (dateString: string | Date) => {
@@ -109,7 +151,7 @@ export default function CoursesPageComponent() {
   };
 
   if (isLoading || isFetching) {
-    return <LoadingSpinner tip="Loading courses..." />;
+    return <LoadingSpinner tip={t("courses.loading_courses")} />;
   }
 
   return (
@@ -229,7 +271,7 @@ export default function CoursesPageComponent() {
         {filteredCourses.length === 0 ? (
           <Card>
             <Empty
-              description="No courses found matching your criteria"
+              description={t("courses.no_courses_found")}
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
           </Card>
@@ -282,7 +324,7 @@ export default function CoursesPageComponent() {
                             fontSize: 12,
                           }}
                         >
-                          📚 Course
+                          📚 {t("courses.course")}
                         </div>
                         <div
                           style={{
@@ -296,35 +338,102 @@ export default function CoursesPageComponent() {
                             fontSize: 12,
                           }}
                         >
-                          Course
+                          {t("courses.course")}
                         </div>
                       </div>
                     }
                     actions={[
-                      <Button
-                        key="enroll"
-                        type="primary"
-                        icon={<BookOutlined />}
-                        onClick={() => handleEnrollCourse(course)}
-                      >
-                        Enroll
-                      </Button>,
-                      <Button
+                      enrolledCourses.has(course.id) ? (
+                        <Button
+                          key="enrolled"
+                          disabled
+                          style={{
+                            background: 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            height: '44px',
+                            padding: '0 24px',
+                            color: 'white',
+                            cursor: 'not-allowed',
+                            opacity: 0.8,
+                          }}
+                        >
+                          ✓ {t("courses.enrolled")}
+                        </Button>
+                      ) : (
+                        <EnrollButton
+                          key="enroll"
+                          icon={<BookOutlined />}
+                          onClick={() => handleEnrollCourse(course)}
+                          style={{
+                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            border: 'none',
+                            borderRadius: '12px',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            height: '44px',
+                            padding: '0 24px',
+                            boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                          }}
+                        >
+                          {t("courses.enroll")}
+                        </EnrollButton>
+                      ),
+                      <ViewDetailsButton
                         key="view"
                         icon={<EyeOutlined />}
                         onClick={() => {
                           router.push(`/courses/${course.slug}`);
                         }}
+                        style={{
+                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                          border: '2px solid #667eea',
+                          color: '#667eea',
+                          borderRadius: '12px',
+                          fontWeight: 600,
+                          fontSize: '14px',
+                          height: '44px',
+                          padding: '0 24px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                          e.currentTarget.style.color = '#ffffff';
+                          e.currentTarget.style.borderColor = '#667eea';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)';
+                          e.currentTarget.style.color = '#667eea';
+                          e.currentTarget.style.borderColor = '#667eea';
+                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
                       >
-                        View Details
-                      </Button>,
+                        {t("courses.view_details")}
+                      </ViewDetailsButton>,
                     ]}
                   >
                     <Card.Meta
                       title={
                         <Space>
                           <Text strong>{course.title}</Text>
-                          <Tag color="green">Course</Tag>
+                          <Tag color="green">{t("courses.course")}</Tag>
                         </Space>
                       }
                       description={
@@ -357,9 +466,7 @@ export default function CoursesPageComponent() {
           visible={enrollmentModalVisible}
           onCancel={() => setEnrollmentModalVisible(false)}
           course={selectedCourse}
-          onSuccess={() => {
-            // Optionally refresh data or show success message
-          }}
+          onSuccess={handleEnrollmentSuccess}
         />
       </div>
     </PageLayout>

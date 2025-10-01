@@ -9,8 +9,6 @@ export interface IEventRegistration {
   email: string;
   phone: string;
   company?: string;
-  dietaryRequirements?: string;
-  additionalNotes?: string;
   registrationDate: Date;
   status: 'pending' | 'confirmed' | 'cancelled';
   paymentStatus: 'pending' | 'paid' | 'refunded';
@@ -31,8 +29,6 @@ export class EventRegistration extends Model<IEventRegistration, EventRegistrati
   public email!: string;
   public phone!: string;
   public company?: string;
-  public dietaryRequirements?: string;
-  public additionalNotes?: string;
   public registrationDate!: Date;
   public status!: 'pending' | 'confirmed' | 'cancelled';
   public paymentStatus!: 'pending' | 'paid' | 'refunded';
@@ -83,14 +79,6 @@ EventRegistration.init(
     },
     company: {
       type: DataTypes.STRING,
-      allowNull: true,
-    },
-    dietaryRequirements: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    additionalNotes: {
-      type: DataTypes.TEXT,
       allowNull: true,
     },
     registrationDate: {
@@ -145,8 +133,6 @@ export const emptyEventRegistration: Partial<IEventRegistration> = {
   email: '',
   phone: '',
   company: '',
-  dietaryRequirements: '',
-  additionalNotes: '',
   registrationDate: new Date(),
   status: 'pending',
   paymentStatus: 'pending',

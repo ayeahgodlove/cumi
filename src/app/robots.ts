@@ -22,6 +22,8 @@ export default function robots(): MetadataRoute.Robots {
         "/courses/*",
         "/opportunities",
         "/opportunities/*",
+        "/partners",
+        "/partners/*",
         "/categories",
         "/categories/*",
         "/tags",
@@ -31,7 +33,9 @@ export default function robots(): MetadataRoute.Robots {
         "/faqs",
         "/login",
         "/register",
+        "/forgot-password",
         "/sitemap.xml",
+        "/robots.txt",
       ],
       disallow: [
         "/dashboard/*",

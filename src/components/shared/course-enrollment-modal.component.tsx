@@ -12,7 +12,7 @@ import {
   Input,
   Select,
   Button,
-  message,
+  notification,
 } from "antd";
 import {
   CalendarOutlined,
@@ -26,6 +26,7 @@ import { ICourse } from "@domain/models/course";
 import { useSession } from "next-auth/react";
 import PhoneNumberInput from "@components/shared/phone-number-input.component";
 import { validatePhoneNumber } from "@utils/country-codes";
+import { showLoginRequiredNotificationSimple, getCurrentUrlForRedirect } from "@components/shared/login-required-notification";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -46,11 +47,16 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
   const { data: session } = useSession();
   const [form] = Form.useForm();
   const [isEnrolling, setIsEnrolling] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const handleEnrollmentSubmit = async (values: any) => {
     try {
       if (!course || !session?.user?.id) {
-        message.error("Please log in to enroll in courses");
+        showLoginRequiredNotificationSimple({
+          message: "Authentication Required",
+          description: "Please log in to enroll in this course and access all features.",
+          redirectUrl: getCurrentUrlForRedirect()
+        });
         return;
       }
 
@@ -82,24 +88,30 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify(enrollmentData),
-      });
+        });
+
+      const data = await response.json();
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Enrollment failed");
+        throw new Error(data.message || "Enrollment failed");
       }
 
-      message.success("Successfully enrolled in the course!");
+      api.success({
+        message: "Enrollment Successful!",
+        description: "Successfully enrolled in the course! You can now access all course materials.",
+        placement: 'topRight',
+        duration: 4,
+      });
       form.resetFields();
       onCancel();
       onSuccess?.();
     } catch (error) {
       console.error("Enrollment error:", error);
-      message.error(
-        error instanceof Error
-          ? error.message
-          : "Enrollment failed. Please try again."
-      );
+      api.error({
+        message: "Enrollment Failed",
+        description: error instanceof Error ? error.message : "Enrollment failed. Please try again.",
+        placement: 'topRight',
+      });
     } finally {
       setIsEnrolling(false);
     }
@@ -112,14 +124,16 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
   if (!course) return null;
 
   return (
-    <Modal
-      title={`Enroll in ${course.title}`}
-      open={visible}
-      onCancel={onCancel}
-      footer={null}
-      width={700}
-    >
-      <Card style={{ backgroundColor: 'white', border: 'none' }}>
+    <>
+      {contextHolder}
+      <Modal
+        title={`Enroll in ${course.title}`}
+        open={visible}
+        onCancel={onCancel}
+        footer={null}
+        width={700}
+      >
+        <Card style={{ backgroundColor: 'white', border: 'none' }}>
         <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>
           <Row gutter={[16, 16]}>
             <Col span={24}>
@@ -162,6 +176,11 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           onFinish={handleEnrollmentSubmit}
           size="large"
         >
+        {/* Hidden field for country code */}
+        <Form.Item name="countryCode" initialValue="CM" hidden>
+          <Input />
+        </Form.Item>
+
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
@@ -173,6 +192,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
                   validator: (_, value) => {
                     if (!value) return Promise.resolve();
                     const countryCode = form.getFieldValue('countryCode') || 'CM';
+                    console.log('Validating enrollment phone with country code:', countryCode, 'Phone:', value);
                     if (validatePhoneNumber(countryCode, value)) {
                       return Promise.resolve();
                     }
@@ -184,8 +204,10 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
               <PhoneNumberInput
                 placeholder="Enter your phone number"
                 showMoneyServices={true}
-                onCountryCodeChange={(countryCode) => {
-                  form.setFieldValue('countryCode', countryCode);
+                countryCode="CM"
+                onCountryCodeChange={(code) => {
+                  console.log('Enrollment: Country code changed to:', code);
+                  form.setFieldValue('countryCode', code);
                 }}
               />
             </Form.Item>
@@ -339,6 +361,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         </Form>
       </Card>
     </Modal>
+    </>
   );
 };
 

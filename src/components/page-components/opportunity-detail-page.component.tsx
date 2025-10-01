@@ -30,6 +30,7 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 import { opportunityAPI } from "@store/api/opportunity_api";
+import { useTranslation } from "@contexts/translation.context";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -39,6 +40,7 @@ interface OpportunityDetailPageComponentProps {
 }
 
 export default function OpportunityDetailPageComponent({ opportunitySlug }: OpportunityDetailPageComponentProps) {
+  const { t } = useTranslation();
 
   const {
     data: opportunity,
@@ -108,7 +110,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
         >
           <div className="text-center">
             <Spin size="large" />
-            <p className="mt-3">Loading opportunity details...</p>
+            <p className="mt-3">{t("opportunity_detail.loading")}</p>
           </div>
         </Content>
       </Layout>
@@ -121,7 +123,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
         <AppNav logoPath="/" />
         <Content style={{ backgroundColor: "white" }}>
           <BannerComponent
-            pageTitle="Opportunity Not Found"
+            pageTitle={t("opportunity_detail.not_found")}
             breadcrumbs={[
               { label: "Opportunities", uri: "opportunities" },
               { label: "Not Found", uri: "" },
@@ -131,11 +133,11 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
             <Row justify="center">
               <Col xs={24} lg={18}>
                 <Alert
-                  message="Error"
+                  message={t("opportunity_detail.error")}
                   description={
                     error
-                      ? "Failed to load opportunity"
-                      : "Opportunity not found"
+                      ? t("opportunity_detail.failed_load")
+                      : t("opportunity_detail.not_found_desc")
                   }
                   type="error"
                   showIcon
@@ -189,7 +191,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                     </Tag>
                     {isDeadlineNear(opportunity.deadline) && (
                       <Tag color="red" icon={<ClockCircleOutlined />}>
-                        Deadline Soon
+                        {t("opportunity_detail.deadline_soon")}
                       </Tag>
                     )}
                   </div>
@@ -207,7 +209,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                       <div className="d-flex align-items-center">
                         <EnvironmentOutlined className="me-2 text-primary" />
                         <div>
-                          <Text strong>Location</Text>
+                          <Text strong>{t("opportunity_detail.location")}</Text>
                           <br />
                           <Text>{opportunity.location}</Text>
                         </div>
@@ -217,7 +219,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                       <div className="d-flex align-items-center">
                         <CalendarOutlined className="me-2 text-primary" />
                         <div>
-                          <Text strong>Deadline</Text>
+                          <Text strong>{t("opportunity_detail.deadline")}</Text>
                           <br />
                           <Text>{formatDeadline(opportunity.deadline)}</Text>
                         </div>
@@ -230,8 +232,8 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                           <div>
                             <Text strong>
                               {opportunity.opp_type === "scholarship"
-                                ? "Amount"
-                                : "Salary"}
+                                ? t("opportunity_detail.amount")
+                                : t("opportunity_detail.salary")}
                             </Text>
                             <br />
                             <Text>
@@ -246,7 +248,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                         <div className="d-flex align-items-center">
                           <ClockCircleOutlined className="me-2 text-primary" />
                           <div>
-                            <Text strong>Duration</Text>
+                            <Text strong>{t("opportunity_detail.duration")}</Text>
                             <br />
                             <Text>{opportunity.duration}</Text>
                           </div>
@@ -258,14 +260,14 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                   <Divider />
 
                   <div className="mb-4">
-                    <Title level={4}>Description</Title>
+                    <Title level={4}>{t("opportunity_detail.description")}</Title>
                     <Paragraph className="fs-6">
                       {opportunity.description}
                     </Paragraph>
                   </div>
 
                   <div className="mb-4">
-                    <Title level={4}>Requirements</Title>
+                    <Title level={4}>{t("opportunity_detail.requirements")}</Title>
                     <Paragraph className="fs-6">
                       {opportunity.requirements}
                     </Paragraph>
@@ -292,7 +294,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                       )}
                       {opportunity.nationality && (
                         <div className="mb-4">
-                          <Title level={4}>Nationality Requirements</Title>
+                          <Title level={4}>{t("opportunity_detail.nationality_req")}</Title>
                           <Text className="fs-6">
                             {opportunity.nationality}
                           </Text>
@@ -314,7 +316,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                     <>
                       {opportunity.employmentType && (
                         <div className="mb-4">
-                          <Title level={4}>Employment Type</Title>
+                          <Title level={4}>{t("opportunity_detail.employment_type")}</Title>
                           <Text className="fs-6">
                             {opportunity.employmentType}
                           </Text>
@@ -370,7 +372,7 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Apply Now
+                        {t("opportunity_detail.apply_now")}
                       </Button>
                       <Button
                         size="large"

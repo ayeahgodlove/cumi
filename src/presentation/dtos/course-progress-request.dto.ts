@@ -122,9 +122,9 @@ export class CourseProgressRequestDto {
     this.status = data.status;
     this.completionPercentage = data.completionPercentage;
     this.timeSpentMinutes = data.timeSpentMinutes;
-    this.startedAt = data.startedAt?.toISOString();
-    this.completedAt = data.completedAt?.toISOString();
-    this.lastAccessedAt = data.lastAccessedAt?.toISOString();
+    this.startedAt = data.startedAt instanceof Date ? data.startedAt.toISOString() : data.startedAt;
+    this.completedAt = data.completedAt instanceof Date ? data.completedAt.toISOString() : data.completedAt;
+    this.lastAccessedAt = data.lastAccessedAt instanceof Date ? data.lastAccessedAt.toISOString() : data.lastAccessedAt;
     this.score = data.score;
     this.maxScore = data.maxScore;
     this.attempts = data.attempts;

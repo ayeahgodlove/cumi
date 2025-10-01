@@ -13,7 +13,7 @@ import {
   Button,
   Spin,
   Tabs,
-  message,
+  notification,
   Modal,
   Descriptions,
   Popconfirm,
@@ -55,6 +55,7 @@ export default function CreatorDashboard() {
   const { t } = useTranslation();
   const { open } = useCoreNotification();
   const router = useRouter();
+  const [api, contextHolder] = notification.useNotification();
 
   // Modal states
   const [courseModalVisible, setCourseModalVisible] = useState(false);
@@ -63,6 +64,8 @@ export default function CreatorDashboard() {
   const [courseManagementVisible, setCourseManagementVisible] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [editingCourse, setEditingCourse] = useState<any>(null);
+  const [editingPost, setEditingPost] = useState<any>(null);
+  const [editingEvent, setEditingEvent] = useState<any>(null);
 
   // View modal states
   const [viewModalVisible, setViewModalVisible] = useState(false);
@@ -151,9 +154,12 @@ export default function CreatorDashboard() {
 
   // Handle successful creation
   const handleCreationSuccess = (type: "course" | "post" | "event") => {
-    message.success(
-      `${type.charAt(0).toUpperCase() + type.slice(1)} created successfully!`
-    );
+    api.success({
+      message: t('creator.success'),
+      description: t(`creator.${type}_created_success`),
+      placement: 'topRight',
+      duration: 3,
+    });
 
     // Refetch the appropriate table data
     switch (type) {
@@ -210,17 +216,30 @@ export default function CreatorDashboard() {
       });
 
       if (response.ok) {
-        message.success(isApproved ? 'Comment approved!' : 'Comment rejected!');
+        api.success({
+          message: t('common.success'),
+          description: isApproved ? t('creator.comment_approved') : t('creator.comment_rejected'),
+          placement: 'topRight',
+          duration: 2,
+        });
         // Refetch comments to update the table
         if (selectedPost?.id) {
           // The RTK Query will automatically refetch due to cache invalidation
         }
       } else {
-        message.error('Failed to update comment status');
+        api.error({
+          message: t('common.error'),
+          description: t('creator.comment_update_failed'),
+          placement: 'topRight',
+        });
       }
     } catch (error) {
       console.error('Error updating comment:', error);
-      message.error('Failed to update comment status');
+      api.error({
+        message: t('common.error'),
+        description: t('creator.comment_update_failed'),
+        placement: 'topRight',
+      });
     }
   };
 
@@ -232,14 +251,27 @@ export default function CreatorDashboard() {
       });
 
       if (response.ok) {
-        message.success('Comment deleted!');
+        api.success({
+          message: t('common.success'),
+          description: t('creator.comment_deleted'),
+          placement: 'topRight',
+          duration: 2,
+        });
         // Refetch comments to update the table
       } else {
-        message.error('Failed to delete comment');
+        api.error({
+          message: t('common.error'),
+          description: t('creator.comment_delete_failed'),
+          placement: 'topRight',
+        });
       }
     } catch (error) {
       console.error('Error deleting comment:', error);
-      message.error('Failed to delete comment');
+      api.error({
+        message: t('common.error'),
+        description: t('creator.comment_delete_failed'),
+        placement: 'topRight',
+      });
     }
   };
 
@@ -257,17 +289,17 @@ export default function CreatorDashboard() {
         setViewModalType(type);
         setViewModalVisible(true);
       } else {
-        open?.({
-          type: "error",
-          message: "Error",
-          description: `Failed to fetch ${type} details: ${data.message}`,
+        api.error({
+          message: t('common.error'),
+          description: t(`creator.fetch_${type}_failed`, { message: data.message }),
+          placement: 'topRight',
         });
       }
     } catch (error: any) {
-      open?.({
-        type: "error",
-        message: "Error",
-        description: `Failed to fetch ${type} details: ${error.message}`,
+      api.error({
+        message: t('common.error'),
+        description: t(`creator.fetch_${type}_failed`, { message: error.message }),
+        placement: 'topRight',
       });
     }
   };
@@ -280,9 +312,12 @@ export default function CreatorDashboard() {
     if (type === "course") {
       setEditingCourse(record);
       setCourseModalVisible(true);
-    } else {
-      // For posts and events, we can implement edit modals later
-      message.info(`Edit functionality for ${type}s will be implemented soon.`);
+    } else if (type === "post") {
+      setEditingPost(record);
+      setPostModalVisible(true);
+    } else if (type === "event") {
+      setEditingEvent(record);
+      setEventModalVisible(true);
     }
   };
 
@@ -298,12 +333,11 @@ export default function CreatorDashboard() {
       const data = await response.json();
 
       if (response.ok) {
-        open?.({
-          type: "success",
-          message: "Success",
-          description: `${
-            type.charAt(0).toUpperCase() + type.slice(1)
-          } deleted successfully!`,
+        api.success({
+          message: t('common.success'),
+          description: t(`creator.${type}_deleted_success`),
+          placement: 'topRight',
+          duration: 3,
         });
 
         // Refetch the appropriate table data
@@ -322,17 +356,17 @@ export default function CreatorDashboard() {
         // Refetch stats
         statsQuery.refetch();
       } else {
-        open?.({
-          type: "error",
-          message: "Error",
-          description: `Failed to delete ${type}: ${data.message}`,
+        api.error({
+          message: t('common.error'),
+          description: t(`creator.${type}_delete_failed`, { message: data.message }),
+          placement: 'topRight',
         });
       }
     } catch (error: any) {
-      open?.({
-        type: "error",
-        message: "Error",
-        description: `Failed to delete ${type}: ${error.message}`,
+      api.error({
+        message: t('common.error'),
+        description: t(`creator.${type}_delete_failed`, { message: error.message }),
+        placement: 'topRight',
       });
     }
   };
@@ -375,45 +409,45 @@ export default function CreatorDashboard() {
   // Creator-specific stats
   const creatorStats = [
     {
-      title: "My Courses",
+      title: t('creator.my_courses'),
       value: stats.totalCourses,
       icon: <BookOutlined />,
       color: "#52c41a",
     },
     {
-      title: "Course Modules",
+      title: t('creator.course_modules'),
       value: stats.totalCourseModules,
       icon: <CalendarOutlined />,
       color: "#1890ff",
     },
     {
-      title: "Course Assignments",
+      title: t('creator.course_assignments'),
       value: stats.totalCourseAssignments,
       icon: <CalendarOutlined />,
       color: "#13c2c2",
     },
     {
-      title: "My Posts",
+      title: t('creator.my_posts'),
       value: stats.totalPosts,
       icon: <BookOutlined />,
       color: "#722ed1",
     },
     {
-      title: "Post Likes Received",
+      title: t('creator.post_likes_received'),
       value: stats.totalPostLikes,
-      icon: <CalendarOutlined />,
+      icon: <LikeOutlined />,
       color: "#fa8c16",
     },
     {
-      title: "Comment Likes Received",
+      title: t('creator.comment_likes_received'),
       value: stats.totalCommentLikes,
-      icon: <CalendarOutlined />,
+      icon: <LikeOutlined />,
       color: "#eb2f96",
     },
     {
-      title: "My Comments",
+      title: t('creator.my_comments'),
       value: stats.totalUserComments,
-      icon: <CalendarOutlined />,
+      icon: <MessageOutlined />,
       color: "#52c41a",
     },
   ];
@@ -421,25 +455,25 @@ export default function CreatorDashboard() {
   // Table columns
   const courseColumns = [
     {
-      title: "ID",
+      title: t('common.id'),
       dataIndex: "id",
       key: "id",
       render: (value: any, record: any, index: number) =>
         format.twoChar((index + 1).toString()),
     },
     {
-      title: "Title",
+      title: t('common.title'),
       dataIndex: "title",
       key: "title",
     },
     {
-      title: "Price",
+      title: t('common.price'),
       dataIndex: "price",
       key: "price",
       render: (value: any, record: any) => (
         <span>
           {record.isFree ? (
-            <Tag color="green">Free</Tag>
+            <Tag color="green">{t('common.free')}</Tag>
           ) : (
             `${value || 0} ${record.currency || "XAF"}`
           )}
@@ -447,10 +481,11 @@ export default function CreatorDashboard() {
       ),
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       render: (value: string) => {
+        const statusLower = value?.toLowerCase();
         const colorMap = {
           draft: "orange",
           published: "green",
@@ -458,49 +493,67 @@ export default function CreatorDashboard() {
           suspended: "red",
         };
         return (
-          <Tag color={colorMap[value as keyof typeof colorMap] || "default"}>
-            {value}
+          <Tag color={colorMap[statusLower as keyof typeof colorMap] || "default"}>
+            {t(`common.${statusLower}`)}
           </Tag>
         );
       },
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       render: (_: any, record: BaseRecord) => (
         <Space>
           <Button
             icon={<EyeOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleView(record, "course")}
-            title="View Course"
+            title={t('creator.view_course')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button
             icon={<EditOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleEdit(record, "course")}
-            title="Edit Course"
+            title={t('creator.edit_course')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button
             type="primary"
-            size="small"
+            size="middle"
             onClick={() => router.push(`/dashboard/courses/${record.id}`)}
-            title="Manage Course"
+            title={t('creator.manage_course')}
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+            }}
           >
-            Manage
+            {t('creator.manage')}
           </Button>
           <Popconfirm
-            title="Delete Course"
-            description="Are you sure you want to delete this course?"
+            title={t('creator.delete_course')}
+            description={t('creator.delete_course_confirm')}
             onConfirm={() => handleDelete(record, "course")}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
             <Button
               icon={<DeleteOutlined />}
-              size="small"
+              size="middle"
               danger
-              title="Delete Course"
+              title={t('creator.delete_course')}
+              style={{
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(255,77,79,0.3)',
+              }}
             />
           </Popconfirm>
         </Space>
@@ -510,72 +563,91 @@ export default function CreatorDashboard() {
 
   const postColumns = [
     {
-      title: "ID",
+      title: t('common.id'),
       dataIndex: "id",
       key: "id",
       render: (value: any, record: any, index: number) =>
         format.twoChar((index + 1).toString()),
     },
     {
-      title: "Title",
+      title: t('common.title'),
       dataIndex: "title",
       key: "title",
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       render: (value: string) => {
+        const statusLower = value?.toLowerCase();
         const colorMap = {
           draft: "orange",
           published: "green",
           archived: "gray",
         };
         return (
-          <Tag color={colorMap[value as keyof typeof colorMap] || "default"}>
-            {value}
+          <Tag color={colorMap[statusLower as keyof typeof colorMap] || "default"}>
+            {t(`common.${statusLower}`)}
           </Tag>
         );
       },
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       render: (_: any, record: BaseRecord) => (
         <Space>
           <Button
             icon={<SettingOutlined />}
-            size="small"
+            size="middle"
             type="primary"
-            onClick={() => handlePostManagement(record)}
-            title="Manage Post"
+            onClick={() => router.push(`/dashboard/blog-posts/${record.id}`)}
+            title={t('creator.manage_post')}
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(240, 147, 251, 0.4)',
+            }}
           >
-            Manage
+            {t('creator.manage')}
           </Button>
           <Button
             icon={<EyeOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleView(record, "post")}
-            title="View Post"
+            title={t('creator.view_post')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button
             icon={<EditOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleEdit(record, "post")}
-            title="Edit Post"
+            title={t('creator.edit_post')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Popconfirm
-            title="Delete Post"
-            description="Are you sure you want to delete this post?"
+            title={t('creator.delete_post')}
+            description={t('creator.delete_post_confirm')}
             onConfirm={() => handleDelete(record, "post")}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
             <Button
               icon={<DeleteOutlined />}
-              size="small"
+              size="middle"
               danger
-              title="Delete Post"
+              title={t('creator.delete_post')}
+              style={{
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(255,77,79,0.3)',
+              }}
             />
           </Popconfirm>
         </Space>
@@ -585,33 +657,34 @@ export default function CreatorDashboard() {
 
   const eventColumns = [
     {
-      title: "ID",
+      title: t('common.id'),
       dataIndex: "id",
       key: "id",
       render: (value: any, record: any, index: number) =>
         format.twoChar((index + 1).toString()),
     },
     {
-      title: "Title",
+      title: t('common.title'),
       dataIndex: "title",
       key: "title",
     },
     {
-      title: "Event Date",
+      title: t('creator.event_date'),
       dataIndex: "eventDate",
       key: "eventDate",
       render: (value: string) => new Date(value).toLocaleDateString(),
     },
     {
-      title: "Location",
+      title: t('creator.location'),
       dataIndex: "location",
       key: "location",
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       render: (value: string) => {
+        const statusLower = value?.toLowerCase();
         const colorMap = {
           draft: "orange",
           published: "green",
@@ -619,50 +692,68 @@ export default function CreatorDashboard() {
           completed: "blue",
         };
         return (
-          <Tag color={colorMap[value as keyof typeof colorMap] || "default"}>
-            {value}
+          <Tag color={colorMap[statusLower as keyof typeof colorMap] || "default"}>
+            {t(`common.${statusLower}`)}
           </Tag>
         );
       },
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       render: (_: any, record: BaseRecord) => (
         <Space>
           <Button
             icon={<SettingOutlined />}
-            size="small"
+            size="middle"
             type="primary"
-            onClick={() => handleEventManagement(record)}
-            title="Manage Event"
+            onClick={() => router.push(`/dashboard/events/${record.id}`)}
+            title={t('creator.manage_event')}
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #ffa751 0%, #ffe259 100%)',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(255, 167, 81, 0.4)',
+            }}
           >
-            Manage
+            {t('creator.manage')}
           </Button>
           <Button
             icon={<EyeOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleView(record, "event")}
-            title="View Event"
+            title={t('creator.view_event')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Button
             icon={<EditOutlined />}
-            size="small"
+            size="middle"
             onClick={() => handleEdit(record, "event")}
-            title="Edit Event"
+            title={t('creator.edit_event')}
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            }}
           />
           <Popconfirm
-            title="Delete Event"
-            description="Are you sure you want to delete this event?"
+            title={t('creator.delete_event')}
+            description={t('creator.delete_event_confirm')}
             onConfirm={() => handleDelete(record, "event")}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
             <Button
               icon={<DeleteOutlined />}
-              size="small"
+              size="middle"
               danger
-              title="Delete Event"
+              title={t('creator.delete_event')}
+              style={{
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(255,77,79,0.3)',
+              }}
             />
           </Popconfirm>
         </Space>
@@ -673,7 +764,7 @@ export default function CreatorDashboard() {
   const tabItems = [
     {
       key: "courses",
-      label: "Courses",
+      label: t('creator.courses'),
       children: (
         <div ref={coursesTableRef}>
           <div
@@ -684,13 +775,32 @@ export default function CreatorDashboard() {
               alignItems: "center",
             }}
           >
-            <Title level={4}>My Courses</Title>
+            <Title level={4}>{t('creator.my_courses')}</Title>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setCourseModalVisible(true)}
+              size="large"
+              style={{
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                border: 'none',
+                height: '42px',
+                padding: '0 24px',
+                fontWeight: 600,
+                boxShadow: '0 6px 16px rgba(102, 126, 234, 0.4)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(102, 126, 234, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.4)';
+              }}
             >
-              Create Course
+              {t('creator.create_course')}
             </Button>
           </div>
           <Table
@@ -702,13 +812,14 @@ export default function CreatorDashboard() {
               showSizeChanger: true,
               showQuickJumper: true,
             }}
+            locale={{ emptyText: t('creator.no_courses_yet') }}
           />
         </div>
       ),
     },
     {
       key: "posts",
-      label: "Posts",
+      label: t('creator.posts'),
       children: (
         <div ref={postsTableRef}>
           <div
@@ -719,13 +830,32 @@ export default function CreatorDashboard() {
               alignItems: "center",
             }}
           >
-            <Title level={4}>My Posts</Title>
+            <Title level={4}>{t('creator.my_posts')}</Title>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setPostModalVisible(true)}
+              size="large"
+              style={{
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                border: 'none',
+                height: '42px',
+                padding: '0 24px',
+                fontWeight: 600,
+                boxShadow: '0 6px 16px rgba(240, 147, 251, 0.4)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(240, 147, 251, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(240, 147, 251, 0.4)';
+              }}
             >
-              Create Post
+              {t('creator.create_post')}
             </Button>
           </div>
           <Table
@@ -737,13 +867,14 @@ export default function CreatorDashboard() {
               showSizeChanger: true,
               showQuickJumper: true,
             }}
+            locale={{ emptyText: t('creator.no_posts_yet') }}
           />
         </div>
       ),
     },
     {
       key: "events",
-      label: "Events",
+      label: t('creator.events'),
       children: (
         <div ref={eventsTableRef}>
           <div
@@ -754,13 +885,32 @@ export default function CreatorDashboard() {
               alignItems: "center",
             }}
           >
-            <Title level={4}>My Events</Title>
+            <Title level={4}>{t('creator.my_events')}</Title>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setEventModalVisible(true)}
+              size="large"
+              style={{
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #ffa751 0%, #ffe259 100%)',
+                border: 'none',
+                height: '42px',
+                padding: '0 24px',
+                fontWeight: 600,
+                boxShadow: '0 6px 16px rgba(255, 167, 81, 0.4)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 167, 81, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 6px 16px rgba(255, 167, 81, 0.4)';
+              }}
             >
-              Create Event
+              {t('creator.create_event')}
             </Button>
           </div>
           <Table
@@ -772,6 +922,7 @@ export default function CreatorDashboard() {
               showSizeChanger: true,
               showQuickJumper: true,
             }}
+            locale={{ emptyText: t('creator.no_events_yet') }}
           />
         </div>
       ),
@@ -780,12 +931,13 @@ export default function CreatorDashboard() {
 
   return (
     <div style={{ padding: "24px" }}>
+      {contextHolder}
       <EnhancedBreadcrumb items={[]} showBackButton={false} />
-      <Title level={4}>Creator Dashboard</Title>
+      <Title level={4}>{t('creator.dashboard_title')}</Title>
       {/* Creator Statistics */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={24}>
-          <Title level={4}>Your Statistics</Title>
+          <Title level={4}>{t('creator.your_statistics')}</Title>
         </Col>
         {creatorStats.map((stat, index) => (
           <Col sm={6} md={6} span={24} key={index}>
@@ -834,14 +986,22 @@ export default function CreatorDashboard() {
 
       <PostCreateModal
         visible={postModalVisible}
-        onCancel={() => setPostModalVisible(false)}
+        onCancel={() => {
+          setPostModalVisible(false);
+          setEditingPost(null);
+        }}
         onSuccess={() => handleCreationSuccess("post")}
+        editingPost={editingPost}
       />
 
       <EventCreateModal
         visible={eventModalVisible}
-        onCancel={() => setEventModalVisible(false)}
+        onCancel={() => {
+          setEventModalVisible(false);
+          setEditingEvent(null);
+        }}
         onSuccess={() => handleCreationSuccess("event")}
+        editingEvent={editingEvent}
       />
 
       <CourseManagementModal
@@ -856,9 +1016,7 @@ export default function CreatorDashboard() {
 
       {/* View Modal */}
       <Modal
-        title={`View ${
-          viewModalType.charAt(0).toUpperCase() + viewModalType.slice(1)
-        } Details`}
+        title={t(`creator.view_${viewModalType}_details`)}
         open={viewModalVisible}
         onCancel={() => {
           setViewModalVisible(false);
@@ -871,66 +1029,73 @@ export default function CreatorDashboard() {
               setViewModalVisible(false);
               setViewModalData(null);
             }}
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
           >
-            Close
+            {t('common.close')}
           </Button>,
         ]}
         width={800}
       >
         {viewModalData && (
           <Descriptions bordered column={1}>
-            <Descriptions.Item label="ID">{viewModalData.id}</Descriptions.Item>
-            <Descriptions.Item label="Title">
+            <Descriptions.Item label={t('common.id')}>{viewModalData.id}</Descriptions.Item>
+            <Descriptions.Item label={t('common.title')}>
               {viewModalData.title}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('common.status')}>
               <Tag
                 color={
-                  viewModalData.status === "published"
+                  viewModalData.status?.toLowerCase() === "published"
                     ? "green"
-                    : viewModalData.status === "draft"
+                    : viewModalData.status?.toLowerCase() === "draft"
                     ? "orange"
-                    : viewModalData.status === "archived"
+                    : viewModalData.status?.toLowerCase() === "archived"
                     ? "gray"
-                    : viewModalData.status === "cancelled"
+                    : viewModalData.status?.toLowerCase() === "cancelled"
                     ? "red"
-                    : viewModalData.status === "completed"
+                    : viewModalData.status?.toLowerCase() === "completed"
                     ? "blue"
                     : "default"
                 }
               >
-                {viewModalData.status}
+                {t(`common.${viewModalData.status?.toLowerCase()}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Created At">
+            <Descriptions.Item label={t('common.created_at')}>
               {new Date(viewModalData.createdAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Updated At">
+            <Descriptions.Item label={t('common.updated_at')}>
               {new Date(viewModalData.updatedAt).toLocaleString()}
             </Descriptions.Item>
 
             {/* Course-specific fields */}
             {viewModalType === "course" && (
               <>
-                <Descriptions.Item label="Author">
+                <Descriptions.Item label={t('common.author')}>
                   {viewModalData.authorName}
                 </Descriptions.Item>
-                <Descriptions.Item label="Price">
+                <Descriptions.Item label={t('common.price')}>
                   {viewModalData.isFree ? (
-                    <Tag color="green">Free</Tag>
+                    <Tag color="green">{t('common.free')}</Tag>
                   ) : (
                     `${viewModalData.price || 0} ${
                       viewModalData.currency || "XAF"
                     }`
                   )}
                 </Descriptions.Item>
-                <Descriptions.Item label="Level">
+                <Descriptions.Item label={t('common.level')}>
                   {viewModalData.level}
                 </Descriptions.Item>
-                <Descriptions.Item label="Language">
+                <Descriptions.Item label={t('common.language')}>
                   {viewModalData.language}
                 </Descriptions.Item>
-                <Descriptions.Item label="Description" span={2}>
+                <Descriptions.Item label={t('common.description')} span={2}>
                   {viewModalData.description}
                 </Descriptions.Item>
               </>
@@ -939,10 +1104,10 @@ export default function CreatorDashboard() {
             {/* Post-specific fields */}
             {viewModalType === "post" && (
               <>
-                <Descriptions.Item label="Excerpt" span={2}>
+                <Descriptions.Item label={t('common.excerpt')} span={2}>
                   {viewModalData.description}
                 </Descriptions.Item>
-                <Descriptions.Item label="Content" span={2}>
+                <Descriptions.Item label={t('common.content')} span={2}>
                   <div
                     dangerouslySetInnerHTML={{ __html: viewModalData.content }}
                   />
@@ -953,19 +1118,19 @@ export default function CreatorDashboard() {
             {/* Event-specific fields */}
             {viewModalType === "event" && (
               <>
-                <Descriptions.Item label="Event Date">
+                <Descriptions.Item label={t('creator.event_date')}>
                   {new Date(viewModalData.eventDate).toLocaleString()}
                 </Descriptions.Item>
-                <Descriptions.Item label="Location">
+                <Descriptions.Item label={t('creator.location')}>
                   {viewModalData.location}
                 </Descriptions.Item>
-                <Descriptions.Item label="Category">
+                <Descriptions.Item label={t('common.category')}>
                   {viewModalData.category}
                 </Descriptions.Item>
-                <Descriptions.Item label="Description" span={2}>
+                <Descriptions.Item label={t('common.description')} span={2}>
                   {viewModalData.description}
                 </Descriptions.Item>
-                <Descriptions.Item label="Content" span={2}>
+                <Descriptions.Item label={t('common.content')} span={2}>
                   <div
                     dangerouslySetInnerHTML={{ __html: viewModalData.content }}
                   />
@@ -978,15 +1143,25 @@ export default function CreatorDashboard() {
 
       {/* Event Management Modal */}
       <Modal
-        title={`Manage Event: ${selectedEvent?.title || 'Event'}`}
+        title={`${t('creator.manage_event')}: ${selectedEvent?.title || t('creator.event')}`}
         open={eventManagementVisible}
         onCancel={() => {
           setEventManagementVisible(false);
           setSelectedEvent(null);
         }}
         footer={[
-          <Button key="close-event-mgmt" onClick={() => setEventManagementVisible(false)} size="large">
-            Close
+          <Button 
+            key="close-event-mgmt" 
+            onClick={() => setEventManagementVisible(false)} 
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
           </Button>,
           <Button
             key="view-full-event-mgmt"
@@ -1000,8 +1175,17 @@ export default function CreatorDashboard() {
               setEventManagementVisible(false);
             }}
             size="large"
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #ffa751 0%, #ffe259 100%)',
+              border: 'none',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(255, 167, 81, 0.4)',
+            }}
           >
-            View Full Event
+            {t('creator.view_full_event')}
           </Button>,
         ]}
         width={1000}
@@ -1011,47 +1195,47 @@ export default function CreatorDashboard() {
             <Row gutter={[16, 16]}>
               {/* Event Details */}
               <Col xs={24} lg={12}>
-                <Card title="Event Details" style={{ backgroundColor: '#f8f9fa', marginBottom: 16 }}>
+                <Card title={t('creator.event_details')} style={{ backgroundColor: '#f8f9fa', marginBottom: 16 }}>
                   <Descriptions column={1} size="small">
-                    <Descriptions.Item label="Title">{selectedEvent.title}</Descriptions.Item>
-                    <Descriptions.Item label="Date">
-                      {selectedEvent.eventDate ? new Date(selectedEvent.eventDate).toLocaleDateString() : 'TBD'}
+                    <Descriptions.Item label={t('common.title')}>{selectedEvent.title}</Descriptions.Item>
+                    <Descriptions.Item label={t('creator.date')}>
+                      {selectedEvent.eventDate ? new Date(selectedEvent.eventDate).toLocaleDateString() : t('creator.tbd')}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Location">{selectedEvent.location || 'Online'}</Descriptions.Item>
-                    <Descriptions.Item label="Status">
-                      <Tag color={selectedEvent.status === 'published' ? 'green' : selectedEvent.status === 'cancelled' ? 'red' : 'orange'}>
-                        {selectedEvent.status}
+                    <Descriptions.Item label={t('creator.location')}>{selectedEvent.location || t('creator.online')}</Descriptions.Item>
+                    <Descriptions.Item label={t('common.status')}>
+                      <Tag color={selectedEvent.status?.toLowerCase() === 'published' ? 'green' : selectedEvent.status?.toLowerCase() === 'cancelled' ? 'red' : 'orange'}>
+                        {t(`common.${selectedEvent.status?.toLowerCase()}`)}
                       </Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Entry Fee">
+                    <Descriptions.Item label={t('creator.entry_fee')}>
                       {selectedEvent.isFree ? (
-                        <Tag color="green">Free Event</Tag>
+                        <Tag color="green">{t('creator.free_event')}</Tag>
                       ) : (
                         `${selectedEvent.entryFee || 0} ${selectedEvent.currency || 'XAF'}`
                       )}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Max Attendees">
-                      {selectedEvent.maxAttendees || 'Unlimited'}
+                    <Descriptions.Item label={t('creator.max_attendees')}>
+                      {selectedEvent.maxAttendees || t('creator.unlimited')}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Current Attendees">
+                    <Descriptions.Item label={t('creator.current_attendees')}>
                       {selectedEvent.currentAttendees || 0}
                     </Descriptions.Item>
                   </Descriptions>
                 </Card>
 
                 {/* Event Stats */}
-                <Card title="Event Statistics" style={{ backgroundColor: '#f0f8ff' }}>
+                <Card title={t('creator.event_statistics')} style={{ backgroundColor: '#f0f8ff' }}>
                   <Row gutter={[16, 16]}>
                     <Col span={12}>
                       <Statistic
-                        title="Total Registrations"
+                        title={t('creator.total_registrations')}
                         value={eventRegistrations?.length || 0}
                         prefix={<TeamOutlined />}
                       />
                     </Col>
                     <Col span={12}>
                       <Statistic
-                        title="Registration Rate"
+                        title={t('creator.registration_rate')}
                         value={selectedEvent.maxAttendees ? 
                           Math.round(((selectedEvent.currentAttendees || 0) / selectedEvent.maxAttendees) * 100) : 0
                         }
@@ -1065,37 +1249,37 @@ export default function CreatorDashboard() {
 
               {/* Event Registrations Table */}
               <Col xs={24} lg={12}>
-                <Card title="Event Registrations" style={{ backgroundColor: '#f0f8ff' }}>
+                <Card title={t('creator.event_registrations')} style={{ backgroundColor: '#f0f8ff' }}>
                   <Table
                     dataSource={eventRegistrations || []}
                     columns={[
                       {
-                        title: 'Name',
+                        title: t('common.name'),
                         dataIndex: 'name',
                         key: 'name',
                       },
                       {
-                        title: 'Email',
+                        title: t('common.email'),
                         dataIndex: 'email',
                         key: 'email',
                       },
                       {
-                        title: 'Phone',
+                        title: t('common.phone'),
                         dataIndex: 'phone',
                         key: 'phone',
                       },
                       {
-                        title: 'Status',
+                        title: t('common.status'),
                         dataIndex: 'status',
                         key: 'status',
                         render: (status: string) => (
-                          <Tag color={status === 'confirmed' ? 'green' : status === 'cancelled' ? 'red' : 'orange'}>
-                            {status}
+                          <Tag color={status?.toLowerCase() === 'confirmed' ? 'green' : status?.toLowerCase() === 'cancelled' ? 'red' : 'orange'}>
+                            {t(`common.${status?.toLowerCase()}`)}
                           </Tag>
                         ),
                       },
                       {
-                        title: 'Registration Date',
+                        title: t('creator.registration_date'),
                         dataIndex: 'registrationDate',
                         key: 'registrationDate',
                         render: (date: string) => new Date(date).toLocaleDateString(),
@@ -1103,7 +1287,7 @@ export default function CreatorDashboard() {
                     ]}
                     size="small"
                     pagination={{ pageSize: 5 }}
-                    locale={{ emptyText: 'No registrations yet' }}
+                    locale={{ emptyText: t('creator.no_registrations_yet') }}
                   />
                 </Card>
               </Col>
@@ -1114,15 +1298,25 @@ export default function CreatorDashboard() {
 
       {/* Post Management Modal */}
       <Modal
-        title={`Manage Post: ${selectedPost?.title || 'Post'}`}
+        title={`${t('creator.manage_post')}: ${selectedPost?.title || t('creator.post')}`}
         open={postManagementVisible}
         onCancel={() => {
           setPostManagementVisible(false);
           setSelectedPost(null);
         }}
         footer={[
-          <Button key="close-post-mgmt" onClick={() => setPostManagementVisible(false)} size="large">
-            Close
+          <Button 
+            key="close-post-mgmt" 
+            onClick={() => setPostManagementVisible(false)} 
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
           </Button>,
           <Button
             key="view-full-post-mgmt"
@@ -1136,8 +1330,17 @@ export default function CreatorDashboard() {
               setPostManagementVisible(false);
             }}
             size="large"
+            style={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              border: 'none',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 600,
+              boxShadow: '0 4px 12px rgba(240, 147, 251, 0.4)',
+            }}
           >
-            View Full Post
+            {t('creator.view_full_post')}
           </Button>,
         ]}
         width={1200}
@@ -1147,35 +1350,35 @@ export default function CreatorDashboard() {
             <Row gutter={[16, 16]}>
               {/* Post Details */}
               <Col xs={24} lg={8}>
-                <Card title="Post Details" style={{ backgroundColor: '#f8f9fa', marginBottom: 16 }}>
+                <Card title={t('creator.post_details')} style={{ backgroundColor: '#f8f9fa', marginBottom: 16 }}>
                   <Descriptions column={1} size="small">
-                    <Descriptions.Item label="Title">{selectedPost.title}</Descriptions.Item>
-                    <Descriptions.Item label="Status">
-                      <Tag color={selectedPost.status === 'published' ? 'green' : selectedPost.status === 'draft' ? 'orange' : 'default'}>
-                        {selectedPost.status}
+                    <Descriptions.Item label={t('common.title')}>{selectedPost.title}</Descriptions.Item>
+                    <Descriptions.Item label={t('common.status')}>
+                      <Tag color={selectedPost.status?.toLowerCase() === 'published' ? 'green' : selectedPost.status?.toLowerCase() === 'draft' ? 'orange' : 'default'}>
+                        {t(`common.${selectedPost.status?.toLowerCase()}`)}
                       </Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Published">
-                      {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleDateString() : 'Draft'}
+                    <Descriptions.Item label={t('creator.published')}>
+                      {selectedPost.publishedAt ? new Date(selectedPost.publishedAt).toLocaleDateString() : t('common.draft')}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Category">{selectedPost.categoryId || 'Uncategorized'}</Descriptions.Item>
-                    <Descriptions.Item label="Description">{selectedPost.description}</Descriptions.Item>
+                    <Descriptions.Item label={t('common.category')}>{selectedPost.categoryId || t('creator.uncategorized')}</Descriptions.Item>
+                    <Descriptions.Item label={t('common.description')}>{selectedPost.description}</Descriptions.Item>
                   </Descriptions>
                 </Card>
 
                 {/* Post Stats */}
-                <Card title="Post Statistics" style={{ backgroundColor: '#f0f8ff' }}>
+                <Card title={t('creator.post_statistics')} style={{ backgroundColor: '#f0f8ff' }}>
                   <Row gutter={[16, 16]}>
                     <Col span={24}>
                       <Statistic
-                        title="Total Comments"
+                        title={t('creator.total_comments')}
                         value={postComments?.length || 0}
                         prefix={<MessageOutlined />}
                       />
                     </Col>
                     <Col span={24}>
                       <Statistic
-                        title="Total Likes"
+                        title={t('creator.total_likes')}
                         value={postStats?.likesCount || 0}
                         prefix={<LikeOutlined />}
                       />
@@ -1186,12 +1389,12 @@ export default function CreatorDashboard() {
 
               {/* Post Comments Management */}
               <Col xs={24} lg={16}>
-                <Card title="Comments Management" style={{ backgroundColor: '#f0f8ff' }}>
+                <Card title={t('creator.comments_management')} style={{ backgroundColor: '#f0f8ff' }}>
                   <Table
                     dataSource={postComments || []}
                     columns={[
                       {
-                        title: 'User',
+                        title: t('common.user'),
                         dataIndex: 'user',
                         key: 'user',
                         render: (user: any, record: any) => (
@@ -1202,7 +1405,7 @@ export default function CreatorDashboard() {
                         ),
                       },
                       {
-                        title: 'Comment',
+                        title: t('creator.comment'),
                         dataIndex: 'content',
                         key: 'content',
                         render: (content: string) => (
@@ -1212,55 +1415,67 @@ export default function CreatorDashboard() {
                         ),
                       },
                       {
-                        title: 'Date',
+                        title: t('creator.date'),
                         dataIndex: 'createdAt',
                         key: 'createdAt',
                         render: (date: string) => new Date(date).toLocaleDateString(),
                       },
                       {
-                        title: 'Status',
+                        title: t('common.status'),
                         dataIndex: 'isApproved',
                         key: 'isApproved',
                         render: (isApproved: boolean) => (
                           <Tag color={isApproved ? 'green' : 'orange'}>
-                            {isApproved ? 'Approved' : 'Pending'}
+                            {isApproved ? t('creator.approved') : t('creator.pending')}
                           </Tag>
                         ),
                       },
                       {
-                        title: 'Actions',
+                        title: t('common.actions'),
                         key: 'actions',
                         render: (_: any, record: any) => (
                           <Space>
                             {!record.isApproved && (
                               <Button
                                 type="primary"
-                                size="small"
+                                size="middle"
                                 onClick={() => handleCommentApproval(record.id, true)}
+                                style={{
+                                  borderRadius: '6px',
+                                  fontWeight: 500,
+                                }}
                               >
-                                Approve
+                                {t('creator.approve')}
                               </Button>
                             )}
                             {record.isApproved && (
                               <Button
-                                size="small"
+                                size="middle"
                                 onClick={() => handleCommentApproval(record.id, false)}
+                                style={{
+                                  borderRadius: '6px',
+                                  fontWeight: 500,
+                                }}
                               >
-                                Reject
+                                {t('creator.reject')}
                               </Button>
                             )}
                             <Popconfirm
-                              title="Delete Comment"
-                              description="Are you sure you want to delete this comment?"
+                              title={t('creator.delete_comment_title')}
+                              description={t('creator.delete_comment_confirm')}
                               onConfirm={() => handleCommentDeletion(record.id)}
-                              okText="Yes"
-                              cancelText="No"
+                              okText={t('common.yes')}
+                              cancelText={t('common.no')}
                             >
                               <Button
                                 danger
-                                size="small"
+                                size="middle"
+                                style={{
+                                  borderRadius: '6px',
+                                  fontWeight: 500,
+                                }}
                               >
-                                Delete
+                                {t('common.delete')}
                               </Button>
                             </Popconfirm>
                           </Space>
@@ -1269,7 +1484,7 @@ export default function CreatorDashboard() {
                     ]}
                     size="small"
                     pagination={{ pageSize: 5 }}
-                    locale={{ emptyText: 'No comments yet' }}
+                    locale={{ emptyText: t('creator.no_comments_yet') }}
                   />
                 </Card>
               </Col>

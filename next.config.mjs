@@ -18,6 +18,14 @@ const nextConfig = withNextIntl({
         port: "3000",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,

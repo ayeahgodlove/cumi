@@ -62,12 +62,17 @@ export async function GET(
       // Find the most recently accessed lesson
       const lessonProgressRecords = userProgressRecords
         .filter(record => record.progressType === 'lesson' && record.lastAccessedAt)
-        .sort((a, b) => new Date(b.lastAccessedAt || 0).getTime() - new Date(a.lastAccessedAt || 0).getTime());
+        .sort((a, b) => {
+          const dateA = a.lastAccessedAt instanceof Date ? a.lastAccessedAt : new Date(a.lastAccessedAt || 0);
+          const dateB = b.lastAccessedAt instanceof Date ? b.lastAccessedAt : new Date(b.lastAccessedAt || 0);
+          return dateB.getTime() - dateA.getTime();
+        });
       
       if (lessonProgressRecords.length > 0) {
+        const lastAccessed = lessonProgressRecords[0].lastAccessedAt;
         lastAccessedLesson = {
           lessonId: lessonProgressRecords[0].lessonId,
-          lastAccessedAt: lessonProgressRecords[0].lastAccessedAt,
+          lastAccessedAt: lastAccessed instanceof Date ? lastAccessed.toISOString() : lastAccessed,
           completionPercentage: lessonProgressRecords[0].completionPercentage
         };
       }

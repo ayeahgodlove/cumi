@@ -25,6 +25,8 @@ import { learningAPI } from "./api/learning_api";
 import { reviewAPI } from "./api/review_api";
 import { quizSubmissionAPI } from "./api/quiz-submission_api";
 import { assignmentSubmissionAPI } from "./api/assignment-submission_api";
+import { partnerAPI } from "./api/partner_api";
+
 export const store = configureStore({
   reducer: {
     [postAPI.reducerPath]: postAPI.reducer,
@@ -53,6 +55,7 @@ export const store = configureStore({
     [reviewAPI.reducerPath]: reviewAPI.reducer,
     [quizSubmissionAPI.reducerPath]: quizSubmissionAPI.reducer,
     [assignmentSubmissionAPI.reducerPath]: assignmentSubmissionAPI.reducer,
+    [partnerAPI.reducerPath]: partnerAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({}).concat([
@@ -82,6 +85,7 @@ export const store = configureStore({
       reviewAPI.middleware,
       quizSubmissionAPI.middleware,
       assignmentSubmissionAPI.middleware,
+      partnerAPI.middleware,
     ]),
 });
 

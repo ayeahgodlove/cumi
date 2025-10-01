@@ -194,7 +194,6 @@ export interface IReviewRepository
   findApprovedByCourseId(courseId: string): Promise<InstanceType<typeof Review>[]>;
   updateStatus(id: string, status: string, moderatorNotes?: string): Promise<InstanceType<typeof Review> | null>;
   incrementHelpfulVotes(id: string): Promise<InstanceType<typeof Review> | null>;
-  incrementReportedCount(id: string): Promise<InstanceType<typeof Review> | null>;
   getAverageRatingByCourseId(courseId: string): Promise<number>;
   getReviewStatsByCourseId(courseId: string): Promise<{
     totalReviews: number;

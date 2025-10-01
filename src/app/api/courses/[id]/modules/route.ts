@@ -83,7 +83,7 @@ export async function GET(
     // Transform modules using mapper and add computed fields
     const transformedModules = modules.map(module => {
       const moduleDto = moduleMapper.toDTO(module);
-      const moduleData = module.toJSON();
+      const moduleData = JSON.parse(JSON.stringify(module.get()));
       
       // Calculate completion status and progress for lessons
       const lessons = moduleData.lessons || [];

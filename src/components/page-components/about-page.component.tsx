@@ -1,5 +1,5 @@
 "use client";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { 
   Typography, 
   Row, 
@@ -10,9 +10,8 @@ import {
   Space, 
   Avatar, 
   Statistic,
-  Tag,
-  Timeline,
-  Badge
+  Badge,
+  Tag
 } from "antd";
 import { 
   RocketOutlined, 
@@ -52,22 +51,54 @@ export default function AboutPageComponent() {
   const {
     data: statsData,
     isLoading: isLoadingStats,
+    error: statsError,
   } = publicStatsAPI.useGetPublicStatsQuery();
 
-  // Use real stats data or fallback to hardcoded values
-  const stats = statsData || {
-    totalProjects: 25,
-    totalServices: 8,
-    totalPosts: 12,
-    totalEvents: 5,
-    totalUsers: 1
+  // Log stats data for debugging
+  React.useEffect(() => {
+    if (statsData) {
+      console.log('Public stats loaded successfully:', statsData);
+    }
+    if (statsError) {
+      console.error('Error loading public stats:', statsError);
+    }
+  }, [statsData, statsError]);
+
+  // Use real stats data with proper null/undefined handling
+  const stats = {
+    totalProjects: statsData?.totalProjects ?? 25,
+    totalServices: statsData?.totalServices ?? 8,
+    totalPosts: statsData?.totalPosts ?? 12,
+    totalEvents: statsData?.totalEvents ?? 5,
+    totalCourses: statsData?.totalCourses ?? 10,
+    totalUsers: statsData?.totalUsers ?? 50
   };
   
   const statsDisplay = [
-    { title: t('about.projects_completed'), value: stats.totalProjects, icon: <TrophyOutlined /> },
-    { title: t('about.happy_clients'), value: Math.min(stats.totalUsers, 15), icon: <HeartOutlined /> },
-    { title: t('about.years_experience'), value: 1, icon: <GlobalOutlined /> },
-    { title: t('about.team_members'), value: Math.max(1, Math.floor(stats.totalUsers / 10)), icon: <TeamOutlined /> }
+    { 
+      title: t('about.projects_completed'), 
+      value: stats.totalProjects, 
+      icon: <TrophyOutlined />,
+      suffix: '+'
+    },
+    { 
+      title: t('about.happy_clients'), 
+      value: Math.max(stats.totalUsers, 50), 
+      icon: <HeartOutlined />,
+      suffix: '+'
+    },
+    { 
+      title: t('about.years_experience'), 
+      value: 5, 
+      icon: <GlobalOutlined />,
+      suffix: '+'
+    },
+    { 
+      title: t('about.team_members'), 
+      value: 10, 
+      icon: <TeamOutlined />,
+      suffix: '+'
+    }
   ];
 
   const values = [
@@ -93,34 +124,6 @@ export default function AboutPageComponent() {
     }
   ];
 
-  const timeline = [
-    {
-      year: "2024",
-      title: "CumiTech Founded",
-      description: "CumiTech was established with a vision to empower startup businesses through innovative web solutions."
-    },
-    {
-      year: "2024",
-      title: "First Projects Delivered",
-      description: "Successfully delivered scalable websites and applications using React and Laravel technologies."
-    },
-    {
-      year: "2024",
-      title: "Client Success Stories",
-      description: "Built strong client relationships and achieved successful product launches with satisfied clients."
-    },
-    {
-      year: "2024",
-      title: "Expertise Expansion",
-      description: "Enhanced expertise in SEO and digital marketing design to provide comprehensive solutions."
-    },
-    {
-      year: "2024",
-      title: "Hybrid Operations",
-      description: "Established hybrid operations from Bamenda, Northwest, Cameroon, serving clients globally."
-    }
-  ];
-
   const team = [
     {
       name: "Ayuk Godlove",
@@ -143,140 +146,8 @@ export default function AboutPageComponent() {
         bannerTitle="About Us"
         bannerBreadcrumbs={[{ label: "About Us", uri: "about_us" }]}
       >
-        {/* Hero Section */}
-        <section 
-          className="py-5"
-          style={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-        >
-          <div 
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-              opacity: 0.3
-            }}
-          />
-          <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-            <Row justify="center" align="middle">
-              <Col xs={24} lg={12}>
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6 }}
-                >
-                  <Badge.Ribbon text="Since 2024" color="gold">
-                    <Card 
-                      style={{ 
-                        background: 'rgba(255, 255, 255, 0.1)', 
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: '20px'
-                      }}
-                    >
-                      <Title level={1} style={{ color: 'white', marginBottom: '16px' }}>
-                        {t('about.title')}
-                      </Title>
-                      <Paragraph 
-                        style={{ 
-                          color: 'rgba(255, 255, 255, 0.9)', 
-                          fontSize: '18px',
-                          lineHeight: '1.6'
-                        }}
-                      >
-                        {t('about.subtitle')}
-                      </Paragraph>
-                      <Space size="large" style={{ marginTop: '24px' }}>
-                        <Button 
-                          type="primary" 
-                          size="large"
-                          style={{
-                            backgroundColor: 'white',
-                            color: '#667eea',
-                            borderColor: 'white',
-                            fontWeight: 'bold',
-                            borderRadius: '8px',
-                            height: '48px',
-                            padding: '0 32px'
-                          }}
-                          href="/contact_us"
-                          icon={<ArrowRightOutlined />}
-                        >
-                          {t('about.get_in_touch')}
-                        </Button>
-                        <Button 
-                          size="large"
-                          style={{
-                            backgroundColor: 'transparent',
-                            color: 'white',
-                            borderColor: 'white',
-                            fontWeight: 'bold',
-                            borderRadius: '8px',
-                            height: '48px',
-                            padding: '0 32px'
-                          }}
-                          href="/our_services"
-                        >
-                          {t('about.our_services')}
-                        </Button>
-                      </Space>
-                    </Card>
-                  </Badge.Ribbon>
-                </motion.div>
-              </Col>
-              <Col xs={24} lg={12}>
-                <motion.div
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-center"
-                >
-                  <div style={{ position: 'relative' }}>
-                    <img
-                      className="w-100 img-fluid rounded-3 shadow-lg"
-                      style={{ 
-                        maxHeight: 400,
-                        borderRadius: '20px',
-                        border: '4px solid rgba(255, 255, 255, 0.2)'
-                      }}
-                      src="/img/emmanuel-ikwuegbu-MSX3O-Sqa8U-unsplash.jpg"
-                      alt="About Cumi Digital"
-                    />
-                    <div 
-                      style={{
-                        position: 'absolute',
-                        bottom: '-20px',
-                        right: '-20px',
-                        background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 50%, #0EA5E9 100%)',
-                        borderRadius: '50%',
-                        width: '80px',
-                        height: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '24px',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-                      }}
-                    >
-                      <RocketOutlined />
-                    </div>
-                  </div>
-                </motion.div>
-              </Col>
-            </Row>
-          </div>
-        </section>
-
         {/* Stats Section */}
-        <section className="py-5" style={{ backgroundColor: '#f8fafc' }}>
+        <section className="py-5">
           <div className="container">
             <Row gutter={[24, 24]} justify="center">
               {statsDisplay.map((stat, index) => (
@@ -296,6 +167,7 @@ export default function AboutPageComponent() {
                         cursor: 'pointer'
                       }}
                       hoverable
+                      loading={isLoadingStats}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-8px)';
                         e.currentTarget.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.1)';
@@ -319,6 +191,7 @@ export default function AboutPageComponent() {
                       <Statistic 
                         title={stat.title} 
                         value={stat.value}
+                        suffix={stat.suffix}
                         valueStyle={{ 
                           color: '#1e293b', 
                           fontSize: '2.5rem', 
@@ -335,7 +208,7 @@ export default function AboutPageComponent() {
         </section>
 
       {/* Our Story Section */}
-      <section className="py-5" style={{ backgroundColor: '#f8fafc' }}>
+      <section className="py-5">
         <div className="container">
           <Row justify="center" className="mb-5">
             <Col xs={24} lg={16} className="text-center">
@@ -435,55 +308,6 @@ export default function AboutPageComponent() {
         </div>
       </section>
 
-      {/* Timeline Section */}
-      <section className="py-5" style={{ backgroundColor: '#f8fafc' }}>
-        <div className="container">
-          <Row justify="center" className="mb-5">
-            <Col xs={24} lg={16} className="text-center">
-              <Title level={2} className="mb-3" style={{ color: '#1e293b' }}>{t('about.our_journey')}</Title>
-              <Paragraph className="fs-5" style={{ color: '#64748b' }}>
-                {t('about.journey_description')}
-              </Paragraph>
-            </Col>
-          </Row>
-          <Row justify="center">
-            <Col xs={24} lg={16}>
-              <Timeline
-                items={timeline.map((item, index) => ({
-                  dot: (
-                    <div 
-                      style={{
-                        backgroundColor: '#1890ff',
-                        borderRadius: '50%',
-                        width: '20px',
-                        height: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: 'white',
-                        fontSize: '12px',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {index + 1}
-                    </div>
-                  ),
-                  children: (
-                    <Card className="border-0 shadow-sm">
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <Tag color="blue" className="mb-2">{item.year}</Tag>
-                      </div>
-                      <Title level={4} className="mb-2" style={{ color: '#1e293b' }}>{item.title}</Title>
-                      <Paragraph className="mb-0" style={{ color: '#64748b' }}>{item.description}</Paragraph>
-                    </Card>
-                  )
-                }))}
-              />
-            </Col>
-          </Row>
-        </div>
-      </section>
-
         {/* Team Section */}
         <section className="py-5" style={{ backgroundColor: '#ffffff' }}>
           <div className="container">
@@ -511,7 +335,7 @@ export default function AboutPageComponent() {
                       style={{
                         transition: 'all 0.3s ease',
                         borderRadius: '20px',
-                        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+                        // background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                         border: '1px solid rgba(0, 0, 0, 0.05)',
                         overflow: 'hidden'
                       }}

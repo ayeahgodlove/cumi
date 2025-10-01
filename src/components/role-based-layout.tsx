@@ -135,17 +135,32 @@ export default function RoleBasedLayout({
     );
   }
 
-  // User Layout - show user dashboard
+  // User Layout - redirect to student dashboard
   return (
     <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
-      <div style={{ width: "100%" }}>
-        {/* navigation bar */}
+      <div
+        className="student-layout"
+        style={{
+          backgroundColor: "#fafbfc",
+          minHeight: "100vh",
+        }}
+      >
+        {/* Student Navigation */}
         <AppNav logoPath="/" />
-        <Row justify="center" align="top">
-          <Col xs={22} md={18}>
-            {children}
-          </Col>
-        </Row>
+
+        {/* Student Content Area */}
+        <div
+          className="container-fluid"
+          style={{ width: "100%", padding: "24px 0" }}
+        >
+          <Row justify="center" align="top">
+            <Col xs={22} md={20}>
+              {children}
+            </Col>
+          </Row>
+        </div>
+
+        {/* Student Footer */}
         <AppFooter logoPath="/" />
         <AppFootnote />
       </div>

@@ -69,6 +69,12 @@ const User = (sequelize: Sequelize, DataTypes: any) => {
     }
   );
 
+  // Add toJSON method to ensure proper serialization
+  UserModel.prototype.toJSON = function() {
+    const values = Object.assign({}, this.get());
+    return values;
+  };
+
   return UserModel;
 };
 

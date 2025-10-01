@@ -269,6 +269,11 @@ export default function CourseCreate() {
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
+              {/* Hidden field for country code */}
+              <Form.Item name="countryCode" initialValue="CM" hidden>
+                <Input />
+              </Form.Item>
+              
               <Form.Item
                 name={"instructorContact"}
                 label="Instructor Contact"
@@ -278,6 +283,7 @@ export default function CourseCreate() {
                     validator: (_, value) => {
                       if (!value) return Promise.resolve();
                       const countryCode = formProps.form?.getFieldValue('countryCode') || 'CM';
+                      console.log('Validating course create phone with country code:', countryCode, 'Phone:', value);
                       if (validatePhoneNumber(countryCode, value)) {
                         return Promise.resolve();
                       }
@@ -289,8 +295,10 @@ export default function CourseCreate() {
                 <PhoneNumberInput
                   placeholder="Enter instructor phone number"
                   showMoneyServices={true}
-                  onCountryCodeChange={(countryCode) => {
-                    formProps.form?.setFieldValue('countryCode', countryCode);
+                  countryCode="CM"
+                  onCountryCodeChange={(code) => {
+                    console.log('Course Create: Country code changed to:', code);
+                    formProps.form?.setFieldValue('countryCode', code);
                   }}
                 />
               </Form.Item>

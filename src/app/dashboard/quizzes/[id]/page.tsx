@@ -5,6 +5,7 @@ import { Card, Row, Col, Statistic, Descriptions, Tag, Spin, Typography } from "
 import { TrophyOutlined, ClockCircleOutlined, BookOutlined } from "@ant-design/icons";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { useParams } from "next/navigation";
+import { useTranslation } from "@contexts/translation.context";
 import { useGetSingleQuizQuery } from "@store/api/quiz_api";
 
 const { Text } = Typography;
@@ -12,6 +13,7 @@ const { Text } = Typography;
 const QuizDetailsPage: React.FC = () => {
   const params = useParams();
   const id = params?.id as string;
+  const { t } = useTranslation();
 
   const { data: quiz, isLoading: quizLoading, error: quizError } = useGetSingleQuizQuery(id);
 
@@ -26,7 +28,7 @@ const QuizDetailsPage: React.FC = () => {
   if (quizError || !quiz) {
     return (
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <Text>Quiz not found</Text>
+        <Text>{t('quiz_manage.quiz_not_found')}</Text>
       </div>
     );
   }
@@ -38,10 +40,10 @@ const QuizDetailsPage: React.FC = () => {
     <div>
       <EnhancedBreadcrumb
         items={[
-          { title: "Dashboard", href: "/dashboard/creator" },
-          { title: "Lessons", href: "/dashboard/modules" },
-          { title: "Quizzes" },
-          { title: quiz.title || "Quiz" }
+          { title: t('lesson_manage.dashboard'), href: "/dashboard/creator" },
+          { title: t('lesson_manage.lessons'), href: "/dashboard/modules" },
+          { title: t('module_manage.quizzes') },
+          { title: quiz.title || t('lesson_manage.quiz') }
         ]}
         showBackButton
       />
@@ -68,14 +70,14 @@ const QuizDetailsPage: React.FC = () => {
               </p>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <Tag color={quiz.status === "published" ? "green" : quiz.status === "draft" ? "orange" : "gray"}>
-                  {quiz.status}
+                  {t(`common.${quiz.status?.toLowerCase()}`)}
                 </Tag>
                 <Tag color="cyan">{quiz.quizType}</Tag>
                 <Tag color={quiz.difficulty === "easy" ? "green" : quiz.difficulty === "medium" ? "orange" : "red"}>
-                  {quiz.difficulty}
+                  {t(`lesson_manage.${quiz.difficulty}`)}
                 </Tag>
-                <Tag color="gold">{quiz.points || 1} pts</Tag>
-                {quiz.passRequired && <Tag color="red">Pass Required</Tag>}
+                <Tag color="gold">{quiz.points || 1} {t('lesson_manage.pts')}</Tag>
+                {quiz.passRequired && <Tag color="red">{t('lesson_manage.pass_required')}</Tag>}
               </div>
             </div>
           </Col>
@@ -95,7 +97,7 @@ const QuizDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Points"
+              title={t('lesson_manage.points')}
               value={quiz.points || 1}
               prefix={<span style={{ color: "#faad14" }}><TrophyOutlined /></span>}
               valueStyle={{ fontSize: 20 }}
@@ -113,7 +115,7 @@ const QuizDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Time Limit"
+              title={t('lesson_manage.time_limit')}
               value={quiz.timeLimitMinutes || 0}
               suffix="min"
               prefix={<span style={{ color: "#1890ff" }}><ClockCircleOutlined /></span>}
@@ -132,7 +134,7 @@ const QuizDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Answer Options"
+              title={t('lesson_manage.answer_options')}
               value={Array.isArray(answers) ? answers.length : 0}
               prefix={<span style={{ color: "#52c41a" }}><BookOutlined /></span>}
               valueStyle={{ fontSize: 20 }}
@@ -150,36 +152,36 @@ const QuizDetailsPage: React.FC = () => {
           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
           border: "none",
         }}
-        title="Quiz Details"
+        title={t('lesson_manage.quiz_details')}
       >
         <Descriptions column={2} bordered size="small">
-          <Descriptions.Item label="Title">{quiz.title}</Descriptions.Item>
-          <Descriptions.Item label="Order">{quiz.quizOrder || 1}</Descriptions.Item>
-          <Descriptions.Item label="Type">{quiz.quizType}</Descriptions.Item>
-          <Descriptions.Item label="Difficulty">{quiz.difficulty}</Descriptions.Item>
-          <Descriptions.Item label="Points">{quiz.points || 1}</Descriptions.Item>
-          <Descriptions.Item label="Language">{quiz.language}</Descriptions.Item>
-          <Descriptions.Item label="Time Limit">
-            {quiz.timeLimitMinutes ? `${quiz.timeLimitMinutes} minutes` : "No time limit"}
+          <Descriptions.Item label={t('common.title')}>{quiz.title}</Descriptions.Item>
+          <Descriptions.Item label={t('module_manage.order')}>{quiz.quizOrder || 1}</Descriptions.Item>
+          <Descriptions.Item label={t('module_manage.type')}>{quiz.quizType}</Descriptions.Item>
+          <Descriptions.Item label={t('module_manage.difficulty')}>{t(`lesson_manage.${quiz.difficulty}`)}</Descriptions.Item>
+          <Descriptions.Item label={t('lesson_manage.points')}>{quiz.points || 1}</Descriptions.Item>
+          <Descriptions.Item label={t('lesson_manage.language')}>{quiz.language}</Descriptions.Item>
+          <Descriptions.Item label={t('lesson_manage.time_limit')}>
+            {quiz.timeLimitMinutes ? `${quiz.timeLimitMinutes} ${t('quiz_manage.minutes')}` : t('quiz_manage.no_time_limit')}
           </Descriptions.Item>
-          <Descriptions.Item label="Pass Required">
-            {quiz.passRequired ? "Yes" : "No"}
+          <Descriptions.Item label={t('lesson_manage.pass_required')}>
+            {quiz.passRequired ? t('common.yes') : t('common.no')}
           </Descriptions.Item>
-          <Descriptions.Item label="Created">
+          <Descriptions.Item label={t('common.created_at')}>
             {new Date(quiz.createdAt).toLocaleString()}
           </Descriptions.Item>
-          <Descriptions.Item label="Updated">
+          <Descriptions.Item label={t('common.updated_at')}>
             {new Date(quiz.updatedAt).toLocaleString()}
           </Descriptions.Item>
-          <Descriptions.Item label="Question" span={2}>
+          <Descriptions.Item label={t('lesson_manage.question')} span={2}>
             {quiz.question}
           </Descriptions.Item>
           {quiz.instructions && (
-            <Descriptions.Item label="Instructions" span={2}>
+            <Descriptions.Item label={t('lesson_manage.instructions')} span={2}>
               {quiz.instructions}
             </Descriptions.Item>
           )}
-          <Descriptions.Item label="Answer Options" span={2}>
+          <Descriptions.Item label={t('lesson_manage.answer_options')} span={2}>
             {Array.isArray(answers) ? (
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {answers.map((answer: string, index: number) => (
@@ -198,12 +200,12 @@ const QuizDetailsPage: React.FC = () => {
             )}
           </Descriptions.Item>
           {quiz.explanation && (
-            <Descriptions.Item label="Explanation" span={2}>
+            <Descriptions.Item label={t('lesson_manage.explanation')} span={2}>
               {quiz.explanation}
             </Descriptions.Item>
           )}
           {quiz.localExample && (
-            <Descriptions.Item label="Local Example" span={2}>
+            <Descriptions.Item label={t('lesson_manage.local_example')} span={2}>
               {quiz.localExample}
             </Descriptions.Item>
           )}

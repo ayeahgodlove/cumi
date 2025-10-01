@@ -10,19 +10,23 @@ import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
 import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import { useTranslation } from "@contexts/translation.context";
 
 interface PostCreateModalProps {
   visible: boolean;
   onCancel: () => void;
   onSuccess: () => void;
+  editingPost?: any;
 }
 
-export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCreateModalProps) {
+export default function PostCreateModal({ visible, onCancel, onSuccess, editingPost }: PostCreateModalProps) {
   const [form] = Form.useForm();
   const { open } = useNotification();
+  const { t } = useTranslation();
   const { formProps, saveButtonProps } = useForm({
     resource: "posts",
-    action: "create",
+    action: editingPost ? "edit" : "create",
+    id: editingPost?.id,
     redirect: false, // Prevent automatic redirect
   });
 
@@ -45,8 +49,8 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
       // Show success notification
       open?.({
         type: "success",
-        message: "Success",
-        description: "Post created successfully!",
+        message: t('common.success'),
+        description: editingPost ? t('creator.post_updated_success') : t('creator.post_created_success'),
       });
       
       // Reset form and close modal
@@ -58,8 +62,8 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
       // Show error notification
       open?.({
         type: "error",
-        message: "Error",
-        description: "Failed to create post: " + error.message,
+        message: t('common.error'),
+        description: t('forms.post_create_failed', { message: error.message }),
       });
       
       // Don't close modal on error - let user fix the issues
@@ -102,6 +106,35 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
     }
   }, [fileList, form]);
 
+  // Preload form when editing
+  useEffect(() => {
+    if (editingPost && visible) {
+      form.setFieldsValue({
+        title: editingPost.title,
+        categoryId: editingPost.categoryId,
+        status: editingPost.status,
+        excerpt: editingPost.description,
+        content: editingPost.content,
+        tags: editingPost.tags || [],
+        imageUrl: editingPost.imageUrl,
+      });
+      
+      // Set file list if there's an existing image
+      if (editingPost.imageUrl) {
+        setFileList([{
+          uid: '-1',
+          name: 'existing-image',
+          status: 'done',
+          url: editingPost.imageUrl,
+        }]);
+      }
+    } else if (!editingPost && visible) {
+      // Reset form for new post
+      form.resetFields();
+      setFileList([]);
+    }
+  }, [editingPost, visible, form, setFileList]);
+
   const handleCancel = () => {
     form.resetFields();
     setFileList([]);
@@ -118,7 +151,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
           textAlign: "center",
           padding: "16px 0"
         }}>
-          Create New Post
+          {editingPost ? `${t('forms.edit_post')}: ${editingPost.title}` : t('forms.create_new_post')}
         </div>
       }
       open={visible}
@@ -148,8 +181,8 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
       >
         <Form.Item
           name="title"
-          label="Post Title"
-          rules={[{ required: true, message: "Please enter post title" }]}
+          label={t('forms.post_title')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.post_title').toLowerCase() }) }]}
         >
           <Input size="large" />
         </Form.Item>
@@ -158,11 +191,11 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
           <Col xs={24} md={12}>
             <Form.Item
               name="categoryId"
-              label="Category"
-              rules={[{ required: true, message: "Please select a category" }]}
+              label={t('common.category')}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('common.category').toLowerCase() }) }]}
             >
               <Select
-                placeholder="Select category"
+                placeholder={t('forms.select_category')}
                 size="large"
               >
                 {categories && Array.isArray(categories) && categories.map((category: any) => (
@@ -176,14 +209,14 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
           <Col xs={24} md={12}>
             <Form.Item
               name="status"
-              label="Status"
+              label={t('common.status')}
               initialValue="DRAFT"
-              rules={[{ required: true, message: "Please select a status" }]}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('common.status').toLowerCase() }) }]}
             >
               <Select size="large">
-                <Select.Option value="DRAFT">Draft</Select.Option>
-                <Select.Option value="PUBLISHED">Published</Select.Option>
-                <Select.Option value="REJECTED">Rejected</Select.Option>
+                <Select.Option value="DRAFT">{t('common.draft')}</Select.Option>
+                <Select.Option value="PUBLISHED">{t('common.published')}</Select.Option>
+                <Select.Option value="REJECTED">{t('forms.rejected')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -191,33 +224,33 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
 
         <Form.Item
           name="excerpt"
-          label="Excerpt"
-          rules={[{ required: true, message: "Please enter post excerpt" }]}
+          label={t('forms.excerpt')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.excerpt').toLowerCase() }) }]}
         >
           <Input.TextArea rows={3} />
         </Form.Item>
 
         <Form.Item
           name="content"
-          label="Content"
-          rules={[{ required: true, message: "Please enter post content" }]}
+          label={t('common.content')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('common.content').toLowerCase() }) }]}
         >
           <RichTextEditor
             value={form.getFieldValue("content")}
             onChange={(html) => form.setFieldValue("content", html)}
-            placeholder="Enter post content..."
+            placeholder={t('forms.enter_post_content')}
             height={300}
           />
         </Form.Item>
 
         <Form.Item
           name="tags"
-          label="Tags"
-          rules={[{ required: true, message: "Please select at least one tag" }]}
+          label={t('forms.tags')}
+          rules={[{ required: true, message: t('forms.select_at_least_one_tag') }]}
         >
           <Select
             mode="tags"
-            placeholder="Select tags"
+            placeholder={t('forms.select_tags')}
             size="large"
             options={
               tags && Array.isArray(tags)
@@ -232,16 +265,16 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
 
         <Form.Item
           name="imageUrl"
-          label="Featured Image"
+          label={t('forms.featured_image')}
           rules={[
-            { required: true, message: "Please upload a featured image" },
+            { required: true, message: t('forms.please_upload', { field: t('forms.featured_image').toLowerCase() }) },
             {
               validator: (_, value) => {
                 // Check if we have a valid URL string
                 if (typeof value === 'string' && value.trim() !== '') {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Please upload an image'));
+                return Promise.reject(new Error(t('forms.please_upload', { field: 'image' })));
               }
             }
           ]}
@@ -259,7 +292,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
             {fileList.length < 1 && (
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
+                <div style={{ marginTop: 8 }}>{t('forms.upload')}</div>
               </div>
             )}
           </Upload>
@@ -286,7 +319,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
                 height: "auto"
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="primary"
@@ -305,7 +338,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess }: PostCr
                 boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
               }}
             >
-              {saveButtonProps?.loading ? 'Creating...' : 'Create Post'}
+              {saveButtonProps?.loading ? t('forms.saving') : (editingPost ? t('forms.update_post') : t('forms.create_post'))}
             </Button>
           </div>
         </Form.Item>

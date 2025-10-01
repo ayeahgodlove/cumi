@@ -35,6 +35,7 @@ import {
 } from "@ant-design/icons";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { useParams } from "next/navigation";
+import { useTranslation } from "@contexts/translation.context";
 import { useGetSingleLessonQuery } from "@store/api/lesson_api";
 import {
   useGetAssignmentsByLessonQuery,
@@ -57,6 +58,7 @@ const { Text } = Typography;
 const LessonDetailsPage: React.FC = () => {
   const params = useParams();
   const id = params?.id as string;
+  const { t } = useTranslation();
 
   const { data: lesson, isLoading: lessonLoading } =
     useGetSingleLessonQuery(id);
@@ -112,14 +114,14 @@ const LessonDetailsPage: React.FC = () => {
       await deleteAssignment(assignmentId).unwrap();
       open?.({
         type: "success",
-        message: "Success",
-        description: "Assignment deleted successfully!",
+        message: t('common.success'),
+        description: t('lesson_manage.assignment_deleted_success'),
       });
     } catch (error: any) {
       open?.({
         type: "error",
-        message: "Error",
-        description: `Failed to delete assignment: ${error.message}`,
+        message: t('common.error'),
+        description: t('lesson_manage.assignment_delete_failed', { message: error.message }),
       });
     }
   };
@@ -149,14 +151,14 @@ const LessonDetailsPage: React.FC = () => {
       await deleteQuiz(quizId).unwrap();
       open?.({
         type: "success",
-        message: "Success",
-        description: "Quiz deleted successfully!",
+        message: t('common.success'),
+        description: t('lesson_manage.quiz_deleted_success'),
       });
     } catch (error: any) {
       open?.({
         type: "error",
-        message: "Error",
-        description: `Failed to delete quiz: ${error.message}`,
+        message: t('common.error'),
+        description: t('lesson_manage.quiz_delete_failed', { message: error.message }),
       });
     }
   };
@@ -167,9 +169,9 @@ const LessonDetailsPage: React.FC = () => {
     <div>
       <EnhancedBreadcrumb
         items={[
-          { title: "Dashboard", href: "/dashboard/creator" },
-          { title: "Lessons", href: "/dashboard/modules" },
-          { title: lesson?.title || "Lesson" },
+          { title: t('lesson_manage.dashboard'), href: "/dashboard/creator" },
+          { title: t('lesson_manage.lessons'), href: "/dashboard/modules" },
+          { title: lesson?.title || t('lesson_manage.lesson') },
         ]}
         showBackButton
       />
@@ -186,7 +188,7 @@ const LessonDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Assignments"
+              title={t('module_manage.assignments')}
               value={assignments.length}
               prefix={<BookOutlined />}
               valueStyle={{ fontSize: 20 }}
@@ -204,7 +206,7 @@ const LessonDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Quizzes"
+              title={t('module_manage.quizzes')}
               value={quizzes.length}
               prefix={<TrophyOutlined />}
               valueStyle={{ fontSize: 20 }}
@@ -222,7 +224,7 @@ const LessonDetailsPage: React.FC = () => {
             }}
           >
             <Statistic
-              title="Duration (min)"
+              title={t('lesson_manage.duration_min')}
               value={lesson?.durationMinutes ?? 0}
               prefix={<ClockCircleOutlined />}
               valueStyle={{ fontSize: 20 }}
@@ -247,10 +249,10 @@ const LessonDetailsPage: React.FC = () => {
             column={2}
             bordered
             size="small"
-            title="Lesson Information"
+            title={t('lesson_manage.lesson_information')}
           >
-            <Descriptions.Item label="Title">{lesson.title}</Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('common.title')}>{lesson.title}</Descriptions.Item>
+            <Descriptions.Item label={t('common.status')}>
               <Tag
                 color={
                   lesson.status === "published"
@@ -260,28 +262,28 @@ const LessonDetailsPage: React.FC = () => {
                     : "gray"
                 }
               >
-                {lesson.status}
+                {t(`common.${lesson.status?.toLowerCase()}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Difficulty">
-              {lesson.difficulty}
+            <Descriptions.Item label={t('module_manage.difficulty')}>
+              {t(`module_manage.${lesson.difficulty}`)}
             </Descriptions.Item>
-            <Descriptions.Item label="Type">
-              {lesson.lessonType}
+            <Descriptions.Item label={t('module_manage.type')}>
+              {t(`module_manage.${lesson.lessonType}`)}
             </Descriptions.Item>
-            <Descriptions.Item label="Order">
+            <Descriptions.Item label={t('module_manage.order')}>
               {lesson.lessonOrder}
             </Descriptions.Item>
-            <Descriptions.Item label="Language">
+            <Descriptions.Item label={t('lesson_manage.language')}>
               {lesson.language || "-"}
             </Descriptions.Item>
-            <Descriptions.Item label="Created">
+            <Descriptions.Item label={t('common.created_at')}>
               {new Date(lesson.createdAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Updated">
+            <Descriptions.Item label={t('common.updated_at')}>
               {new Date(lesson.updatedAt).toLocaleString()}
             </Descriptions.Item>
-            <Descriptions.Item label="Description" span={2}>
+            <Descriptions.Item label={t('common.description')} span={2}>
               {lesson.description}
             </Descriptions.Item>
           </Descriptions>
@@ -304,15 +306,23 @@ const LessonDetailsPage: React.FC = () => {
           items={[
             {
               key: "assignments",
-              label: `Assignments (${assignments.length})`,
+              label: `${t('module_manage.assignments')} (${assignments.length})`,
               children: (
                 <>
                   <Row justify="end" style={{ marginBottom: 12 }}>
                     <Button
                       type="primary"
                       onClick={() => setAssignmentModalOpen(true)}
+                      size="large"
+                      style={{
+                        borderRadius: "8px",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        border: "none",
+                        fontWeight: 500,
+                        boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+                      }}
                     >
-                      New Assignment
+                      {t('lesson_manage.new_assignment')}
                     </Button>
                   </Row>
                   <Table
@@ -344,7 +354,7 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Assignment Title",
+                        title: t('lesson_manage.assignment_title'),
                         dataIndex: "title",
                         key: "title",
                         render: (title: string, record: any) => (
@@ -361,7 +371,7 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Type",
+                        title: t('module_manage.type'),
                         dataIndex: "assignmentType",
                         key: "assignmentType",
                         width: 100,
@@ -370,49 +380,49 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Score",
+                        title: t('lesson_manage.score'),
                         key: "score",
                         width: 120,
                         render: (_: any, record: any) => (
                           <div style={{ textAlign: "center" }}>
                             <div style={{ fontSize: 12, fontWeight: "bold" }}>
-                              {record.maxScore || 100} pts
+                              {record.maxScore || 100} {t('lesson_manage.pts')}
                             </div>
                             <div style={{ fontSize: 10, color: "#666" }}>
-                              Pass: {record.passingScore || 50}
+                              {t('lesson_manage.pass')}: {record.passingScore || 50}
                             </div>
                           </div>
                         ),
                       },
                       {
-                        title: "Status",
+                        title: t('common.status'),
                         dataIndex: "status",
                         key: "status",
                         width: 100,
                         filters: [
-                          { text: "Published", value: "published" },
-                          { text: "Draft", value: "draft" },
-                          { text: "Archived", value: "archived" },
+                          { text: t('common.published'), value: "published" },
+                          { text: t('common.draft'), value: "draft" },
+                          { text: t('common.archived'), value: "archived" },
                         ],
                         onFilter: (value: any, record: any) =>
                           record.status === value,
                         render: (value: string) => {
+                          const statusLower = value?.toLowerCase();
                           const statusConfig = {
-                            published: { color: "green", text: "Published" },
-                            draft: { color: "orange", text: "Draft" },
-                            archived: { color: "gray", text: "Archived" },
+                            published: { color: "green" },
+                            draft: { color: "orange" },
+                            archived: { color: "gray" },
                           };
                           const config = statusConfig[
-                            value as keyof typeof statusConfig
+                            statusLower as keyof typeof statusConfig
                           ] || {
                             color: "default",
-                            text: value,
                           };
-                          return <Tag color={config.color}>{config.text}</Tag>;
+                          return <Tag color={config.color}>{t(`common.${statusLower}`)}</Tag>;
                         },
                       },
                       {
-                        title: "Due Date",
+                        title: t('lesson_manage.due_date'),
                         dataIndex: "dueDate",
                         key: "dueDate",
                         width: 140,
@@ -423,7 +433,7 @@ const LessonDetailsPage: React.FC = () => {
                           v ? new Date(v).toLocaleDateString() : "-",
                       },
                       {
-                        title: "Created",
+                        title: t('module_manage.created'),
                         dataIndex: "createdAt",
                         key: "createdAt",
                         width: 140,
@@ -433,12 +443,12 @@ const LessonDetailsPage: React.FC = () => {
                         render: (v: string) => new Date(v).toLocaleDateString(),
                       },
                       {
-                        title: "Actions",
+                        title: t('common.actions'),
                         key: "actions",
                         width: 280,
                         render: (_: any, record: any) => (
                           <Space size="small" wrap>
-                            <Tooltip title="View details">
+                            <Tooltip title={t('module_manage.view_details')}>
                               <Button
                                 icon={<EyeOutlined />}
                                 size="small"
@@ -447,7 +457,7 @@ const LessonDetailsPage: React.FC = () => {
                                 onClick={() => handleViewAssignment(record)}
                               />
                             </Tooltip>
-                            <Tooltip title="Edit assignment">
+                            <Tooltip title={t('lesson_manage.edit_assignment')}>
                               <Button
                                 type="primary"
                                 icon={<EditOutlined />}
@@ -457,29 +467,33 @@ const LessonDetailsPage: React.FC = () => {
                                 onClick={() => handleEditAssignment(record)}
                               />
                             </Tooltip>
-                            <Tooltip title="Manage assignment">
+                            <Tooltip title={t('lesson_manage.manage_assignment')}>
                               <Link
                                 href={`/dashboard/assignments/${record.id}`}
                               >
                                 <Button
-                                  type="dashed"
                                   size="small"
-                                  style={{ borderRadius: 8 }}
+                                  style={{ 
+                                    borderRadius: 8,
+                                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                    border: "none",
+                                    color: "white"
+                                  }}
                                 >
-                                  Manage
+                                  {t('common.manage')}
                                 </Button>
                               </Link>
                             </Tooltip>
                             <Popconfirm
-                              title="Delete Assignment"
-                              description="Are you sure you want to delete this assignment?"
+                              title={t('lesson_manage.delete_assignment_title')}
+                              description={t('lesson_manage.delete_assignment_confirm')}
                               onConfirm={() =>
                                 handleDeleteAssignment(record.id)
                               }
-                              okText="Yes"
-                              cancelText="No"
+                              okText={t('common.yes')}
+                              cancelText={t('common.no')}
                             >
-                              <Tooltip title="Delete assignment">
+                              <Tooltip title={t('lesson_manage.delete_assignment')}>
                                 <Button
                                   icon={<DeleteOutlined />}
                                   size="small"
@@ -500,12 +514,23 @@ const LessonDetailsPage: React.FC = () => {
             },
             {
               key: "quizzes",
-              label: `Quizzes (${quizzes.length})`,
+              label: `${t('module_manage.quizzes')} (${quizzes.length})`,
               children: (
                 <>
                   <Row justify="end" style={{ marginBottom: 12 }}>
-                    <Button onClick={() => setQuizModalOpen(true)}>
-                      New Quiz
+                    <Button 
+                      type="primary"
+                      onClick={() => setQuizModalOpen(true)}
+                      size="large"
+                      style={{
+                        borderRadius: "8px",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        border: "none",
+                        fontWeight: 500,
+                        boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+                      }}
+                    >
+                      {t('lesson_manage.new_quiz')}
                     </Button>
                   </Row>
                   <Table
@@ -537,7 +562,7 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Quiz Title",
+                        title: t('lesson_manage.quiz_title'),
                         dataIndex: "title",
                         key: "title",
                         render: (title: string, record: any) => (
@@ -554,7 +579,7 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Question",
+                        title: t('lesson_manage.question'),
                         dataIndex: "question",
                         key: "question",
                         ellipsis: { showTitle: false },
@@ -565,7 +590,7 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Type",
+                        title: t('module_manage.type'),
                         dataIndex: "quizType",
                         key: "quizType",
                         width: 120,
@@ -574,38 +599,37 @@ const LessonDetailsPage: React.FC = () => {
                         ),
                       },
                       {
-                        title: "Difficulty",
+                        title: t('module_manage.difficulty'),
                         dataIndex: "difficulty",
                         key: "difficulty",
                         width: 100,
                         filters: [
-                          { text: "Easy", value: "easy" },
-                          { text: "Medium", value: "medium" },
-                          { text: "Hard", value: "hard" },
+                          { text: t('lesson_manage.easy'), value: "easy" },
+                          { text: t('lesson_manage.medium'), value: "medium" },
+                          { text: t('lesson_manage.hard'), value: "hard" },
                         ],
                         onFilter: (value: any, record: any) =>
                           record.difficulty === value,
                         render: (value: string) => {
                           const config = {
-                            easy: { color: "green", text: "Easy" },
-                            medium: { color: "orange", text: "Medium" },
-                            hard: { color: "red", text: "Hard" },
+                            easy: { color: "green" },
+                            medium: { color: "orange" },
+                            hard: { color: "red" },
                           };
                           const difficultyConfig = config[
                             value as keyof typeof config
                           ] || {
                             color: "default",
-                            text: value,
                           };
                           return (
                             <Tag color={difficultyConfig.color}>
-                              {difficultyConfig.text}
+                              {t(`lesson_manage.${value}`)}
                             </Tag>
                           );
                         },
                       },
                       {
-                        title: "Points",
+                        title: t('lesson_manage.points'),
                         dataIndex: "points",
                         key: "points",
                         width: 80,
@@ -613,38 +637,38 @@ const LessonDetailsPage: React.FC = () => {
                         sorter: (a: any, b: any) =>
                           (a.points || 0) - (b.points || 0),
                         render: (value: number) => (
-                          <Tag color="gold">{value || 1} pts</Tag>
+                          <Tag color="gold">{value || 1} {t('lesson_manage.pts')}</Tag>
                         ),
                       },
                       {
-                        title: "Status",
+                        title: t('common.status'),
                         dataIndex: "status",
                         key: "status",
                         width: 100,
                         filters: [
-                          { text: "Published", value: "published" },
-                          { text: "Draft", value: "draft" },
-                          { text: "Archived", value: "archived" },
+                          { text: t('common.published'), value: "published" },
+                          { text: t('common.draft'), value: "draft" },
+                          { text: t('common.archived'), value: "archived" },
                         ],
                         onFilter: (value: any, record: any) =>
                           record.status === value,
                         render: (value: string) => {
+                          const statusLower = value?.toLowerCase();
                           const statusConfig = {
-                            published: { color: "green", text: "Published" },
-                            draft: { color: "orange", text: "Draft" },
-                            archived: { color: "gray", text: "Archived" },
+                            published: { color: "green" },
+                            draft: { color: "orange" },
+                            archived: { color: "gray" },
                           };
                           const config = statusConfig[
-                            value as keyof typeof statusConfig
+                            statusLower as keyof typeof statusConfig
                           ] || {
                             color: "default",
-                            text: value,
                           };
-                          return <Tag color={config.color}>{config.text}</Tag>;
+                          return <Tag color={config.color}>{t(`common.${statusLower}`)}</Tag>;
                         },
                       },
                       {
-                        title: "Created",
+                        title: t('module_manage.created'),
                         dataIndex: "createdAt",
                         key: "createdAt",
                         width: 140,
@@ -654,12 +678,12 @@ const LessonDetailsPage: React.FC = () => {
                         render: (v: string) => new Date(v).toLocaleDateString(),
                       },
                       {
-                        title: "Actions",
+                        title: t('common.actions'),
                         key: "actions",
                         width: 280,
                         render: (_: any, record: any) => (
                           <Space size="small" wrap>
-                            <Tooltip title="View details">
+                            <Tooltip title={t('module_manage.view_details')}>
                               <Button
                                 icon={<EyeOutlined />}
                                 size="small"
@@ -668,7 +692,7 @@ const LessonDetailsPage: React.FC = () => {
                                 onClick={() => handleViewQuiz(record)}
                               />
                             </Tooltip>
-                            <Tooltip title="Edit quiz">
+                            <Tooltip title={t('lesson_manage.edit_quiz')}>
                               <Button
                                 type="primary"
                                 icon={<EditOutlined />}
@@ -678,25 +702,29 @@ const LessonDetailsPage: React.FC = () => {
                                 onClick={() => handleEditQuiz(record)}
                               />
                             </Tooltip>
-                            <Tooltip title="Manage quiz">
+                            <Tooltip title={t('lesson_manage.manage_quiz')}>
                               <Link href={`/dashboard/quizzes/${record.id}`}>
                                 <Button
-                                  type="dashed"
                                   size="small"
-                                  style={{ borderRadius: 8 }}
+                                  style={{ 
+                                    borderRadius: 8,
+                                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                    border: "none",
+                                    color: "white"
+                                  }}
                                 >
-                                  Manage
+                                  {t('common.manage')}
                                 </Button>
                               </Link>
                             </Tooltip>
                             <Popconfirm
-                              title="Delete Quiz"
-                              description="Are you sure you want to delete this quiz?"
+                              title={t('lesson_manage.delete_quiz_title')}
+                              description={t('lesson_manage.delete_quiz_confirm')}
                               onConfirm={() => handleDeleteQuiz(record.id)}
-                              okText="Yes"
-                              cancelText="No"
+                              okText={t('common.yes')}
+                              cancelText={t('common.no')}
                             >
-                              <Tooltip title="Delete quiz">
+                              <Tooltip title={t('lesson_manage.delete_quiz')}>
                                 <Button
                                   icon={<DeleteOutlined />}
                                   size="small"
@@ -723,8 +751,8 @@ const LessonDetailsPage: React.FC = () => {
       <Modal
         title={
           editingAssignment
-            ? `Edit Assignment: ${editingAssignment.title}`
-            : "Create Assignment"
+            ? `${t('lesson_manage.edit_assignment')}: ${editingAssignment.title}`
+            : t('lesson_manage.create_assignment')
         }
         open={assignmentModalOpen}
         onCancel={() => {
@@ -733,7 +761,23 @@ const LessonDetailsPage: React.FC = () => {
           assignmentForm.resetFields();
         }}
         onOk={() => assignmentForm.submit()}
-        okButtonProps={{ loading: creatingAssignment || updatingAssignment }}
+        okText={editingAssignment ? t('lesson_manage.update') : t('lesson_manage.create')}
+        cancelText={t('common.cancel')}
+        okButtonProps={{ 
+          loading: creatingAssignment || updatingAssignment,
+          style: {
+            borderRadius: "8px",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            border: "none",
+            fontWeight: 500,
+            boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+          }
+        }}
+        cancelButtonProps={{
+          style: {
+            borderRadius: "8px"
+          }
+        }}
       >
         <Card bordered={false} style={{ backgroundColor: "white" }}>
           {" "}
@@ -812,8 +856,8 @@ const LessonDetailsPage: React.FC = () => {
                   }).unwrap();
                   open?.({
                     type: "success",
-                    message: "Success",
-                    description: "Assignment updated successfully!",
+                    message: t('common.success'),
+                    description: t('lesson_manage.assignment_updated_success'),
                   });
                 } else {
                   // Create assignment
@@ -881,8 +925,8 @@ const LessonDetailsPage: React.FC = () => {
                   }).unwrap();
                   open?.({
                     type: "success",
-                    message: "Success",
-                    description: "Assignment created successfully!",
+                    message: t('common.success'),
+                    description: t('lesson_manage.assignment_created_success'),
                   });
                 }
                 setAssignmentModalOpen(false);
@@ -891,46 +935,47 @@ const LessonDetailsPage: React.FC = () => {
               } catch (e: any) {
                 open?.({
                   type: "error",
-                  message: "Error",
+                  message: t('common.error'),
                   description:
                     e?.data?.message ||
                     e?.message ||
-                    "Failed to create assignment",
+                    t('lesson_manage.assignment_create_failed'),
                 });
               }
             }}
           >
             <Form.Item
               name="title"
-              label="Title"
-              rules={[{ required: true, message: "Please enter title" }]}
+              label={t('common.title')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('common.title').toLowerCase() }) }]}
             >
-              <Input placeholder="Assignment title" />
+              <Input placeholder={t('lesson_manage.assignment_title_placeholder')} size="large" />
             </Form.Item>
-            <Form.Item name="description" label="Description">
-              <Input.TextArea rows={3} placeholder="Assignment description" />
+            <Form.Item name="description" label={t('common.description')}>
+              <Input.TextArea rows={3} placeholder={t('lesson_manage.assignment_description_placeholder')} />
             </Form.Item>
-            <Form.Item name="instructions" label="Instructions">
-              <Input.TextArea rows={4} placeholder="Detailed instructions" />
+            <Form.Item name="instructions" label={t('lesson_manage.instructions')}>
+              <Input.TextArea rows={4} placeholder={t('lesson_manage.instructions_placeholder')} />
             </Form.Item>
             <Row gutter={12}>
               <Col span={12}>
                 <Form.Item
                   name="assignmentType"
-                  label="Type"
+                  label={t('module_manage.type')}
                   initialValue="essay"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={
                       [
-                        { value: "essay", label: "Essay" },
-                        { value: "project", label: "Project" },
-                        { value: "practical", label: "Practical" },
-                        { value: "presentation", label: "Presentation" },
-                        { value: "research", label: "Research" },
-                        { value: "coding", label: "Coding" },
-                        { value: "design", label: "Design" },
+                        { value: "essay", label: t('lesson_manage.essay') },
+                        { value: "project", label: t('lesson_manage.project') },
+                        { value: "practical", label: t('lesson_manage.practical') },
+                        { value: "presentation", label: t('lesson_manage.presentation') },
+                        { value: "research", label: t('lesson_manage.research') },
+                        { value: "coding", label: t('lesson_manage.coding') },
+                        { value: "design", label: t('lesson_manage.design') },
                       ] as any
                     }
                   />
@@ -939,16 +984,17 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="status"
-                  label="Status"
+                  label={t('common.status')}
                   initialValue="draft"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={
                       [
-                        { value: "draft", label: "Draft" },
-                        { value: "published", label: "Published" },
-                        { value: "archived", label: "Archived" },
+                        { value: "draft", label: t('common.draft') },
+                        { value: "published", label: t('common.published') },
+                        { value: "archived", label: t('common.archived') },
                       ] as any
                     }
                   />
@@ -959,24 +1005,24 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="assignmentOrder"
-                  label="Order"
+                  label={t('module_manage.order')}
                   initialValue={1}
                 >
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="maxScore" label="Max Score" initialValue={100}>
-                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} />
+                <Form.Item name="maxScore" label={t('lesson_manage.max_score')} initialValue={100}>
+                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
                 <Form.Item
                   name="passingScore"
-                  label="Passing Score"
+                  label={t('lesson_manage.passing_score')}
                   initialValue={50}
                 >
-                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} />
+                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -984,32 +1030,32 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="maxAttempts"
-                  label="Max Attempts"
+                  label={t('lesson_manage.max_attempts')}
                   initialValue={3}
                 >
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="timeLimitMinutes" label="Time Limit (min)">
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                <Form.Item name="timeLimitMinutes" label={t('lesson_manage.time_limit_min')}>
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="latePenaltyPercent" label="Late Penalty %">
-                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} />
+                <Form.Item name="latePenaltyPercent" label={t('lesson_manage.late_penalty')}>
+                  <InputNumber step={0.01} min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={12}>
               <Col span={12}>
-                <Form.Item name="availableFrom" label="Available From">
-                  <DatePicker showTime style={{ width: "100%" }} />
+                <Form.Item name="availableFrom" label={t('lesson_manage.available_from')}>
+                  <DatePicker showTime style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item name="dueDate" label="Due Date">
-                  <DatePicker showTime style={{ width: "100%" }} />
+                <Form.Item name="dueDate" label={t('lesson_manage.due_date')}>
+                  <DatePicker showTime style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -1017,24 +1063,25 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="submissionFormat"
-                  label="Submission Format"
+                  label={t('lesson_manage.submission_format')}
                   initialValue="text"
                 >
                   <Select
+                    size="large"
                     options={
                       [
-                        { value: "text", label: "Text" },
-                        { value: "file_upload", label: "File Upload" },
-                        { value: "url", label: "URL" },
-                        { value: "both_text_file", label: "Text + File" },
+                        { value: "text", label: t('lesson_manage.text') },
+                        { value: "file_upload", label: t('lesson_manage.file_upload') },
+                        { value: "url", label: t('lesson_manage.url') },
+                        { value: "both_text_file", label: t('lesson_manage.text_file') },
                       ] as any
                     }
                   />
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item name="allowedFileTypes" label="Allowed File Types">
-                  <Input placeholder="e.g. pdf,docx,zip" />
+                <Form.Item name="allowedFileTypes" label={t('lesson_manage.allowed_file_types')}>
+                  <Input placeholder={t('lesson_manage.file_types_placeholder')} size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -1042,20 +1089,20 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="maxFileSizeMb"
-                  label="Max File Size (MB)"
+                  label={t('lesson_manage.max_file_size')}
                   initialValue={10}
                 >
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="minWordCount" label="Min Words">
-                  <InputNumber min={0} style={{ width: "100%" }} />
+                <Form.Item name="minWordCount" label={t('lesson_manage.min_words')}>
+                  <InputNumber min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="maxWordCount" label="Max Words">
-                  <InputNumber min={0} style={{ width: "100%" }} />
+                <Form.Item name="maxWordCount" label={t('lesson_manage.max_words')}>
+                  <InputNumber min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -1063,7 +1110,7 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="autoGrade"
-                  label="Auto Grade"
+                  label={t('lesson_manage.auto_grade')}
                   valuePropName="checked"
                 >
                   <Switch />
@@ -1072,7 +1119,7 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="lateSubmissionAllowed"
-                  label="Late Submission"
+                  label={t('lesson_manage.late_submission')}
                   valuePropName="checked"
                   initialValue={true}
                 >
@@ -1082,7 +1129,7 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={8}>
                 <Form.Item
                   name="peerReviewEnabled"
-                  label="Peer Review"
+                  label={t('lesson_manage.peer_review')}
                   valuePropName="checked"
                 >
                   <Switch />
@@ -1093,17 +1140,17 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="peerReviewsRequired"
-                  label="Peer Reviews Required"
+                  label={t('lesson_manage.peer_reviews_required')}
                 >
-                  <InputNumber min={0} style={{ width: "100%" }} />
+                  <InputNumber min={0} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={12}>
                 <Form.Item
                   name="sampleSubmissions"
-                  label="Sample Submissions URL"
+                  label={t('lesson_manage.sample_submissions')}
                 >
-                  <Input />
+                  <Input size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -1121,14 +1168,14 @@ const LessonDetailsPage: React.FC = () => {
                       marginBottom: 8,
                     }}
                   >
-                    <label style={{ fontWeight: 600 }}>Grading Rubric</label>
+                    <label style={{ fontWeight: 600 }}>{t('lesson_manage.grading_rubric')}</label>
                     <Button
                       type="dashed"
                       onClick={() => add()}
                       icon={<PlusOutlined />}
                       size="small"
                     >
-                      Add Criterion
+                      {t('lesson_manage.add_criterion')}
                     </Button>
                   </div>
                   {fields.map(({ key, name, ...restField }) => (
@@ -1142,24 +1189,24 @@ const LessonDetailsPage: React.FC = () => {
                           <Form.Item
                             {...restField}
                             name={[name, "criterion"]}
-                            label="Criterion"
+                            label={t('lesson_manage.criterion')}
                             rules={[
                               {
                                 required: true,
-                                message: "Please enter criterion",
+                                message: t('lesson_manage.enter_criterion'),
                               },
                             ]}
                           >
-                            <Input placeholder="e.g. Content Quality" />
+                            <Input placeholder={t('lesson_manage.criterion_placeholder')} />
                           </Form.Item>
                         </Col>
                         <Col span={4}>
                           <Form.Item
                             {...restField}
                             name={[name, "points"]}
-                            label="Points"
+                            label={t('lesson_manage.points')}
                             rules={[
-                              { required: true, message: "Enter points" },
+                              { required: true, message: t('lesson_manage.enter_points') },
                             ]}
                           >
                             <InputNumber
@@ -1173,9 +1220,9 @@ const LessonDetailsPage: React.FC = () => {
                           <Form.Item
                             {...restField}
                             name={[name, "description"]}
-                            label="Description"
+                            label={t('common.description')}
                           >
-                            <Input placeholder="Describe what this criterion evaluates" />
+                            <Input placeholder={t('lesson_manage.criterion_description_placeholder')} />
                           </Form.Item>
                         </Col>
                         <Col
@@ -1192,7 +1239,7 @@ const LessonDetailsPage: React.FC = () => {
                             icon={<MinusCircleOutlined />}
                             onClick={() => remove(name)}
                             disabled={fields.length <= 1}
-                            title="Remove criterion"
+                            title={t('lesson_manage.remove_criterion')}
                           />
                         </Col>
                       </Row>
@@ -1201,7 +1248,7 @@ const LessonDetailsPage: React.FC = () => {
                 </>
               )}
             </Form.List>
-            <Form.Item name="referenceMaterials" label="Reference Materials">
+            <Form.Item name="referenceMaterials" label={t('lesson_manage.reference_materials')}>
               <Input.TextArea rows={3} />
             </Form.Item>
           </Form>
@@ -1210,7 +1257,7 @@ const LessonDetailsPage: React.FC = () => {
 
       {/* Create/Edit Quiz Modal */}
       <Modal
-        title={editingQuiz ? `Edit Quiz: ${editingQuiz.title}` : "Create Quiz"}
+        title={editingQuiz ? `${t('lesson_manage.edit_quiz')}: ${editingQuiz.title}` : t('lesson_manage.create_quiz')}
         open={quizModalOpen}
         onCancel={() => {
           setQuizModalOpen(false);
@@ -1218,7 +1265,23 @@ const LessonDetailsPage: React.FC = () => {
           quizForm.resetFields();
         }}
         onOk={() => quizForm.submit()}
-        okButtonProps={{ loading: creatingQuiz || updatingQuiz }}
+        okText={editingQuiz ? t('lesson_manage.update') : t('lesson_manage.create')}
+        cancelText={t('common.cancel')}
+        okButtonProps={{ 
+          loading: creatingQuiz || updatingQuiz,
+          style: {
+            borderRadius: "8px",
+            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            border: "none",
+            fontWeight: 500,
+            boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+          }
+        }}
+        cancelButtonProps={{
+          style: {
+            borderRadius: "8px"
+          }
+        }}
       >
         <Card bordered={false} style={{ backgroundColor: "white" }}>
           <Form
@@ -1259,8 +1322,8 @@ const LessonDetailsPage: React.FC = () => {
                   }).unwrap();
                   open?.({
                     type: "success",
-                    message: "Success",
-                    description: "Quiz updated successfully!",
+                    message: t('common.success'),
+                    description: t('lesson_manage.quiz_updated_success'),
                   });
                 } else {
                   // Create quiz
@@ -1287,8 +1350,8 @@ const LessonDetailsPage: React.FC = () => {
                   }).unwrap();
                   open?.({
                     type: "success",
-                    message: "Success",
-                    description: "Quiz created successfully!",
+                    message: t('common.success'),
+                    description: t('lesson_manage.quiz_created_success'),
                   });
                 }
                 setQuizModalOpen(false);
@@ -1297,26 +1360,26 @@ const LessonDetailsPage: React.FC = () => {
               } catch (e: any) {
                 open?.({
                   type: "error",
-                  message: "Error",
+                  message: t('common.error'),
                   description:
-                    e?.data?.message || e?.message || "Failed to create quiz",
+                    e?.data?.message || e?.message || t('lesson_manage.quiz_create_failed'),
                 });
               }
             }}
           >
             <Form.Item
               name="title"
-              label="Quiz Title"
-              rules={[{ required: true, message: "Please enter title" }]}
+              label={t('lesson_manage.quiz_title')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('lesson_manage.quiz_title').toLowerCase() }) }]}
             >
-              <Input placeholder="Quiz title" />
+              <Input placeholder={t('lesson_manage.quiz_title_placeholder')} size="large" />
             </Form.Item>
             <Form.Item
               name="question"
-              label="Question"
-              rules={[{ required: true, message: "Please enter question" }]}
+              label={t('lesson_manage.question')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('lesson_manage.question').toLowerCase() }) }]}
             >
-              <Input.TextArea rows={2} placeholder="Question text" />
+              <Input.TextArea rows={2} placeholder={t('lesson_manage.question_placeholder')} />
             </Form.Item>
 
             <Form.List name="answers" initialValue={["Option A", "Option B"]}>
@@ -1330,14 +1393,14 @@ const LessonDetailsPage: React.FC = () => {
                       marginBottom: 8,
                     }}
                   >
-                    <label style={{ fontWeight: 600 }}>Answer Options</label>
+                    <label style={{ fontWeight: 600 }}>{t('lesson_manage.answer_options')}</label>
                     <Button
                       type="dashed"
                       onClick={() => add()}
                       icon={<PlusOutlined />}
                       size="small"
                     >
-                      Add Answer
+                      {t('lesson_manage.add_answer')}
                     </Button>
                   </div>
                   {fields.map(({ key, name, ...restField }) => (
@@ -1349,11 +1412,11 @@ const LessonDetailsPage: React.FC = () => {
                           rules={[
                             {
                               required: true,
-                              message: "Please enter answer option",
+                              message: t('lesson_manage.enter_answer_option'),
                             },
                           ]}
                         >
-                          <Input placeholder={`Answer option ${name + 1}`} />
+                          <Input placeholder={`${t('lesson_manage.answer_option')} ${name + 1}`} />
                         </Form.Item>
                       </Col>
                       <Col>
@@ -1363,7 +1426,7 @@ const LessonDetailsPage: React.FC = () => {
                           icon={<MinusCircleOutlined />}
                           onClick={() => remove(name)}
                           disabled={fields.length <= 2}
-                          title="Remove answer"
+                          title={t('lesson_manage.remove_answer')}
                         />
                       </Col>
                     </Row>
@@ -1374,29 +1437,30 @@ const LessonDetailsPage: React.FC = () => {
 
             <Form.Item
               name="correctAnswerIndex"
-              label="Correct Answer Index"
+              label={t('lesson_manage.correct_answer_index')}
               initialValue={0}
             >
-              <InputNumber min={0} style={{ width: "100%" }} />
+              <InputNumber min={0} style={{ width: "100%" }} size="large" />
             </Form.Item>
-            <Form.Item name="instructions" label="Instructions">
-              <Input.TextArea rows={2} placeholder="Quiz instructions" />
+            <Form.Item name="instructions" label={t('lesson_manage.instructions')}>
+              <Input.TextArea rows={2} placeholder={t('lesson_manage.quiz_instructions_placeholder')} />
             </Form.Item>
             <Row gutter={12}>
               <Col span={12}>
                 <Form.Item
                   name="quizType"
-                  label="Type"
+                  label={t('module_manage.type')}
                   initialValue="multiple_choice"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={[
-                      { value: "multiple_choice", label: "Multiple Choice" },
-                      { value: "true_false", label: "True/False" },
-                      { value: "fill_blank", label: "Fill in the Blank" },
-                      { value: "short_answer", label: "Short Answer" },
-                      { value: "essay", label: "Essay" },
+                      { value: "multiple_choice", label: t('lesson_manage.multiple_choice') },
+                      { value: "true_false", label: t('lesson_manage.true_false') },
+                      { value: "fill_blank", label: t('lesson_manage.fill_blank') },
+                      { value: "short_answer", label: t('lesson_manage.short_answer') },
+                      { value: "essay", label: t('lesson_manage.essay') },
                     ]}
                   />
                 </Form.Item>
@@ -1404,15 +1468,16 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="difficulty"
-                  label="Difficulty"
+                  label={t('module_manage.difficulty')}
                   initialValue="easy"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={[
-                      { value: "easy", label: "Easy" },
-                      { value: "medium", label: "Medium" },
-                      { value: "hard", label: "Hard" },
+                      { value: "easy", label: t('lesson_manage.easy') },
+                      { value: "medium", label: t('lesson_manage.medium') },
+                      { value: "hard", label: t('lesson_manage.hard') },
                     ]}
                   />
                 </Form.Item>
@@ -1420,18 +1485,18 @@ const LessonDetailsPage: React.FC = () => {
             </Row>
             <Row gutter={12}>
               <Col span={8}>
-                <Form.Item name="points" label="Points" initialValue={1}>
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                <Form.Item name="points" label={t('lesson_manage.points')} initialValue={1}>
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="quizOrder" label="Order" initialValue={1}>
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                <Form.Item name="quizOrder" label={t('module_manage.order')} initialValue={1}>
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
               <Col span={8}>
-                <Form.Item name="timeLimitMinutes" label="Time Limit (min)">
-                  <InputNumber min={1} style={{ width: "100%" }} />
+                <Form.Item name="timeLimitMinutes" label={t('lesson_manage.time_limit_min')}>
+                  <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
               </Col>
             </Row>
@@ -1439,15 +1504,16 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="language"
-                  label="Language"
+                  label={t('lesson_manage.language')}
                   initialValue="both"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={[
-                      { value: "english", label: "English" },
-                      { value: "french", label: "French" },
-                      { value: "both", label: "Both" },
+                      { value: "english", label: t('forms.english') },
+                      { value: "french", label: t('forms.french') },
+                      { value: "both", label: t('forms.both') },
                     ]}
                   />
                 </Form.Item>
@@ -1455,15 +1521,16 @@ const LessonDetailsPage: React.FC = () => {
               <Col span={12}>
                 <Form.Item
                   name="status"
-                  label="Status"
+                  label={t('common.status')}
                   initialValue="draft"
                   rules={[{ required: true }]}
                 >
                   <Select
+                    size="large"
                     options={[
-                      { value: "draft", label: "Draft" },
-                      { value: "published", label: "Published" },
-                      { value: "archived", label: "Archived" },
+                      { value: "draft", label: t('common.draft') },
+                      { value: "published", label: t('common.published') },
+                      { value: "archived", label: t('common.archived') },
                     ]}
                   />
                 </Form.Item>
@@ -1471,22 +1538,22 @@ const LessonDetailsPage: React.FC = () => {
             </Row>
             <Form.Item
               name="passRequired"
-              label="Pass Required to Continue"
+              label={t('lesson_manage.pass_required')}
               valuePropName="checked"
             >
               <Switch />
             </Form.Item>
             <Form.Item
               name="explanation"
-              label="Explanation for Correct Answer"
+              label={t('lesson_manage.explanation_correct')}
             >
               <Input.TextArea
                 rows={2}
-                placeholder="Explain why this answer is correct"
+                placeholder={t('lesson_manage.explanation_placeholder')}
               />
             </Form.Item>
-            <Form.Item name="localExample" label="Cameroon-Specific Example">
-              <Input.TextArea rows={2} placeholder="Local context or example" />
+            <Form.Item name="localExample" label={t('lesson_manage.local_example')}>
+              <Input.TextArea rows={2} placeholder={t('lesson_manage.local_example_placeholder')} />
             </Form.Item>
           </Form>
         </Card>
@@ -1496,23 +1563,37 @@ const LessonDetailsPage: React.FC = () => {
       <Modal
         title={
           viewAssignment
-            ? `Assignment: ${viewAssignment.title}`
-            : "Assignment Details"
+            ? `${t('lesson_manage.assignment')}: ${viewAssignment.title}`
+            : t('lesson_manage.assignment_details')
         }
         open={viewAssignmentModalOpen}
         onCancel={() => setViewAssignmentModalOpen(false)}
-        footer={null}
+        footer={[
+          <Button 
+            key="close" 
+            onClick={() => setViewAssignmentModalOpen(false)}
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
+          </Button>
+        ]}
         width={800}
       >
         {viewAssignment && (
           <Descriptions column={2} bordered size="small">
-            <Descriptions.Item label="Title">
+            <Descriptions.Item label={t('common.title')}>
               {viewAssignment.title}
             </Descriptions.Item>
-            <Descriptions.Item label="Type">
+            <Descriptions.Item label={t('module_manage.type')}>
               <Tag color="purple">{viewAssignment.assignmentType}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('common.status')}>
               <Tag
                 color={
                   viewAssignment.status === "published"
@@ -1522,36 +1603,36 @@ const LessonDetailsPage: React.FC = () => {
                     : "gray"
                 }
               >
-                {viewAssignment.status}
+                {t(`common.${viewAssignment.status?.toLowerCase()}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Max Score">
-              {viewAssignment.maxScore || 100} pts
+            <Descriptions.Item label={t('lesson_manage.max_score')}>
+              {viewAssignment.maxScore || 100} {t('lesson_manage.pts')}
             </Descriptions.Item>
-            <Descriptions.Item label="Passing Score">
-              {viewAssignment.passingScore || 50} pts
+            <Descriptions.Item label={t('lesson_manage.passing_score')}>
+              {viewAssignment.passingScore || 50} {t('lesson_manage.pts')}
             </Descriptions.Item>
-            <Descriptions.Item label="Max Attempts">
+            <Descriptions.Item label={t('lesson_manage.max_attempts')}>
               {viewAssignment.maxAttempts || 3}
             </Descriptions.Item>
-            <Descriptions.Item label="Due Date">
+            <Descriptions.Item label={t('lesson_manage.due_date')}>
               {viewAssignment.dueDate
                 ? new Date(viewAssignment.dueDate).toLocaleString()
-                : "No due date"}
+                : t('lesson_manage.no_due_date')}
             </Descriptions.Item>
-            <Descriptions.Item label="Time Limit">
+            <Descriptions.Item label={t('lesson_manage.time_limit')}>
               {viewAssignment.timeLimitMinutes
                 ? `${viewAssignment.timeLimitMinutes} min`
-                : "No limit"}
+                : t('lesson_manage.no_limit')}
             </Descriptions.Item>
-            <Descriptions.Item label="Description" span={2}>
+            <Descriptions.Item label={t('common.description')} span={2}>
               {viewAssignment.description}
             </Descriptions.Item>
-            <Descriptions.Item label="Instructions" span={2}>
+            <Descriptions.Item label={t('lesson_manage.instructions')} span={2}>
               {viewAssignment.instructions}
             </Descriptions.Item>
             {viewAssignment.rubric && (
-              <Descriptions.Item label="Grading Rubric" span={2}>
+              <Descriptions.Item label={t('lesson_manage.grading_rubric')} span={2}>
                 {(() => {
                   try {
                     const rubric =
@@ -1572,7 +1653,7 @@ const LessonDetailsPage: React.FC = () => {
                             }}
                           >
                             <div style={{ fontWeight: "bold" }}>
-                              {criterion.criterion} ({criterion.points} pts)
+                              {criterion.criterion} ({criterion.points} {t('lesson_manage.pts')})
                             </div>
                             {criterion.description && (
                               <div
@@ -1590,7 +1671,7 @@ const LessonDetailsPage: React.FC = () => {
                       </div>
                     );
                   } catch (e) {
-                    return <Text type="secondary">Invalid rubric format</Text>;
+                    return <Text type="secondary">{t('lesson_manage.invalid_rubric')}</Text>;
                   }
                 })()}
               </Descriptions.Item>
@@ -1601,21 +1682,35 @@ const LessonDetailsPage: React.FC = () => {
 
       {/* View Quiz Modal */}
       <Modal
-        title={viewQuiz ? `Quiz: ${viewQuiz.title}` : "Quiz Details"}
+        title={viewQuiz ? `${t('lesson_manage.quiz')}: ${viewQuiz.title}` : t('lesson_manage.quiz_details')}
         open={viewQuizModalOpen}
         onCancel={() => setViewQuizModalOpen(false)}
-        footer={null}
+        footer={[
+          <Button 
+            key="close" 
+            onClick={() => setViewQuizModalOpen(false)}
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
+          </Button>
+        ]}
         width={800}
       >
         {viewQuiz && (
           <Descriptions column={2} bordered size="small">
-            <Descriptions.Item label="Title">
+            <Descriptions.Item label={t('common.title')}>
               {viewQuiz.title}
             </Descriptions.Item>
-            <Descriptions.Item label="Type">
+            <Descriptions.Item label={t('module_manage.type')}>
               <Tag color="cyan">{viewQuiz.quizType}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Difficulty">
+            <Descriptions.Item label={t('module_manage.difficulty')}>
               <Tag
                 color={
                   viewQuiz.difficulty === "easy"
@@ -1625,13 +1720,13 @@ const LessonDetailsPage: React.FC = () => {
                     : "red"
                 }
               >
-                {viewQuiz.difficulty}
+                {t(`lesson_manage.${viewQuiz.difficulty}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Points">
-              {viewQuiz.points || 1} pts
+            <Descriptions.Item label={t('lesson_manage.points')}>
+              {viewQuiz.points || 1} {t('lesson_manage.pts')}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('common.status')}>
               <Tag
                 color={
                   viewQuiz.status === "published"
@@ -1641,26 +1736,26 @@ const LessonDetailsPage: React.FC = () => {
                     : "gray"
                 }
               >
-                {viewQuiz.status}
+                {t(`common.${viewQuiz.status?.toLowerCase()}`)}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Language">
+            <Descriptions.Item label={t('lesson_manage.language')}>
               <Tag>{viewQuiz.language}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Time Limit">
+            <Descriptions.Item label={t('lesson_manage.time_limit')}>
               {viewQuiz.timeLimitMinutes
                 ? `${viewQuiz.timeLimitMinutes} min`
-                : "No limit"}
+                : t('lesson_manage.no_limit')}
             </Descriptions.Item>
-            <Descriptions.Item label="Pass Required">
+            <Descriptions.Item label={t('lesson_manage.pass_required')}>
               <Tag color={viewQuiz.passRequired ? "red" : "green"}>
-                {viewQuiz.passRequired ? "Required" : "Optional"}
+                {viewQuiz.passRequired ? t('lesson_manage.required') : t('lesson_manage.optional')}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Question" span={2}>
+            <Descriptions.Item label={t('lesson_manage.question')} span={2}>
               {viewQuiz.question}
             </Descriptions.Item>
-            <Descriptions.Item label="Answer Options" span={2}>
+            <Descriptions.Item label={t('lesson_manage.answer_options')} span={2}>
               {Array.isArray(viewQuiz.answers) ? (
                 <div>
                   {viewQuiz.answers.map((answer: string, index: number) => (
@@ -1683,12 +1778,12 @@ const LessonDetailsPage: React.FC = () => {
               )}
             </Descriptions.Item>
             {viewQuiz.explanation && (
-              <Descriptions.Item label="Explanation" span={2}>
+              <Descriptions.Item label={t('lesson_manage.explanation')} span={2}>
                 {viewQuiz.explanation}
               </Descriptions.Item>
             )}
             {viewQuiz.localExample && (
-              <Descriptions.Item label="Local Example" span={2}>
+              <Descriptions.Item label={t('lesson_manage.local_example')} span={2}>
                 {viewQuiz.localExample}
               </Descriptions.Item>
             )}

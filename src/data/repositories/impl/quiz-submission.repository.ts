@@ -36,7 +36,7 @@ export class QuizSubmissionRepository implements IQuizSubmissionRepository {
           },
           {
             model: Course,
-            as: "course",
+            as: "quizSubmissionCourse",
             attributes: ["id", "title", "slug"],
           },
           {
@@ -68,7 +68,7 @@ export class QuizSubmissionRepository implements IQuizSubmissionRepository {
           },
           {
             model: Course,
-            as: "course",
+            as: "quizSubmissionCourse",
             attributes: ["id", "title"],
           },
         ],
@@ -134,7 +134,7 @@ export class QuizSubmissionRepository implements IQuizSubmissionRepository {
           },
           {
             model: Course,
-            as: "course",
+            as: "quizSubmissionCourse",
             attributes: ["id", "title"],
           },
         ],

@@ -1,4 +1,4 @@
-import { Assignment } from "@data/entities/index";
+import { Assignment, Course, Module, Lesson, User } from "@data/entities/index";
 import { IAssignment } from "@domain/models/assignment.model";
 import { IAssignmentRepository } from "@data/repositories/contracts/repository.base";
 
@@ -16,10 +16,10 @@ export class AssignmentRepository implements IAssignmentRepository {
     try {
       const assignment = await Assignment.findByPk(id, {
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
       });
       return assignment;
@@ -32,10 +32,10 @@ export class AssignmentRepository implements IAssignmentRepository {
     try {
       const assignments = await Assignment.findAll({
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });
@@ -81,10 +81,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignment = await Assignment.findOne({
         where: { title },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
       });
       return assignment;
@@ -98,10 +98,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignment = await Assignment.findOne({
         where: { slug },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
       });
       return assignment;
@@ -115,10 +115,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignments = await Assignment.findAll({
         where: { courseId },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });
@@ -133,10 +133,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignments = await Assignment.findAll({
         where: { moduleId },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });
@@ -148,18 +148,30 @@ export class AssignmentRepository implements IAssignmentRepository {
 
   async findByLessonId(lessonId: string): Promise<InstanceType<typeof Assignment>[]> {
     try {
+      console.log("AssignmentRepository: Finding assignments for lessonId:", lessonId);
+      
       const assignments = await Assignment.findAll({
         where: { lessonId },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });
+      
+      console.log("AssignmentRepository: Found assignments:", assignments.length);
+      console.log("AssignmentRepository: Assignment details:", assignments.map(a => ({
+        id: a.id,
+        title: a.title,
+        lessonId: a.lessonId,
+        status: a.status
+      })));
+      
       return assignments;
     } catch (error) {
+      console.error("AssignmentRepository: Error finding assignments by lessonId:", error);
       throw error;
     }
   }
@@ -169,10 +181,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignments = await Assignment.findAll({
         where: { userId },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['createdAt', 'DESC']],
       });
@@ -187,10 +199,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignments = await Assignment.findAll({
         where: { status },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });
@@ -205,10 +217,10 @@ export class AssignmentRepository implements IAssignmentRepository {
       const assignments = await Assignment.findAll({
         where: { assignmentType: type },
         include: [
-          { model: Assignment.associations.course.target, as: "course" },
-          { model: Assignment.associations.module.target, as: "module" },
-          { model: Assignment.associations.lesson.target, as: "lesson" },
-          { model: Assignment.associations.instructor.target, as: "instructor" },
+          { model: Course, as: "assignmentCourse" },
+          { model: Module, as: "module" },
+          { model: Lesson, as: "lesson" },
+          { model: User, as: "instructor" },
         ],
         order: [['assignmentOrder', 'ASC']],
       });

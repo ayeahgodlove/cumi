@@ -36,6 +36,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useNotification } from "@refinedev/core";
+import { useTranslation } from "@contexts/translation.context";
 import RichTextEditor from "@components/shared/rich-text-editor";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
 import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
@@ -66,6 +67,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
   const { data: session } = useSession();
   const router = useRouter();
   const { open } = useNotification();
+  const { t } = useTranslation();
   // RTK Query hooks
   const {
     data: module,
@@ -129,12 +131,12 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
     if (moduleLoading === false && !module) {
       open?.({
         type: "error",
-        message: "Error",
-        description: "Failed to fetch module data",
+        message: t('common.error'),
+        description: t('module_manage.fetch_module_failed'),
       });
       router.push("/dashboard/creator");
     }
-  }, [moduleLoading, module, router, open]);
+  }, [moduleLoading, module, router, open, t]);
 
   // Handle lesson image upload updates
   useEffect(() => {
@@ -202,16 +204,16 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
         }).unwrap();
         open?.({
           type: "success",
-          message: "Success",
-          description: "Lesson updated successfully!",
+          message: t('common.success'),
+          description: t('module_manage.lesson_updated_success'),
         });
       } else {
         // Create lesson using RTK Query
         await createLesson(lessonData).unwrap();
         open?.({
           type: "success",
-          message: "Success",
-          description: "Lesson created successfully!",
+          message: t('common.success'),
+          description: t('module_manage.lesson_created_success'),
         });
       }
 
@@ -221,8 +223,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
     } catch (error: any) {
       open?.({
         type: "error",
-        message: "Error",
-        description: `Failed to save lesson: ${error.message}`,
+        message: t('common.error'),
+        description: t('module_manage.lesson_save_failed', { message: error.message }),
       });
     }
   };
@@ -253,14 +255,14 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       await deleteLesson(lessonId).unwrap();
       open?.({
         type: "success",
-        message: "Success",
-        description: "Lesson deleted successfully!",
+        message: t('common.success'),
+        description: t('module_manage.lesson_deleted_success'),
       });
     } catch (error: any) {
       open?.({
         type: "error",
-        message: "Error",
-        description: `Failed to delete lesson: ${error.message}`,
+        message: t('common.error'),
+        description: t('module_manage.lesson_delete_failed', { message: error.message }),
       });
     }
   };
@@ -287,7 +289,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       ),
     },
     {
-      title: "Lesson Title",
+      title: t('module_manage.lesson_title'),
       dataIndex: "title",
       key: "title",
       render: (title: string, record: any) => (
@@ -300,18 +302,18 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       ),
     },
     {
-      title: "Description",
+      title: t('common.description'),
       dataIndex: "description",
       key: "description",
       ellipsis: { showTitle: false },
       render: (text: string) => (
         <Tooltip title={text}>
-          <Text>{text || "No description"}</Text>
+          <Text>{text || t('module_manage.no_description')}</Text>
         </Tooltip>
       ),
     },
     {
-      title: "Duration",
+      title: t('module_manage.duration'),
       dataIndex: "durationMinutes",
       key: "durationMinutes",
       width: 100,
@@ -325,57 +327,56 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       ),
     },
     {
-      title: "Difficulty",
+      title: t('module_manage.difficulty'),
       dataIndex: "difficulty",
       key: "difficulty",
       width: 100,
       filters: [
-        { text: "Beginner", value: "beginner" },
-        { text: "Intermediate", value: "intermediate" },
-        { text: "Advanced", value: "advanced" },
+        { text: t('module_manage.beginner'), value: "beginner" },
+        { text: t('module_manage.intermediate'), value: "intermediate" },
+        { text: t('module_manage.advanced'), value: "advanced" },
       ],
       onFilter: (value: any, record: any) => record.difficulty === value,
       render: (value: string) => {
         const config = {
-          beginner: { color: "green", text: "Beginner" },
-          intermediate: { color: "orange", text: "Intermediate" },
-          advanced: { color: "red", text: "Advanced" },
+          beginner: { color: "green" },
+          intermediate: { color: "orange" },
+          advanced: { color: "red" },
         };
         const difficultyConfig = config[value as keyof typeof config] || {
           color: "default",
-          text: value,
         };
         return (
-          <Tag color={difficultyConfig.color}>{difficultyConfig.text}</Tag>
+          <Tag color={difficultyConfig.color}>{t(`module_manage.${value}`)}</Tag>
         );
       },
     },
     {
-      title: "Status",
+      title: t('common.status'),
       dataIndex: "status",
       key: "status",
       width: 100,
       filters: [
-        { text: "Published", value: "published" },
-        { text: "Draft", value: "draft" },
-        { text: "Archived", value: "archived" },
+        { text: t('common.published'), value: "published" },
+        { text: t('common.draft'), value: "draft" },
+        { text: t('common.archived'), value: "archived" },
       ],
       onFilter: (value: any, record: any) => record.status === value,
       render: (value: string) => {
+        const statusLower = value?.toLowerCase();
         const statusConfig = {
-          published: { color: "green", text: "Published" },
-          draft: { color: "orange", text: "Draft" },
-          archived: { color: "gray", text: "Archived" },
+          published: { color: "green" },
+          draft: { color: "orange" },
+          archived: { color: "gray" },
         };
-        const config = statusConfig[value as keyof typeof statusConfig] || {
+        const config = statusConfig[statusLower as keyof typeof statusConfig] || {
           color: "default",
-          text: value,
         };
-        return <Tag color={config.color}>{config.text}</Tag>;
+        return <Tag color={config.color}>{t(`common.${statusLower}`)}</Tag>;
       },
     },
     {
-      title: "Created",
+      title: t('module_manage.created'),
       dataIndex: "createdAt",
       key: "createdAt",
       width: 100,
@@ -384,22 +385,21 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       render: (value: string) => new Date(value).toLocaleDateString(),
     },
     {
-      title: "Actions",
+      title: t('common.actions'),
       key: "actions",
       width: 260,
       render: (_: any, record: any) => (
         <Space size="small" wrap>
-          <Tooltip title="View details">
+          <Tooltip title={t('module_manage.view_details')}>
             <Button
               icon={<EyeOutlined />}
               size="small"
-              // ghost
               style={{ borderRadius: 8 }}
               onClick={() => handleViewLesson(record)}
             />
           </Tooltip>
 
-          <Tooltip title="Edit lesson">
+          <Tooltip title={t('module_manage.edit_lesson')}>
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -410,22 +410,31 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             />
           </Tooltip>
 
-          <Tooltip title="Manage lesson">
+          <Tooltip title={t('module_manage.manage_lesson')}>
             <Link href={`/dashboard/lessons/${record.id}`}>
-              <Button type="dashed" size="small" style={{ borderRadius: 8 }}>
-                Manage
+              <Button 
+                type="dashed" 
+                size="small" 
+                style={{ 
+                  borderRadius: 8,
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  border: "none",
+                  color: "white"
+                }}
+              >
+                {t('common.manage')}
               </Button>
             </Link>
           </Tooltip>
 
           <Popconfirm
-            title="Delete Lesson"
-            description="Are you sure you want to delete this lesson?"
+            title={t('module_manage.delete_lesson_title')}
+            description={t('module_manage.delete_lesson_confirm')}
             onConfirm={() => handleDeleteLesson(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('common.yes')}
+            cancelText={t('common.no')}
           >
-            <Tooltip title="Delete lesson">
+            <Tooltip title={t('module_manage.delete_lesson')}>
               <Button
                 icon={<DeleteOutlined />}
                 size="small"
@@ -466,7 +475,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
           height: "100vh",
         }}
       >
-        <Text>Module not found</Text>
+        <Text>{t('module_manage.module_not_found')}</Text>
       </div>
     );
   }
@@ -489,10 +498,10 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       <EnhancedBreadcrumb
         items={[
           {
-            title: course?.title || "Course Management",
+            title: course?.title || t('module_manage.course_management'),
             href: `/dashboard/courses/${module.courseId}`,
           },
-          { title: "Module Management" },
+          { title: t('module_manage.module_management') },
           { title: module.title },
         ]}
       />
@@ -534,7 +543,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                 color="blue"
                 style={{ fontSize: 12, fontWeight: "bold", padding: "4px 8px" }}
               >
-                Order: {module.moduleOrder}
+                {t('module_manage.order')}: {module.moduleOrder}
               </Tag>
               {module.isLocked && (
                 <Tag
@@ -545,7 +554,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                     padding: "4px 8px",
                   }}
                 >
-                  LOCKED
+                  {t('course_manage.locked').toUpperCase()}
                 </Tag>
               )}
             </Space>
@@ -555,34 +564,48 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
 
       <Modal
         title={
-          viewLesson ? `Lesson Details: ${viewLesson.title}` : "Lesson Details"
+          viewLesson ? `${t('module_manage.lesson_details')}: ${viewLesson.title}` : t('module_manage.lesson_details')
         }
         open={viewModalVisible}
         onCancel={() => setViewModalVisible(false)}
-        footer={null}
+        footer={[
+          <Button 
+            key="close" 
+            onClick={() => setViewModalVisible(false)}
+            size="large"
+            style={{
+              borderRadius: '8px',
+              height: '40px',
+              padding: '0 24px',
+              fontWeight: 500,
+            }}
+          >
+            {t('common.close')}
+          </Button>
+        ]}
         width={800}
       >
         {viewLesson && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="Title">
+            <Descriptions.Item label={t('common.title')}>
               {viewLesson.title}
             </Descriptions.Item>
-            <Descriptions.Item label="Description">
+            <Descriptions.Item label={t('common.description')}>
               {viewLesson.description}
             </Descriptions.Item>
-            <Descriptions.Item label="Difficulty">
-              {viewLesson.difficulty}
+            <Descriptions.Item label={t('module_manage.difficulty')}>
+              {t(`module_manage.${viewLesson.difficulty}`)}
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
-              {viewLesson.status}
+            <Descriptions.Item label={t('common.status')}>
+              {t(`common.${viewLesson.status?.toLowerCase()}`)}
             </Descriptions.Item>
-            <Descriptions.Item label="Duration (min)">
+            <Descriptions.Item label={t('module_manage.duration_minutes')}>
               {viewLesson.durationMinutes ?? 0}
             </Descriptions.Item>
-            <Descriptions.Item label="Type">
-              {viewLesson.lessonType}
+            <Descriptions.Item label={t('module_manage.type')}>
+              {t(`module_manage.${viewLesson.lessonType}`)}
             </Descriptions.Item>
-            <Descriptions.Item label="Created">
+            <Descriptions.Item label={t('module_manage.created')}>
               {new Date(viewLesson.createdAt).toLocaleString()}
             </Descriptions.Item>
           </Descriptions>
@@ -601,7 +624,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Total Lessons"
+              title={t('course_manage.total_lessons')}
               value={totalLessons}
               valueStyle={{ fontSize: 20 }}
               prefix={
@@ -622,7 +645,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Published Lessons"
+              title={t('module_manage.published_lessons')}
               value={publishedLessons}
               valueStyle={{ fontSize: 20 }}
               prefix={
@@ -643,7 +666,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Assignments"
+              title={t('module_manage.assignments')}
               value={totalAssignments}
               valueStyle={{ fontSize: 20 }}
               prefix={
@@ -664,7 +687,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Quizzes"
+              title={t('module_manage.quizzes')}
               value={totalQuizzes}
               valueStyle={{ fontSize: 20 }}
               prefix={
@@ -688,7 +711,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Total Duration"
+              title={t('module_manage.total_duration')}
               value={totalDuration}
               suffix="min"
               valueStyle={{ fontSize: 20 }}
@@ -710,9 +733,9 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Module Duration"
+              title={t('module_manage.module_duration')}
               value={module.estimatedDurationHours || 0}
-              suffix="hrs"
+              suffix={t('module_manage.hrs')}
               valueStyle={{ fontSize: 20 }}
               prefix={
                 <span style={{ color: "#722ed1" }}>
@@ -732,8 +755,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Course"
-              value={course?.title || "Unknown"}
+              title={t('module_manage.course')}
+              value={course?.title || t('module_manage.unknown')}
               valueStyle={{ fontSize: 16 }}
               prefix={
                 <span style={{ color: "#52c41a" }}>
@@ -753,8 +776,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <Statistic
-              title="Author"
-              value="Unknown"
+              title={t('module_manage.author')}
+              value={t('module_manage.unknown')}
               valueStyle={{ fontSize: 16 }}
               prefix={
                 <span style={{ color: "#fa8c16" }}>
@@ -768,7 +791,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
 
       {/* Module Details */}
       <Card
-        title="Module Details"
+        title={t('course_manage.module_details')}
         style={{
           marginBottom: 24,
           backgroundColor: "white",
@@ -779,14 +802,14 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
         size="small"
       >
         <Descriptions bordered column={2}>
-          <Descriptions.Item label="Title">{module.title}</Descriptions.Item>
-          <Descriptions.Item label="Order">
+          <Descriptions.Item label={t('common.title')}>{module.title}</Descriptions.Item>
+          <Descriptions.Item label={t('module_manage.order')}>
             {module.moduleOrder}
           </Descriptions.Item>
-          <Descriptions.Item label="Duration">
-            {module.estimatedDurationHours || 0} hours
+          <Descriptions.Item label={t('course_manage.duration')}>
+            {module.estimatedDurationHours || 0} {t('course_manage.hours_full')}
           </Descriptions.Item>
-          <Descriptions.Item label="Status">
+          <Descriptions.Item label={t('common.status')}>
             <Tag
               color={
                 module.status === "published"
@@ -796,27 +819,27 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                   : "gray"
               }
             >
-              {module.status || "Draft"}
+              {t(`common.${module.status?.toLowerCase()}`) || t('common.draft')}
             </Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="Access">
+          <Descriptions.Item label={t('course_manage.access')}>
             <Tag color={module.isLocked ? "red" : "green"}>
-              {module.isLocked ? "Locked" : "Open"}
+              {module.isLocked ? t('course_manage.locked') : t('course_manage.open')}
             </Tag>
           </Descriptions.Item>
-          <Descriptions.Item label="Created At">
+          <Descriptions.Item label={t('common.created_at')}>
             {new Date(module.createdAt).toLocaleDateString()}
           </Descriptions.Item>
-          <Descriptions.Item label="Description" span={2}>
-            {module.description || "No description provided"}
+          <Descriptions.Item label={t('common.description')} span={2}>
+            {module.description || t('module_manage.no_description_provided')}
           </Descriptions.Item>
           {module.learningObjectives && (
-            <Descriptions.Item label="Learning Objectives" span={2}>
+            <Descriptions.Item label={t('course_manage.learning_objectives')} span={2}>
               {module.learningObjectives}
             </Descriptions.Item>
           )}
           {module.prerequisites && (
-            <Descriptions.Item label="Prerequisites" span={2}>
+            <Descriptions.Item label={t('course_manage.prerequisites')} span={2}>
               {module.prerequisites}
             </Descriptions.Item>
           )}
@@ -829,8 +852,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <BookOutlined style={{ color: "#1890ff" }} />
             <span>
-              Module Lessons ({lessons.length} total, {publishedLessons}{" "}
-              published)
+              {t('module_manage.module_lessons')} ({lessons.length} {t('module_manage.total')}, {publishedLessons}{" "}
+              {t('module_manage.published')})
             </span>
           </div>
         }
@@ -839,8 +862,16 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setLessonModalVisible(true)}
+            size="large"
+            style={{
+              borderRadius: "8px",
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              border: "none",
+              fontWeight: 500,
+              boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+            }}
           >
-            Add Lesson
+            {t('module_manage.add_lesson')}
           </Button>
         }
         style={{
@@ -859,14 +890,21 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             }}
           >
             <BookOutlined style={{ fontSize: 48, marginBottom: 16 }} />
-            <div>No lessons found for this module</div>
+            <div>{t('module_manage.no_lessons_found')}</div>
             <Button
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setLessonModalVisible(true)}
-              style={{ marginTop: 16 }}
+              style={{ 
+                marginTop: 16,
+                borderRadius: "8px",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                border: "none",
+                boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+              }}
+              size="large"
             >
-              Add First Lesson
+              {t('module_manage.add_first_lesson')}
             </Button>
           </div>
         ) : (
@@ -880,7 +918,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} lessons`,
+                `${range[0]}-${range[1]} ${t('module_manage.of')} ${total} ${t('module_manage.lessons')}`,
             }}
             scroll={{ x: 1200 }}
             rowClassName={(record, index) =>
@@ -895,8 +933,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
       <Modal
         title={
           editingLesson
-            ? `Edit Lesson: ${editingLesson.title}`
-            : "Add New Lesson"
+            ? `${t('module_manage.edit_lesson')}: ${editingLesson.title}`
+            : t('module_manage.add_new_lesson')
         }
         open={lessonModalVisible}
         onCancel={() => {
@@ -934,24 +972,24 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
               <Col xs={24} sm={24} md={24} lg={24} xl={24}>
                 <Form.Item
                   name="title"
-                  label="Lesson Title"
+                  label={t('module_manage.lesson_title')}
                   rules={[
-                    { required: true, message: "Please enter lesson title" },
+                    { required: true, message: t('forms.please_enter', { field: t('module_manage.lesson_title').toLowerCase() }) },
                   ]}
                 >
-                  <Input size="large" placeholder="Enter lesson title" />
+                  <Input size="large" placeholder={t('module_manage.enter_lesson_title')} />
                 </Form.Item>
               </Col>
             </Row>
 
             <Form.Item
               name="description"
-              label="Description"
+              label={t('common.description')}
               rules={[
-                { required: true, message: "Please enter lesson description" },
+                { required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) },
               ]}
             >
-              <Input.TextArea rows={3} placeholder="Enter lesson description" />
+              <Input.TextArea rows={3} placeholder={t('module_manage.enter_lesson_description')} />
             </Form.Item>
 
             {/* Duration and Difficulty */}
@@ -959,8 +997,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
               <Col xs={12} sm={8} md={6} lg={4} xl={4}>
                 <Form.Item
                   name="durationMinutes"
-                  label="Duration (min)"
-                  rules={[{ required: true, message: "Please enter duration" }]}
+                  label={t('module_manage.duration_minutes')}
+                  rules={[{ required: true, message: t('forms.please_enter', { field: t('module_manage.duration').toLowerCase() }) }]}
                 >
                   <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
@@ -968,7 +1006,7 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
               <Col xs={12} sm={8} md={6} lg={6} xl={6}>
                 <Form.Item
                   name="estimatedCompletionTime"
-                  label="Completion Time (minutes)"
+                  label={t('module_manage.completion_time')}
                 >
                   <InputNumber min={1} style={{ width: "100%" }} size="large" />
                 </Form.Item>
@@ -976,44 +1014,44 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
               <Col xs={12} sm={8} md={6} lg={6} xl={6}>
                 <Form.Item
                   name="difficulty"
-                  label="Difficulty"
+                  label={t('module_manage.difficulty')}
                   rules={[
-                    { required: true, message: "Please select difficulty" },
+                    { required: true, message: t('forms.please_select', { field: t('module_manage.difficulty').toLowerCase() }) },
                   ]}
                 >
-                  <Select size="large" placeholder="Select difficulty">
-                    <Select.Option value="beginner">Beginner</Select.Option>
+                  <Select size="large" placeholder={t('module_manage.select_difficulty')}>
+                    <Select.Option value="beginner">{t('module_manage.beginner')}</Select.Option>
                     <Select.Option value="intermediate">
-                      Intermediate
+                      {t('module_manage.intermediate')}
                     </Select.Option>
-                    <Select.Option value="advanced">Advanced</Select.Option>
+                    <Select.Option value="advanced">{t('module_manage.advanced')}</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
               <Col xs={12} sm={12} md={6} lg={4} xl={4}>
                 <Form.Item
                   name="lessonType"
-                  label="Lesson Type"
+                  label={t('module_manage.lesson_type')}
                   rules={[
-                    { required: true, message: "Please select lesson type" },
+                    { required: true, message: t('forms.please_select', { field: t('module_manage.lesson_type').toLowerCase() }) },
                   ]}
                 >
-                  <Select size="large" placeholder="Select type">
-                    <Select.Option value="video">Video</Select.Option>
-                    <Select.Option value="text">Text</Select.Option>
-                    <Select.Option value="audio">Audio</Select.Option>
-                    <Select.Option value="practical">Practical</Select.Option>
-                    <Select.Option value="discussion">Discussion</Select.Option>
-                    <Select.Option value="assignment">Assignment</Select.Option>
+                  <Select size="large" placeholder={t('module_manage.select_type')}>
+                    <Select.Option value="video">{t('module_manage.video')}</Select.Option>
+                    <Select.Option value="text">{t('module_manage.text')}</Select.Option>
+                    <Select.Option value="audio">{t('module_manage.audio')}</Select.Option>
+                    <Select.Option value="practical">{t('module_manage.practical')}</Select.Option>
+                    <Select.Option value="discussion">{t('module_manage.discussion')}</Select.Option>
+                    <Select.Option value="assignment">{t('module_manage.assignment')}</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
               <Col xs={12} sm={12} md={6} lg={4} xl={4}>
                 <Form.Item
                   name="lessonOrder"
-                  label="Order"
+                  label={t('module_manage.order')}
                   rules={[
-                    { required: true, message: "Please enter lesson order" },
+                    { required: true, message: t('forms.please_enter', { field: t('module_manage.order').toLowerCase() }) },
                   ]}
                 >
                   <InputNumber min={1} style={{ width: "100%" }} size="large" />
@@ -1234,15 +1272,13 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
 
             {/* Form Actions */}
             <Form.Item style={{ marginTop: 24 }}>
-              <Space>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  size="large"
-                  loading={createLoading || updateLoading}
-                >
-                  {editingLesson ? "Update Lesson" : "Create Lesson"}
-                </Button>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end', 
+                gap: '12px',
+                paddingTop: '24px',
+                borderTop: '1px solid #e5e7eb'
+              }}>
                 <Button
                   onClick={() => {
                     setLessonModalVisible(false);
@@ -1251,10 +1287,36 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                     setLessonImageFileList([]);
                   }}
                   size="large"
+                  style={{
+                    borderRadius: "8px",
+                    border: "2px solid #e5e7eb",
+                    color: "#6b7280",
+                    fontWeight: "500",
+                    padding: "8px 24px",
+                    height: "auto"
+                  }}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
-              </Space>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  loading={createLoading || updateLoading}
+                  style={{
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    border: "none",
+                    color: "white",
+                    fontWeight: "500",
+                    padding: "8px 24px",
+                    height: "auto",
+                    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
+                  }}
+                >
+                  {createLoading || updateLoading ? t('forms.saving') : (editingLesson ? t('module_manage.update_lesson') : t('module_manage.create_lesson'))}
+                </Button>
+              </div>
             </Form.Item>
           </Form>
         </Card>

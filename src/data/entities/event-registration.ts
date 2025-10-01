@@ -40,16 +40,6 @@ const EventRegistration = (sequelize: Sequelize, DataTypes: any) => {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      dietaryRequirements: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'dietary_requirements',
-      },
-      additionalNotes: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'additional_notes',
-      },
       registrationDate: {
         type: DataTypes.DATE,
         allowNull: false,

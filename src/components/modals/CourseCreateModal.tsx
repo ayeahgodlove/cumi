@@ -11,6 +11,7 @@ import { ITag } from "@domain/models/tag";
 import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
 import RichTextEditor from "@components/shared/rich-text-editor";
 import PhoneNumberInput from "@components/shared/phone-number-input.component";
+import { useTranslation } from "@contexts/translation.context";
 
 interface CourseCreateModalProps {
   visible: boolean;
@@ -22,6 +23,7 @@ interface CourseCreateModalProps {
 export default function CourseCreateModal({ visible, onCancel, onSuccess, editingCourse }: CourseCreateModalProps) {
   const [form] = Form.useForm();
   const { open } = useNotification();
+  const { t } = useTranslation();
   const { formProps, saveButtonProps } = useForm({
     resource: "courses",
     action: editingCourse ? "edit" : "create",
@@ -46,8 +48,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
       // Show success notification
       open?.({
         type: "success",
-        message: "Success",
-        description: editingCourse ? "Course updated successfully!" : "Course created successfully!",
+        message: t('common.success'),
+        description: editingCourse ? t('creator.course_updated_success') : t('creator.course_created_success'),
       });
       
       // Reset form and close modal
@@ -59,8 +61,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
       // Show error notification
       open?.({
         type: "error",
-        message: "Error",
-        description: "Failed to create course: " + error.message,
+        message: t('common.error'),
+        description: t('forms.course_create_failed', { message: error.message }),
       });
       
       // Don't close modal on error - let user fix the issues
@@ -153,7 +155,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           textAlign: "center",
           padding: "16px 0"
         }}>
-          {editingCourse ? `Edit Course: ${editingCourse.title}` : "Create New Course"}
+          {editingCourse ? `${t('forms.edit_course')}: ${editingCourse.title}` : t('forms.create_new_course')}
         </div>
       }
       open={visible}
@@ -187,8 +189,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={12}>
             <Form.Item
               name="title"
-              label="Course Title"
-              rules={[{ required: true, message: "Please enter course title" }]}
+              label={t('forms.course_title')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.course_title').toLowerCase() }) }]}
             >
               <Input size="large" />
             </Form.Item>
@@ -196,10 +198,10 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={12}>
             <Form.Item
               name="authorName"
-              label="Author Name"
-              rules={[{ required: true, message: "Please enter author name" }]}
+              label={t('forms.author_name')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.author_name').toLowerCase() }) }]}
             >
-              <Input size="large" placeholder="Course author" />
+              <Input size="large" placeholder={t('forms.course_author')} />
             </Form.Item>
           </Col>
         </Row>
@@ -208,11 +210,11 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={12}>
             <Form.Item
               name="categoryId"
-              label="Category"
-              rules={[{ required: true, message: "Please select a category" }]}
+              label={t('common.category')}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('common.category').toLowerCase() }) }]}
             >
               <Select
-                placeholder="Select category"
+                placeholder={t('forms.select_category')}
                 size="large"
               >
                 {categories && Array.isArray(categories) && categories.map((category: any) => (
@@ -226,13 +228,13 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={12}>
             <Form.Item
               name="status"
-              label="Status"
+              label={t('common.status')}
               initialValue="draft"
             >
               <Select size="large">
-                <Select.Option value="draft">Draft</Select.Option>
-                <Select.Option value="published">Published</Select.Option>
-                <Select.Option value="archived">Archived</Select.Option>
+                <Select.Option value="draft">{t('common.draft')}</Select.Option>
+                <Select.Option value="published">{t('common.published')}</Select.Option>
+                <Select.Option value="archived">{t('common.archived')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -240,8 +242,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
 
         <Form.Item
           name="description"
-          label="Description"
-          rules={[{ required: true, message: "Please enter course description" }]}
+          label={t('common.description')}
+          rules={[{ required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) }]}
         >
           <Input.TextArea rows={4} />
         </Form.Item>
@@ -250,8 +252,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={8}>
             <Form.Item
               name="price"
-              label="Price"
-              rules={[{ required: true, message: "Please enter price" }]}
+              label={t('common.price')}
+              rules={[{ required: true, message: t('forms.please_enter', { field: t('common.price').toLowerCase() }) }]}
             >
               <InputNumber
                 min={0}
@@ -264,7 +266,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={8}>
             <Form.Item
               name="currency"
-              label="Currency"
+              label={t('forms.currency')}
               initialValue="XAF"
             >
               <Select size="large">
@@ -277,7 +279,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={8}>
             <Form.Item
               name="isFree"
-              label="Free Course"
+              label={t('forms.free_course')}
               valuePropName="checked"
             >
               <Switch />
@@ -289,28 +291,28 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Col xs={24} md={12}>
             <Form.Item
               name="level"
-              label="Difficulty Level"
-              rules={[{ required: true, message: "Please select difficulty level" }]}
+              label={t('forms.difficulty_level')}
+              rules={[{ required: true, message: t('forms.please_select', { field: t('forms.difficulty_level').toLowerCase() }) }]}
             >
-              <Select size="large" placeholder="Select level">
-                <Select.Option value="beginner">Beginner</Select.Option>
-                <Select.Option value="intermediate">Intermediate</Select.Option>
-                <Select.Option value="advanced">Advanced</Select.Option>
+              <Select size="large" placeholder={t('forms.select_level')}>
+                <Select.Option value="beginner">{t('forms.beginner')}</Select.Option>
+                <Select.Option value="intermediate">{t('forms.intermediate')}</Select.Option>
+                <Select.Option value="advanced">{t('forms.advanced')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
               name="language"
-              label="Language"
+              label={t('common.language')}
               initialValue="both"
             >
               <Select size="large">
-                <Select.Option value="french">French</Select.Option>
-                <Select.Option value="english">English</Select.Option>
-                <Select.Option value="both">Both</Select.Option>
-                <Select.Option value="fulfulde">Fulfulde</Select.Option>
-                <Select.Option value="ewondo">Ewondo</Select.Option>
+                <Select.Option value="french">{t('forms.french')}</Select.Option>
+                <Select.Option value="english">{t('forms.english')}</Select.Option>
+                <Select.Option value="both">{t('forms.both')}</Select.Option>
+                <Select.Option value="fulfulde">{t('forms.fulfulde')}</Select.Option>
+                <Select.Option value="ewondo">{t('forms.ewondo')}</Select.Option>
               </Select>
             </Form.Item>
           </Col>
@@ -318,16 +320,16 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
 
         <Form.Item
           name="imageUrl"
-          label="Course Image"
+          label={t('forms.course_image')}
           rules={[
-            { required: true, message: "Please upload a course image" },
+            { required: true, message: t('forms.please_upload', { field: t('forms.course_image').toLowerCase() }) },
             {
               validator: (_, value) => {
                 // Check if we have a valid URL string
                 if (typeof value === 'string' && value.trim() !== '') {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Please upload an image'));
+                return Promise.reject(new Error(t('forms.please_upload', { field: 'image' })));
               }
             }
           ]}
@@ -343,9 +345,9 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
             beforeUpload={beforeUpload}
             onRemove={handleRemove}
           >
-            <p className="ant-upload-text">Drag & drop a course image here</p>
+            <p className="ant-upload-text">{t('forms.drag_drop_course_image')}</p>
             <p className="ant-upload-hint">
-              Support for single upload. Maximum file size: 1MB
+              {t('forms.upload_hint')}
             </p>
           </Upload.Dragger>
         </Form.Item>
@@ -371,7 +373,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
                 height: "auto"
               }}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="primary"
@@ -390,7 +392,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
                 boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)"
               }}
             >
-              {saveButtonProps?.loading ? 'Creating...' : 'Create Course'}
+              {saveButtonProps?.loading ? t('forms.creating') : t('forms.create_course')}
             </Button>
           </div>
         </Form.Item>
