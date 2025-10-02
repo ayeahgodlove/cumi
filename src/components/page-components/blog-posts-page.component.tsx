@@ -89,16 +89,7 @@ export default function BlogPostsPageComponent() {
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  if (
-    isLoadingCategory ||
-    isFetchCategory ||
-    isLoadingTag ||
-    isFetchTag ||
-    isLoadingUser ||
-    isFetchUser
-  ) {
-    return <LoadingSpinner tip={t("blog.loading_content")} />;
-  }
+  const loading = isLoadingCategory || isFetchCategory || isLoadingTag || isFetchTag || isLoadingUser || isFetchUser;
 
   return (
     <ErrorBoundary>
@@ -111,6 +102,15 @@ export default function BlogPostsPageComponent() {
       <div className="container py-5 mb-5">
         {error && <h1>{t("blog.something_wrong")}</h1>}
 
+        {loading ? (
+          <div style={{ minHeight: "50vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+            <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+              <Spin size="large" />
+              <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("blog.loading_content")}</div>
+            </Card>
+          </div>
+        ) : (
+          <>
         {/* Search and Filter Section */}
         <div style={{ 
           marginBottom: '2rem',
@@ -229,6 +229,8 @@ export default function BlogPostsPageComponent() {
             </Col>
           )}
         </div>
+          </>
+        )}
       </div>
       </PageLayout>
     </ErrorBoundary>

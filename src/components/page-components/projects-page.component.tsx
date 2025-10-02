@@ -4,7 +4,6 @@ import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import ProjectCard from "@components/project/ProjectCard";
-import SpinnerList from "@components/shared/spinner-list";
 import { projectAPI } from "@store/api/project_api";
 import {
   Col,
@@ -14,7 +13,6 @@ import {
   Spin,
   Typography,
   Card,
-  Button,
   Space,
   Tag,
   Statistic,
@@ -26,9 +24,6 @@ import {
   CodeOutlined,
   GlobalOutlined,
   TrophyOutlined,
-  ArrowRightOutlined,
-  FilterOutlined,
-  MailOutlined,
 } from "@ant-design/icons";
 import { useTranslation } from "@contexts/translation.context";
 import { AppCTA } from "@components/CTA.component";
@@ -45,20 +40,7 @@ export default function ProjectsPageComponent() {
     isFetching: isFetchEvent,
   } = projectAPI.useFetchAllProjectsQuery(1);
 
-  if (isLoadingEvent || isFetchEvent) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoadingEvent || isFetchEvent;
 
   const stats = [
     {
@@ -101,68 +83,21 @@ export default function ProjectsPageComponent() {
         <AppNav logoPath="/" />
       </div>
 
-      <BannerComponent
-        breadcrumbs={[{ label: t("nav.projects"), uri: "projects" }]}
-        pageTitle={t("nav.projects")}
-      />
-
-      {/* Hero Section */}
-      <section
-        className="py-5"
-        style={{
-          background: "linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%)",
-        }}
-      >
-        <div className="container bg-light">
-          <Row justify="center" align="middle">
-            <Col xs={24} lg={12}>
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <Title level={1} className="mb-4">
-                  {t("projects.innovative_projects")}
-                </Title>
-                <Paragraph className="fs-5 text-muted mb-4">
-                  {t("projects.innovative_description")}
-                </Paragraph>
-                <Space size="large">
-                  <Button
-                    type="primary"
-                    size="large"
-                    icon={<ArrowRightOutlined />}
-                    href="/contact_us"
-                  >
-                    {t("projects.start_project")}
-                  </Button>
-                  <Button size="large" href="/our_services">
-                    {t("projects.view_services")}
-                  </Button>
-                </Space>
-              </motion.div>
-            </Col>
-            <Col xs={24} lg={12}>
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-center"
-              >
-                <img
-                  className="w-100 img-fluid rounded-3 shadow-lg"
-                  style={{ maxHeight: 400 }}
-                  src="/img/emmanuel-ikwuegbu-MSX3O-Sqa8U-unsplash.jpg"
-                  alt="Project Portfolio"
-                />
-              </motion.div>
-            </Col>
-          </Row>
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading projects...</div>
+          </Card>
         </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-5 my-5">
+      ) : (
+        <>
+          <BannerComponent
+            breadcrumbs={[{ label: t("nav.projects"), uri: "projects" }]}
+            pageTitle={t("nav.projects")}
+          />
+          {/* Stats Section */}
+          <section className="py-5 my-5">
         <div className="container">
           <Row gutter={[24, 24]} justify="center">
             {stats.map((stat, index) => (
@@ -283,9 +218,11 @@ export default function ProjectsPageComponent() {
         )}
       </Content>
 
-      <AppCTA />
-      <AppFooter logoPath="/" />
-      <AppFootnote />
+          <AppCTA />
+          <AppFooter logoPath="/" />
+          <AppFootnote />
+        </>
+      )}
     </>
   );
 }

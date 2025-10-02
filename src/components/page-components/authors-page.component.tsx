@@ -21,20 +21,7 @@ export default function AuthorsPageComponent() {
     isFetching,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  if (isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching;
 
   return (
     <>
@@ -42,6 +29,16 @@ export default function AuthorsPageComponent() {
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
+      
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading authors...</div>
+          </Card>
+        </div>
+      ) : (
+        <>
       {/* banner */}
       <BannerComponent
         breadcrumbs={[
@@ -156,6 +153,8 @@ export default function AuthorsPageComponent() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

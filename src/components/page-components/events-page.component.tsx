@@ -33,7 +33,10 @@ import { IEvent } from "@domain/models/event.model";
 import { useTranslation } from "@contexts/translation.context";
 import { useRouter } from "next/navigation";
 import EventRegistrationModal from "@components/shared/event-registration-modal.component";
-import { RegisterButton, ViewDetailsButton } from "@components/shared/modern-button-styles";
+import {
+  RegisterButton,
+  ViewDetailsButton,
+} from "@components/shared/modern-button-styles";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -74,7 +77,9 @@ export default function EventsPageComponent() {
     events?.filter((event) => {
       const matchesSearch =
         event.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+        event.description
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase());
       // Note: IEvent doesn't have category property, so we'll skip category filtering for now
       return matchesSearch;
     }) || [];
@@ -93,21 +98,7 @@ export default function EventsPageComponent() {
     });
   };
 
-  if (isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "50px",
-          backgroundColor: "white",
-          minHeight: "100vh",
-        }}
-      >
-        <Spin size="large" />
-        <Text>Loading events...</Text>
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching;
 
   return (
     <>
@@ -118,10 +109,19 @@ export default function EventsPageComponent() {
         <AppNav logoPath="/" />
       </div>
 
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading events...</div>
+          </Card>
+        </div>
+      ) : (
+        <>
       {/* Banner */}
       <BannerComponent
-        breadcrumbs={[{ label: t('nav.events'), uri: "events" }]}
-        pageTitle={t('nav.events')}
+        breadcrumbs={[{ label: t("nav.events"), uri: "events" }]}
+        pageTitle={t("nav.events")}
       />
 
       <div
@@ -146,11 +146,9 @@ export default function EventsPageComponent() {
             <Row justify="space-between" align="middle">
               <Col>
                 <Title level={2} style={{ margin: 0 }}>
-                  {t('events.title')}
+                  {t("events.title")}
                 </Title>
-                <Text type="secondary">
-                  {t('events.subtitle')}
-                </Text>
+                <Text type="secondary">{t("events.subtitle")}</Text>
               </Col>
             </Row>
           </Card>
@@ -174,24 +172,38 @@ export default function EventsPageComponent() {
             <Row gutter={[16, 16]} align="middle">
               <Col xs={24} sm={12} md={6}>
                 <Search
-                  placeholder={t('events.search_placeholder')}
+                  placeholder={t("events.search_placeholder")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   prefix={<SearchOutlined />}
+                  styles={{
+                    affixWrapper: {
+                      height: "44px",
+                    },
+                  }}
+                  allowClear
+                  size="large"
                 />
               </Col>
               <Col xs={24} sm={12} md={6}>
                 <Select
-                  placeholder={t('events.category_placeholder')}
+                  placeholder={t("events.category_placeholder")}
                   value={filterCategory}
                   onChange={setFilterCategory}
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", height: "44px" }}
+                  size="large"
                 >
-                  <Option value="all">{t('events.all_categories')}</Option>
-                  <Option value="Web Development">{t('events.web_dev')}</Option>
-                  <Option value="Artificial Intelligence">{t('events.ai_ml')}</Option>
-                  <Option value="Data Science">{t('events.data_science')}</Option>
-                  <Option value="Mobile Development">{t('events.mobile_dev')}</Option>
+                  <Option value="all">{t("events.all_categories")}</Option>
+                  <Option value="Web Development">{t("events.web_dev")}</Option>
+                  <Option value="Artificial Intelligence">
+                    {t("events.ai_ml")}
+                  </Option>
+                  <Option value="Data Science">
+                    {t("events.data_science")}
+                  </Option>
+                  <Option value="Mobile Development">
+                    {t("events.mobile_dev")}
+                  </Option>
                 </Select>
               </Col>
               <Col xs={24} sm={12} md={4}>
@@ -202,7 +214,7 @@ export default function EventsPageComponent() {
                     setFilterCategory("all");
                   }}
                 >
-                  {t('events.clear_filters')}
+                  {t("events.clear_filters")}
                 </Button>
               </Col>
             </Row>
@@ -224,16 +236,16 @@ export default function EventsPageComponent() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     delay: index * 0.1,
-                    ease: "easeOut"
+                    ease: "easeOut",
                   }}
-                  whileHover={{ 
+                  whileHover={{
                     y: -5,
-                    transition: { duration: 0.2 }
+                    transition: { duration: 0.2 },
                   }}
-                  style={{ height: '100%' }}
+                  style={{ height: "100%" }}
                 >
                   <Card
                     hoverable
@@ -290,25 +302,30 @@ export default function EventsPageComponent() {
                         icon={<CalendarOutlined />}
                         onClick={() => handleRegisterEvent(event)}
                         style={{
-                          background: 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)',
-                          border: 'none',
-                          borderRadius: '12px',
+                          background:
+                            "linear-gradient(135deg, #22C55E 0%, #16a34a 100%)",
+                          border: "none",
+                          borderRadius: "12px",
                           fontWeight: 600,
-                          fontSize: '14px',
-                          height: '44px',
-                          padding: '0 24px',
-                          boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          fontSize: "14px",
+                          height: "44px",
+                          padding: "0 24px",
+                          boxShadow: "0 4px 12px rgba(34, 197, 94, 0.3)",
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)';
-                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(34, 197, 94, 0.4)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, #16a34a 0%, #15803d 100%)";
+                          e.currentTarget.style.boxShadow =
+                            "0 6px 20px rgba(34, 197, 94, 0.4)";
+                          e.currentTarget.style.transform = "translateY(-2px)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #22C55E 0%, #16a34a 100%)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(34, 197, 94, 0.3)';
-                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, #22C55E 0%, #16a34a 100%)";
+                          e.currentTarget.style.boxShadow =
+                            "0 4px 12px rgba(34, 197, 94, 0.3)";
+                          e.currentTarget.style.transform = "translateY(0)";
                         }}
                       >
                         Register
@@ -320,30 +337,35 @@ export default function EventsPageComponent() {
                           router.push(`/events/${event.slug}`);
                         }}
                         style={{
-                          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                          border: '2px solid #667eea',
-                          color: '#667eea',
-                          borderRadius: '12px',
+                          background:
+                            "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+                          border: "2px solid #667eea",
+                          color: "#667eea",
+                          borderRadius: "12px",
                           fontWeight: 600,
-                          fontSize: '14px',
-                          height: '44px',
-                          padding: '0 24px',
-                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          fontSize: "14px",
+                          height: "44px",
+                          padding: "0 24px",
+                          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                          e.currentTarget.style.color = '#ffffff';
-                          e.currentTarget.style.borderColor = '#667eea';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                          e.currentTarget.style.color = "#ffffff";
+                          e.currentTarget.style.borderColor = "#667eea";
+                          e.currentTarget.style.boxShadow =
+                            "0 4px 12px rgba(102, 126, 234, 0.3)";
+                          e.currentTarget.style.transform = "translateY(-2px)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)';
-                          e.currentTarget.style.color = '#667eea';
-                          e.currentTarget.style.borderColor = '#667eea';
-                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.background =
+                            "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)";
+                          e.currentTarget.style.color = "#667eea";
+                          e.currentTarget.style.borderColor = "#667eea";
+                          e.currentTarget.style.boxShadow =
+                            "0 2px 8px rgba(0, 0, 0, 0.1)";
+                          e.currentTarget.style.transform = "translateY(0)";
                         }}
                       >
                         View Details
@@ -395,6 +417,8 @@ export default function EventsPageComponent() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

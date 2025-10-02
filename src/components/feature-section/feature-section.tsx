@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import styles from "./feature.module.css";
-import { Button, Spin } from "antd";
+import { Button, Spin, Card } from "antd";
 import Image from "next/image";
 import ServiceList from "@components/service/service-list.component";
 import { serviceAPI } from "@store/api/service_api";
@@ -15,20 +15,19 @@ const FeatureSection = () => {
     isFetching: isFetchService,
   } = serviceAPI.useFetchAllServicesQuery(1);
 
-  if (isLoadingService || isFetchService) {
+  const loading = isLoadingService || isFetchService;
+
+  if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip={t('common.loading')} fullscreen spinning />
-      </div>
+      <section className={`section ${styles.section}`} style={{ minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+        <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+          <Spin size="large" />
+          <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t('common.loading')}</div>
+        </Card>
+      </section>
     );
   }
+  
   return (
     <>
       <section className={`section ${styles.section}`}>

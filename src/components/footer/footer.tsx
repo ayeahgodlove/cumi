@@ -126,6 +126,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath  }) => {
                       htmlType="submit"
                       loading={loading}
                       icon={<ArrowRightOutlined style={{ color: "#81ce89" }} />}
+                      aria-label={t('footer.subscribe_button')}
                     />
                   }
                   value={email}

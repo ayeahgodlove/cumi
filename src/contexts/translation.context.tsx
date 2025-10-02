@@ -20,7 +20,7 @@ const translations = {
     'nav.services': 'Services',
     'nav.projects': 'Projects',
     'nav.blog_posts': 'Blog',
-    'nav.opportunities': 'Jobs',
+    'nav.opportunities': 'Opportunities',
     'nav.events': 'Events',
     'nav.courses': 'Courses',
     'nav.about_us': 'About',
@@ -101,6 +101,7 @@ const translations = {
     'footer.join_mailing': 'Join Our Mailing List',
     'footer.mailing_description': 'Get notified and updated with our marketing emails.',
     'footer.email_placeholder': 'Your Email',
+    'footer.subscribe_button': 'Subscribe to newsletter',
     
     // Dashboard
     'dashboard.welcome': 'Welcome back',
@@ -797,6 +798,12 @@ const translations = {
     'project_detail.about_project': 'About This Project',
     'project_detail.share_project': 'Share this project',
     
+    // Share
+    'share.title': 'Share this',
+    'share.copy_link': 'Copy link',
+    'share.link_copied': 'Link copied to clipboard!',
+    'share.copy_failed': 'Failed to copy link',
+    
     // Tag Detail Page
     'tag_detail.loading': 'Loading posts...',
     'tag_detail.tags': 'Tags',
@@ -1016,7 +1023,7 @@ const translations = {
     'nav.services': 'Services',
     'nav.projects': 'Projets',
     'nav.blog_posts': 'Blog',
-    'nav.opportunities': 'Emplois',
+    'nav.opportunities': 'Opportunités',
     'nav.events': 'Événements',
     'nav.courses': 'Cours',
     'nav.about_us': 'À propos',
@@ -1097,6 +1104,7 @@ const translations = {
     'footer.join_mailing': 'Rejoignez notre liste de diffusion',
     'footer.mailing_description': 'Soyez notifié et mis à jour avec nos emails marketing.',
     'footer.email_placeholder': 'Votre Email',
+    'footer.subscribe_button': 'S\'abonner à la newsletter',
     
     // Dashboard
     'dashboard.welcome': 'Bon retour',
@@ -1792,6 +1800,12 @@ const translations = {
     'project_detail.created': 'Créé',
     'project_detail.about_project': 'À propos de ce projet',
     'project_detail.share_project': 'Partager ce projet',
+    
+    // Share
+    'share.title': 'Partager',
+    'share.copy_link': 'Copier le lien',
+    'share.link_copied': 'Lien copié!',
+    'share.copy_failed': 'Échec de la copie',
     
     // Tag Detail Page
     'tag_detail.loading': 'Chargement des articles...',

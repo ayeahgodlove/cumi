@@ -14,19 +14,7 @@ const partnerMapper = new PartnerMapper();
 
 export async function GET(request: any) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        {
-          data: [],
-          message: "Unauthorized",
-          validationErrors: [],
-          success: false,
-        },
-        { status: 401 }
-      );
-    }
-
+    // Make this endpoint public - partners should be viewable by anyone
     const partners = await partnerUseCase.getAll();
     
     return NextResponse.json(partners);

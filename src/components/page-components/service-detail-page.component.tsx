@@ -83,25 +83,20 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
     fetchData();
   }, [slug]);
 
-  if (loading) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" style={{ height: "65vh", width: "100%" }} />
-      </div>
-    );
-  }
-
-  if (error || !service) {
-    return (
+  return (
+    <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
+      </div>
+
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading service...</div>
+          </Card>
+        </div>
+      ) : error || !service ? (
         <div className="container py-5">
           <Alert
             message="Service Not Found"
@@ -115,16 +110,8 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
             }
           />
         </div>
-        <AppFooter logoPath="/" />
-        <AppFootnote />
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <div className="container-fluid" style={{ width: "100%" }}>
-        <AppNav logoPath="/" />
+      ) : (
+        <>
         <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -365,9 +352,11 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
             </motion.div>
           </div>
         </Content>
-      </div>
+        
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

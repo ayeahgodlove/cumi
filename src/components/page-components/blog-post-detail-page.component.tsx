@@ -132,39 +132,27 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     }
   };
 
-  if (
-    isLoadingCategory ||
-    isFetchCategory ||
-    isLoading ||
-    isFetching ||
-    isLoadingUser ||
-    isFetchUser ||
-    isFetchBaner ||
-    isLoadingBaner ||
-    isLoadingPosts ||
-    isFetchingPosts ||
-    isLoadingTag ||
-    isFetchingTag
-  ) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip={t("blog_detail.loading")} fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching || 
+    isLoadingUser || isFetchUser || isFetchBaner || isLoadingBaner ||
+    isLoadingPosts || isFetchingPosts || isLoadingTag || isFetchingTag;
+
   return (
     <>
       {contextHolder}
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
+      </div>
+      
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("blog_detail.loading")}</div>
+          </Card>
+        </div>
+      ) : (
+        <>
         <PageContent
           title={post?.title}
           banner={banners ? (banners.length > 0 ? banners[0].image : "") : ""}
@@ -456,9 +444,11 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
             </div>
           </section>
         </Content>
-      </div>
-      <AppFooter logoPath="/" />
-      <AppFootnote />
+        
+        <AppFooter logoPath="/" />
+        <AppFootnote />
+        </>
+      )}
     </>
   );
 }

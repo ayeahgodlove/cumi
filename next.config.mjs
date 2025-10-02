@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = withNextIntl({
   trailingSlash: false,
   transpilePackages: ["@refinedev/antd"],
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: true, // Enable for better debugging
   
   // Headers for PWA/Service Worker support
   async headers() {
@@ -57,8 +57,11 @@ const nextConfig = withNextIntl({
     ],
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 60,
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: false, // Enable optimization
   },
   
   // Performance optimizations
@@ -68,15 +71,7 @@ const nextConfig = withNextIntl({
   // Experimental features for performance
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['@ant-design/icons', 'antd'],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
+    optimizePackageImports: ['@ant-design/icons', 'antd', 'framer-motion'],
   },
   
   // Build optimizations

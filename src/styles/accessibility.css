@@ -1,0 +1,189 @@
+/* Accessibility Improvements */
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to main content link */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #22C55E;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  z-index: 100;
+  font-weight: 600;
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* Ensure minimum touch target size (48x48px) */
+a, button, .ant-btn, .clickable {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Small buttons/links get proper padding */
+.ant-btn-sm {
+  min-height: 32px;
+  min-width: auto;
+  padding: 6px 12px;
+}
+
+/* Icon-only buttons need proper touch targets */
+.ant-btn-icon-only {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Fix contrast for light text on light backgrounds */
+.low-contrast-fix {
+  color: #1F2937 !important;
+}
+
+/* Ensure links are distinguishable */
+a:not(.ant-btn) {
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:not(.ant-btn):hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Remove underline from button-like links */
+.ant-btn, .btn, [role="button"] {
+  text-decoration: none !important;
+}
+
+/* Focus visible styles */
+*:focus-visible {
+  outline: 2px solid #22C55E;
+  outline-offset: 2px;
+}
+
+/* Hide aria-hidden elements from focus */
+[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+[aria-hidden="true"] * {
+  pointer-events: none;
+}
+
+/* Mobile touch targets */
+@media (max-width: 768px) {
+  a, button, .ant-btn {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px 16px;
+  }
+  
+  .ant-btn-sm {
+    min-height: 40px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+  
+  button, .ant-btn {
+    border: 2px solid currentColor !important;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Image aspect ratio preservation */
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+img[width][height] {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Ensure proper heading hierarchy visibility */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Sufficient spacing between interactive elements */
+.ant-space-item {
+  margin-right: 8px !important;
+}
+
+button + button,
+a + a {
+  margin-left: 8px;
+}
+
+/* Ensure sufficient color contrast */
+.text-muted,
+.ant-typography-secondary {
+  color: #6B7280 !important; /* WCAG AA compliant */
+}
+
+.text-light {
+  color: #374151 !important; /* Better contrast */
+}
+

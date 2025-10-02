@@ -33,7 +33,10 @@ import {
 import Link from "next/link";
 import { opportunityAPI } from "@store/api/opportunity_api";
 import { useTranslation } from "@contexts/translation.context";
-import { ApplyButton, ViewDetailsButton } from "@components/shared/modern-button-styles";
+import {
+  ApplyButton,
+  ViewDetailsButton,
+} from "@components/shared/modern-button-styles";
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -61,15 +64,18 @@ export default function OpportunitiesPageComponent() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredOpportunities = (opportunities || [])
-    .filter((opp) => {
-      const matchesFilter = filter === "all" || opp.opp_type === filter;
-      const matchesSearch = 
-        opp.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        opp.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        opp.companyOrInstitution.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
+  const filteredOpportunities = (opportunities || []).filter((opp) => {
+    const matchesFilter = filter === "all" || opp.opp_type === filter;
+    const matchesSearch =
+      opp.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+      opp.description
+        .toLowerCase()
+        .includes(debouncedSearchTerm.toLowerCase()) ||
+      opp.companyOrInstitution
+        .toLowerCase()
+        .includes(debouncedSearchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   const getOpportunityTypeColor = (type: string) => {
     switch (type) {
@@ -127,8 +133,10 @@ export default function OpportunitiesPageComponent() {
       <AppNav logoPath="/" />
       <Content style={{ backgroundColor: "white" }}>
         <BannerComponent
-          pageTitle={t('nav.opportunities')}
-          breadcrumbs={[{ label: t('nav.opportunities'), uri: "opportunities" }]}
+          pageTitle={t("nav.opportunities")}
+          breadcrumbs={[
+            { label: t("nav.opportunities"), uri: "opportunities" },
+          ]}
         />
 
         <div className="container py-5" style={{ backgroundColor: "white" }}>
@@ -151,57 +159,67 @@ export default function OpportunitiesPageComponent() {
                 >
                   <div className="text-center">
                     <Title level={4} className="mb-3">
-                      {t('opportunities.filter_title')}
+                      {t("opportunities.filter_title")}
                     </Title>
-                    
+
                     {/* Search Input */}
-                    <div className="mb-4">
-                      <Search
-                        placeholder="Search opportunities..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        prefix={<SearchOutlined />}
-                        style={{ maxWidth: "400px" }}
-                        allowClear
-                      />
-                    </div>
-                    
+                    <Search
+                      placeholder="Search opportunities..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      prefix={<SearchOutlined />}
+                      style={{ maxWidth: "400px", marginBottom: 30 }}
+                      styles={{
+                        affixWrapper: {
+                          height: "44px",
+                        },
+                      }}
+                      allowClear
+                      size="large"
+                    />
+
                     <Space wrap>
                       <Button
                         type={filter === "all" ? "primary" : "default"}
                         onClick={() => setFilter("all")}
+                        size="large"
                       >
-                        {t('opportunities.all_opportunities')}
+                        {t("opportunities.all_opportunities")}
                       </Button>
                       <Button
                         type={filter === "job" ? "primary" : "default"}
                         onClick={() => setFilter("job")}
+                        size="large"
                       >
-                        {t('opportunities.jobs')}
+                        {t("opportunities.jobs")}
                       </Button>
                       <Button
                         type={filter === "scholarship" ? "primary" : "default"}
                         onClick={() => setFilter("scholarship")}
+                        size="large"
                       >
-                        {t('opportunities.scholarships')}
+                        {t("opportunities.scholarships")}
                       </Button>
                       <Button
                         type={filter === "internship" ? "primary" : "default"}
                         onClick={() => setFilter("internship")}
+                        size="large"
                       >
-                        {t('opportunities.internships')}
+                        {t("opportunities.internships")}
                       </Button>
                       <Button
                         type={filter === "fellowship" ? "primary" : "default"}
                         onClick={() => setFilter("fellowship")}
+                        size="large"
                       >
-                        {t('opportunities.fellowships')}
+                        {t("opportunities.fellowships")}
                       </Button>
                       <Button
                         type={filter === "grant" ? "primary" : "default"}
                         onClick={() => setFilter("grant")}
+                        size="large"
                       >
-                        {t('opportunities.grants')}
+                        {t("opportunities.grants")}
                       </Button>
                     </Space>
                   </div>
@@ -269,59 +287,77 @@ export default function OpportunitiesPageComponent() {
                         actions={[
                           <ViewDetailsButton
                             key="view"
-                            onClick={() => window.location.href = `/opportunities/${opportunity.slug}`}
+                            onClick={() =>
+                              (window.location.href = `/opportunities/${opportunity.slug}`)
+                            }
                             style={{
-                              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                              border: '2px solid #667eea',
-                              color: '#667eea',
-                              borderRadius: '12px',
+                              background:
+                                "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
+                              border: "2px solid #667eea",
+                              color: "#667eea",
+                              borderRadius: "12px",
                               fontWeight: 600,
-                              fontSize: '14px',
-                              height: '44px',
-                              padding: '0 24px',
-                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                              fontSize: "14px",
+                              height: "44px",
+                              padding: "0 24px",
+                              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                              transition:
+                                "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                              e.currentTarget.style.color = '#ffffff';
-                              e.currentTarget.style.borderColor = '#667eea';
-                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
-                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.background =
+                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+                              e.currentTarget.style.color = "#ffffff";
+                              e.currentTarget.style.borderColor = "#667eea";
+                              e.currentTarget.style.boxShadow =
+                                "0 4px 12px rgba(102, 126, 234, 0.3)";
+                              e.currentTarget.style.transform =
+                                "translateY(-2px)";
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)';
-                              e.currentTarget.style.color = '#667eea';
-                              e.currentTarget.style.borderColor = '#667eea';
-                              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
-                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.background =
+                                "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)";
+                              e.currentTarget.style.color = "#667eea";
+                              e.currentTarget.style.borderColor = "#667eea";
+                              e.currentTarget.style.boxShadow =
+                                "0 2px 8px rgba(0, 0, 0, 0.1)";
+                              e.currentTarget.style.transform = "translateY(0)";
                             }}
                           >
                             View Details
                           </ViewDetailsButton>,
                           <ApplyButton
                             key="apply"
-                            onClick={() => window.open(opportunity.applicationLink, '_blank')}
+                            onClick={() =>
+                              window.open(opportunity.applicationLink, "_blank")
+                            }
                             style={{
-                              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                              border: 'none',
-                              borderRadius: '12px',
+                              background:
+                                "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                              border: "none",
+                              borderRadius: "12px",
                               fontWeight: 600,
-                              fontSize: '14px',
-                              height: '44px',
-                              padding: '0 24px',
-                              boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-                              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                              fontSize: "14px",
+                              height: "44px",
+                              padding: "0 24px",
+                              boxShadow: "0 4px 12px rgba(245, 158, 11, 0.3)",
+                              transition:
+                                "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #d97706 0%, #b45309 100%)';
-                              e.currentTarget.style.boxShadow = '0 6px 20px rgba(245, 158, 11, 0.4)';
-                              e.currentTarget.style.transform = 'translateY(-2px)';
+                              e.currentTarget.style.background =
+                                "linear-gradient(135deg, #d97706 0%, #b45309 100%)";
+                              e.currentTarget.style.boxShadow =
+                                "0 6px 20px rgba(245, 158, 11, 0.4)";
+                              e.currentTarget.style.transform =
+                                "translateY(-2px)";
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
-                              e.currentTarget.style.transform = 'translateY(0)';
+                              e.currentTarget.style.background =
+                                "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)";
+                              e.currentTarget.style.boxShadow =
+                                "0 4px 12px rgba(245, 158, 11, 0.3)";
+                              e.currentTarget.style.transform = "translateY(0)";
                             }}
                           >
                             Apply Now

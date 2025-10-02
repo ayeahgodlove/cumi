@@ -12,7 +12,7 @@ import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
 import { userAPI } from "@store/api/user_api";
 import { useTranslation } from "@contexts/translation.context";
-import { Row, Col, Layout, Empty, Spin, Typography } from "antd";
+import { Row, Col, Layout, Empty, Spin, Typography, Card } from "antd";
 import { motion } from "framer-motion";
 
 const { Content } = Layout;
@@ -51,35 +51,25 @@ export default function CategoryDetailPageComponent({
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  if (
-    isLoadingCategory ||
-    isFetchCategory ||
-    isLoading ||
-    isFetching ||
-    isLoadingUser ||
-    isFetchUser ||
-    isLoadingTag ||
-    isFetchTag
-  ) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip={t('category_detail.loading')} fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching ||
+    isLoadingUser || isFetchUser || isLoadingTag || isFetchTag;
 
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
+      </div>
+      
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t('category_detail.loading')}</div>
+          </Card>
+        </div>
+      ) : (
+        <>
       </div>
       {/* banner */}
       <BannerComponent
@@ -171,6 +161,8 @@ export default function CategoryDetailPageComponent({
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

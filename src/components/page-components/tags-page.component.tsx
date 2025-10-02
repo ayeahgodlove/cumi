@@ -6,7 +6,7 @@ import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import { postAPI } from "@store/api/post_api";
 import { tagAPI } from "@store/api/tag_api";
-import { Spin } from "antd";
+import { Spin, Card } from "antd";
 
 export default function TagsPageComponent() {
   const {
@@ -24,26 +24,24 @@ export default function TagsPageComponent() {
     isFetching: isFetchTag,
   } = tagAPI.useFetchAllTagsQuery(1);
 
-  if (isLoading || isFetching || isLoadingTag || isFetchTag) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching || isLoadingTag || isFetchTag;
+
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
+      
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading tags...</div>
+          </Card>
+        </div>
+      ) : (
+        <>
       {/* banner */}
       <BannerComponent
         breadcrumbs={[{ label: "Tags", uri: "tags" }]}
@@ -57,6 +55,8 @@ export default function TagsPageComponent() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

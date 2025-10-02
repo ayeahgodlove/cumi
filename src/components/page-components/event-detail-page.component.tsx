@@ -5,6 +5,7 @@ import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import SpinnerList from "@components/shared/spinner-list";
+import Share from "@components/shared/share";
 import { eventAPI } from "@store/api/event_api";
 import { Row, Col, Layout, Empty, Spin, Card, Typography, Button, Tag, Space, Divider, App } from "antd";
 import { motion } from "framer-motion";
@@ -61,35 +62,7 @@ export default function EventDetailPageComponent({ eventSlug }: EventDetailPageC
     setRegistrationModalVisible(true);
   };
 
-  if (isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
-
-  if (error || !event) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Empty description="Event not found" />
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching;
 
   return (
     <>
@@ -97,6 +70,19 @@ export default function EventDetailPageComponent({ eventSlug }: EventDetailPageC
         <AppNav logoPath="/" />
       </div>
 
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading event...</div>
+          </Card>
+        </div>
+      ) : error || !event ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Empty description="Event not found" />
+        </div>
+      ) : (
+        <>
       <BannerComponent
         breadcrumbs={[
           { label: "Events", uri: "events" },
@@ -460,6 +446,17 @@ export default function EventDetailPageComponent({ eventSlug }: EventDetailPageC
         </Content>
       </div>
 
+      {/* Share Section - Modern Design */}
+      <div className="container mb-4">
+        <Share
+          title={event.title}
+          description={event.description}
+          slug={event.slug}
+          type="events"
+          showModern={true}
+        />
+      </div>
+
       {/* Registration Modal */}
       <EventRegistrationModal
         visible={registrationModalVisible}
@@ -472,6 +469,8 @@ export default function EventDetailPageComponent({ eventSlug }: EventDetailPageC
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

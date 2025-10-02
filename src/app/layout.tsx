@@ -82,11 +82,11 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        {/* Preload critical resources */}
+        {/* Preconnect to external domains */}
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"
@@ -97,32 +97,47 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          rel="preload"
+          rel="dns-prefetch"
+          href="https://www.googletagmanager.com"
+        />
+        
+        {/* Load fonts asynchronously - prevents render blocking */}
+        <link
+          rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          as="style"
         />
         <link
-          rel="preload"
+          rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
-          as="style"
         />
+        
+        {/* Preload critical images */}
         <link
           rel="preload"
           href="/cumi-green.jpg"
           as="image"
-        />
-        <link
-          rel="dns-prefetch"
-          href="https://www.googletagmanager.com"
+          type="image/jpeg"
         />
 
         {/* SEO metadata */}
         <meta name="robots" content="index, follow" />
         <meta name="theme-color" content="#15b9a1" />
+        <meta name="msapplication-TileColor" content="#15b9a1" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta
           name="google-site-verification"
           content="EwAFsxtAXhVOAGglKgaihgaEa3YiI9yB7cOzQc4qBw4"
         />
+        
+        {/* Image optimization hints */}
+        <meta name="image-rendering" content="auto" />
+        <meta name="color-scheme" content="light dark" />
+        
+        {/* Favicon - Multiple sizes for all devices */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         
         {/* PWA manifest */}
         <link rel="manifest" href="/manifest.json" />
@@ -237,24 +252,118 @@ export default async function RootLayout({
         <ServiceWorkerProvider>
           <Suspense
             fallback={
-              <Spin
-                size="large"
-                indicator={
-                  <LoadingOutlined
-                    style={{
-                      fontSize: 48,
-                    }}
-                    spin
-                  />
-                }
+              <div
                 style={{
-                  minHeight: "65vh",
+                  minHeight: "100vh",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
+                  background: "linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
-                fullscreen
-              />
+              >
+                {/* Animated Background Circles */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "10%",
+                    left: "15%",
+                    width: "200px",
+                    height: "200px",
+                    borderRadius: "50%",
+                    background: "rgba(34, 197, 94, 0.1)",
+                    filter: "blur(60px)",
+                    animation: "pulse 3s ease-in-out infinite",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "20%",
+                    right: "10%",
+                    width: "250px",
+                    height: "250px",
+                    borderRadius: "50%",
+                    background: "rgba(14, 165, 233, 0.1)",
+                    filter: "blur(70px)",
+                    animation: "pulse 3s ease-in-out infinite 1s",
+                  }}
+                />
+                
+                <div
+                  style={{
+                    textAlign: "center",
+                    padding: "40px",
+                    borderRadius: "24px",
+                    background: "rgba(255, 255, 255, 0.8)",
+                    backdropFilter: "blur(20px)",
+                    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.1)",
+                    border: "1px solid rgba(255, 255, 255, 0.5)",
+                    position: "relative",
+                    zIndex: 1,
+                  }}
+                >
+                  {/* Custom CUMI Loader */}
+                  <div
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      margin: "0 auto 24px",
+                      position: "relative",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        border: "6px solid transparent",
+                        borderTopColor: "#22C55E",
+                        borderRightColor: "#14B8A6",
+                        borderBottomColor: "#0EA5E9",
+                        animation: "spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite",
+                      }}
+                    />
+                  </div>
+                  
+                  <h2
+                    style={{
+                      fontSize: "1.5rem",
+                      fontWeight: 700,
+                      background: "linear-gradient(135deg, #22C55E 0%, #14B8A6 50%, #0EA5E9 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      margin: "0 0 12px 0",
+                    }}
+                  >
+                    CUMI
+                  </h2>
+                  
+                  <p
+                    style={{
+                      fontSize: "0.95rem",
+                      color: "#6B7280",
+                      margin: 0,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Loading your experience...
+                  </p>
+                </div>
+                
+                <style jsx>{`
+                  @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                  }
+                  @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 0.5; }
+                    50% { transform: scale(1.1); opacity: 0.8; }
+                  }
+                `}</style>
+              </div>
             }
           >
             <NextIntlClientProvider locale={locale} messages={messages}>

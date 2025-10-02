@@ -5,6 +5,7 @@ import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import SpinnerList from "@components/shared/spinner-list";
+import Share from "@components/shared/share";
 import { courseAPI } from "@store/api/course_api";
 import { useGetCourseModulesQuery } from "@store/api/learning_api";
 import { useGetCourseEnrollmentsByCourseQuery } from "@store/api/course-enrollment_api";
@@ -237,20 +238,7 @@ export default function CourseDetailPageComponent({
     setSelectedLesson(null);
   };
 
-  if (isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip={t("course_detail.loading")} fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching;
 
   if (error || !course) {
     return (
@@ -301,6 +289,52 @@ export default function CourseDetailPageComponent({
         <AppNav logoPath="/" />
       </div>
 
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("course_detail.loading")}</div>
+          </Card>
+        </div>
+      ) : error || !course ? (
+        <>
+        <div className="container-fluid" style={{ width: "100%" }}>
+          <AppNav logoPath="/" />
+        </div>
+        <div
+          style={{
+            minHeight: "65vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            padding: "2rem",
+          }}
+        >
+          <Empty
+            description={
+              <div style={{ textAlign: "center" }}>
+                <Title level={3}>Course Not Found</Title>
+                <Paragraph>
+                  The course &ldquo;{courseSlug}&rdquo; could not be found.
+                </Paragraph>
+                <Button
+                  type="primary"
+                  onClick={() => window.history.back()}
+                  style={{ marginTop: "1rem" }}
+                >
+                  Go Back
+                </Button>
+              </div>
+            }
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+          />
+        </div>
+        <AppFooter logoPath="/" />
+        <AppFootnote />
+        </>
+      ) : (
+        <>
       <BannerComponent
         breadcrumbs={[
           { label: "Courses", uri: "courses" },
@@ -659,6 +693,22 @@ export default function CourseDetailPageComponent({
                   )}
                 </Card>
 
+                {/* Share Section - Modern Design */}
+                <motion.div
+                  className="box mt-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  <Share
+                    title={course.title}
+                    description={course.description}
+                    slug={course.slug}
+                    type="courses"
+                    showModern={true}
+                  />
+                </motion.div>
+
                 {/* Course Modules and Lessons */}
                 <motion.div
                   className="box mt-4"
@@ -740,6 +790,7 @@ export default function CourseDetailPageComponent({
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "12px",
+                                    flexWrap: "wrap",
                                   }}
                                 >
                                   <Text type="secondary">
@@ -869,6 +920,7 @@ export default function CourseDetailPageComponent({
                                                 alignItems: "center",
                                                 gap: "16px",
                                                 marginTop: "8px",
+                                                flexWrap: "wrap",
                                               }}
                                             >
                                               <div
@@ -1541,6 +1593,8 @@ export default function CourseDetailPageComponent({
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

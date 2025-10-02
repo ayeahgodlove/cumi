@@ -15,19 +15,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        {
-          data: null,
-          message: "Unauthorized",
-          validationErrors: [],
-          success: false,
-        },
-        { status: 401 }
-      );
-    }
-
+    // Make this endpoint public - professional profiles should be viewable by anyone
     const { id } = params;
     const professional = await professionalUseCase.getById(id);
 

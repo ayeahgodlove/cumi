@@ -1,0 +1,242 @@
+/* Responsive Tables for Mobile Devices */
+
+/* Make Ant Design tables horizontally scrollable on mobile */
+.ant-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (max-width: 768px) {
+  /* Table Container */
+  .ant-table-wrapper {
+    margin: 0 -16px;
+    border-radius: 0;
+  }
+
+  .ant-table {
+    font-size: 13px;
+  }
+
+  /* Table Header */
+  .ant-table-thead > tr > th {
+    padding: 12px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  /* Table Body */
+  .ant-table-tbody > tr > td {
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+  }
+
+  /* Actions column */
+  .ant-table-tbody > tr > td .ant-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+    height: auto;
+  }
+
+  /* Tags */
+  .ant-table .ant-tag {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  /* Pagination */
+  .ant-pagination {
+    margin: 16px 0 !important;
+  }
+
+  .ant-pagination-item,
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    min-width: 28px !important;
+    height: 28px !important;
+    line-height: 26px !important;
+    font-size: 12px !important;
+  }
+
+  /* Table scroll hint */
+  .ant-table-wrapper::after {
+    content: "← Scroll to see more →";
+    display: block;
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: #999;
+    background: #f5f5f5;
+    border-top: 1px solid #e8e8e8;
+  }
+
+  /* Hide scroll hint when not needed */
+  .ant-table-wrapper.scroll-hidden::after {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  /* Extra small devices */
+  .ant-table {
+    font-size: 12px;
+  }
+
+  .ant-table-thead > tr > th {
+    padding: 10px 6px !important;
+    font-size: 11px !important;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+  }
+
+  /* Hide less important columns on very small screens */
+  .ant-table-cell.hide-on-mobile {
+    display: none !important;
+  }
+
+  /* Stack action buttons vertically */
+  .ant-table-tbody > tr > td .ant-space {
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .ant-table-tbody > tr > td .ant-btn {
+    width: 100%;
+  }
+}
+
+/* Responsive List for Mobile (alternative to tables) */
+@media screen and (max-width: 768px) {
+  .mobile-list-view {
+    display: block !important;
+  }
+
+  .mobile-list-view .ant-list-item {
+    padding: 16px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .mobile-list-view .ant-list-item-meta-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .mobile-list-view .ant-list-item-meta-description {
+    font-size: 12px;
+    color: #666;
+  }
+}
+
+/* Course Module Accordion Responsiveness */
+@media screen and (max-width: 768px) {
+  .ant-collapse-header {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  .ant-collapse-content-box {
+    padding: 12px !important;
+  }
+
+  .ant-list-item {
+    padding: 10px 12px !important;
+  }
+
+  .ant-list-item-meta-avatar {
+    margin-right: 12px !important;
+  }
+
+  .ant-list-item-meta-avatar > div {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+
+  .ant-list-item-meta-title {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+
+  .ant-list-item-meta-description {
+    font-size: 12px !important;
+  }
+
+  .ant-list-item-meta-description .ant-tag {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+}
+
+/* Responsive Grid Layouts */
+@media screen and (max-width: 768px) {
+  .ant-row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .ant-col {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
+/* Responsive Cards */
+@media screen and (max-width: 768px) {
+  .ant-card {
+    margin-bottom: 16px;
+  }
+
+  .ant-card-head {
+    padding: 12px 16px !important;
+    font-size: 16px !important;
+  }
+
+  .ant-card-body {
+    padding: 16px !important;
+  }
+
+  .ant-card-meta-title {
+    font-size: 14px !important;
+  }
+
+  .ant-card-meta-description {
+    font-size: 12px !important;
+  }
+}
+
+/* Responsive Modals */
+@media screen and (max-width: 768px) {
+  .ant-modal {
+    max-width: calc(100vw - 32px) !important;
+    margin: 16px auto !important;
+  }
+
+  .ant-modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+}
+
+/* Responsive Buttons */
+@media screen and (max-width: 576px) {
+  .ant-btn-group {
+    flex-direction: column !important;
+  }
+
+  .ant-btn-group .ant-btn {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .ant-space-horizontal {
+    flex-wrap: wrap !important;
+  }
+}
+

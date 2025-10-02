@@ -40,26 +40,23 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
     isFetching: isFetchingBanner,
   } = bannerAPI.useFetchAllBannersQuery(1);
 
-  if (isLoading || isFetching || !project || isLoadingBanner || isFetchingBanner) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip={t('project_detail.loading')} fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoading || isFetching || !project || isLoadingBanner || isFetchingBanner;
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
+      </div>
         
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t('project_detail.loading')}</div>
+          </Card>
+        </div>
+      ) : (
+        <>
         {/* Page Banner */}
         <PageContent
           title={project?.title}
@@ -215,7 +212,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                             background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
                             border: "none",
                           }}
-                          bodyStyle={{ padding: "1.5rem" }}
+                          styles={{ body: { padding: "1.5rem" } }}
                         >
                           <Row gutter={[24, 16]}>
                             <Col xs={24} sm={12} md={8}>
@@ -296,34 +293,14 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
 
                         <Divider style={{ margin: "2rem 0" }} />
 
-                        {/* Share Section */}
-                        <Card
-                          style={{
-                            borderRadius: "12px",
-                            background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
-                            border: "none",
-                          }}
-                          bodyStyle={{ padding: "1.5rem" }}
-                        >
-                          <Row align="middle" justify="space-between">
-                            <Col>
-                              <Space>
-                                <LinkOutlined style={{ color: "#1890ff", fontSize: "1.2rem" }} />
-                                <Text strong style={{ fontSize: "1.1rem" }}>
-                                  {t('project_detail.share_project')}
-                                </Text>
-                              </Space>
-                            </Col>
-                            <Col>
-                              <Share
-                                className="nav social-icons"
-                                title={project?.title as any}
-                                description={project?.description}
-                                slug={project?.slug!}
-                              />
-                            </Col>
-                          </Row>
-                        </Card>
+                        {/* Share Section - Modern Design */}
+                        <Share
+                          title={project?.title as any}
+                          description={project?.description}
+                          slug={project?.slug!}
+                          type="projects"
+                          showModern={true}
+                        />
                       </div>
                     </Card>
                   )}
@@ -332,9 +309,11 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
             </div>
           </section>
         </Content>
-      </div>
-      <AppFooter logoPath="/" />
-      <AppFootnote />
+        
+        <AppFooter logoPath="/" />
+        <AppFootnote />
+        </>
+      )}
     </>
   );
 }

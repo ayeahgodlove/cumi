@@ -44,10 +44,12 @@ self.addEventListener('activate', (event) => {
             return caches.delete(cache);
           }
         })
-      );
+      ).then(() => {
+        // Only claim clients after cache cleanup
+        return self.clients.claim();
+      });
     })
   );
-  return self.clients.claim();
 });
 
 // Fetch event - serve from cache or network

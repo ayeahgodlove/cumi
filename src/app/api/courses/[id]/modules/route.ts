@@ -19,38 +19,20 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Make this endpoint public - auth is optional for progress tracking
   let session;
+  let userId = null;
   
   try {
     session = await getServerSession(authOptions);
+    userId = session?.user?.id || null;
   } catch (sessionError: any) {
-    console.error("Session decryption error:", sessionError);
-    return NextResponse.json(
-      {
-        message: "Session error: Please clear your browser cookies and log in again.",
-        success: false,
-        data: null,
-        validationErrors: [],
-      },
-      { status: 401 }
-    );
-  }
-
-  if (!session || !session.user) {
-    return NextResponse.json(
-      {
-        message: "Unauthorized: Please log in to access this resource.",
-        success: false,
-        data: null,
-        validationErrors: [],
-      },
-      { status: 401 }
-    );
+    console.error("Session error (non-fatal):", sessionError);
+    // Continue without user session - will show modules without progress
   }
 
   try {
     const { id: courseId } = params;
-    const userId = session.user.id;
 
     // Get modules with lessons using the repository layer
     const modules = await moduleUseCase.getModulesByCourseIdWithLessons(courseId);
@@ -67,18 +49,25 @@ export async function GET(
       );
     }
 
-    // Get user's progress for this course using the use case
-    const userProgress = await courseProgressUseCase.getCourseProgressByCourseId(courseId);
+    // Get user's progress for this course (only if authenticated)
     const userProgressMap = new Map();
     
-    userProgress
-      .filter(progress => progress.getDataValue('userId') === userId)
-      .forEach(progress => {
-        const lessonId = progress.getDataValue('lessonId');
-        if (lessonId) {
-          userProgressMap.set(lessonId, progress);
-        }
-      });
+    if (userId) {
+      try {
+        const userProgress = await courseProgressUseCase.getCourseProgressByCourseId(courseId);
+        userProgress
+          .filter(progress => progress.getDataValue('userId') === userId)
+          .forEach(progress => {
+            const lessonId = progress.getDataValue('lessonId');
+            if (lessonId) {
+              userProgressMap.set(lessonId, progress);
+            }
+          });
+      } catch (progressError) {
+        console.error("Error fetching progress:", progressError);
+        // Continue without progress - not critical
+      }
+    }
 
     // Transform modules using mapper and add computed fields
     const transformedModules = modules.map(module => {

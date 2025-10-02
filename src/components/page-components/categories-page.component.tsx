@@ -6,7 +6,7 @@ import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import { categoryAPI } from "@store/api/category_api";
 import { postAPI } from "@store/api/post_api";
-import { Spin } from "antd";
+import { Spin, Card } from "antd";
 
 export default function CategoriesPageComponent() {
   const {
@@ -23,26 +23,24 @@ export default function CategoriesPageComponent() {
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
 
-  if (isLoadingCategory || isFetchCategory || isLoading || isFetching) {
-    return (
-      <div
-        style={{
-          minHeight: "65vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Spin size="large" tip="Loading..." fullscreen spinning />
-      </div>
-    );
-  }
+  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching;
+
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         {/* navigation bar */}
         <AppNav logoPath="/" />
       </div>
+      
+      {loading ? (
+        <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>Loading categories...</div>
+          </Card>
+        </div>
+      ) : (
+        <>
       {/* banner */}
       <BannerComponent
         breadcrumbs={[{ label: "Categories", uri: "categories" }]}
@@ -56,6 +54,8 @@ export default function CategoriesPageComponent() {
 
       <AppFooter logoPath="/" />
       <AppFootnote />
+        </>
+      )}
     </>
   );
 }

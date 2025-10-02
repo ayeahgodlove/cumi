@@ -14,19 +14,7 @@ const professionalMapper = new ProfessionalMapper();
 
 export async function GET(request: any) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json(
-        {
-          data: [],
-          message: "Unauthorized",
-          validationErrors: [],
-          success: false,
-        },
-        { status: 401 }
-      );
-    }
-
+    // Make this endpoint public - professionals should be viewable by anyone
     const professionals = await professionalUseCase.getAll();
     
     return NextResponse.json(professionals);

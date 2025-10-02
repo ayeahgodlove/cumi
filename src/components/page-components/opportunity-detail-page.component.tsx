@@ -4,6 +4,7 @@ import BannerComponent from "@components/banner/banner.component";
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
+import Share from "@components/shared/share";
 import {
   Col,
   Layout,
@@ -100,27 +101,20 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
     return diffDays <= 30 && diffDays > 0;
   };
 
-  if (isLoading || isFetching) {
-    return (
-      <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
-        <AppNav logoPath="/" />
-        <Content
-          className="d-flex align-items-center justify-content-center"
-          style={{ backgroundColor: "white" }}
-        >
-          <div className="text-center">
-            <Spin size="large" />
-            <p className="mt-3">{t("opportunity_detail.loading")}</p>
-          </div>
-        </Content>
-      </Layout>
-    );
-  }
+  const loading = isLoading || isFetching;
 
-  if (error || !opportunity) {
-    return (
-      <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
-        <AppNav logoPath="/" />
+  return (
+    <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
+      <AppNav logoPath="/" />
+
+      {loading ? (
+        <Content style={{ backgroundColor: "white", minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
+          <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
+            <Spin size="large" />
+            <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("opportunity_detail.loading")}</div>
+          </Card>
+        </Content>
+      ) : error || !opportunity ? (
         <Content style={{ backgroundColor: "white" }}>
           <BannerComponent
             pageTitle={t("opportunity_detail.not_found")}
@@ -146,14 +140,8 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
             </Row>
           </div>
         </Content>
-        <AppFooter logoPath="/" />
-      </Layout>
-    );
-  }
-
-  return (
-    <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
-      <AppNav logoPath="/" />
+      ) : (
+        <>
       <Content style={{ backgroundColor: "white" }}>
         <BannerComponent
           pageTitle={opportunity.title}
@@ -388,7 +376,21 @@ export default function OpportunityDetailPageComponent({ opportunitySlug }: Oppo
             </Col>
           </Row>
         </div>
+        
+        {/* Share Section - Modern Design */}
+        <div className="container mb-4">
+          <Share
+            title={opportunity.title}
+            description={opportunity.description}
+            slug={opportunity.slug}
+            type="opportunities"
+            showModern={true}
+          />
+        </div>
       </Content>
+        </>
+      )}
+      
       <AppFooter logoPath="/" />
       <AppFootnote />
     </Layout>

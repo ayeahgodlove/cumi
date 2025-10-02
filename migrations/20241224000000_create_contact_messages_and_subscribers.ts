@@ -17,8 +17,8 @@ export async function up(knex: Knex): Promise<void> {
       table.increments("id").primary();
       table.string("email", 255).unique().notNullable();
       table.string("name", 255).nullable();
-      table.boolean("isActive").defaultTo(true);
-      table.timestamp("subscribedAt").defaultTo(knex.fn.now());
+      table.boolean("is_active").defaultTo(true);
+      table.timestamp("subscribed_at").defaultTo(knex.fn.now());
       table.timestamps(true, true);
     });
 }

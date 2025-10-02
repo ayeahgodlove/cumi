@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Card, Spin, Typography, Button, Carousel } from "antd";
 import {
   RocketOutlined,
@@ -30,6 +30,18 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
     serviceAPI.useFetchAllServicesQuery(1);
   const services = (servicesData as any)?.data || servicesData || [];
   const carouselRef = useRef<CarouselRef>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   if (isLoading) {
     return (
@@ -41,7 +53,8 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
           alignItems: "center",
         }}
       >
-        <Spin size="large" tip={t("common.loading")} />
+        <Spin size="large" />
+        <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("common.loading")}</div>
       </div>
     );
   }
@@ -50,8 +63,8 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
     return null;
   }
 
-  // Group services into chunks of 3 for carousel slides
-  const servicesPerSlide = 3;
+  // Group services based on screen size: 1 for mobile, 3 for desktop
+  const servicesPerSlide = isMobile ? 1 : 3;
   const serviceSlides = [];
   for (let i = 0; i < services.length; i += servicesPerSlide) {
     serviceSlides.push(services.slice(i, i + servicesPerSlide));
@@ -119,7 +132,10 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
         </div>
 
         {/* Carousel Container */}
-        <div style={{ position: "relative", padding: "0 60px" }}>
+        <div style={{ 
+          position: "relative", 
+          padding: isMobile ? "0 32px" : "0 60px"
+        }}>
           {/* Navigation Buttons */}
           {serviceSlides.length > 1 && (
             <>
@@ -129,19 +145,19 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                 onClick={handlePrev}
                 style={{
                   position: "absolute",
-                  left: "0",
+                  left: isMobile ? "-8px" : "0",
                   top: "50%",
                   transform: "translateY(-50%)",
                   zIndex: 10,
-                  width: "48px",
-                  height: "48px",
+                  width: isMobile ? "36px" : "48px",
+                  height: isMobile ? "36px" : "48px",
                   borderRadius: "50%",
                   background: "white",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "18px",
+                  fontSize: isMobile ? "14px" : "18px",
                   color: "#20b2aa",
                   border: "2px solid #e8e8e8",
                   transition: "all 0.3s ease",
@@ -166,19 +182,19 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                 onClick={handleNext}
                 style={{
                   position: "absolute",
-                  right: "0",
+                  right: isMobile ? "-8px" : "0",
                   top: "50%",
                   transform: "translateY(-50%)",
                   zIndex: 10,
-                  width: "48px",
-                  height: "48px",
+                  width: isMobile ? "36px" : "48px",
+                  height: isMobile ? "36px" : "48px",
                   borderRadius: "50%",
                   background: "white",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "18px",
+                  fontSize: isMobile ? "14px" : "18px",
                   color: "#20b2aa",
                   border: "2px solid #e8e8e8",
                   transition: "all 0.3s ease",
@@ -217,11 +233,11 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                    gap: "32px",
+                    gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                    gap: isMobile ? "16px" : "32px",
                     maxWidth: "1200px",
                     margin: "0 auto",
-                    padding: "0 20px",
+                    padding: isMobile ? "5px" : "0",
                   }}
                 >
                   {slide.map((service: any) => (

@@ -41,6 +41,7 @@ const Banner = (sequelizeInstance: Sequelize, DataTypes: any) => {
     {
       tableName: "banners",
       timestamps: true,
+      underscored: true,
     }
   );
 
