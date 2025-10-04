@@ -32,15 +32,15 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
   const carouselRef = useRef<CarouselRef>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile screen size
+  // Detect mobile/tablet screen size
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 992); // <992px = mobile/tablet (show 1 card)
     };
-    
+
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   if (isLoading) {
@@ -54,7 +54,9 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
         }}
       >
         <Spin size="large" />
-        <div style={{ marginTop: '16px', fontSize: '16px', color: '#666' }}>{t("common.loading")}</div>
+        <div style={{ marginTop: "16px", fontSize: "16px", color: "#666" }}>
+          {t("common.loading")}
+        </div>
       </div>
     );
   }
@@ -63,7 +65,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
     return null;
   }
 
-  // Group services based on screen size: 1 for mobile, 3 for desktop
+  // Group services based on screen size: 1 for mobile/tablet (<992px), 3 for desktop (≥992px)
   const servicesPerSlide = isMobile ? 1 : 3;
   const serviceSlides = [];
   for (let i = 0; i < services.length; i += servicesPerSlide) {
@@ -132,10 +134,12 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
         </div>
 
         {/* Carousel Container */}
-        <div style={{ 
-          position: "relative", 
-          padding: isMobile ? "0 32px" : "0 60px"
-        }}>
+        <div
+          style={{
+            position: "relative",
+            padding: isMobile ? "0 32px" : "0 60px",
+          }}
+        >
           {/* Navigation Buttons */}
           {serviceSlides.length > 1 && (
             <>
@@ -219,8 +223,8 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
           {/* Carousel */}
           <Carousel
             ref={carouselRef}
-            dots={{ className: "custom-dots" }}
-            dotPosition="bottom"
+            dots={false}
+            // dotPosition="bottom"
             autoplay
             autoplaySpeed={4000}
             speed={800}
@@ -253,11 +257,13 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                         background: "white",
                         height: "100%",
                       }}
-                      bodyStyle={{
-                        padding: "0",
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "100%",
+                      styles={{
+                        body: {
+                          padding: "0",
+                          display: "flex",
+                          flexDirection: "column",
+                          height: "100%",
+                        }
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "translateY(-16px)";
@@ -466,26 +472,6 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
           </div>
         )}
       </div>
-
-      {/* Custom carousel dots styling */}
-      <style jsx global>{`
-        .custom-dots li button {
-          background: #d9d9d9 !important;
-          width: 12px !important;
-          height: 12px !important;
-          border-radius: 50% !important;
-          transition: all 0.3s ease !important;
-        }
-        .custom-dots li.slick-active button {
-          background: #20b2aa !important;
-          width: 32px !important;
-          border-radius: 6px !important;
-        }
-        .custom-dots li:hover button {
-          background: #20b2aa !important;
-          opacity: 0.7;
-        }
-      `}</style>
     </section>
   );
 };

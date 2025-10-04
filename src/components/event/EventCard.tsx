@@ -2,7 +2,6 @@ import React from "react";
 import { Card, Button } from "antd";
 import { IEvent } from "@domain/models/event.model";
 import { format } from "@utils/format";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Image from "next/image";
 
 type Prop = {
@@ -39,7 +38,7 @@ const EventCard: React.FC<Prop> = ({ event }) => {
         height={500}
         width={1200}
         quality={100}
-        src={`${BASE_URL_UPLOADS_MEDIA}/${event.imageUrl}`}
+        src={event.imageUrl}
         alt={event.title}
         style={{ maxWidth: "100%", height: "auto", objectFit: "cover" }}
       />

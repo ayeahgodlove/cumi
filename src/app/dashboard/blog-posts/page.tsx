@@ -1,7 +1,6 @@
 "use client";
 
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DateField,
   DeleteButton,
@@ -40,7 +39,8 @@ export default function BlogPostList() {
           { title: "Blog Posts" },
           { title: "Lists" }
         ]}
-        backButtonText="Back to Dashboard"
+        showBackButton={false}
+        // backButtonText="Back to Dashboard"
       />
       <List>
         <Table 
@@ -62,7 +62,7 @@ export default function BlogPostList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${BASE_URL_UPLOADS_MEDIA}/${record.imageUrl}`}
+                src={record.imageUrl}
                 alt={record?.title}
                 height={100}
                 width={100}

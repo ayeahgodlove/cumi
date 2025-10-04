@@ -5,7 +5,6 @@ import { Show } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography, Space, Tag, Avatar, Card, Row, Col, Divider } from "antd";
 import { UserOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, LinkOutlined, GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -32,7 +31,7 @@ export default function ProfessionalShow() {
               <div style={{ textAlign: 'center' }}>
                 <Avatar
                   size={120}
-                  src={record.avatar ? `${BASE_URL_UPLOADS_MEDIA}/${record.avatar}` : null}
+                  src={record.avatar || null}
                   icon={<UserOutlined />}
                   style={{ marginBottom: 16 }}
                 />

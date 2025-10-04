@@ -778,6 +778,19 @@ const LessonDetailsPage: React.FC = () => {
             borderRadius: "8px"
           }
         }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        width="95%"
+        style={{ maxWidth: '1200px', top: 20 }}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card bordered={false} style={{ backgroundColor: "white" }}>
           {" "}
@@ -1282,6 +1295,19 @@ const LessonDetailsPage: React.FC = () => {
             borderRadius: "8px"
           }
         }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        width="95%"
+        style={{ maxWidth: '1100px', top: 20 }}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card bordered={false} style={{ backgroundColor: "white" }}>
           <Form
@@ -1583,7 +1609,19 @@ const LessonDetailsPage: React.FC = () => {
             {t('common.close')}
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         {viewAssignment && (
           <Descriptions column={2} bordered size="small">
@@ -1700,7 +1738,19 @@ const LessonDetailsPage: React.FC = () => {
             {t('common.close')}
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         {viewQuiz && (
           <Descriptions column={2} bordered size="small">

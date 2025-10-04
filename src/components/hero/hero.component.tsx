@@ -21,7 +21,7 @@ export const AppHero = () => {
           {t('hero.description')}
         </p>
         <div className="mt-3">
-          <Space>
+          <Space size="middle" direction="horizontal">
             <Button
               className="primary-btn shadow-sm"
               shape="round"

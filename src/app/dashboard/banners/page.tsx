@@ -2,10 +2,6 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import {
-  BASE_URL_UPLOADS_MEDIA,
-} from "@constants/api-url";
-// import { ICategory } from "@models/category.model";
-import {
   DeleteButton,
   EditButton,
   List,
@@ -21,11 +17,16 @@ export default function CategoryList() {
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <PageBreadCrumbs items={["Banners", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column
             dataIndex="id"
             title={"ID"}
@@ -40,7 +41,7 @@ export default function CategoryList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${BASE_URL_UPLOADS_MEDIA}/${value}`}
+                src={value}
                 alt={record?.title}
                 height={100}
                 width={100}

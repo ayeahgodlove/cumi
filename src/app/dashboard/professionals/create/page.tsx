@@ -1,39 +1,12 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { Create, useForm } from "@refinedev/antd";
-import { Form, Input, Select, Switch, Upload, Button, Row, Col, InputNumber, message } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { useUpload, getImageUrlFromEvent, getImageUrlString } from "@hooks/shared/upload.hook";
-import { useEffect } from "react";
+import { Form, Input, Select, Switch, Row, Col, InputNumber } from "antd";
 
 export default function ProfessionalCreate() {
   const { formProps, saveButtonProps } = useForm();
-
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: formProps.form,
-    fieldName: 'profileImage',
-    onSuccess: (response) => {
-      // This will be handled in useEffect to prevent setState in render
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Handle form field updates in useEffect to prevent setState in render
-  useEffect(() => {
-    if (fileList && fileList.length > 0) {
-      const imageUrl = getImageUrlString(fileList);
-      if (imageUrl) {
-        formProps.form?.setFieldsValue({
-          profileImage: imageUrl
-        });
-      }
-    }
-  }, [fileList, formProps.form]);
 
   return (
     <>
@@ -47,7 +20,7 @@ export default function ProfessionalCreate() {
                 name="title"
                 rules={[{ required: true, message: "Please enter professional title" }]}
               >
-                <Input placeholder="e.g., Senior Developer" />
+                <Input size="large" placeholder="e.g., Senior Developer" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -56,7 +29,7 @@ export default function ProfessionalCreate() {
                 name="position"
                 rules={[{ required: true, message: "Please enter position" }]}
               >
-                <Input placeholder="e.g., Full Stack Developer" />
+                <Input size="large" placeholder="e.g., Full Stack Developer" />
               </Form.Item>
             </Col>
           </Row>
@@ -71,7 +44,7 @@ export default function ProfessionalCreate() {
                   { type: "email", message: "Please enter a valid email" }
                 ]}
               >
-                <Input placeholder="professional@company.com" />
+                <Input size="large" placeholder="professional@company.com" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -80,7 +53,7 @@ export default function ProfessionalCreate() {
                 name="whatsappContact"
                 rules={[{ required: true, message: "Please enter WhatsApp contact" }]}
               >
-                <Input placeholder="+237681289411" />
+                <Input size="large" placeholder="+237681289411" />
               </Form.Item>
             </Col>
           </Row>
@@ -92,7 +65,7 @@ export default function ProfessionalCreate() {
                 name="location"
                 rules={[{ required: true, message: "Please enter location" }]}
               >
-                <Input placeholder="e.g., Bamenda, Cameroon" />
+                <Input size="large" placeholder="e.g., Bamenda, Cameroon" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -101,7 +74,7 @@ export default function ProfessionalCreate() {
                 name="yearsOfExperience"
                 rules={[{ required: true, message: "Please enter years of experience" }]}
               >
-                <InputNumber min={0} max={50} placeholder="5" style={{ width: '100%' }} />
+                <InputNumber size="large" min={0} max={50} placeholder="5" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -112,6 +85,7 @@ export default function ProfessionalCreate() {
             rules={[{ required: true, message: "Please enter bio" }]}
           >
             <Input.TextArea 
+              size="large"
               rows={4} 
               placeholder="Tell us about this professional's background and expertise..."
             />
@@ -123,7 +97,7 @@ export default function ProfessionalCreate() {
                 label="LinkedIn"
                 name={["socialLinks", "linkedin"]}
               >
-                <Input placeholder="https://linkedin.com/in/username" />
+                <Input size="large" placeholder="https://linkedin.com/in/username" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
@@ -131,7 +105,7 @@ export default function ProfessionalCreate() {
                 label="GitHub"
                 name={["socialLinks", "github"]}
               >
-                <Input placeholder="https://github.com/username" />
+                <Input size="large" placeholder="https://github.com/username" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
@@ -139,7 +113,7 @@ export default function ProfessionalCreate() {
                 label="Website"
                 name={["socialLinks", "website"]}
               >
-                <Input placeholder="https://website.com" />
+                <Input size="large" placeholder="https://website.com" />
               </Form.Item>
             </Col>
           </Row>
@@ -150,6 +124,7 @@ export default function ProfessionalCreate() {
             rules={[{ required: true, message: "Please select skills" }]}
           >
             <Select
+              size="large"
               mode="multiple"
               placeholder="Select professional skills"
               options={[
@@ -179,6 +154,7 @@ export default function ProfessionalCreate() {
             name="specializations"
           >
             <Select
+              size="large"
               mode="multiple"
               placeholder="Select specializations"
               options={[
@@ -197,11 +173,75 @@ export default function ProfessionalCreate() {
           </Form.Item>
 
           <Form.Item
+            label="Project Types"
+            name="projectTypes"
+          >
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select project types"
+              options={[
+                { label: "Web Development", value: "Web Development" },
+                { label: "Mobile Apps", value: "Mobile Apps" },
+                { label: "E-commerce", value: "E-commerce" },
+                { label: "CMS Development", value: "CMS Development" },
+                { label: "API Development", value: "API Development" },
+                { label: "Database Design", value: "Database Design" },
+                { label: "DevOps", value: "DevOps" },
+                { label: "UI/UX Design", value: "UI/UX Design" },
+                { label: "Consulting", value: "Consulting" },
+                { label: "Training", value: "Training" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Languages"
+            name="languages"
+          >
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select languages spoken"
+              options={[
+                { label: "English", value: "English" },
+                { label: "French", value: "French" },
+                { label: "Spanish", value: "Spanish" },
+                { label: "German", value: "German" },
+                { label: "Chinese", value: "Chinese" },
+                { label: "Arabic", value: "Arabic" },
+                { label: "Portuguese", value: "Portuguese" },
+                { label: "Russian", value: "Russian" },
+                { label: "Japanese", value: "Japanese" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Certifications"
+            name="certifications"
+          >
+            <Select
+              size="large"
+              mode="tags"
+              placeholder="Add certifications (press Enter to add)"
+              options={[
+                { label: "AWS Certified Solutions Architect", value: "AWS Certified Solutions Architect" },
+                { label: "Google Cloud Professional", value: "Google Cloud Professional" },
+                { label: "Microsoft Certified: Azure", value: "Microsoft Certified: Azure" },
+                { label: "Certified ScrumMaster", value: "Certified ScrumMaster" },
+                { label: "PMP Certification", value: "PMP Certification" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
             label="Availability"
             name="availability"
             initialValue="Available"
           >
             <Select
+              size="large"
               options={[
                 { label: "Available", value: "Available" },
                 { label: "Busy", value: "Busy" },
@@ -216,7 +256,7 @@ export default function ProfessionalCreate() {
                 label="Hourly Rate ($)"
                 name="hourlyRate"
               >
-                <InputNumber min={0} placeholder="50" style={{ width: '100%' }} />
+                <InputNumber size="large" min={0} placeholder="50" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -224,44 +264,18 @@ export default function ProfessionalCreate() {
                 label="Education"
                 name="education"
               >
-                <Input placeholder="e.g., BSc Computer Science" />
+                <Input size="large" placeholder="e.g., BSc Computer Science" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item
-            label="Profile Image"
+          <ImageUploadField
             name="profileImage"
+            label="Profile Image"
             required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-              {
-                validator: (_, value) => {
-                  if (typeof value === 'string' && value.trim() !== '') {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Please upload a profile image'));
-                }
-              }
-            ]}
-          >
-            <Upload.Dragger
-              name="file"
-              action="/api/uploads"
-              listType="picture"
-              maxCount={1}
-              multiple={false}
-              fileList={Array.isArray(fileList) ? fileList : []}
-              onChange={handleUploadChange}
-              beforeUpload={beforeUpload}
-              onRemove={handleRemove}
-            >
-              <p className="ant-upload-text">Drag & drop a profile image here</p>
-              <p className="ant-upload-hint">
-                Support for single upload. Maximum file size: 1MB
-              </p>
-            </Upload.Dragger>
-          </Form.Item>
+            form={formProps.form}
+            maxSize={5 * 1024 * 1024}
+          />
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>

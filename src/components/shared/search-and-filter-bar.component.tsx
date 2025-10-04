@@ -2,7 +2,11 @@
 
 import React from "react";
 import { Input, Select, Row, Col, Space, Button } from "antd";
-import { SearchOutlined, FilterOutlined, ClearOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  FilterOutlined,
+  ClearOutlined,
+} from "@ant-design/icons";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -44,7 +48,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
 }) => {
   const handleClearFilters = () => {
     onSearchChange("");
-    filters.forEach(filter => filter.onChange(""));
+    filters.forEach((filter) => filter.onChange(""));
     onClearFilters?.();
   };
 
@@ -58,22 +62,30 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
             onChange={(e) => onSearchChange(e.target.value)}
             onSearch={onSearchChange}
             enterButton={<SearchOutlined />}
-            size="large"
+            styles={{
+              affixWrapper: {
+                height: "44px",
+              },
+            }}
             allowClear
+            size="large"
           />
         </Col>
-        
+
         {filters.length > 0 && (
           <Col xs={24} md={12}>
             <Space wrap>
               {filters.map((filter) => (
                 <Select
                   key={filter.key}
-                  placeholder={filter.placeholder || `Filter by ${filter.label}`}
+                  placeholder={
+                    filter.placeholder || `Filter by ${filter.label}`
+                  }
                   value={filter.value}
                   onChange={filter.onChange}
-                  style={{ minWidth: 150 }}
+                  style={{ minWidth: 150, height: "44px" }}
                   allowClear
+                  size="large"
                 >
                   {filter.options.map((option) => (
                     <Option key={option.value} value={option.value}>
@@ -82,7 +94,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                   ))}
                 </Select>
               ))}
-              
+
               {showClearButton && (
                 <Button
                   icon={<ClearOutlined />}
@@ -96,10 +108,10 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
           </Col>
         )}
       </Row>
-      
+
       {resultsCount !== undefined && (
-        <div style={{ marginTop: '12px', textAlign: 'right' }}>
-          <span style={{ color: '#666', fontSize: '14px' }}>
+        <div style={{ marginTop: "12px", textAlign: "right" }}>
+          <span style={{ color: "#666", fontSize: "14px" }}>
             {resultsCount} {resultsLabel}
           </span>
         </div>

@@ -38,12 +38,17 @@ const nextConfig = withNextIntl({
   
   // Image optimization
   images: {
-    domains: ["localhost"],
+    domains: ["localhost", "res.cloudinary.com"],
     remotePatterns: [
       {
         protocol: "http",
         hostname: "localhost",
         port: "3000",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
         pathname: "/**",
       },
       {
@@ -78,6 +83,14 @@ const nextConfig = withNextIntl({
   swcMinify: true,
   compress: true,
   optimizeFonts: true,
+  
+  // Compiler options for older browser support
+  compiler: {
+    // Remove console logs in production for better performance
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
   
   // Webpack optimizations
   webpack(config, { isServer, dev }) {

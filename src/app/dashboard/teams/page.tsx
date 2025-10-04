@@ -1,7 +1,6 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -18,11 +17,16 @@ export default function TeamList() {
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <PageBreadCrumbs items={["Team", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column
             dataIndex="id"
             title={"ID"}
@@ -35,7 +39,7 @@ export default function TeamList() {
             title={"Avatar"}
             render={(value, record: any) => (
               <Avatar
-                src={value ? `${BASE_URL_UPLOADS_MEDIA}/${value}` : "/img/avatar.png"}
+                src={value || "/img/avatar.png"}
                 alt={record?.name}
                 size={50}
               />

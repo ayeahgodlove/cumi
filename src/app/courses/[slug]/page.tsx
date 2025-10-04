@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
       canonical: `https://cumi.dev/courses/${params.slug}`,
     },
     images: course.imageUrl ? [{
-      url: `https://cumi.dev/uploads/courses/${course.imageUrl}`,
+      url: course.imageUrl,
       width: 1200,
       height: 630,
       alt: course.title,
@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
       type: "website",
       title: `${course.title} - CUMI Technology Course`,
       description: course.description || `Learn ${course.title} with CUMI's comprehensive course.`,
-      images: course.imageUrl ? [`https://cumi.dev/uploads/courses/${course.imageUrl}`] : [defaultImages[2]],
+      images: course.imageUrl ? [course.imageUrl] : [defaultImages[2]],
       siteName: "CUMI",
       locale: "en_US",
       url: `https://cumi.dev/courses/${params.slug}`,
@@ -95,7 +95,7 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
       card: "summary_large_image",
       title: `${course.title} - CUMI Technology Course`,
       description: course.description || `Learn ${course.title} with CUMI's comprehensive course.`,
-      images: course.imageUrl ? [`https://cumi.dev/uploads/courses/${course.imageUrl}`] : [defaultImages[2]],
+      images: course.imageUrl ? [course.imageUrl] : [defaultImages[2]],
       creator: "@cumi_dev",
     },
     // Structured data
@@ -108,7 +108,7 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
         "@type": "Organization",
         "name": "CUMI",
         "url": "https://cumi.dev",
-        "logo": "https://cumi.dev/uploads/media/1022.jpg"
+        "logo": "https://cumi.dev/img/cumi-green.jpg"
       },
       "courseMode": course.isOnline ? "online" : "blended",
       "educationalLevel": course.difficulty || "beginner",
@@ -129,7 +129,7 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock"
       },
-      "image": course.imageUrl ? `https://cumi.dev/uploads/courses/${course.imageUrl}` : defaultImages[2],
+      "image": course.imageUrl || defaultImages[2],
       "inLanguage": "en",
       "teaches": course.objectives,
       "timeRequired": course.duration

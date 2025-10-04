@@ -184,7 +184,7 @@ class NotificationService {
       userId: '', // Not needed for external emails
       title: "Welcome to CUMI Newsletter!",
       message: `Thank you for subscribing to our newsletter! You'll now receive updates about our latest courses, events, and educational content. We're excited to have you as part of our learning community.`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard`,
       type: 'general'
     });
   }
@@ -195,7 +195,7 @@ class NotificationService {
       userId: '', // Not needed for external emails
       title: "Thank You for Contacting CUMI",
       message: `Thank you for reaching out to us! We have received your message regarding "${subject}" and our team will get back to you within 24 hours. We appreciate your interest in our services and look forward to assisting you.`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/contact`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/contact`,
       type: 'general'
     });
   }
@@ -205,7 +205,7 @@ class NotificationService {
       userId: '', // Not needed for admin emails
       title: "New Contact Message Received",
       message: `A new contact message has been received from ${name} (${email}).\n\nSubject: ${subject || 'No subject'}\nMessage: ${message}\n\nPhone: ${phone || 'Not provided'}`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/contact-messages`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard/contact-messages`,
       type: 'system'
     });
   }
@@ -227,7 +227,7 @@ class NotificationService {
       userId,
       title: "Assignment Submitted",
       message: `Your assignment "${assignmentTitle}" for the course "${courseTitle}" has been submitted successfully. You'll receive feedback soon!`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard`,
       type: 'course'
     });
   }
@@ -238,7 +238,7 @@ class NotificationService {
       userId,
       title: "Quiz Completed!",
       message: `You've completed the quiz "${quizTitle}" in "${courseTitle}" with a score of ${score}%. ${score >= 80 ? 'Excellent work!' : 'Keep studying to improve your score!'}`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard`,
       type: 'course'
     });
   }
@@ -249,7 +249,7 @@ class NotificationService {
       userId,
       title: "Payment Successful",
       message: `Your payment of $${amount} for "${itemName}" has been processed successfully. Thank you for your purchase!`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard`,
       type: 'system'
     });
   }
@@ -260,7 +260,7 @@ class NotificationService {
       userId,
       title: "Account Status Update",
       message: `Your account status has been updated to "${status}". ${reason ? `Reason: ${reason}` : 'Please contact support if you have any questions.'}`,
-      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/dashboard/settings`,
+      actionUrl: `${process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || (process.env.NODE_ENV === 'production' ? 'https://cumi.dev' : 'http://localhost:3000')}/dashboard/settings`,
       type: 'security'
     });
   }

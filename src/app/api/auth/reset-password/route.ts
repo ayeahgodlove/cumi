@@ -13,11 +13,6 @@ export async function POST(request: NextRequest) {
   try {
     const { token, password } = await request.json();
 
-    console.log("🔐 Password reset attempt:", { 
-      hasToken: !!token, 
-      passwordLength: password?.length 
-    });
-
     // Validate input
     if (!token || !password) {
       return NextResponse.json(
@@ -54,7 +49,6 @@ export async function POST(request: NextRequest) {
     const user = await userUseCase.getUserByResetToken(token) as any;
     
     if (!user) {
-      console.warn("⚠️ Invalid reset token attempted");
       return NextResponse.json(
         { 
           error: "Invalid Reset Token",
@@ -67,10 +61,6 @@ export async function POST(request: NextRequest) {
     // Check if token is expired
     const tokenExpiry = user.resetTokenExpiry ? new Date(user.resetTokenExpiry) : null;
     if (!tokenExpiry || new Date() > tokenExpiry) {
-      console.warn("⚠️ Expired reset token:", { 
-        expiry: tokenExpiry, 
-        now: new Date() 
-      });
       return NextResponse.json(
         { 
           error: "Expired Reset Token",
@@ -94,8 +84,6 @@ export async function POST(request: NextRequest) {
       resetTokenExpiry: null,
       lastPasswordChange: new Date()
     } as any);
-
-    console.log("✅ Password reset successful for user:", userData.email);
 
     // Send confirmation email (optional, non-blocking)
     try {
@@ -144,7 +132,6 @@ The CUMI Team
         `
       });
     } catch (emailError) {
-      console.error("⚠️ Failed to send confirmation email:", emailError);
       // Don't fail the password reset if email fails
     }
 
@@ -156,11 +143,6 @@ The CUMI Team
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("❌ Error in password reset:", {
-      error: error.message,
-      stack: error.stack
-    });
-    
     return NextResponse.json(
       { 
         error: "Internal Server Error",

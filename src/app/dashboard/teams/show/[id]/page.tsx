@@ -4,7 +4,6 @@ import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.
 import { Show } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography, Row, Col, Card, Tag, Avatar, Space, Divider } from "antd";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { MailOutlined, PhoneOutlined, EnvironmentOutlined, LinkedinOutlined, GithubOutlined, TwitterOutlined } from "@ant-design/icons";
 
 const { Title, Paragraph, Text } = Typography;
@@ -23,7 +22,7 @@ export default function TeamShow() {
             <Card className="text-center">
               <Avatar
                 size={120}
-                src={record?.avatar ? `${BASE_URL_UPLOADS_MEDIA}/${record.avatar}` : "/img/avatar.png"}
+                src={record?.avatar || "/img/avatar.png"}
                 alt={record?.name}
                 className="mb-3"
               />

@@ -355,7 +355,8 @@ export default function MailingListPage() {
             Close
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px' }}
       >
         <div>
           <Title level={4}>Subject: {form.getFieldValue('subject')}</Title>
@@ -384,7 +385,8 @@ export default function MailingListPage() {
             Close
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px' }}
       >
         <div>
           <Row gutter={16} style={{ marginBottom: 16 }}>

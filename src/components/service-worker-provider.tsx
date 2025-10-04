@@ -6,23 +6,16 @@ import { notification } from 'antd';
 export default function ServiceWorkerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // Unregister old service workers first
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        registrations.forEach((reg) => {
-          reg.unregister();
-        });
-      });
-
-      // Register service worker
+      // Register service worker (or get existing registration)
       navigator.serviceWorker
-        .register('/sw.js', { scope: '/' })
+        .register('/sw.js', { scope: '/', updateViaCache: 'none' })
         .then((registration) => {
           console.log('[SW] Service Worker registered successfully:', registration.scope);
 
-          // Check for updates every hour
+          // Check for updates periodically
           const updateInterval = setInterval(() => {
             registration.update();
-          }, 3600000);
+          }, 3600000); // 1 hour
 
           // Listen for updates
           registration.addEventListener('updatefound', () => {
@@ -36,18 +29,22 @@ export default function ServiceWorkerProvider({ children }: { children: React.Re
                     message: 'Update Available',
                     description: 'A new version is available. Refresh to update.',
                     duration: 0,
+                    placement: 'bottomRight',
                     btn: (
                       <button
                         onClick={() => {
+                          // Skip waiting and reload
+                          newWorker.postMessage({ type: 'SKIP_WAITING' });
                           window.location.reload();
                         }}
                         style={{
                           padding: '8px 16px',
-                          background: '#15b9a1',
+                          background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
                           color: '#fff',
                           border: 'none',
-                          borderRadius: '4px',
+                          borderRadius: '8px',
                           cursor: 'pointer',
+                          fontWeight: 600,
                         }}
                       >
                         Refresh Now

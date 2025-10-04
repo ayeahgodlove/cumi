@@ -17,10 +17,10 @@ export const PartnersSection = () => {
   const carouselRef = useRef<CarouselRef>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile screen size
+  // Detect mobile/tablet screen size
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 992); // <992px = mobile/tablet (show 1 card)
     };
     
     handleResize();
@@ -48,7 +48,7 @@ export const PartnersSection = () => {
     return null;
   }
 
-  // Group partners based on screen size: 1 for mobile, 4 for desktop
+  // Group partners based on screen size: 1 for mobile/tablet (<992px), 4 for desktop (≥992px)
   const partnersPerSlide = isMobile ? 1 : 4;
   const partnerSlides = [];
   for (let i = 0; i < partners.length; i += partnersPerSlide) {
@@ -211,8 +211,7 @@ export const PartnersSection = () => {
           {/* Carousel */}
           <Carousel
             ref={carouselRef}
-            dots={{ className: "custom-dots" }}
-            dotPosition="bottom"
+            dots={false}
             autoplay
             autoplaySpeed={5000}
             speed={800}
@@ -245,13 +244,15 @@ export const PartnersSection = () => {
                         background: "white",
                         height: "100%",
                       }}
-                      bodyStyle={{
-                        padding: "32px 24px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "20px",
-                        minHeight: "380px",
+                      styles={{
+                        body: {
+                          padding: "32px 24px",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "20px",
+                          minHeight: "200px",
+                        }
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "translateY(-12px) scale(1.02)";
@@ -321,102 +322,35 @@ export const PartnersSection = () => {
                         >
                           {partner.name}
                         </Title>
-                        <Text
-                          style={{
-                            fontSize: "13px",
-                            color: "#999",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "6px",
-                            fontWeight: "500",
-                          }}
-                        >
-                          <span style={{ fontSize: "16px" }}>📍</span> {partner.location}
-                        </Text>
-                        <Paragraph
-                          ellipsis={{ rows: 3 }}
-                          style={{
-                            fontSize: "14px",
-                            color: "#666",
-                            margin: "16px 0",
-                            lineHeight: "1.7",
-                            minHeight: "63px",
-                          }}
-                        >
-                          {partner.description}
-                        </Paragraph>
-                      </div>
-
-                      {/* Partner Actions */}
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "12px",
-                          width: "100%",
-                          justifyContent: "center",
-                          paddingTop: "12px",
-                          borderTop: "1px solid #f0f0f0",
-                        }}
-                      >
-                        {partner.websiteLink && (
-                          <Button
-                            type="primary"
-                            icon={<GlobalOutlined />}
-                            href={partner.websiteLink}
-                            target="_blank"
-                            shape="round"
+                        <div style={{ 
+                          display: "inline-flex", 
+                          alignItems: "center", 
+                          justifyContent: "center", 
+                          gap: "8px", 
+                          padding: "8px 20px",
+                          background: "linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)",
+                          borderRadius: "24px",
+                          border: "1px solid rgba(20, 184, 166, 0.2)",
+                          margin: "0 auto",
+                        }}>
+                          <div
                             style={{
-                              background: "linear-gradient(135deg, #20b2aa 0%, #17a2b8 100%)",
-                              border: "none",
-                              color: "white",
-                              fontWeight: "500",
-                              fontSize: "13px",
-                              height: "36px",
-                              padding: "0 20px",
-                              boxShadow: "0 2px 8px rgba(32,178,170,0.25)",
-                              transition: "all 0.3s ease",
+                              width: "8px",
+                              height: "8px",
+                              borderRadius: "50%",
+                              background: "#14B8A6",
                             }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.transform = "translateY(-2px)";
-                              e.currentTarget.style.boxShadow = "0 4px 12px rgba(32,178,170,0.35)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.transform = "translateY(0)";
-                              e.currentTarget.style.boxShadow = "0 2px 8px rgba(32,178,170,0.25)";
+                          />
+                          <Text
+                            style={{
+                              fontSize: "14px",
+                              color: "#0d9488",
+                              fontWeight: "600",
                             }}
                           >
-                            {t('partners.visit')}
-                          </Button>
-                        )}
-                        {partner.contactPhone && (
-                          <Button
-                            icon={<PhoneOutlined />}
-                            href={`tel:${partner.contactPhone}`}
-                            shape="round"
-                            style={{
-                              border: "2px solid #e8e8e8",
-                              color: "#666",
-                              fontWeight: "500",
-                              fontSize: "13px",
-                              height: "36px",
-                              padding: "0 20px",
-                              transition: "all 0.3s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = "#20b2aa";
-                              e.currentTarget.style.color = "#20b2aa";
-                              e.currentTarget.style.transform = "translateY(-2px)";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = "#e8e8e8";
-                              e.currentTarget.style.color = "#666";
-                              e.currentTarget.style.transform = "translateY(0)";
-                            }}
-                          >
-                            {t('partners.contact')}
-                          </Button>
-                        )}
+                            {partner.location}
+                          </Text>
+                        </div>
                       </div>
                     </Card>
                   ))}
@@ -458,26 +392,6 @@ export const PartnersSection = () => {
           </Link>
         </div>
       </div>
-
-      {/* Custom carousel dots styling */}
-      <style jsx global>{`
-        .custom-dots li button {
-          background: #d9d9d9 !important;
-          width: 12px !important;
-          height: 12px !important;
-          border-radius: 50% !important;
-          transition: all 0.3s ease !important;
-        }
-        .custom-dots li.slick-active button {
-          background: #20b2aa !important;
-          width: 32px !important;
-          border-radius: 6px !important;
-        }
-        .custom-dots li:hover button {
-          background: #20b2aa !important;
-          opacity: 0.7;
-        }
-      `}</style>
     </section>
   );
 };

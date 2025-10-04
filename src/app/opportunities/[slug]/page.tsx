@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: OpportunityDetailPageProps): 
       canonical: `https://cumi.dev/opportunities/${params.slug}`,
     },
     images: opportunity.imageUrl ? [{
-      url: `https://cumi.dev/uploads/opportunities/${opportunity.imageUrl}`,
+      url: opportunity.imageUrl,
       width: 1200,
       height: 630,
       alt: opportunity.title,
@@ -86,7 +86,7 @@ export async function generateMetadata({ params }: OpportunityDetailPageProps): 
       type: "website",
       title: `${opportunity.title} - CUMI Career Opportunity`,
       description: opportunity.description || `Join CUMI as a ${opportunity.title}. Explore this exciting career opportunity.`,
-      images: opportunity.imageUrl ? [`https://cumi.dev/uploads/opportunities/${opportunity.imageUrl}`] : [defaultImages[1]],
+      images: opportunity.imageUrl ? [opportunity.imageUrl] : [defaultImages[1]],
       siteName: "CUMI",
       locale: "en_US",
       url: `https://cumi.dev/opportunities/${params.slug}`,
@@ -96,7 +96,7 @@ export async function generateMetadata({ params }: OpportunityDetailPageProps): 
       card: "summary_large_image",
       title: `${opportunity.title} - CUMI Career Opportunity`,
       description: opportunity.description || `Join CUMI as a ${opportunity.title}. Explore this exciting career opportunity.`,
-      images: opportunity.imageUrl ? [`https://cumi.dev/uploads/opportunities/${opportunity.imageUrl}`] : [defaultImages[1]],
+      images: opportunity.imageUrl ? [opportunity.imageUrl] : [defaultImages[1]],
       creator: "@cumi_dev",
     },
     // Structured data
@@ -112,7 +112,7 @@ export async function generateMetadata({ params }: OpportunityDetailPageProps): 
         "@type": "Organization",
         "name": "CUMI",
         "url": "https://cumi.dev",
-        "logo": "https://cumi.dev/uploads/media/1022.jpg"
+        "logo": "https://cumi.dev/cumi-green.jpg"
       },
       "jobLocation": opportunity.location ? {
         "@type": "Place",

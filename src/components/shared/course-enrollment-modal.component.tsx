@@ -131,7 +131,19 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         open={visible}
         onCancel={onCancel}
         footer={null}
-        width={700}
+        width="95%"
+        style={{ maxWidth: '800px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card style={{ backgroundColor: 'white', border: 'none' }}>
         <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>

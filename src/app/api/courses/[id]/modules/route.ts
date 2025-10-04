@@ -21,7 +21,7 @@ export async function GET(
 ) {
   // Make this endpoint public - auth is optional for progress tracking
   let session;
-  let userId = null;
+  let userId: string | null = null;
   
   try {
     session = await getServerSession(authOptions);

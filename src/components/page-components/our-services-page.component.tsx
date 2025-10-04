@@ -119,10 +119,6 @@ export default function OurServicesPageComponent() {
         </div>
       </section>
 
-      {/* Services List */}
-      <ServicesSection />
-      {/* CTA Section */}
-      <AppCTA />
       {/* Benefits Section */}
       <section className="py-5">
         <div className="container">
@@ -172,6 +168,11 @@ export default function OurServicesPageComponent() {
           </Row>
         </div>
       </section>
+
+      {/* Services List */}
+      <ServicesSection />
+      {/* CTA Section */}
+      <AppCTA />
 
       <AppFooter logoPath="/" />
       <AppFootnote />

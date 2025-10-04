@@ -29,6 +29,12 @@ import {
   UserOutlined,
   BookOutlined,
   SearchOutlined,
+  ShopOutlined,
+  TrophyOutlined,
+  TeamOutlined,
+  RocketOutlined,
+  FireOutlined,
+  ClockCircleOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import { opportunityAPI } from "@store/api/opportunity_api";
@@ -140,22 +146,106 @@ export default function OpportunitiesPageComponent() {
         />
 
         <div className="container py-5" style={{ backgroundColor: "white" }}>
-          {/* Filter Section */}
+          {/* Stats Section */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.5 }}
           >
-            <Row justify="center" className="mb-4">
-              <Col xs={24} lg={22}>
+            <Row gutter={[16, 16]} style={{ marginBottom: '2rem' }}>
+              <Col xs={24} sm={12} md={6}>
                 <Card
-                  className="cumi-card"
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                    border: '1px solid rgba(34, 197, 94, 0.15)',
+                    boxShadow: '0 4px 12px rgba(34, 197, 94, 0.1)',
+                    textAlign: 'center',
+                  }}
+                  styles={{ body: { padding: '24px' } }}
+                >
+                  <ShopOutlined style={{ fontSize: '32px', color: '#22C55E', marginBottom: '8px' }} />
+                  <Title level={3} style={{ margin: '8px 0 4px', color: '#16a34a', fontWeight: 700 }}>
+                    {filteredOpportunities?.length || 0}
+                  </Title>
+                  <Text style={{ color: '#4b5563', fontSize: '14px', fontWeight: 500 }}>Total</Text>
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Card
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #ecfeff 0%, #cffafe 100%)',
+                    border: '1px solid rgba(20, 184, 166, 0.15)',
+                    boxShadow: '0 4px 12px rgba(20, 184, 166, 0.1)',
+                    textAlign: 'center',
+                  }}
+                  styles={{ body: { padding: '24px' } }}
+                >
+                  <BookOutlined style={{ fontSize: '32px', color: '#14B8A6', marginBottom: '8px' }} />
+                  <Title level={3} style={{ margin: '8px 0 4px', color: '#0d9488', fontWeight: 700 }}>
+                    {opportunities?.filter(o => o.opp_type === 'scholarship').length || 0}
+                  </Title>
+                  <Text style={{ color: '#4b5563', fontSize: '14px', fontWeight: 500 }}>Scholarships</Text>
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Card
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+                    border: '1px solid rgba(14, 165, 233, 0.15)',
+                    boxShadow: '0 4px 12px rgba(14, 165, 233, 0.1)',
+                    textAlign: 'center',
+                  }}
+                  styles={{ body: { padding: '24px' } }}
+                >
+                  <TeamOutlined style={{ fontSize: '32px', color: '#0EA5E9', marginBottom: '8px' }} />
+                  <Title level={3} style={{ margin: '8px 0 4px', color: '#0284c7', fontWeight: 700 }}>
+                    {opportunities?.filter(o => o.opp_type === 'job').length || 0}
+                  </Title>
+                  <Text style={{ color: '#4b5563', fontSize: '14px', fontWeight: 500 }}>Jobs</Text>
+                </Card>
+              </Col>
+              <Col xs={24} sm={12} md={6}>
+                <Card
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                    border: '1px solid rgba(245, 158, 11, 0.15)',
+                    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.1)',
+                    textAlign: 'center',
+                  }}
+                  styles={{ body: { padding: '24px' } }}
+                >
+                  <RocketOutlined style={{ fontSize: '32px', color: '#f59e0b', marginBottom: '8px' }} />
+                  <Title level={3} style={{ margin: '8px 0 4px', color: '#d97706', fontWeight: 700 }}>
+                    {opportunities?.filter(o => o.opp_type === 'internship').length || 0}
+                  </Title>
+                  <Text style={{ color: '#4b5563', fontSize: '14px', fontWeight: 500 }}>Internships</Text>
+                </Card>
+              </Col>
+            </Row>
+          </motion.div>
+
+          {/* Filter Section */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Row justify="center">
+              <Col xs={24}>
+                <Card
+                  className="search-filter-card"
                   style={{
                     backgroundColor: "white",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                    borderRadius: "12px",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+                    borderRadius: "20px",
                     overflow: "hidden",
+                    border: "1px solid rgba(34, 197, 94, 0.1)",
                   }}
+                  styles={{ body: { padding: '32px' } }}
                 >
                   <div className="text-center">
                     <Title level={4} className="mb-3">
@@ -421,26 +511,39 @@ export default function OpportunitiesPageComponent() {
                           {opportunity.description}
                         </Paragraph>
 
-                        {opportunity.skills &&
-                          opportunity.skills.length > 0 && (
+                        {(() => {
+                          // Parse skills if it's a string, otherwise use as-is
+                          let skillsArray: string[] = [];
+                          try {
+                            if (typeof opportunity.skills === 'string') {
+                              skillsArray = JSON.parse(opportunity.skills);
+                            } else if (Array.isArray(opportunity.skills)) {
+                              skillsArray = opportunity.skills;
+                            }
+                          } catch (e) {
+                            skillsArray = [];
+                          }
+
+                          return skillsArray && skillsArray.length > 0 ? (
                             <div className="mb-3">
                               <Text strong className="me-2">
                                 Skills:
                               </Text>
                               <Space wrap>
-                                {opportunity.skills
+                                {skillsArray
                                   .slice(0, 3)
                                   .map((skill, index) => (
                                     <Tag key={index}>{skill}</Tag>
                                   ))}
-                                {opportunity.skills.length > 3 && (
+                                {skillsArray.length > 3 && (
                                   <Tag>
-                                    +{opportunity.skills.length - 3} more
+                                    +{skillsArray.length - 3} more
                                   </Tag>
                                 )}
                               </Space>
                             </div>
-                          )}
+                          ) : null;
+                        })()}
                       </Card>
                     </motion.div>
                   ))}

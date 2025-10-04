@@ -11,18 +11,22 @@ import {
 import { BaseRecord } from "@refinedev/core";
 import { format } from "@utils/format";
 import { Space, Table, Avatar } from "antd";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 export default function PartnerList() {
   const { tableProps } = useTable({
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <PageBreadCrumbs items={["Partners", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column
             dataIndex="id"
             title={"ID"}
@@ -35,7 +39,7 @@ export default function PartnerList() {
             title={"Logo"}
             render={(value, record: any) => (
               <Avatar
-                src={value ? `${BASE_URL_UPLOADS_MEDIA}/${value}` : "/img/avatar.png"}
+                src={value || "/img/avatar.png"}
                 alt={record?.name}
                 size={40}
               />

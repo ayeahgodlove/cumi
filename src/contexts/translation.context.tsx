@@ -593,7 +593,7 @@ const translations = {
     // Hero Section
     'hero.title': 'Empowering Your Digital Journey',
     'hero.description': 'We\'re committed to revolutionizing the digital landscape, offering cutting-edge solutions tailored to individuals, startups, enterprises, and organizations.',
-    'hero.hire_services': 'Hire our services',
+    'hero.hire_services': 'Our services',
     'hero.our_mission': 'Our Mission',
     
     // Features Section
@@ -941,6 +941,7 @@ const translations = {
     'projects.ready_to_start': 'Ready to Get Started?',
     'projects.start_description': 'Let\'s discuss your project and bring your vision to life with our professional services.',
     'projects.get_quote': 'Get Quote',
+    'projects.lets_work_together': 'Let\'s Work Together',
     
     // Student Dashboard
     'student_dashboard.title': 'Student Dashboard',
@@ -1596,7 +1597,7 @@ const translations = {
     // Hero Section
     'hero.title': 'Autonomiser Votre Parcours Numérique',
     'hero.description': 'Nous nous engageons à révolutionner le paysage numérique, en offrant des solutions de pointe adaptées aux particuliers, startups, entreprises et organisations.',
-    'hero.hire_services': 'Engagez nos services',
+    'hero.hire_services': 'Nos prestations',
     'hero.our_mission': 'Notre Mission',
     
     // Features Section
@@ -1944,6 +1945,7 @@ const translations = {
     'projects.ready_to_start': 'Prêt à Commencer?',
     'projects.start_description': 'Discutons de votre projet et donnons vie à votre vision avec nos services professionnels.',
     'projects.get_quote': 'Obtenir un Devis',
+    'projects.lets_work_together': 'Travaillons Ensemble',
     
     // Student Dashboard
     'student_dashboard.title': 'Tableau de bord étudiant',

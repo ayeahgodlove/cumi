@@ -21,6 +21,7 @@ const Banner = (sequelizeInstance: Sequelize, DataTypes: any) => {
       },
       subTitle: {
         type: DataTypes.STRING,
+        field: 'subTitle', // Explicitly map to camelCase column name
       },
       image: {
         type: DataTypes.STRING,
@@ -28,6 +29,7 @@ const Banner = (sequelizeInstance: Sequelize, DataTypes: any) => {
       userId: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'userId', // Explicitly map to camelCase column name
       },
       createdAt: {
         type: DataTypes.DATE,

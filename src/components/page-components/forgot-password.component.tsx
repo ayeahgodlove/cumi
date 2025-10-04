@@ -273,7 +273,7 @@ export default function ForgotPasswordComponent() {
                 border: "none",
                 overflow: "hidden",
               }}
-              bodyStyle={{ padding: "3rem 2rem" }}
+              styles={{ body: { padding: "3rem 2rem" } }}
             >
               {/* Header Section */}
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>

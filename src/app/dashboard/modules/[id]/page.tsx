@@ -39,7 +39,7 @@ import { useNotification } from "@refinedev/core";
 import { useTranslation } from "@contexts/translation.context";
 import RichTextEditor from "@components/shared/rich-text-editor";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
-import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import {
   useGetLessonsByModuleQuery,
   useCreateLessonMutation,
@@ -98,34 +98,6 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [lessonForm] = Form.useForm();
 
-  // Image upload hook for lesson form
-  const {
-    fileList: lessonImageFileList,
-    setFileList: setLessonImageFileList,
-    handleUploadChange: handleLessonImageUploadChange,
-    beforeUpload: beforeLessonImageUpload,
-    handleRemove: handleLessonImageRemove,
-  } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "image/svg+xml",
-    ],
-    form: lessonForm,
-    fieldName: "imageUrl",
-    onError: (error) => {
-      open?.({
-        type: "error",
-        message: "Upload Error",
-        description: error,
-      });
-    },
-  });
-
   // Handle RTK Query errors
   useEffect(() => {
     if (moduleLoading === false && !module) {
@@ -138,17 +110,6 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
     }
   }, [moduleLoading, module, router, open, t]);
 
-  // Handle lesson image upload updates
-  useEffect(() => {
-    if (lessonImageFileList && lessonImageFileList.length > 0) {
-      const imageUrl = getImageUrlString(lessonImageFileList);
-      if (imageUrl) {
-        lessonForm.setFieldsValue({
-          imageUrl: imageUrl,
-        });
-      }
-    }
-  }, [lessonImageFileList, lessonForm]);
 
   const handleLessonSubmit = async (values: any) => {
     try {
@@ -160,9 +121,8 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
         .replace(/-+/g, "-")
         .trim("-");
 
-      // Get image URL from file list or form value
-      const imageUrl =
-        getImageUrlString(lessonImageFileList) || values.imageUrl || "";
+      // Get image URL from form value (ImageUploadField handles this)
+      const imageUrl = values.imageUrl || "";
 
       // Extract specific fields to avoid any string conversion issues
       const { reviews, ...cleanValues } = values;
@@ -232,21 +192,6 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
   const handleEditLesson = (lesson: any) => {
     setEditingLesson(lesson);
     lessonForm.setFieldsValue(lesson);
-
-    // Handle image file list for editing
-    if (lesson.imageUrl) {
-      const imageFile = {
-        uid: `existing-${lesson.id}`,
-        name: lesson.imageUrl.split("/").pop() || "image",
-        status: "done",
-        url: lesson.imageUrl,
-        response: { url: lesson.imageUrl },
-      };
-      setLessonImageFileList([imageFile]);
-    } else {
-      setLessonImageFileList([]);
-    }
-
     setLessonModalVisible(true);
   };
 
@@ -583,7 +528,19 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
             {t('common.close')}
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         {viewLesson && (
           <Descriptions column={1} bordered size="small">
@@ -941,11 +898,21 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
           setLessonModalVisible(false);
           setEditingLesson(null);
           lessonForm.resetFields();
-          setLessonImageFileList([]);
         }}
         footer={null}
-        width={1000}
-        style={{ top: 20 }}
+        width="95%"
+        style={{ maxWidth: '1100px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card
           bordered={false}
@@ -1080,46 +1047,13 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                 </Form.Item>
               </Col>
               <Col xs={24} sm={24} md={24} lg={24} xl={24}>
-                <Form.Item
+                <ImageUploadField
                   name="imageUrl"
                   label="Lesson Image"
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        // Check if we have a valid URL string
-                        if (typeof value === "string" && value.trim() !== "") {
-                          return Promise.resolve();
-                        }
-                        return Promise.reject(
-                          new Error("Please upload an image")
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <Upload.Dragger
-                    name="file"
-                    action="/api/uploads"
-                    listType="picture"
-                    maxCount={1}
-                    multiple={false}
-                    fileList={
-                      Array.isArray(lessonImageFileList)
-                        ? lessonImageFileList
-                        : []
-                    }
-                    onChange={handleLessonImageUploadChange}
-                    beforeUpload={beforeLessonImageUpload}
-                    onRemove={handleLessonImageRemove}
-                  >
-                    <p className="ant-upload-text">
-                      Drag & drop a lesson image here
-                    </p>
-                    <p className="ant-upload-hint">
-                      Support for single upload. Maximum file size: 1MB
-                    </p>
-                  </Upload.Dragger>
-                </Form.Item>
+                  form={lessonForm}
+                  initialImageUrl={editingLesson?.imageUrl}
+                  maxSize={5 * 1024 * 1024}
+                />
               </Col>
             </Row>
 
@@ -1284,7 +1218,6 @@ export default function ModuleDetailsPage({ params }: ModuleDetailsPageProps) {
                     setLessonModalVisible(false);
                     setEditingLesson(null);
                     lessonForm.resetFields();
-                    setLessonImageFileList([]);
                   }}
                   size="large"
                   style={{

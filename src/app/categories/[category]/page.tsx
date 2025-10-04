@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       canonical: `https://cumi.dev/categories/${params.category}`,
     },
     images: category.posts?.slice(0, 3).map((post: any) => ({
-      url: post.imageUrl ? `https://cumi.dev/uploads/posts/${post.imageUrl}` : defaultImages[0],
+      url: post.imageUrl || defaultImages[0],
       width: 800,
       height: 600,
       alt: post.title,

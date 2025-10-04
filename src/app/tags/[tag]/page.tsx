@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
       canonical: `https://cumi.dev/tags/${params.tag}`,
     },
     images: tag.posts?.slice(0, 3).map((post: any) => ({
-      url: post.imageUrl ? `https://cumi.dev/uploads/posts/${post.imageUrl}` : defaultImages[0],
+      url: post.imageUrl || defaultImages[0],
       width: 800,
       height: 600,
       alt: post.title,

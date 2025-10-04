@@ -2,7 +2,6 @@ import React from "react";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { IService } from "@domain/models/service.model";
 import { Empty } from "antd";
 
@@ -39,7 +38,7 @@ const ServiceList: React.FC<IServiceListProps> = ({ services }) => {
                   <SwiperSlide key={index}>
                     <div className="card rounded bg-light shadow border-0">
                       <img
-                        src={`${BASE_URL_UPLOADS_MEDIA}/${item.imageUrl}`}
+                        src={item.imageUrl}
                         alt={item.title}
                         className="card-img-top"
                         style={{ maxHeight: 250 }}

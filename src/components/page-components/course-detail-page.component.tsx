@@ -51,7 +51,6 @@ import {
 import { useState, useEffect } from "react";
 import { message } from "antd";
 import { useSession } from "next-auth/react";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import CourseEnrollmentModal from "@components/shared/course-enrollment-modal.component";
 import {
   showLoginRequiredNotificationSimple,
@@ -443,7 +442,7 @@ export default function CourseDetailPageComponent({
                   {course.imageUrl && (
                     <div className="mb-6">
                       <img
-                        src={`${BASE_URL_UPLOADS_MEDIA}/${course.imageUrl}`}
+                        src={course.imageUrl}
                         alt={course.title}
                         style={{
                           width: "100%",

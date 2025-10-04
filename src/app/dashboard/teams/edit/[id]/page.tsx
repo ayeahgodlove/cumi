@@ -2,8 +2,8 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, Select, Switch, Upload, Button, Row, Col } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Select, Switch, Row, Col } from "antd";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 
 export default function TeamEdit() {
   const { formProps, saveButtonProps, queryResult } = useForm();
@@ -165,19 +165,13 @@ export default function TeamEdit() {
             />
           </Form.Item>
 
-          <Form.Item
+          <ImageUploadField
             label="Avatar"
             name="avatar"
-          >
-            <Upload
-              name="avatar"
-              listType="picture-card"
-              showUploadList={false}
-              action="/api/uploads"
-            >
-              <Button icon={<UploadOutlined />}>Upload Avatar</Button>
-            </Upload>
-          </Form.Item>
+            form={formProps.form}
+            listType="picture-card"
+            initialImageUrl={queryResult?.data?.data?.avatar}
+          />
 
           <Form.Item
             label="Active Status"

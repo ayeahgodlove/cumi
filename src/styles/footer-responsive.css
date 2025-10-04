@@ -1,0 +1,71 @@
+/* Footer Responsive Styles */
+
+/* Show Contact Info and Social Media only on large screens (≥992px) */
+@media (min-width: 992px) {
+  .contactInfo,
+  .socialMedia {
+    display: block !important;
+  }
+}
+
+/* Mobile and tablet only (<992px) */
+@media (max-width: 991px) {
+  /* Hide these sections completely */
+  .contactInfo,
+  .socialMedia {
+    display: none !important;
+  }
+  
+  /* Center visible footer content */
+  footer .content_group {
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  /* Center titles */
+  footer .footerTitle,
+  footer h5 {
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  
+  /* Center all links */
+  footer .content_group a {
+    display: block !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+  
+  /* Center newsletter section */
+  footer .content_group form {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  
+  footer .content_group form input,
+  footer .content_group form button {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Hide carousel dots on mobile/tablet */
+  .custom-dots {
+    display: none !important;
+  }
+}
+
+/* Large screens only (≥992px) */
+@media (min-width: 992px) {
+  /* Show carousel dots on large screens */
+  .custom-dots {
+    display: block !important;
+  }
+}
+

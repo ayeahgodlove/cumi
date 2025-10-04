@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Upload, message, InputNumber, Switch, DatePicker, Row, Col, Button, Space, Card } from "antd";
-import { PlusOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import { Modal, Form, Input, Select, message, InputNumber, Switch, DatePicker, Row, Col, Button, Space, Card } from "antd";
+import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
 import { useNotification } from "@refinedev/core";
 import { useSelect } from "@refinedev/antd";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
-import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
 import PhoneNumberInput from "@components/shared/phone-number-input.component";
 import { useTranslation } from "@contexts/translation.context";
@@ -36,8 +36,8 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
       // Format the data before submission
       const formattedValues = {
         ...values,
-        // Ensure imageUrl is a string (not a file object)
-        imageUrl: getImageUrlString(fileList) || values.imageUrl || "",
+        // Ensure imageUrl is a string from the ImageUploadField
+        imageUrl: values.imageUrl || "",
         // Ensure authorName is provided (required field)
         authorName: values.authorName || "Unknown Author",
       };
@@ -54,7 +54,6 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
       
       // Reset form and close modal
       form.resetFields();
-      setFileList([]);
       onSuccess();
       onCancel();
     } catch (error: any) {
@@ -74,31 +73,6 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
   });
 
   const categories = categoryData?.data?.data || [];
-
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: form,
-    fieldName: 'imageUrl',
-    onSuccess: (response) => {
-      // This will be handled in useEffect to prevent setState in render
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Handle form field updates in useEffect to prevent setState in render
-  useEffect(() => {
-    if (fileList && fileList.length > 0) {
-      const imageUrl = getImageUrlString(fileList);
-      if (imageUrl) {
-        form.setFieldsValue({
-          imageUrl: imageUrl
-        });
-      }
-    }
-  }, [fileList, form]);
 
   // Preload form when editing
   useEffect(() => {
@@ -122,26 +96,14 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
         keywords: editingCourse.keywords,
         imageUrl: editingCourse.imageUrl,
       });
-      
-      // Set file list if there's an existing image
-      if (editingCourse.imageUrl) {
-        setFileList([{
-          uid: '-1',
-          name: 'existing-image',
-          status: 'done',
-          url: editingCourse.imageUrl,
-        }]);
-      }
     } else if (!editingCourse && visible) {
       // Reset form for new course
       form.resetFields();
-      setFileList([]);
     }
-  }, [editingCourse, visible, form, setFileList]);
+  }, [editingCourse, visible, form]);
 
   const handleCancel = () => {
     form.resetFields();
-    setFileList([]);
     onCancel();
   };
 
@@ -161,15 +123,18 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      width={800}
-      destroyOnClose
-      style={{
-        backgroundColor: "white"
-      }}
+      width="95%"
+      style={{ maxWidth: '1200px', top: 20 }}
+      destroyOnClose={true}
+      maskClosable={true}
+      keyboard={true}
+      forceRender={false}
       styles={{
         body: {
           backgroundColor: "white",
-          padding: "24px"
+          padding: "24px",
+          maxHeight: 'calc(100vh - 200px)',
+          overflowY: 'auto'
         },
         header: {
           backgroundColor: "white",
@@ -245,7 +210,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           label={t('common.description')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) }]}
         >
-          <Input.TextArea rows={4} />
+          <Input.TextArea size="large" rows={4} />
         </Form.Item>
 
         <Row gutter={[16, 16]}>
@@ -318,39 +283,16 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           </Col>
         </Row>
 
-        <Form.Item
+        <ImageUploadField
           name="imageUrl"
           label={t('forms.course_image')}
-          rules={[
-            { required: true, message: t('forms.please_upload', { field: t('forms.course_image').toLowerCase() }) },
-            {
-              validator: (_, value) => {
-                // Check if we have a valid URL string
-                if (typeof value === 'string' && value.trim() !== '') {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(t('forms.please_upload', { field: 'image' })));
-              }
-            }
-          ]}
-        >
-          <Upload.Dragger
-            name="file"
-            action="/api/uploads"
-            listType="picture"
-            maxCount={1}
-            multiple={false}
-            fileList={Array.isArray(fileList) ? fileList : []}
-            onChange={handleUploadChange}
-            beforeUpload={beforeUpload}
-            onRemove={handleRemove}
-          >
-            <p className="ant-upload-text">{t('forms.drag_drop_course_image')}</p>
-            <p className="ant-upload-hint">
-              {t('forms.upload_hint')}
-            </p>
-          </Upload.Dragger>
-        </Form.Item>
+          required={true}
+          form={form}
+          maxSize={5 * 1024 * 1024}
+          dragger={true}
+          draggerText={t('forms.drag_drop_course_image')}
+          draggerHint={t('forms.upload_hint')}
+        />
 
         <Form.Item>
           <div style={{ 

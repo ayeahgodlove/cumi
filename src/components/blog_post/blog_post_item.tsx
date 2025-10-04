@@ -1,7 +1,6 @@
 import { Card, Space, Typography, Button } from "antd";
 import React from "react";
 import { IPost } from "@domain/models/post.model";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
 import { ICategory } from "@domain/models/category";
 import { IUser } from "@domain/models/user";
@@ -39,7 +38,7 @@ const BlogPostItem = ({ post, users, categories }: PostItemProps) => {
         <Link href={`/blog_posts/${post.slug}`}>
           <Image
             alt={post.title}
-            src={`${BASE_URL_UPLOADS_MEDIA}/${post.imageUrl}`}
+            src={post.imageUrl}
             height={500}
             width={1200}
             quality={100}

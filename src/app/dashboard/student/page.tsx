@@ -1860,7 +1860,8 @@ export default function StudentDashboard() {
             View Full Course
           </Button>,
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px' }}
       >
         {selectedItem && (
           <Card style={{ backgroundColor: "white", border: "none" }}>

@@ -1,7 +1,6 @@
 "use client";
 
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DeleteButton,
   EditButton,
@@ -18,6 +17,11 @@ export default function CategoryList() {
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <EnhancedBreadcrumb
@@ -28,7 +32,7 @@ export default function CategoryList() {
         backButtonText="Back to Dashboard"
       />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column
             dataIndex="id"
             title={"ID"}
@@ -124,7 +128,7 @@ export default function CategoryList() {
             title={"Image"}
             render={(value, record: any) => (
               <Image
-                src={`${BASE_URL_UPLOADS_MEDIA}/${value}`}
+                src={value}
                 alt={record?.title}
                 height={100}
                 width={100}

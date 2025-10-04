@@ -5,9 +5,26 @@ import { App } from "../../app/_refine_context";
 import { ColorModeContextProvider } from "../color-mode";
 import { TranslationProvider } from "../translation.context";
 import { LiveSupportButton } from "../../components/shared/live-support-button";
+import ClientProvider from "../provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 export const RefineContext = (props: any) => {
   const defaultMode = props?.defaultMode;
+
+  // Create QueryClient at the highest level to ensure it's always available
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            refetchOnWindowFocus: false,
+            retry: 1,
+            staleTime: 5 * 60 * 1000, // 5 minutes
+          },
+        },
+      })
+  );
 
   const aiConfig = {
     provider: "openai" as const,
@@ -20,19 +37,23 @@ export const RefineContext = (props: any) => {
   };
 
   return (
-    <SessionProvider>
-      <TranslationProvider>
-        <ColorModeContextProvider defaultMode={defaultMode}>
-          <App {...props} />
-          <LiveSupportButton
-            aiConfig={aiConfig}
-            companyName="CumiTech"
-            supportEmail="info@cumi.dev"
-            supportPhone="+237-673-687-549"
-            whatsappNumber="+237681289411"
-          />
-        </ColorModeContextProvider>
-      </TranslationProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <ClientProvider>
+          <TranslationProvider>
+            <ColorModeContextProvider defaultMode={defaultMode}>
+              <App {...props} />
+              <LiveSupportButton
+                aiConfig={aiConfig}
+                companyName="CumiTech"
+                supportEmail="info@cumi.dev"
+                supportPhone="+237-673-687-549"
+                whatsappNumber="+237681289411"
+              />
+            </ColorModeContextProvider>
+          </TranslationProvider>
+        </ClientProvider>
+      </SessionProvider>
+    </QueryClientProvider>
   );
 };

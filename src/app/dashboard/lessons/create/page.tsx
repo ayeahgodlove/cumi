@@ -3,6 +3,7 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
 import { Create, useForm, useSelect } from "@refinedev/antd";
@@ -14,13 +15,10 @@ import {
   InputNumber,
   Row,
   Select,
-  Upload,
-  message,
   Switch,
 } from "antd";
-import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
-import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LessonCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -37,31 +35,6 @@ export default function LessonCreate() {
   const categories = categoryData?.data?.data || [];
   const courses = courseData?.data?.data || [];
 
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: formProps.form,
-    fieldName: 'imageUrl',
-    onSuccess: (response) => {
-      // This will be handled in useEffect to prevent setState in render
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Handle form field updates in useEffect to prevent setState in render
-  useEffect(() => {
-    if (fileList && fileList.length > 0) {
-      const imageUrl = getImageUrlString(fileList);
-      if (imageUrl) {
-        formProps.form?.setFieldsValue({
-          imageUrl: imageUrl
-        });
-      }
-    }
-  }, [fileList, formProps.form]);
-
   // Pre-populate courseId if provided in URL
   useEffect(() => {
     if (courseId && formProps.form) {
@@ -71,20 +44,6 @@ export default function LessonCreate() {
     }
   }, [courseId, formProps.form]);
 
-  // Custom function to extract URL from file list for form submission
-  const getImageUrlFromEvent = (e: any) => {
-    if (Array.isArray(e)) {
-      // If it's an array, get the URL from the first file
-      const file = e[0];
-      if (file?.response?.url) {
-        return file.response.url;
-      }
-      if (file?.url) {
-        return file.url;
-      }
-    }
-    return undefined;
-  };
   return (
     <>
       <PageBreadCrumbs items={["Lessons", "Lists", "Create"]} />
@@ -402,41 +361,13 @@ export default function LessonCreate() {
               >
                 <Input.TextArea size="large" rows={6} />
               </Form.Item>
-              <Form.Item
-                name={"imageUrl"}
-                label="Image"
+              <ImageUploadField
+                name="imageUrl"
+                label="Lesson Image"
                 required={true}
-                rules={[
-                  { required: true, message: "This field is a required field" },
-                  {
-                    validator: (_, value) => {
-                      // Check if we have a valid URL string
-                      if (typeof value === 'string' && value.trim() !== '') {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Please upload an image'));
-                    }
-                  }
-                ]}
-                style={{ marginBottom: 10 }}
-              >
-                <Upload.Dragger
-                  name="file"
-                  action="/api/uploads"
-                  listType="picture"
-                  maxCount={1}
-                  multiple={false}
-                  fileList={Array.isArray(fileList) ? fileList : []}
-                  onChange={handleUploadChange}
-                  beforeUpload={beforeUpload}
-                  onRemove={handleRemove}
-                >
-                  <p className="ant-upload-text">Drag & drop a lesson image here</p>
-                  <p className="ant-upload-hint">
-                    Support for single upload. Maximum file size: 1MB
-                  </p>
-                </Upload.Dragger>
-              </Form.Item>
+                form={formProps.form}
+                maxSize={5 * 1024 * 1024}
+              />
             </Col>
           </Row>
 

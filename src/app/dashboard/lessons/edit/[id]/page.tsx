@@ -3,6 +3,7 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
 import { Edit, useForm, useSelect } from "@refinedev/antd";
@@ -14,15 +15,10 @@ import {
   InputNumber,
   Row,
   Select,
-  Upload,
-  message,
 } from "antd";
-import { useUpload, deleteUploadedFile } from "@hooks/shared/upload.hook";
-import { useEffect, useState } from "react";
 
 export default function LessonEdit() {
   const { formProps, saveButtonProps, queryResult } = useForm({});
-  const [initialImageUrl, setInitialImageUrl] = useState<string>("");
 
   const { queryResult: courseData, selectProps: courseSelectProps } =
     useSelect<ICourse>({
@@ -36,66 +32,6 @@ export default function LessonEdit() {
   const categories = categoryData?.data || [];
   const courses = courseData?.data || [];
 
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    onSuccess: (response) => {
-      // Update form with the uploaded file URL
-      formProps.form?.setFieldsValue({
-        imageUrl: response.url
-      });
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Set initial file list when data loads
-  useEffect(() => {
-    if (queryResult?.data?.data?.imageUrl) {
-      const imageUrl = queryResult.data.data.imageUrl;
-      setInitialImageUrl(imageUrl);
-      
-      // Create file list item for existing image
-      const existingFile = {
-        uid: '-1',
-        name: imageUrl.split('/').pop() || 'image',
-        status: 'done',
-        url: imageUrl,
-        response: { url: imageUrl }
-      };
-      setFileList([existingFile]);
-    }
-  }, [queryResult?.data?.data?.imageUrl, setFileList]);
-
-  // Custom function to extract URL from file list for form submission
-  const getImageUrlFromEvent = (e: any) => {
-    if (Array.isArray(e)) {
-      // If it's an array, get the URL from the first file
-      const file = e[0];
-      if (file?.response?.url) {
-        return file.response.url;
-      }
-      if (file?.url) {
-        return file.url;
-      }
-    }
-    return undefined;
-  };
-
-  const handleRemoveWithCleanup = async (file: any) => {
-    // If removing existing file, delete it from server
-    if (file.url === initialImageUrl && initialImageUrl) {
-      const deleted = await deleteUploadedFile(initialImageUrl);
-      if (deleted) {
-        message.success('File deleted successfully');
-      } else {
-        message.warning('File removed from form but may still exist on server');
-      }
-    }
-    // Use the hook's handleRemove for uploaded files
-    return await handleRemove(file);
-  };
   return (
     <>
       <PageBreadCrumbs items={["Courses", "Lists", "Edit"]} />
@@ -212,41 +148,14 @@ export default function LessonEdit() {
                 <Input.TextArea size="large" rows={6} />
               </Form.Item>
 
-              <Form.Item
-                name={"imageUrl"}
-                label="Image"
+              <ImageUploadField
+                name="imageUrl"
+                label="Lesson Image"
                 required={true}
-                rules={[
-                  { required: true, message: "This field is a required field" },
-                  {
-                    validator: (_, value) => {
-                      // Check if we have a valid URL string
-                      if (typeof value === 'string' && value.trim() !== '') {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Please upload an image'));
-                    }
-                  }
-                ]}
-                style={{ marginBottom: 10 }}
-              >
-                <Upload.Dragger
-                  name="file"
-                  action="/api/uploads"
-                  listType="picture"
-                  maxCount={1}
-                  multiple={false}
-                  fileList={Array.isArray(fileList) ? fileList : []}
-                  onChange={handleUploadChange}
-                  beforeUpload={beforeUpload}
-                  onRemove={handleRemoveWithCleanup}
-                >
-                  <p className="ant-upload-text">Drag & drop a lesson image here</p>
-                  <p className="ant-upload-hint">
-                    Support for single upload. Maximum file size: 1MB
-                  </p>
-                </Upload.Dragger>
-              </Form.Item>
+                form={formProps.form}
+                initialImageUrl={queryResult?.data?.data?.imageUrl}
+                maxSize={5 * 1024 * 1024}
+              />
             </Col>
           </Row>
 

@@ -17,11 +17,16 @@ const SubscriberList: React.FC = () => {
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <PageBreadCrumbs items={["Subscribers", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column dataIndex="id" title="ID" />
           <Table.Column dataIndex="email" title="Email" />
           <Table.Column dataIndex="name" title="Name" />

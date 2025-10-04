@@ -9,5 +9,10 @@ export const themeConfig = {
     colorLink: "#54c6aa", // --primary-color
     colorBgBase: "#E7E9F8", // --gray (background base)
     colorWhite: "#ffffff", // --white
+    // Control border radius globally
+    borderRadius: 8,
+    borderRadiusLG: 12,
+    borderRadiusSM: 6,
+    borderRadiusXS: 4,
   },
 };

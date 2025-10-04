@@ -1,4 +1,3 @@
-import { message } from "antd";
 import { useState } from "react";
 
 interface UploadResponse {
@@ -17,8 +16,8 @@ interface UseUploadOptions {
   allowedTypes?: string[];
   onSuccess?: (response: UploadResponse) => void;
   onError?: (error: string) => void;
-  form?: any; // Add form reference for direct field updates
-  fieldName?: string; // Add field name for direct updates
+  form?: any;
+  fieldName?: string;
 }
 
 export const useUpload = (options: UseUploadOptions = {}) => {
@@ -46,46 +45,6 @@ export const useUpload = (options: UseUploadOptions = {}) => {
     }
 
     return null;
-  };
-
-  const uploadFile = async (file: File): Promise<UploadResponse> => {
-    const validationError = validateFile(file);
-    if (validationError) {
-      const errorResponse = { success: false, message: validationError };
-      onError?.(validationError);
-      return errorResponse;
-    }
-
-    setUploading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('/api/uploads', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result: UploadResponse = await response.json();
-
-      if (result.success) {
-        message.success(`${file.name} uploaded successfully`);
-        onSuccess?.(result);
-      } else {
-        message.error(result.message || 'Upload failed');
-        onError?.(result.message || 'Upload failed');
-      }
-
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
-      message.error(errorMessage);
-      onError?.(errorMessage);
-      return { success: false, message: errorMessage };
-    } finally {
-      setUploading(false);
-    }
   };
 
   const handleUploadChange = ({ file, fileList }: { file: any; fileList: any }) => {
@@ -126,7 +85,7 @@ export const useUpload = (options: UseUploadOptions = {}) => {
         }
       }
     } else if (file.status === 'error') {
-      message.error(`${file.name} upload failed`);
+      onError?.(`${file.name} upload failed`);
     }
 
     setFileList(filteredList);
@@ -135,62 +94,56 @@ export const useUpload = (options: UseUploadOptions = {}) => {
   const beforeUpload = (file: File) => {
     const validationError = validateFile(file);
     if (validationError) {
-      message.error(validationError);
+      onError?.(validationError);
       return false;
     }
     return true;
   };
 
-  const removeFile = (file: any) => {
-    const newFileList = fileList.filter((f) => f.uid !== file.uid);
-    setFileList(newFileList);
-  };
-
-  const clearFiles = () => {
-    setFileList([]);
-  };
-
   const handleRemove = async (file: any) => {
-    // If file was uploaded, delete it from server
-    if (file.response?.url) {
-      const deleted = await deleteUploadedFile(file.response.url);
-      if (deleted) {
-        message.success('File deleted successfully');
-      } else {
-        message.warning('File removed from form but may still exist on server');
-      }
-    }
-    
     // Remove from file list
     const newFileList = fileList.filter((f) => f.uid !== file.uid);
     setFileList(newFileList);
-    
-    return true; // Allow removal
+    return true;
   };
 
   return {
     uploading,
     fileList,
     setFileList,
-    uploadFile,
     handleUploadChange,
     beforeUpload,
-    removeFile,
-    clearFiles,
     handleRemove,
     validateFile
   };
 };
 
-// Utility function to delete uploaded files
-export const deleteUploadedFile = async (fileUrl: string): Promise<boolean> => {
+// Utility function to delete uploaded files from Cloudinary
+export const deleteUploadedFile = async (fileUrl: string, publicId?: string): Promise<boolean> => {
   try {
-    const response = await fetch('/api/uploads/delete', {
+    // Extract public ID from URL if not provided
+    let cloudinaryPublicId = publicId;
+    
+    if (!cloudinaryPublicId && fileUrl) {
+      // Extract from Cloudinary URL format
+      // https://res.cloudinary.com/dch9sc7gq/image/upload/v1234567890/cumi/image_name.jpg
+      const match = fileUrl.match(/\/v\d+\/(.+)\.(jpg|jpeg|png|gif|webp|svg)$/i);
+      if (match && match[1]) {
+        cloudinaryPublicId = match[1];
+      }
+    }
+
+    if (!cloudinaryPublicId) {
+      console.warn('No public ID available for deletion');
+      return false;
+    }
+
+    const response = await fetch('/api/cloudinary/delete', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ fileUrl }),
+      body: JSON.stringify({ publicId: cloudinaryPublicId }),
     });
 
     const result = await response.json();
@@ -199,40 +152,6 @@ export const deleteUploadedFile = async (fileUrl: string): Promise<boolean> => {
     console.error('Error deleting file:', error);
     return false;
   }
-};
-
-// Utility function to get file info from URL
-export const getFileInfoFromUrl = (url: string) => {
-  if (!url) return null;
-  
-  const filename = url.split('/').pop();
-  const extension = filename?.split('.').pop()?.toLowerCase();
-  
-  return {
-    filename,
-    extension,
-    url,
-    isImage: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension || '')
-  };
-};
-
-// Utility function to extract URL from file list for form submission
-export const getImageUrlFromEvent = (e: any) => {
-  // Handle different event types
-  if (Array.isArray(e)) {
-    // If it's an array (fileList), return it as is for form control
-    return e;
-  }
-  
-  if (e && typeof e === 'object') {
-    // If it's a single file object, wrap it in an array
-    if (e.response?.url || e.url) {
-      return [e];
-    }
-  }
-  
-  // Return empty array if no valid file
-  return [];
 };
 
 // Utility function to extract URL string from file list for form field updates

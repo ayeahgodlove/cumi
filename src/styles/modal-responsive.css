@@ -1,0 +1,134 @@
+/* Modal Responsive Styles - Ensures all modals are mobile-friendly */
+
+/* Mobile devices (less than 576px) */
+@media (max-width: 575.98px) {
+  .ant-modal {
+    max-width: 95vw !important;
+    margin: 10px auto !important;
+  }
+  
+  .ant-modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .ant-modal-body {
+    padding: 16px !important;
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+  }
+  
+  .ant-modal-header {
+    padding: 16px !important;
+  }
+  
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+  }
+  
+  /* Form elements in modals */
+  .ant-modal .ant-form-item {
+    margin-bottom: 16px;
+  }
+  
+  .ant-modal .ant-descriptions-row > td,
+  .ant-modal .ant-descriptions-row > th {
+    padding: 8px !important;
+    font-size: 13px;
+  }
+  
+  /* Tables in modals */
+  .ant-modal .ant-table-wrapper {
+    overflow-x: auto;
+  }
+}
+
+/* Tablet devices (576px to 991px) */
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .ant-modal {
+    max-width: 90vw !important;
+    margin: 20px auto !important;
+  }
+  
+  .ant-modal-content {
+    max-height: 85vh;
+  }
+  
+  .ant-modal-body {
+    padding: 20px !important;
+    max-height: calc(85vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+/* Large tablets and small desktops (992px to 1199px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .ant-modal-body {
+    padding: 24px !important;
+  }
+}
+
+/* Ensure modal centered on all screens */
+.ant-modal-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Prevent modal body content from overflowing */
+.ant-modal-body .ant-form {
+  max-width: 100%;
+}
+
+.ant-modal-body .ant-row {
+  max-width: 100%;
+}
+
+/* Make cards inside modals responsive */
+.ant-modal .ant-card {
+  margin: 0 !important;
+}
+
+/* Ensure buttons wrap on small screens */
+.ant-modal-footer .ant-btn {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 575.98px) {
+  .ant-modal-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .ant-modal-footer .ant-btn {
+    width: 100%;
+    margin: 0 !important;
+  }
+}
+
+/* Responsive descriptions in modals */
+@media (max-width: 767.98px) {
+  .ant-modal .ant-descriptions-view table {
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .ant-modal .ant-descriptions-item-label,
+  .ant-modal .ant-descriptions-item-content {
+    display: block;
+    width: 100% !important;
+  }
+}
+
+/* Ensure Space.Compact components work on mobile */
+@media (max-width: 575.98px) {
+  .ant-modal .ant-space-compact {
+    flex-wrap: wrap;
+  }
+  
+  .ant-modal .ant-space-compact > * {
+    flex: 1 1 100%;
+  }
+}
+

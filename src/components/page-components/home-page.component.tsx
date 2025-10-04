@@ -1,9 +1,6 @@
 "use client";
-import { Suspense } from "react";
-
 import { AppFooter } from "@components/footer/footer";
 import { AppFootnote } from "@components/footnote/footnote";
-
 import FeatureSection from "@components/feature-section/feature-section";
 import AboutNote from "@components/about-note/about-note";
 import { AppNav } from "@components/nav/nav.component";

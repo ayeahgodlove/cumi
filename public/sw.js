@@ -1,8 +1,9 @@
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1'; // Updated to force refresh
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 const IMAGE_CACHE = `images-${CACHE_VERSION}`;
 const API_CACHE = `api-${CACHE_VERSION}`;
+const FONT_CACHE = `fonts-${CACHE_VERSION}`;
 
 // Resources to cache immediately
 const STATIC_ASSETS = [
@@ -22,9 +23,18 @@ self.addEventListener('install', (event) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
         console.error('[Service Worker] Failed to cache static assets:', err);
       });
+    }).then(() => {
+      // Skip waiting to activate immediately
+      return self.skipWaiting();
     })
   );
-  self.skipWaiting();
+});
+
+// Listen for skip waiting message
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Activate event - clean up old caches
@@ -38,15 +48,19 @@ self.addEventListener('activate', (event) => {
             cache !== STATIC_CACHE &&
             cache !== DYNAMIC_CACHE &&
             cache !== IMAGE_CACHE &&
-            cache !== API_CACHE
+            cache !== API_CACHE &&
+            cache !== FONT_CACHE
           ) {
             console.log('[Service Worker] Deleting old cache:', cache);
             return caches.delete(cache);
           }
         })
-      ).then(() => {
-        // Only claim clients after cache cleanup
-        return self.clients.claim();
+      );
+    }).then(() => {
+      // Claim clients only after activation is complete
+      console.log('[Service Worker] Claiming clients...');
+      return self.clients.claim().catch((err) => {
+        console.warn('[Service Worker] Could not claim clients:', err);
       });
     })
   );
@@ -64,6 +78,17 @@ self.addEventListener('fetch', (event) => {
 
   // Skip chrome extensions
   if (url.protocol === 'chrome-extension:') {
+    return;
+  }
+
+  // Skip Google Fonts and other cross-origin font requests - let browser handle them
+  if (
+    url.hostname === 'fonts.googleapis.com' ||
+    url.hostname === 'fonts.gstatic.com' ||
+    request.destination === 'font' ||
+    url.pathname.match(/\.(woff|woff2|ttf|eot|otf)$/)
+  ) {
+    // Let browser handle fonts with its own cache (faster and CORS-safe)
     return;
   }
 

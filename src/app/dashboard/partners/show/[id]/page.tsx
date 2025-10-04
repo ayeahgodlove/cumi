@@ -4,7 +4,6 @@ import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.
 import { Show } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
 import { Typography, Descriptions, Avatar, Tag } from "antd";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 const { Title, Text } = Typography;
 
@@ -22,7 +21,7 @@ export default function PartnerShow() {
           <Descriptions.Item label="Logo">
             <Avatar
               size={64}
-              src={record?.logo ? `${BASE_URL_UPLOADS_MEDIA}/${record.logo}` : "/img/avatar.png"}
+              src={record?.logo || "/img/avatar.png"}
               alt={record?.name}
             />
           </Descriptions.Item>

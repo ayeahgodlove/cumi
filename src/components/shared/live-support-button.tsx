@@ -10,7 +10,8 @@ import {
   WhatsAppOutlined,
   SettingOutlined,
   CloseOutlined,
-  CustomerServiceOutlined
+  CustomerServiceOutlined,
+  MailOutlined
 } from '@ant-design/icons';
 import { useTranslation } from '@contexts/translation.context';
 import AIService, { AIServiceConfig, AIMessage } from '../../service/ai.sevice';
@@ -18,18 +19,19 @@ import AIService, { AIServiceConfig, AIMessage } from '../../service/ai.sevice';
 const { Text } = Typography;
 const { TextArea } = Input;
 
-// Add modern styles
+// Add modern CUMI-themed styles
 const modernSupportStyles = `
   .modern-support-modal .ant-modal-content {
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(34, 197, 94, 0.15);
     overflow: hidden;
+    border: 1px solid rgba(34, 197, 94, 0.1);
   }
   
   .modern-support-modal .ant-modal-header {
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-bottom: 1px solid #f0f0f0;
-    padding: 20px 24px;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%);
+    border-bottom: 2px solid rgba(34, 197, 94, 0.1);
+    padding: 24px;
   }
   
   .modern-support-modal .ant-modal-body {
@@ -37,8 +39,29 @@ const modernSupportStyles = `
   }
   
   .modern-support-modal .ant-modal-close {
-    top: 16px;
-    right: 16px;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .modern-support-modal .ant-modal-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: rotate(90deg);
+  }
+  
+  @media (max-width: 768px) {
+    .modern-support-modal {
+      max-width: 95vw !important;
+      margin: 10px auto !important;
+    }
+    
+    .modern-support-modal .ant-modal-content {
+      max-height: 90vh;
+    }
   }
 `;
 
@@ -387,22 +410,24 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
           style={{
             width: '64px',
             height: '64px',
-            boxShadow: '0 8px 24px rgba(24, 144, 255, 0.3)',
-            background: 'linear-gradient(135deg, #1890ff 0%, #722ed1 100%)',
+            boxShadow: '0 8px 24px rgba(34, 197, 94, 0.3)',
+            background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
             border: 'none',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '24px',
-            transition: 'all 0.3s ease',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(24, 144, 255, 0.4)';
+            e.currentTarget.style.transform = 'scale(1.1) rotate(5deg)';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(34, 197, 94, 0.4)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #0d9488 100%)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(24, 144, 255, 0.3)';
+            e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(34, 197, 94, 0.3)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)';
           }}
         />
         
@@ -429,52 +454,80 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'space-between',
-            padding: '8px 0'
+            padding: '8px 0',
+            flexWrap: 'wrap',
+            gap: '12px'
           }}>
             <Space>
-              <CustomerServiceOutlined style={{ color: '#1890ff', fontSize: '20px' }} />
-              <span style={{ fontSize: '18px', fontWeight: '600' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(34, 197, 94, 0.2)',
+              }}>
+                <CustomerServiceOutlined style={{ color: 'white', fontSize: '20px' }} />
+              </div>
+              <span style={{ fontSize: '18px', fontWeight: '700', color: '#1f2937' }}>
                 {t('support.title') || 'Customer Support'}
               </span>
             </Space>
             <Badge 
               status={agentStatus === 'available' ? 'success' : agentStatus === 'busy' ? 'warning' : 'error'} 
               text={getStatusText()}
-              style={{ fontSize: '12px' }}
+              style={{ fontSize: '13px', fontWeight: 600 }}
             />
           </div>
         }
         open={isOpen}
         onCancel={() => setIsOpen(false)}
         footer={null}
-        width={520}
-        style={{ top: 20 }}
+        width={600}
+        style={{ top: 20, maxWidth: '95vw' }}
         styles={{ body: { padding: 0 } }}
         className="modern-support-modal"
+        centered
       >
-        <Card style={{ backgroundColor: 'white', border: 'none', height: '500px', display: 'flex', flexDirection: 'column' }}>
+        <Card style={{ 
+          backgroundColor: 'white', 
+          border: 'none', 
+          height: 'clamp(400px, 70vh, 600px)', 
+          display: 'flex', 
+          flexDirection: 'column',
+          borderRadius: '0',
+        }}>
           {/* Mode Selector */}
           <div style={{ 
-            padding: '20px', 
-            borderBottom: '1px solid #f0f0f0',
-            background: 'linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)'
+            padding: '24px', 
+            borderBottom: '2px solid rgba(34, 197, 94, 0.1)',
+            background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)'
           }}>
-            <div style={{ marginBottom: '12px' }}>
-              <Text strong style={{ fontSize: '14px', color: '#666' }}>
+            <div style={{ marginBottom: '16px' }}>
+              <Text strong style={{ fontSize: '15px', color: '#1f2937', fontWeight: 600 }}>
                 Choose Support Option
               </Text>
             </div>
-            <Space size="middle">
+            <Space size="middle" wrap style={{ width: '100%', justifyContent: 'center' }}>
               <Button
                 type={supportMode === 'ai' ? 'primary' : 'default'}
                 icon={<RobotOutlined />}
                 onClick={() => setSupportMode('ai')}
-                size="middle"
+                size="large"
                 style={{
-                  borderRadius: '8px',
-                  height: '40px',
-                  padding: '0 20px',
-                  fontWeight: '500'
+                  borderRadius: '12px',
+                  height: '44px',
+                  padding: '0 24px',
+                  fontWeight: 600,
+                  ...(supportMode === 'ai' ? {
+                    background: 'linear-gradient(135deg, #0EA5E9 0%, #0284c7 100%)',
+                    border: 'none',
+                    boxShadow: '0 4px 12px rgba(14, 165, 233, 0.3)',
+                  } : {
+                    borderColor: '#e5e7eb',
+                  })
                 }}
               >
                 {t('support.ai_chat') || 'AI Assistant'}
@@ -483,23 +536,24 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                 type="default"
                 icon={<WhatsAppOutlined style={{ color: '#25D366' }} />}
                 onClick={connectToAgent}
-                size="middle"
+                size="large"
                 disabled={agentStatus === 'offline'}
                 style={{
-                  borderRadius: '8px',
-                  height: '40px',
-                  padding: '0 20px',
-                  fontWeight: '500',
-                  borderColor: '#25D366',
-                  color: '#25D366'
+                  borderRadius: '12px',
+                  height: '44px',
+                  padding: '0 24px',
+                  fontWeight: 600,
+                  borderColor: agentStatus === 'offline' ? '#e5e7eb' : '#25D366',
+                  color: agentStatus === 'offline' ? '#9ca3af' : '#25D366',
+                  background: agentStatus === 'offline' ? '#f9fafb' : 'white',
                 }}
               >
-                {t('support.live_agent') || 'WhatsApp Agent'}
+                {t('support.live_agent') || 'WhatsApp'}
               </Button>
             </Space>
             {!aiConfig && (
-              <div style={{ marginTop: '8px' }}>
-                <Text type="secondary" style={{ fontSize: '12px' }}>
+              <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                <Text type="secondary" style={{ fontSize: '12px', fontStyle: 'italic' }}>
                   Demo Mode - Configure AI settings for full functionality
                 </Text>
               </div>
@@ -530,20 +584,25 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                       size="default"
                       icon={msg.type === 'ai' ? <RobotOutlined /> : <UserOutlined />}
                       style={{
-                        backgroundColor: msg.type === 'ai' ? '#1890ff' : '#52c41a',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        background: msg.type === 'ai' 
+                          ? 'linear-gradient(135deg, #0EA5E9 0%, #0284c7 100%)'
+                          : 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        border: '2px solid white',
                       }}
                     />
                   )}
                   <div
                     style={{
                       maxWidth: '75%',
-                      backgroundColor: msg.type === 'user' ? '#1890ff' : 'white',
-                      color: msg.type === 'user' ? 'white' : '#333',
-                      padding: '12px 16px',
-                      borderRadius: '18px',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                      border: msg.type === 'user' ? 'none' : '1px solid #f0f0f0',
+                      background: msg.type === 'user' 
+                        ? 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)'
+                        : 'white',
+                      color: msg.type === 'user' ? 'white' : '#1f2937',
+                      padding: '14px 18px',
+                      borderRadius: msg.type === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+                      boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
+                      border: msg.type === 'user' ? 'none' : '1px solid rgba(34, 197, 94, 0.1)',
                       order: msg.type === 'user' ? -1 : 0,
                     }}
                   >
@@ -581,8 +640,9 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                       size="default" 
                       icon={<UserOutlined />} 
                       style={{ 
-                        backgroundColor: '#52c41a',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                        border: '2px solid white',
                       }} 
                     />
                   )}
@@ -594,18 +654,22 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                   <Avatar 
                     size="default" 
                     icon={<RobotOutlined />} 
-                    style={{ backgroundColor: '#1890ff' }} 
+                    style={{ 
+                      background: 'linear-gradient(135deg, #0EA5E9 0%, #0284c7 100%)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                      border: '2px solid white',
+                    }} 
                   />
                   <div style={{
                     backgroundColor: 'white',
-                    padding: '12px 16px',
-                    borderRadius: '18px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                    border: '1px solid #f0f0f0'
+                    padding: '14px 18px',
+                    borderRadius: '18px 18px 18px 4px',
+                    boxShadow: '0 3px 12px rgba(0,0,0,0.08)',
+                    border: '1px solid rgba(14, 165, 233, 0.1)'
                   }}>
                     <Space>
-                      <Spin size="small" />
-                      <Text style={{ fontStyle: 'italic', opacity: 0.7, fontSize: '14px' }}>
+                      <Spin size="small" style={{ color: '#0EA5E9' }} />
+                      <Text style={{ fontStyle: 'italic', color: '#6b7280', fontSize: '14px', fontWeight: 500 }}>
                         {supportMode === 'ai' ? 'AI is thinking...' : 'Agent is typing...'}
                       </Text>
                     </Space>
@@ -618,16 +682,15 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
 
           {/* Input Area */}
           <div style={{ 
-            padding: '20px', 
-            borderTop: '1px solid #f0f0f0',
-            backgroundColor: '#ffffff'
+            padding: '24px', 
+            borderTop: '2px solid rgba(34, 197, 94, 0.1)',
+            background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)'
           }}>
             <Space.Compact style={{ width: '100%' }}>
-              <TextArea
+              <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Type your message..."
-                autoSize={{ minRows: 1, maxRows: 3 }}
                 onPressEnter={(e) => {
                   if (!e.shiftKey) {
                     e.preventDefault();
@@ -635,11 +698,14 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                   }
                 }}
                 style={{ 
-                  resize: 'none',
-                  borderRadius: '12px 0 0 12px',
-                  border: '1px solid #d9d9d9'
+                  borderRadius: '14px 0 0 14px',
+                  border: '1.5px solid #e5e7eb',
+                  height: '52px',
+                  fontSize: '15px',
+                  padding: '0 20px',
                 }}
                 disabled={isTyping}
+                size="large"
               />
               <Button
                 type="primary"
@@ -648,44 +714,78 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                 disabled={!inputMessage.trim() || isTyping}
                 loading={isTyping}
                 style={{
-                  borderRadius: '0 12px 12px 0',
-                  height: 'auto',
-                  minHeight: '40px'
+                  borderRadius: '0 14px 14px 0',
+                  height: '52px',
+                  width: '52px',
+                  background: 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)',
+                  border: 'none',
+                  boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.3s ease',
                 }}
+                onMouseEnter={(e) => {
+                  if (!isTyping && inputMessage.trim()) {
+                    e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #0d9488 100%)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(34, 197, 94, 0.4)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(34, 197, 94, 0.3)';
+                }}
+                size="large"
               />
             </Space.Compact>
             
             {/* Quick Actions */}
-            <div style={{ marginTop: '16px', textAlign: 'center' }}>
-              <Space size="small" wrap>
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <Space size="middle" wrap style={{ justifyContent: 'center' }}>
                 <Button 
-                  size="small" 
+                  size="middle" 
                   icon={<WhatsAppOutlined style={{ color: '#25D366' }} />}
                   onClick={connectToAgent}
                   style={{
-                    borderRadius: '20px',
+                    borderRadius: '24px',
                     borderColor: '#25D366',
-                    color: '#25D366'
+                    color: '#25D366',
+                    fontWeight: 600,
+                    height: '36px',
+                    padding: '0 16px',
                   }}
                 >
-                  WhatsApp Support
+                  WhatsApp
                 </Button>
                 <Button 
-                  size="small" 
+                  size="middle" 
+                  icon={<MailOutlined />}
                   onClick={() => window.open(`mailto:${supportEmail}`, '_blank')}
-                  style={{ borderRadius: '20px' }}
+                  style={{ 
+                    borderRadius: '24px',
+                    borderColor: '#0EA5E9',
+                    color: '#0EA5E9',
+                    fontWeight: 600,
+                    height: '36px',
+                    padding: '0 16px',
+                  }}
                 >
-                  Email Support
+                  Email
                 </Button>
                 <Button 
-                  size="small" 
+                  size="middle" 
                   onClick={() => {
                     setMessages(messages.slice(0, 1)); // Keep initial greeting
                     message.success('Chat cleared');
                   }}
-                  style={{ borderRadius: '20px' }}
+                  style={{ 
+                    borderRadius: '24px',
+                    fontWeight: 600,
+                    height: '36px',
+                    padding: '0 16px',
+                  }}
                 >
-                  Clear Chat
+                  Clear
                 </Button>
               </Space>
             </div>

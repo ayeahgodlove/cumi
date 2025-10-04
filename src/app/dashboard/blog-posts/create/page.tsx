@@ -1,14 +1,12 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
 import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Col, Form, Input, message, Row, Select, Upload } from "antd";
-import { useUpload, getImageUrlFromEvent, getImageUrlString } from "@hooks/shared/upload.hook";
-import { useEffect } from "react";
+import { Col, Form, Input, Row, Select } from "antd";
 
 export default function BlogPostCreate() {
   const { formProps, saveButtonProps } = useForm({});
@@ -22,32 +20,6 @@ export default function BlogPostCreate() {
 
   const categories = categoryData.data;
   const tags = tagData.data;
-
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: formProps.form,
-    fieldName: 'imageUrl',
-    onSuccess: (response) => {
-      // This will be handled in useEffect to prevent setState in render
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Handle form field updates in useEffect to prevent setState in render
-  useEffect(() => {
-    if (fileList && fileList.length > 0) {
-      const imageUrl = getImageUrlString(fileList);
-      if (imageUrl) {
-        formProps.form?.setFieldsValue({
-          imageUrl: imageUrl
-        });
-      }
-    }
-  }, [fileList, formProps.form]);
-
 
   return (
     <>
@@ -180,41 +152,12 @@ export default function BlogPostCreate() {
             />
           </Form.Item>
 
-          <Form.Item 
-            name="imageUrl" 
-            label="Upload Image"
+          <ImageUploadField
+            name="imageUrl"
+            label="Featured Image"
             required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-              {
-                validator: (_, value) => {
-                  // Check if we have a valid URL string
-                  if (typeof value === 'string' && value.trim() !== '') {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Please upload an image'));
-                }
-              }
-            ]}
-          >
-            <Upload
-              listType="picture-card"
-              beforeUpload={beforeUpload}
-              onChange={handleUploadChange}
-              action="/api/uploads"
-              maxCount={1}
-              showUploadList={{ showPreviewIcon: true }}
-              onRemove={handleRemove}
-              fileList={Array.isArray(fileList) ? fileList : []}
-            >
-              {fileList.length < 1 && (
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              )}
-            </Upload>
-          </Form.Item>
+            form={formProps.form}
+          />
         </Form>
       </Create>
     </>

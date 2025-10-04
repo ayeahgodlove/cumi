@@ -33,6 +33,7 @@ import {
   Select,
   Checkbox,
   notification,
+  Splitter,
 } from "antd";
 import {
   PlayCircleOutlined,
@@ -1770,7 +1771,7 @@ const LearningPage: React.FC<LearningPageProps> = () => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
             border: "1px solid #f0f0f0"
           }}
-          bodyStyle={{ padding: "20px" }}
+          styles={{ body: { padding: "20px" } }}
         >
           <div style={{
             background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -1812,7 +1813,7 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
           border: "1px solid #f0f0f0"
         }}
-        bodyStyle={{ padding: "20px" }}
+        styles={{ body: { padding: "20px" } }}
       >
         <div style={{
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -2498,8 +2499,8 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         }
         open={quizVisible}
         onCancel={() => setQuizVisible(false)}
-        width={800}
-        style={{ maxWidth: "95vw" }}
+        width="95%"
+        style={{ maxWidth: '900px' }}
         footer={[
           <Button 
             key="cancel" 
@@ -2696,8 +2697,8 @@ const LearningPage: React.FC<LearningPageProps> = () => {
         }
         open={quizResultsVisible}
         onCancel={() => setQuizResultsVisible(false)}
-        width={800}
-        style={{ maxWidth: "95vw" }}
+        width="95%"
+        style={{ maxWidth: '900px' }}
         footer={[
           <Button 
             key="close" 
@@ -2938,8 +2939,8 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           setReviewVisible(false);
           reviewForm.resetFields();
         }}
-        width={800}
-        style={{ maxWidth: "95vw" }}
+        width="95%"
+        style={{ maxWidth: '900px' }}
         footer={[
           <Button 
             key="cancel" 
@@ -3220,19 +3221,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       </div>
 
       <Layout style={{ backgroundColor: "#f5f5f5" }}>
-        {/* Desktop Sidebar */}
-        <Sider 
-          width={350} 
-          style={{ 
-            backgroundColor: "white",
-            height: "calc(100vh - 80px)",
-            overflow: "auto"
-          }}
-          className={styles["desktop-only"]}
-        >
-          {renderCourseModules()}
-        </Sider>
-
         {/* Mobile Drawer */}
         <Drawer
           title="Course Content"
@@ -3244,8 +3232,63 @@ const LearningPage: React.FC<LearningPageProps> = () => {
           {renderCourseModules()}
         </Drawer>
 
-        {/* Main Content */}
-        <Layout style={{ backgroundColor: "#f5f5f5" }}>
+        {/* Desktop: Splitter with 3 resizable panels */}
+        <div className={styles["desktop-only"]} style={{ height: "calc(100vh - 80px)" }}>
+          <Splitter style={{ height: "100%", backgroundColor: "#f5f5f5" }}>
+            {/* Panel 1: Lessons Column */}
+            <Splitter.Panel
+              defaultSize="20%"
+              min="15%"
+              max="40%"
+              style={{ 
+                backgroundColor: "white",
+                overflow: "auto"
+              }}
+            >
+              {renderCourseModules()}
+            </Splitter.Panel>
+
+            {/* Panel 2: Lesson Content Column */}
+            <Splitter.Panel
+              defaultSize="50%"
+              min="30%"
+              style={{ 
+                overflow: "auto",
+                padding: "8px"
+              }}
+            >
+              <Card 
+                style={{ 
+                  height: "100%", 
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  minHeight: "400px"
+                }}
+                styles={{ body: { padding: 0, height: "100%" } }}
+              >
+                {renderLessonContent()}
+              </Card>
+            </Splitter.Panel>
+
+            {/* Panel 3: Activities Column */}
+            <Splitter.Panel
+              defaultSize="30%"
+              min="20%"
+              max="50%"
+              style={{ 
+                overflow: "auto",
+                padding: "8px"
+              }}
+            >
+              <div className={styles["assignments-panel"]}>
+                {renderAssignmentsQuizzes()}
+              </div>
+            </Splitter.Panel>
+          </Splitter>
+        </div>
+
+        {/* Mobile: Original responsive layout */}
+        <Layout style={{ backgroundColor: "#f5f5f5" }} className={styles["mobile-only"]}>
           <Content 
             style={{ 
               margin: "8px", 
@@ -3263,7 +3306,7 @@ const LearningPage: React.FC<LearningPageProps> = () => {
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     minHeight: "400px"
                   }}
-                  bodyStyle={{ padding: 0, height: "100%" }}
+                  styles={{ body: { padding: 0, height: "100%" } }}
                 >
                   {renderLessonContent()}
                 </Card>

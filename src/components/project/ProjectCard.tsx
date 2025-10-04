@@ -1,7 +1,6 @@
 import React from "react";
 import { Card, Tag, Tooltip, Typography, Button, Space, Avatar } from "antd";
 import { IProject } from "@domain/models/project.model";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -50,7 +49,7 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
           <div className="position-relative overflow-hidden">
             <img
               alt={project.title}
-              src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
+              src={project.imageUrl}
               className={`card-img-top ${styles.projectImage}`}
             />
             <div className="position-absolute top-0 end-0 m-3">

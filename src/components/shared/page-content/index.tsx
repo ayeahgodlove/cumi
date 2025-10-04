@@ -3,7 +3,6 @@ import { Breadcrumb, Col, Row } from "antd";
 import { HomeOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 
 export default function PageContent(props: any) {
   const { title, breadcrumb, desc, banner } = props;
@@ -19,7 +18,7 @@ export default function PageContent(props: any) {
         alignItems: "center",
         justifyContent: "center",
         background: banner 
-          ? `linear-gradient(135deg, rgba(34, 197, 94, 0.85) 0%, rgba(20, 184, 166, 0.75) 50%, rgba(14, 165, 233, 0.85) 100%), url('${BASE_URL_UPLOADS_MEDIA}/${banner}')`
+          ? `linear-gradient(135deg, rgba(34, 197, 94, 0.85) 0%, rgba(20, 184, 166, 0.75) 50%, rgba(14, 165, 233, 0.85) 100%), url('${banner}')`
           : "linear-gradient(135deg, #22C55E 0%, #14B8A6 50%, #0EA5E9 100%)",
         backgroundSize: "cover",
         backgroundPosition: "center",

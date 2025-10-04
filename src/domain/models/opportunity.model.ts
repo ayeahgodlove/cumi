@@ -17,7 +17,7 @@ export interface IOpportunity {
   
   // Additional fields for scholarships
   amount?: string; // Scholarship amount
-  duration?: string; // Duration of scholarship
+  duration?: string; // Duration of scholarship/internship/job
   academicLevel?: string; // Undergraduate, Graduate, PhD, etc.
   fieldOfStudy?: string; // Field of study requirement
   nationality?: string; // Nationality requirements
@@ -30,6 +30,9 @@ export interface IOpportunity {
   department?: string;
   isRemote?: boolean;
   skills?: string[]; // Required skills for jobs
+  
+  // Optional image (not displayed in current design)
+  imageUrl?: string;
   
   createdAt: Date;
   updatedAt: Date;
@@ -60,6 +63,7 @@ export const emptyOpportunity: IOpportunity = {
   department: "",
   isRemote: false,
   skills: [],
+  imageUrl: "",
   createdAt: new Date(),
   updatedAt: new Date()
 };

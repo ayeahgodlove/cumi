@@ -6,7 +6,6 @@ import { AppNav } from "@components/nav/nav.component";
 import ImageFallback from "@components/shared/image-fallback";
 import Share from "@components/shared/share";
 import PageContent from "@components/shared/page-content/index";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { projectAPI } from "@store/api/project_api";
 import { userAPI } from "@store/api/user_api";
 import { bannerAPI } from "@store/api/banner_api";
@@ -90,7 +89,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                       {/* Hero Image */}
                       <div style={{ position: "relative", overflow: "hidden" }}>
                         <ImageFallback
-                          src={`${BASE_URL_UPLOADS_MEDIA}/${project.imageUrl}`}
+                          src={project.imageUrl}
                           height={500}
                           width={1200}
                           alt={project?.title}

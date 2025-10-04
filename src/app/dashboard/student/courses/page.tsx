@@ -2,7 +2,6 @@
 
 import React from "react";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { 
   Card, 
   Row, 
@@ -91,7 +90,7 @@ export default function StudentCourseBrowser() {
           course.imageUrl ? (
             <img
               alt={course.title}
-              src={`${BASE_URL_UPLOADS_MEDIA}/${course.imageUrl}`}
+              src={course.imageUrl}
               style={{ height: 200, objectFit: "cover" }}
             />
           ) : (

@@ -1,64 +1,12 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, Switch, Upload, Button, Space, Avatar, Row, Col, InputNumber, message } from "antd";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
-import { useUpload, deleteUploadedFile, getImageUrlFromEvent } from "@hooks/shared/upload.hook";
-import { useEffect, useState } from "react";
+import { Form, Input, Switch, Row, Col, InputNumber, Select } from "antd";
 
 export default function ProfessionalEdit() {
   const { formProps, saveButtonProps, queryResult } = useForm({});
-  const [initialImageUrl, setInitialImageUrl] = useState<string>("");
-
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: formProps.form,
-    fieldName: 'profileImage',
-    onSuccess: (response) => {
-      formProps.form?.setFieldsValue({
-        profileImage: response.url
-      });
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Set initial file list when data loads
-  useEffect(() => {
-    if (queryResult?.data?.data?.profileImage) {
-      const imageUrl = queryResult.data.data.profileImage;
-      setInitialImageUrl(imageUrl);
-      
-      // Create file list item for existing image
-      const existingFile = {
-        uid: '-1',
-        name: imageUrl.split('/').pop() || 'image',
-        status: 'done',
-        url: imageUrl,
-        response: { url: imageUrl }
-      };
-      setFileList([existingFile]);
-    }
-  }, [queryResult?.data?.data?.profileImage, setFileList]);
-
-  const handleRemoveWithCleanup = async (file: any) => {
-    // If removing existing file, delete it from server
-    if (file.url === initialImageUrl && initialImageUrl) {
-      const deleted = await deleteUploadedFile(initialImageUrl);
-      if (deleted) {
-        message.success('File deleted successfully');
-      } else {
-        message.warning('File removed from form but may still exist on server');
-      }
-    }
-    
-    // Use the hook's handleRemove for uploaded files
-    return await handleRemove(file);
-  };
 
   return (
     <>
@@ -77,7 +25,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <Input placeholder="Enter professional title" />
+                <Input size="large" placeholder="Enter professional title" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -91,7 +39,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <Input placeholder="Enter position" />
+                <Input size="large" placeholder="Enter position" />
               </Form.Item>
             </Col>
           </Row>
@@ -112,7 +60,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <Input placeholder="Enter email address" />
+                <Input size="large" placeholder="Enter email address" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -126,7 +74,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <Input placeholder="Enter WhatsApp contact" />
+                <Input size="large" placeholder="Enter WhatsApp contact" />
               </Form.Item>
             </Col>
           </Row>
@@ -143,7 +91,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <Input placeholder="Enter location" />
+                <Input size="large" placeholder="Enter location" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
@@ -157,7 +105,7 @@ export default function ProfessionalEdit() {
                   },
                 ]}
               >
-                <InputNumber min={0} max={50} placeholder="5" style={{ width: '100%' }} />
+                <InputNumber size="large" min={0} max={50} placeholder="5" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -173,6 +121,7 @@ export default function ProfessionalEdit() {
             ]}
           >
             <Input.TextArea 
+              size="large"
               rows={4} 
               placeholder="Enter professional bio" 
             />
@@ -184,7 +133,7 @@ export default function ProfessionalEdit() {
                 label="LinkedIn"
                 name={["socialLinks", "linkedin"]}
               >
-                <Input placeholder="https://linkedin.com/in/username" />
+                <Input size="large" placeholder="https://linkedin.com/in/username" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
@@ -192,7 +141,7 @@ export default function ProfessionalEdit() {
                 label="GitHub"
                 name={["socialLinks", "github"]}
               >
-                <Input placeholder="https://github.com/username" />
+                <Input size="large" placeholder="https://github.com/username" />
               </Form.Item>
             </Col>
             <Col xs={24} sm={8}>
@@ -200,7 +149,7 @@ export default function ProfessionalEdit() {
                 label="Website"
                 name={["socialLinks", "website"]}
               >
-                <Input placeholder="https://website.com" />
+                <Input size="large" placeholder="https://website.com" />
               </Form.Item>
             </Col>
           </Row>
@@ -208,16 +157,31 @@ export default function ProfessionalEdit() {
           <Form.Item
             label="Skills"
             name="skills"
-            rules={[
-              {
-                required: true,
-                message: "Skills are required",
-              },
-            ]}
+            rules={[{ required: true, message: "Please select skills" }]}
           >
-            <Input.TextArea 
-              rows={3} 
-              placeholder="Enter skills (comma-separated)" 
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select professional skills"
+              options={[
+                { label: "React", value: "React" },
+                { label: "Laravel", value: "Laravel" },
+                { label: "Node.js", value: "Node.js" },
+                { label: "TypeScript", value: "TypeScript" },
+                { label: "PHP", value: "PHP" },
+                { label: "JavaScript", value: "JavaScript" },
+                { label: "Python", value: "Python" },
+                { label: "Java", value: "Java" },
+                { label: "C++", value: "C++" },
+                { label: "Vue.js", value: "Vue.js" },
+                { label: "Angular", value: "Angular" },
+                { label: "MongoDB", value: "MongoDB" },
+                { label: "PostgreSQL", value: "PostgreSQL" },
+                { label: "MySQL", value: "MySQL" },
+                { label: "Docker", value: "Docker" },
+                { label: "AWS", value: "AWS" },
+                { label: "Git", value: "Git" }
+              ]}
             />
           </Form.Item>
 
@@ -225,71 +189,129 @@ export default function ProfessionalEdit() {
             label="Specializations"
             name="specializations"
           >
-            <Input.TextArea 
-              rows={3} 
-              placeholder="Enter specializations (comma-separated)" 
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select specializations"
+              options={[
+                { label: "Web Development", value: "Web Development" },
+                { label: "Mobile Development", value: "Mobile Development" },
+                { label: "Backend Development", value: "Backend Development" },
+                { label: "Frontend Development", value: "Frontend Development" },
+                { label: "DevOps", value: "DevOps" },
+                { label: "UI/UX Design", value: "UI/UX Design" },
+                { label: "Data Science", value: "Data Science" },
+                { label: "Machine Learning", value: "Machine Learning" },
+                { label: "Cloud Computing", value: "Cloud Computing" },
+                { label: "Cybersecurity", value: "Cybersecurity" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Project Types"
+            name="projectTypes"
+          >
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select project types"
+              options={[
+                { label: "Web Development", value: "Web Development" },
+                { label: "Mobile Apps", value: "Mobile Apps" },
+                { label: "E-commerce", value: "E-commerce" },
+                { label: "CMS Development", value: "CMS Development" },
+                { label: "API Development", value: "API Development" },
+                { label: "Database Design", value: "Database Design" },
+                { label: "DevOps", value: "DevOps" },
+                { label: "UI/UX Design", value: "UI/UX Design" },
+                { label: "Consulting", value: "Consulting" },
+                { label: "Training", value: "Training" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Languages"
+            name="languages"
+          >
+            <Select
+              size="large"
+              mode="multiple"
+              placeholder="Select languages spoken"
+              options={[
+                { label: "English", value: "English" },
+                { label: "French", value: "French" },
+                { label: "Spanish", value: "Spanish" },
+                { label: "German", value: "German" },
+                { label: "Chinese", value: "Chinese" },
+                { label: "Arabic", value: "Arabic" },
+                { label: "Portuguese", value: "Portuguese" },
+                { label: "Russian", value: "Russian" },
+                { label: "Japanese", value: "Japanese" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Certifications"
+            name="certifications"
+          >
+            <Select
+              size="large"
+              mode="tags"
+              placeholder="Add certifications (press Enter to add)"
+              options={[
+                { label: "AWS Certified Solutions Architect", value: "AWS Certified Solutions Architect" },
+                { label: "Google Cloud Professional", value: "Google Cloud Professional" },
+                { label: "Microsoft Certified: Azure", value: "Microsoft Certified: Azure" },
+                { label: "Certified ScrumMaster", value: "Certified ScrumMaster" },
+                { label: "PMP Certification", value: "PMP Certification" }
+              ]}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Availability"
+            name="availability"
+          >
+            <Select
+              size="large"
+              options={[
+                { label: "Available", value: "Available" },
+                { label: "Busy", value: "Busy" },
+                { label: "Not Available", value: "Not Available" }
+              ]}
             />
           </Form.Item>
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Availability"
-                name="availability"
+                label="Hourly Rate ($)"
+                name="hourlyRate"
               >
-                <Input placeholder="Available, Busy, Not Available" />
+                <InputNumber size="large" min={0} placeholder="50" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Hourly Rate ($)"
-                name="hourlyRate"
+                label="Education"
+                name="education"
               >
-                <InputNumber min={0} placeholder="50" style={{ width: '100%' }} />
+                <Input size="large" placeholder="e.g., BSc Computer Science" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item
-            label="Education"
-            name="education"
-          >
-            <Input placeholder="e.g., BSc Computer Science" />
-          </Form.Item>
-
-          <Form.Item
-            label="Profile Image"
+          <ImageUploadField
             name="profileImage"
+            label="Profile Image"
             required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-              {
-                validator: (_, value) => {
-                  if (typeof value === 'string' && value.trim() !== '') {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Please upload a profile image'));
-                }
-              }
-            ]}
-          >
-            <Upload.Dragger
-              name="file"
-              action="/api/uploads"
-              listType="picture"
-              maxCount={1}
-              multiple={false}
-              fileList={Array.isArray(fileList) ? fileList : []}
-              onChange={handleUploadChange}
-              beforeUpload={beforeUpload}
-              onRemove={handleRemoveWithCleanup}
-            >
-              <p className="ant-upload-text">Drag & drop a profile image here</p>
-              <p className="ant-upload-hint">
-                Support for single upload. Maximum file size: 1MB
-              </p>
-            </Upload.Dragger>
-          </Form.Item>
+            form={formProps.form}
+            initialImageUrl={queryResult?.data?.data?.profileImage}
+            maxSize={5 * 1024 * 1024}
+          />
 
           <Row gutter={16}>
             <Col xs={24} sm={12}>

@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import EnhancedBreadcrumb from "@components/shared/enhanced-breadcrumb/enhanced-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import { useShow } from "@refinedev/core";
 import {
   Card,
@@ -646,7 +645,7 @@ export default function CourseShow() {
                 <Col xs={24} md={8}>
                   {course?.imageUrl && (
                     <img
-                      src={`${BASE_URL_UPLOADS_MEDIA}/${course.imageUrl}`}
+                      src={course.imageUrl}
                       alt={course.title}
                       style={{
                         width: "100%",
@@ -959,7 +958,19 @@ export default function CourseShow() {
             moduleForm.resetFields();
           }}
           footer={null}
-          width={800}
+          width="95%"
+          style={{ maxWidth: '900px', top: 20 }}
+          destroyOnClose={true}
+          maskClosable={true}
+          keyboard={true}
+          forceRender={false}
+          styles={{
+            body: {
+              maxHeight: 'calc(100vh - 200px)',
+              overflowY: 'auto',
+              padding: '24px'
+            }
+          }}
         >
           <Form
             form={moduleForm}

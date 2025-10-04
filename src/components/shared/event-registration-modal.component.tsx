@@ -125,7 +125,19 @@ export const EventRegistrationModal: React.FC<EventRegistrationModalProps> = ({
         open={visible}
         onCancel={onCancel}
         footer={null}
-        width={600}
+        width="95%"
+        style={{ maxWidth: '700px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card style={{ backgroundColor: 'white', border: 'none' }}>
         <Card size="small" style={{ marginBottom: 24, backgroundColor: 'white' }}>

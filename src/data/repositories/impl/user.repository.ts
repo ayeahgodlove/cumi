@@ -62,7 +62,14 @@ export class UserRepository implements IUserRepository {
 
   async findByResetToken(token: string): Promise<InstanceType<typeof User> | null> {
     try {
-      const userItem = await User.findOne({ where: { resetToken: token } });
+      const userItem = await User.findOne({ 
+        where: { 
+          resetToken: token,
+          resetTokenExpiry: {
+            [require('sequelize').Op.gt]: new Date()
+          }
+        } 
+      });
       return userItem;
     } catch (error) {
       throw error;
@@ -104,13 +111,31 @@ export class UserRepository implements IUserRepository {
         throw new NotFoundException("User", id.toString());
       }
 
-      // Only hash password if it's not already hashed (check if it starts with $2b$)
-      if (user.password && !user.password.startsWith('$2b$')) {
+      // Only hash password if it's being updated and not already hashed
+      if (user.password && !user.password.startsWith('$2b$') && !user.password.startsWith('$2a$')) {
         const hashedPassword = await bcrypt.hash(user.password, 10);
         user.password = hashedPassword;
       }
 
-      return await userItem?.update({ ...user });
+      // Build update object - only include fields that are explicitly set
+      const updateData: any = {};
+      const userKeys = Object.keys(user) as Array<keyof IUser>;
+      
+      userKeys.forEach(key => {
+        const value = user[key];
+        // Include field if it has a value (even null, to clear fields)
+        if (value !== undefined) {
+          updateData[key] = value;
+        }
+      });
+
+      // Update user with explicit fields
+      const updatedUser = await userItem.update(updateData);
+
+      // Reload from database to get fresh data
+      await updatedUser.reload();
+
+      return updatedUser;
     } catch (error) {
       throw error;
     }

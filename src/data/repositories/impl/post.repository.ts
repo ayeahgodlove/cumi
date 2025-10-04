@@ -100,14 +100,20 @@ export class PostRepository implements IPostRepository {
 
   async findByTag(tag: string): Promise<InstanceType<typeof Post>[] | null> {
     try {
+      console.log(`[PostRepository] Searching for tag: "${tag}"`);
+      
+      // Try finding by slug first (case-insensitive), then by name
       const tagItem = await Tag.findOne({
-        where: { slug: tag },
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('slug')),
+          sequelize.fn('LOWER', tag)
+        ),
         include: [
           {
             model: Post,
             as: "posts",
-            where: { status: 'PUBLISHED' }, // Only published posts
-            required: false, // LEFT JOIN to get tag even if no posts
+            where: { status: 'PUBLISHED' },
+            required: false,
             include: [
               {
                 model: Category,
@@ -123,15 +129,49 @@ export class PostRepository implements IPostRepository {
       });
 
       if (!tagItem) {
-        console.warn(`Tag not found with slug: ${tag}`);
-        return [];
+        console.warn(`[PostRepository] Tag not found with slug: ${tag}, trying by name...`);
+        
+        // Try by name as fallback
+        const tagByName = await Tag.findOne({
+          where: sequelize.where(
+            sequelize.fn('LOWER', sequelize.col('name')),
+            sequelize.fn('LOWER', tag.replace(/-/g, ' '))
+          ),
+          include: [
+            {
+              model: Post,
+              as: "posts",
+              where: { status: 'PUBLISHED' },
+              required: false,
+              include: [
+                {
+                  model: Category,
+                  as: "category",
+                },
+                {
+                  model: Tag,
+                  as: "tags",
+                },
+              ],
+            },
+          ],
+        });
+        
+        if (!tagByName) {
+          console.warn(`[PostRepository] Tag not found with name: ${tag}`);
+          return [];
+        }
+        
+        const itemByName = tagByName.toJSON<any>();
+        console.log(`[PostRepository] Found ${itemByName.posts?.length || 0} posts for tag (by name): ${tag}`);
+        return itemByName.posts || [];
       }
 
-      // Return the posts associated with this tag
       const item = tagItem.toJSON<any>();
+      console.log(`[PostRepository] Found ${item.posts?.length || 0} posts for tag (by slug): ${tag}`);
       return item.posts || [];
     } catch (error) {
-      console.error('Error in findByTag:', error);
+      console.error('[PostRepository] Error in findByTag:', error);
       throw error;
     }
   }

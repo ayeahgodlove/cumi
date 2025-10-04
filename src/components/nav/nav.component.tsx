@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { LanguageSelector, useTranslation } from "@contexts/translation.context";
 
 type Props = {
@@ -21,7 +21,13 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { t } = useTranslation();
+
+  // Fix hydration mismatch - only use Affix on client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleLogout = useCallback(async () => {
     setIsNavigating(true);
@@ -40,11 +46,14 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
   }, []);
 
   const getLinkStyle = (path: string) => ({
-    color: pathname === path ? "#20b2aa" : "inherit",
+    color: pathname === path ? "#22C55E" : "#4b5563",
     fontWeight: pathname === path ? "600" : "500",
     letterSpacing: "0.3px",
-    transition: "all 0.3s ease",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     position: "relative" as const,
+    background: pathname === path 
+      ? "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)" 
+      : "transparent",
   });
 
   const getLinkClassName = (path: string) => 
@@ -56,26 +65,30 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       label: (
         <div
           style={{
-            padding: "12px 16px",
+            padding: "14px 18px",
             fontWeight: "600",
-            color: "#1890ff",
-            borderBottom: "1px solid #f0f0f0",
+            color: "#22C55E",
+            borderBottom: "1px solid #e5e7eb",
             marginBottom: "8px",
-            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-            borderRadius: "8px 8px 0 0",
+            background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
+            borderRadius: "10px 10px 0 0",
           }}
         >
-          <div style={{ fontSize: "15px", fontWeight: "600", letterSpacing: "0.3px" }}>
+          <div style={{ fontSize: "15px", fontWeight: "600", letterSpacing: "0.3px", color: "#1f2937" }}>
             {session?.user?.name || session?.user?.email || t('nav.user')}
           </div>
           {session?.user?.role && (
             <div
               style={{
                 fontSize: "12px",
-                color: "#666",
-                fontWeight: "500",
-                textTransform: "capitalize",
-                marginTop: "4px",
+                color: "#22C55E",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                marginTop: "6px",
+                padding: "2px 8px",
+                background: "rgba(34, 197, 94, 0.1)",
+                borderRadius: "6px",
+                display: "inline-block",
               }}
             >
               {session.user.role}
@@ -91,14 +104,15 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     // Only show dashboard link for non-user roles
     ...(session?.user?.role !== 'user' ? [{
       key: "dashboard",
-      icon: <DashboardOutlined style={{ fontSize: "16px" }} />,
+      icon: <DashboardOutlined style={{ fontSize: "16px", color: "#22C55E" }} />,
       label: (
         <Link 
           href="/dashboard" 
           style={{ 
             fontWeight: "500",
             letterSpacing: "0.3px",
-            fontSize: "14px"
+            fontSize: "14px",
+            color: "#4b5563",
           }}
         >
           {t('nav.dashboard')}
@@ -107,14 +121,15 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     }] : []),
     {
       key: "settings",
-      icon: <SettingOutlined style={{ fontSize: "16px" }} />,
+      icon: <SettingOutlined style={{ fontSize: "16px", color: "#14B8A6" }} />,
       label: (
         <Link 
           href="/dashboard/settings"
           style={{ 
             fontWeight: "500",
             letterSpacing: "0.3px",
-            fontSize: "14px"
+            fontSize: "14px",
+            color: "#4b5563",
           }}
         >
           {t('nav.settings')}
@@ -126,13 +141,13 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     },
     {
       key: "logout",
-      icon: <LogoutOutlined style={{ fontSize: "16px" }} />,
+      icon: <LogoutOutlined style={{ fontSize: "16px", color: "#ef4444" }} />,
       label: (
         <span style={{ 
           fontWeight: "500",
           letterSpacing: "0.3px",
           fontSize: "14px",
-          color: "#ff4d4f"
+          color: "#ef4444"
         }}>
           {t('nav.logout')}
         </span>
@@ -141,18 +156,21 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       danger: true,
     },
   ];
-  return (
-    <Affix offsetTop={0}>
+
+  const navContent = (
       <nav 
         className="navbar navbar-expand-lg navbar-full-width" 
         style={{ 
-          backgroundColor: "white",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
-          borderBottom: "1px solid rgba(0,0,0,0.06)",
-          transition: "box-shadow 0.3s ease",
+          background: "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+          // borderBottom: "3px solid transparent",
+          borderImage: "linear-gradient(90deg, #22C55E 0%, #14B8A6 50%, #0EA5E9 100%) 1",
+          borderImageSlice: "0 0 1 0",
+          transition: "all 0.3s ease",
+          position: "relative",
         }}
       >
-        <div className="container-fluid" style={{ 
+        <div className="container-fluid bg-none" style={{ 
           width: "100%", 
           maxWidth: "none", 
           padding: "8px 16px"
@@ -207,32 +225,38 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
             }}>
               <li className="nav-item">
                 <Link
-                  className={`nav-link  ${
-                    pathname === "/" ? " active fw-bold" : ""
-                  }`}
+                  className={`nav-link ${pathname === "/" ? "active fw-bold" : ""}`}
                   style={{
-                    color: pathname === "/" ? "#20b2aa" : "inherit",
+                    color: pathname === "/" ? "#22C55E" : "#4b5563",
                     fontWeight: pathname === "/" ? "600" : "500",
                     letterSpacing: "0.3px",
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    transition: "all 0.3s ease",
+                    padding: "8px 16px",
+                    borderRadius: "10px",
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     position: "relative",
                     whiteSpace: "nowrap",
                     fontSize: "15px",
+                    background: pathname === "/" 
+                      ? "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)" 
+                      : "transparent",
+                    border: pathname === "/" ? "1px solid rgba(34, 197, 94, 0.2)" : "1px solid transparent",
                   }}
                   aria-current="page"
                   href="/"
                   onMouseEnter={(e) => {
                     if (pathname !== "/") {
-                      e.currentTarget.style.backgroundColor = "#f5f5f5";
-                      e.currentTarget.style.color = "#20b2aa";
+                      e.currentTarget.style.background = "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)";
+                      e.currentTarget.style.color = "#22C55E";
+                      e.currentTarget.style.borderColor = "rgba(34, 197, 94, 0.2)";
+                      e.currentTarget.style.transform = "translateX(2px)";
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (pathname !== "/") {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = "inherit";
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "#4b5563";
+                      e.currentTarget.style.borderColor = "transparent";
+                      e.currentTarget.style.transform = "translateX(0)";
                     }
                   }}
                 >
@@ -254,22 +278,27 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     className={getLinkClassName(path)}
                     style={{
                       ...getLinkStyle(path),
-                      padding: "8px 12px",
-                      borderRadius: "8px",
+                      padding: "8px 16px",
+                      borderRadius: "10px",
                       whiteSpace: "nowrap",
                       fontSize: "15px",
+                      border: pathname === path ? "1px solid rgba(34, 197, 94, 0.2)" : "1px solid transparent",
                     }}
                     href={path}
                     onMouseEnter={(e) => {
                       if (pathname !== path) {
-                        e.currentTarget.style.backgroundColor = "#f5f5f5";
-                        e.currentTarget.style.color = "#20b2aa";
+                        e.currentTarget.style.background = "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)";
+                        e.currentTarget.style.color = "#22C55E";
+                        e.currentTarget.style.borderColor = "rgba(34, 197, 94, 0.2)";
+                        e.currentTarget.style.transform = "translateX(2px)";
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (pathname !== path) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "inherit";
+                        e.currentTarget.style.background = "transparent";
+                        e.currentTarget.style.color = "#4b5563";
+                        e.currentTarget.style.borderColor = "transparent";
+                        e.currentTarget.style.transform = "translateX(0)";
                       }
                     }}
                   >
@@ -312,15 +341,23 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     <Space 
                       className="cursor-pointer"
                       style={{
-                        padding: "4px 8px",
-                        borderRadius: "24px",
-                        transition: "all 0.3s ease",
+                        padding: "6px 12px",
+                        borderRadius: "12px",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
+                        border: "1px solid rgba(34, 197, 94, 0.15)",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#f5f5f5";
+                        e.currentTarget.style.background = "linear-gradient(135deg, #dcfce7 0%, #cffafe 100%)";
+                        e.currentTarget.style.borderColor = "rgba(34, 197, 94, 0.3)";
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow = "0 4px 12px rgba(34, 197, 94, 0.2)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.background = "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)";
+                        e.currentTarget.style.borderColor = "rgba(34, 197, 94, 0.15)";
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                     >
                       <Avatar
@@ -328,9 +365,9 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                         src={session.user?.image}
                         icon={<UserOutlined />}
                         style={{ 
-                          backgroundColor: "#1890ff",
-                          border: "2px solid #f0f0f0",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                          background: "linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)",
+                          border: "2px solid white",
+                          boxShadow: "0 2px 8px rgba(34, 197, 94, 0.3)"
                         }}
                       />
                     </Space>
@@ -342,20 +379,25 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
                     href="/login"
                     size="large"
                     style={{
-                      fontWeight: "500",
+                      background: "linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)",
+                      border: "none",
+                      color: "white",
+                      fontWeight: "600",
                       letterSpacing: "0.3px",
-                      height: "42px",
-                      padding: "0 28px",
-                      boxShadow: "0 2px 8px rgba(32, 178, 170, 0.2)",
-                      transition: "all 0.3s ease",
+                      height: "44px",
+                      padding: "0 32px",
+                      boxShadow: "0 4px 12px rgba(34, 197, 94, 0.3)",
+                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(32, 178, 170, 0.3)";
+                      e.currentTarget.style.boxShadow = "0 6px 20px rgba(34, 197, 94, 0.4)";
+                      e.currentTarget.style.background = "linear-gradient(135deg, #16a34a 0%, #0d9488 100%)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(32, 178, 170, 0.2)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(34, 197, 94, 0.3)";
+                      e.currentTarget.style.background = "linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)";
                     }}
                   >
                     {t('nav.login')}
@@ -366,6 +408,8 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
           </div>
         </div>
       </nav>
-    </Affix>
   );
+
+  // Only use Affix on client to prevent hydration mismatch
+  return isMounted ? <Affix offsetTop={0}>{navContent}</Affix> : navContent;
 };

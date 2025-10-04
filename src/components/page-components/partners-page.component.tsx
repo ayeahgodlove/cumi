@@ -102,13 +102,15 @@ export default function PartnersPageComponent() {
                       background: "white",
                       height: "100%",
                     }}
-                    bodyStyle={{
-                      padding: "32px 24px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "20px",
-                      minHeight: "420px",
+                    styles={{
+                      body: {
+                        padding: "32px 24px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "20px",
+                        minHeight: "420px",
+                      }
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-12px) scale(1.02)";

@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
       canonical: `https://cumi.dev/events/${params.slug}`,
     },
     images: event.imageUrl ? [{
-      url: `https://cumi.dev/uploads/events/${event.imageUrl}`,
+      url: event.imageUrl,
       width: 1200,
       height: 630,
       alt: event.title,
@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
       type: "website",
       title: `${event.title} - CUMI Technology Event`,
       description: event.description || `Join CUMI's ${event.title} event. Learn about technology and innovation.`,
-      images: event.imageUrl ? [`https://cumi.dev/uploads/events/${event.imageUrl}`] : [defaultImages[0]],
+      images: event.imageUrl ? [event.imageUrl] : [defaultImages[0]],
       siteName: "CUMI",
       locale: "en_US",
       url: `https://cumi.dev/events/${params.slug}`,
@@ -94,7 +94,7 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
       card: "summary_large_image",
       title: `${event.title} - CUMI Technology Event`,
       description: event.description || `Join CUMI's ${event.title} event. Learn about technology and innovation.`,
-      images: event.imageUrl ? [`https://cumi.dev/uploads/events/${event.imageUrl}`] : [defaultImages[0]],
+      images: event.imageUrl ? [event.imageUrl] : [defaultImages[0]],
       creator: "@cumi_dev",
     },
     // Structured data
@@ -122,7 +122,7 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
         "@type": "Organization",
         "name": "CUMI",
         "url": "https://cumi.dev",
-        "logo": "https://cumi.dev/uploads/media/1022.jpg"
+        "logo": "https://cumi.dev/img/cumi-green.jpg"
       },
       "offers": event.price ? {
         "@type": "Offer",
@@ -130,7 +130,7 @@ export async function generateMetadata({ params }: EventDetailPageProps): Promis
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock"
       } : undefined,
-      "image": event.imageUrl ? `https://cumi.dev/uploads/events/${event.imageUrl}` : defaultImages[0],
+      "image": event.imageUrl || defaultImages[0],
       "category": event.category
     },
   });

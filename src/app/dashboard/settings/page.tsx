@@ -1,45 +1,43 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { 
-  Card, 
-  Form, 
-  Input, 
-  Button, 
-  notification, 
-  Space, 
-  Typography, 
-  Divider, 
-  Row, 
-  Col, 
-  Select, 
-  DatePicker, 
-  Switch, 
-  Upload, 
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  notification,
+  Space,
+  Typography,
+  Divider,
+  Row,
+  Col,
+  Select,
+  DatePicker,
+  Switch,
   Avatar,
   Tag,
   Badge,
   Tooltip,
-  Tabs
+  Tabs,
 } from "antd";
-import { 
-  UserOutlined, 
-  MailOutlined, 
-  LockOutlined, 
-  PhoneOutlined, 
-  EnvironmentOutlined, 
+import {
+  UserOutlined,
+  MailOutlined,
+  LockOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
   CalendarOutlined,
   GlobalOutlined,
   BellOutlined,
-  CameraOutlined,
-  EditOutlined,
   SaveOutlined,
   SecurityScanOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
 } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import PhoneNumberInput from "@components/shared/phone-number-input.component";
 import { validatePhoneNumber } from "@utils/country-codes";
 import dayjs from "dayjs";
@@ -54,63 +52,81 @@ export default function SettingsPage() {
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [preferencesForm] = Form.useForm();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState("profile");
   const [api, contextHolder] = notification.useNotification();
 
   // Mock user data - in real app, this would come from API
   const [userData, setUserData] = useState({
-    username: session?.user?.name || '',
-    email: session?.user?.email || '',
-    fullName: session?.user?.name || '',
-    phoneNumber: '',
-    countryCode: 'CM', // Default to Cameroon
-    bio: '',
+    username: session?.user?.name || "",
+    email: session?.user?.email || "",
+    fullName: session?.user?.name || "",
+    phoneNumber: "",
+    countryCode: "CM", // Default to Cameroon
+    bio: "",
     dateOfBirth: null as Date | null,
-    gender: undefined as 'male' | 'female' | 'other' | 'prefer_not_to_say' | undefined,
-    address: '',
-    timezone: 'UTC',
-    locale: 'en',
+    gender: undefined as
+      | "male"
+      | "female"
+      | "other"
+      | "prefer_not_to_say"
+      | undefined,
+    address: "",
+    profileImage: "",
+    timezone: "UTC",
+    locale: "en",
     emailNotifications: true,
     smsNotifications: false,
     verified: false,
-    accountStatus: 'active' as 'active' | 'inactive' | 'suspended' | 'banned' | 'pending',
+    accountStatus: "active" as
+      | "active"
+      | "inactive"
+      | "suspended"
+      | "banned"
+      | "pending",
     createdAt: new Date(),
     lastLoginAt: new Date(),
+    referralCode: "",
+    twoFactorEnabled: false,
   });
 
   // Load user data from API
   const loadUserData = async () => {
     if (!session?.user?.id) return;
-    
+
     try {
       const response = await fetch(`/api/users/${session.user.id}`);
       const result = await response.json();
-      
+
       if (response.ok && result) {
         const apiUserData = {
-          username: result.username || '',
-          email: result.email || '',
-          fullName: result.fullName || '',
-          phoneNumber: result.phoneNumber || '',
-          countryCode: result.countryCode || 'CM', // Default to Cameroon
-          bio: result.bio || '',
+          username: result.username || "",
+          email: result.email || "",
+          fullName: result.fullName || "",
+          phoneNumber: result.phoneNumber || "",
+          countryCode: result.countryCode || "CM",
+          bio: result.bio || "",
           dateOfBirth: result.dateOfBirth ? new Date(result.dateOfBirth) : null,
           gender: result.gender,
-          address: result.address || '',
-          timezone: result.timezone || 'UTC',
-          locale: result.locale || 'en',
+          address: result.address || "",
+          profileImage: result.profileImage || "",
+          timezone: result.timezone || "UTC",
+          locale: result.locale || "en",
           emailNotifications: result.emailNotifications ?? true,
           smsNotifications: result.smsNotifications ?? false,
           verified: result.verified ?? false,
-          accountStatus: result.accountStatus || 'active',
+          accountStatus: result.accountStatus || "active",
           createdAt: result.createdAt ? new Date(result.createdAt) : new Date(),
-          lastLoginAt: result.lastLoginAt ? new Date(result.lastLoginAt) : new Date(),
+          lastLoginAt: result.lastLoginAt
+            ? new Date(result.lastLoginAt)
+            : new Date(),
+          referralCode: result.referralCode || "",
+          twoFactorEnabled: result.twoFactorEnabled ?? false,
         };
-        
+
         setUserData(apiUserData);
       }
     } catch (error) {
-      console.error('Failed to load user data:', error);
+      console.error("Failed to load user data:", error);
     }
   };
 
@@ -125,11 +141,12 @@ export default function SettingsPage() {
       email: userData.email,
       fullName: userData.fullName,
       phoneNumber: userData.phoneNumber,
-      countryCode: userData.countryCode || 'CM',
+      countryCode: userData.countryCode || "CM",
       bio: userData.bio,
       dateOfBirth: userData.dateOfBirth ? dayjs(userData.dateOfBirth) : null,
       gender: userData.gender,
       address: userData.address,
+      profileImage: userData.profileImage, // Avatar field for Cloudinary upload
     });
 
     preferencesForm.setFieldsValue({
@@ -137,10 +154,8 @@ export default function SettingsPage() {
       locale: userData.locale,
       emailNotifications: userData.emailNotifications,
       smsNotifications: userData.smsNotifications,
+      twoFactorEnabled: userData.twoFactorEnabled,
     });
-    
-    // Log for debugging
-    console.log('Settings form initialized with countryCode:', userData.countryCode || 'CM');
   }, [userData, profileForm, preferencesForm]);
 
   const handleUpdateProfile = async (values: any) => {
@@ -148,13 +163,15 @@ export default function SettingsPage() {
     try {
       const updateData = {
         ...values,
-        dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toDate().toISOString() : null,
+        dateOfBirth: values.dateOfBirth
+          ? values.dateOfBirth.toDate().toISOString()
+          : null,
       };
 
       const response = await fetch(`/api/users/${session?.user?.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updateData),
       });
@@ -162,7 +179,7 @@ export default function SettingsPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to update profile');
+        throw new Error(result.message || "Failed to update profile");
       }
 
       // Update local state
@@ -171,15 +188,15 @@ export default function SettingsPage() {
         ...values,
         dateOfBirth: values.dateOfBirth ? values.dateOfBirth.toDate() : null,
       };
-      
+
       setUserData(updatedData);
       api.success({
         message: "Profile Updated!",
         description: "Profile updated successfully!",
-        placement: 'topRight',
+        placement: "topRight",
         duration: 3,
       });
-      
+
       // Update the session if needed
       await update({
         ...session,
@@ -187,13 +204,14 @@ export default function SettingsPage() {
           ...session?.user,
           name: values.fullName,
           email: values.email,
+          image: values.profileImage || session?.user?.image, // Update avatar in session
         },
       });
     } catch (error: any) {
       api.error({
         message: "Update Failed",
         description: error.message || "Failed to update profile",
-        placement: 'topRight',
+        placement: "topRight",
       });
       console.error("Profile update error:", error);
     } finally {
@@ -205,9 +223,9 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       const response = await fetch(`/api/users/${session?.user?.id}/password`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           currentPassword: values.currentPassword,
@@ -218,13 +236,13 @@ export default function SettingsPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to change password');
+        throw new Error(result.message || "Failed to change password");
       }
 
       api.success({
         message: "Password Changed!",
         description: "Password changed successfully!",
-        placement: 'topRight',
+        placement: "topRight",
         duration: 3,
       });
       passwordForm.resetFields();
@@ -232,7 +250,7 @@ export default function SettingsPage() {
       api.error({
         message: "Password Change Failed",
         description: error.message || "Failed to change password",
-        placement: 'topRight',
+        placement: "topRight",
       });
       console.error("Password change error:", error);
     } finally {
@@ -244,9 +262,9 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       const response = await fetch(`/api/users/${session?.user?.id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
@@ -254,7 +272,7 @@ export default function SettingsPage() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to update preferences');
+        throw new Error(result.message || "Failed to update preferences");
       }
 
       const updatedData = { ...userData, ...values };
@@ -262,14 +280,14 @@ export default function SettingsPage() {
       api.success({
         message: "Preferences Updated!",
         description: "Preferences updated successfully!",
-        placement: 'topRight',
+        placement: "topRight",
         duration: 3,
       });
     } catch (error: any) {
       api.error({
         message: "Update Failed",
         description: error.message || "Failed to update preferences",
-        placement: 'topRight',
+        placement: "topRight",
       });
       console.error("Preferences update error:", error);
     } finally {
@@ -279,18 +297,24 @@ export default function SettingsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'green';
-      case 'inactive': return 'orange';
-      case 'suspended': return 'red';
-      case 'banned': return 'red';
-      case 'pending': return 'blue';
-      default: return 'default';
+      case "active":
+        return "green";
+      case "inactive":
+        return "orange";
+      case "suspended":
+        return "red";
+      case "banned":
+        return "red";
+      case "pending":
+        return "blue";
+      default:
+        return "default";
     }
   };
 
   const tabItems = [
     {
-      key: 'profile',
+      key: "profile",
       label: (
         <span>
           <UserOutlined />
@@ -299,59 +323,88 @@ export default function SettingsPage() {
       ),
       children: (
         <Card>
-          <Row gutter={[24, 24]}>
-            <Col xs={24} md={8}>
-              <div style={{ textAlign: 'center' }}>
-                <Avatar
-                  size={120}
-                  src={session?.user?.image}
-                  icon={<UserOutlined />}
-                  style={{ backgroundColor: '#1890ff', marginBottom: 16 }}
-                />
-                <div>
-                  <Upload
-                    showUploadList={false}
-                    beforeUpload={() => false}
-                  >
-                    <Button icon={<CameraOutlined />} size="small">
-                      Change Photo
-                    </Button>
-                  </Upload>
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <Text strong>{userData.fullName}</Text>
-                  <br />
-                  <Text type="secondary">{userData.email}</Text>
-                  <br />
-                  <Tag color={getStatusColor(userData.accountStatus)} style={{ marginTop: 8 }}>
-                    {userData.accountStatus.toUpperCase()}
-                  </Tag>
-                  {userData.verified && (
-                    <Badge status="success" text="Verified" style={{ marginTop: 8, display: 'block' }} />
-                  )}
-                </div>
-              </div>
-            </Col>
-            <Col xs={24} md={16}>
-              <Form
-                form={profileForm}
-                layout="vertical"
-                onFinish={handleUpdateProfile}
-                size="large"
-              >
-                {/* Hidden field for country code */}
-                <Form.Item name="countryCode" initialValue="CM" hidden>
-                  <Input />
-                </Form.Item>
+          <Form
+            form={profileForm}
+            layout="vertical"
+            onFinish={handleUpdateProfile}
+            size="large"
+          >
+            {/* Hidden field for country code */}
+            <Form.Item name="countryCode" initialValue="CM" hidden>
+              <Input />
+            </Form.Item>
 
+            <Row gutter={[24, 24]}>
+              {/* Avatar Section */}
+              <Col xs={24} md={8}>
+                <div
+                  style={{ textAlign: "center", position: "sticky", top: 24 }}
+                >
+                  <Avatar
+                    size={140}
+                    src={
+                      profileForm.getFieldValue("profileImage") ||
+                      userData.profileImage ||
+                      session?.user?.image
+                    }
+                    icon={<UserOutlined />}
+                    style={{ backgroundColor: "#1890ff", marginBottom: 16 }}
+                  />
+                  <div style={{ marginTop: 16 }}>
+                    <Text strong style={{ fontSize: "16px" }}>
+                      {userData.fullName || "User"}
+                    </Text>
+                    <br />
+                    <Text type="secondary">{userData.email}</Text>
+                    <br />
+                    <Tag
+                      color={getStatusColor(userData.accountStatus)}
+                      style={{ marginTop: 12 }}
+                    >
+                      {userData.accountStatus.toUpperCase()}
+                    </Tag>
+                    {userData.verified && (
+                      <div style={{ marginTop: 8 }}>
+                        <Badge status="success" text="Verified Account" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-5 text-center">
+                    <ImageUploadField
+                      name="profileImage"
+                      label=""
+                      required={false}
+                      form={profileForm}
+                      initialImageUrl={
+                        userData.profileImage || session?.user?.image
+                      }
+                      maxSize={5 * 1024 * 1024}
+                      fieldName="profileImage"
+                      onImageChange={(url) => {
+                        // Update form field value immediately for real-time avatar preview
+                        profileForm.setFieldValue("profileImage", url);
+                      }}
+                    />
+                  </div>
+                </div>
+              </Col>
+
+              {/* Form Fields Section */}
+              <Col xs={24} md={16}>
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
                     <Form.Item
                       name="username"
                       label="Username"
-                      rules={[{ required: true, message: "Please enter your username" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your username",
+                        },
+                      ]}
                     >
                       <Input
+                        size="large"
                         prefix={<UserOutlined />}
                         placeholder="Enter your username"
                       />
@@ -361,9 +414,15 @@ export default function SettingsPage() {
                     <Form.Item
                       name="fullName"
                       label="Full Name"
-                      rules={[{ required: true, message: "Please enter your full name" }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your full name",
+                        },
+                      ]}
                     >
                       <Input
+                        size="large"
                         prefix={<UserOutlined />}
                         placeholder="Enter your full name"
                       />
@@ -380,6 +439,7 @@ export default function SettingsPage() {
                   ]}
                 >
                   <Input
+                    size="large"
                     prefix={<MailOutlined />}
                     placeholder="Enter your email address"
                   />
@@ -392,12 +452,14 @@ export default function SettingsPage() {
                     {
                       validator: (_, value) => {
                         if (!value) return Promise.resolve();
-                        const countryCode = profileForm.getFieldValue('countryCode') || 'CM';
-                        console.log('Validating settings phone with country code:', countryCode, 'Phone:', value);
+                        const countryCode =
+                          profileForm.getFieldValue("countryCode") || "CM";
                         if (validatePhoneNumber(countryCode, value)) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Please enter a valid phone number'));
+                        return Promise.reject(
+                          new Error("Please enter a valid phone number")
+                        );
                       },
                     },
                   ]}
@@ -405,56 +467,49 @@ export default function SettingsPage() {
                   <PhoneNumberInput
                     placeholder="Enter your phone number"
                     showMoneyServices={true}
-                    countryCode={userData.countryCode || 'CM'}
+                    countryCode={userData.countryCode || "CM"}
                     onCountryCodeChange={(code) => {
-                      console.log('Settings: Country code changed to:', code);
-                      profileForm.setFieldValue('countryCode', code);
+                      profileForm.setFieldValue("countryCode", code);
                     }}
+                    size="large"
                   />
                 </Form.Item>
 
                 <Row gutter={16}>
                   <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="dateOfBirth"
-                      label="Date of Birth"
-                    >
+                    <Form.Item name="dateOfBirth" label="Date of Birth">
                       <DatePicker
-                        style={{ width: '100%' }}
+                        size="large"
+                        style={{ width: "100%" }}
                         placeholder="Select your date of birth"
                       />
                     </Form.Item>
                   </Col>
                   <Col xs={24} sm={12}>
-                    <Form.Item
-                      name="gender"
-                      label="Gender"
-                    >
-                      <Select placeholder="Select gender">
+                    <Form.Item name="gender" label="Gender">
+                      <Select size="large" placeholder="Select gender">
                         <Option value="male">Male</Option>
                         <Option value="female">Female</Option>
                         <Option value="other">Other</Option>
-                        <Option value="prefer_not_to_say">Prefer not to say</Option>
+                        <Option value="prefer_not_to_say">
+                          Prefer not to say
+                        </Option>
                       </Select>
                     </Form.Item>
                   </Col>
                 </Row>
 
-                <Form.Item
-                  name="address"
-                  label="Address"
-                >
+                <Form.Item name="address" label="Address">
                   <Input
+                    size="large"
                     prefix={<EnvironmentOutlined />}
                     placeholder="Enter your address"
                   />
                 </Form.Item>
 
-                <Form.Item
-                  name="bio"
-                  label="Bio"
-                >
+                <Form.Item name="bio" label="Bio">
                   <TextArea
+                    size="large"
                     rows={4}
                     placeholder="Tell us about yourself..."
                     maxLength={500}
@@ -473,14 +528,14 @@ export default function SettingsPage() {
                     Update Profile
                   </Button>
                 </Form.Item>
-              </Form>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          </Form>
         </Card>
       ),
     },
     {
-      key: 'security',
+      key: "security",
       label: (
         <span>
           <SecurityScanOutlined />
@@ -498,9 +553,15 @@ export default function SettingsPage() {
             <Form.Item
               name="currentPassword"
               label="Current Password"
-              rules={[{ required: true, message: "Please enter your current password" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Please enter your current password",
+                },
+              ]}
             >
               <Input.Password
+                size="large"
                 prefix={<LockOutlined />}
                 placeholder="Enter your current password"
               />
@@ -515,6 +576,7 @@ export default function SettingsPage() {
               ]}
             >
               <Input.Password
+                size="large"
                 prefix={<LockOutlined />}
                 placeholder="Enter your new password"
               />
@@ -537,6 +599,7 @@ export default function SettingsPage() {
               ]}
             >
               <Input.Password
+                size="large"
                 prefix={<LockOutlined />}
                 placeholder="Confirm your new password"
               />
@@ -558,7 +621,7 @@ export default function SettingsPage() {
       ),
     },
     {
-      key: 'preferences',
+      key: "preferences",
       label: (
         <span>
           <BellOutlined />
@@ -575,11 +638,8 @@ export default function SettingsPage() {
           >
             <Row gutter={16}>
               <Col xs={24} sm={12}>
-                <Form.Item
-                  name="timezone"
-                  label="Timezone"
-                >
-                  <Select placeholder="Select timezone">
+                <Form.Item name="timezone" label="Timezone">
+                  <Select size="large" placeholder="Select timezone">
                     <Option value="UTC">UTC</Option>
                     <Option value="America/New_York">Eastern Time</Option>
                     <Option value="America/Chicago">Central Time</Option>
@@ -592,11 +652,8 @@ export default function SettingsPage() {
                 </Form.Item>
               </Col>
               <Col xs={24} sm={12}>
-                <Form.Item
-                  name="locale"
-                  label="Language"
-                >
-                  <Select placeholder="Select language">
+                <Form.Item name="locale" label="Language">
+                  <Select size="large" placeholder="Select language">
                     <Option value="en">English</Option>
                     <Option value="es">Spanish</Option>
                     <Option value="fr">French</Option>
@@ -626,6 +683,22 @@ export default function SettingsPage() {
               <Switch />
             </Form.Item>
 
+            <Divider orientation="left">Security</Divider>
+
+            <Form.Item
+              name="twoFactorEnabled"
+              label={
+                <Space>
+                  <SecurityScanOutlined />
+                  Two-Factor Authentication (2FA)
+                </Space>
+              }
+              valuePropName="checked"
+              extra="Enable two-factor authentication for additional security"
+            >
+              <Switch />
+            </Form.Item>
+
             <Form.Item>
               <Button
                 type="primary"
@@ -642,7 +715,7 @@ export default function SettingsPage() {
       ),
     },
     {
-      key: 'account',
+      key: "account",
       label: (
         <span>
           <InfoCircleOutlined />
@@ -657,7 +730,9 @@ export default function SettingsPage() {
                 <div>
                   <Text strong>User ID:</Text>
                   <br />
-                  <Text type="secondary" copyable>{session?.user?.id || "N/A"}</Text>
+                  <Text type="secondary" copyable>
+                    {session?.user?.id || "N/A"}
+                  </Text>
                 </div>
               </Col>
               <Col xs={24} sm={12}>
@@ -670,9 +745,9 @@ export default function SettingsPage() {
                 </div>
               </Col>
             </Row>
-            
+
             <Divider />
-            
+
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12}>
                 <div>
@@ -693,9 +768,9 @@ export default function SettingsPage() {
                 </div>
               </Col>
             </Row>
-            
+
             <Divider />
-            
+
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12}>
                 <div>
@@ -716,6 +791,49 @@ export default function SettingsPage() {
                 </div>
               </Col>
             </Row>
+
+            {userData.referralCode && (
+              <>
+                <Divider />
+
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <div>
+                      <Text strong>Referral Code:</Text>
+                      <br />
+                      <Text
+                        type="secondary"
+                        copyable={{ text: userData.referralCode }}
+                      >
+                        {userData.referralCode}
+                      </Text>
+                      <br />
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        Share this code with friends to earn rewards
+                      </Text>
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            )}
+
+            {userData.twoFactorEnabled && (
+              <>
+                <Divider />
+
+                <Row gutter={[16, 16]}>
+                  <Col xs={24}>
+                    <div>
+                      <Text strong>Two-Factor Authentication:</Text>
+                      <br />
+                      <Tag color="green" icon={<SecurityScanOutlined />}>
+                        Enabled
+                      </Tag>
+                    </div>
+                  </Col>
+                </Row>
+              </>
+            )}
           </Space>
         </Card>
       ),
@@ -725,26 +843,32 @@ export default function SettingsPage() {
   return (
     <>
       {contextHolder}
-      <div style={{ padding: "24px", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <div
+        style={{
+          padding: "24px",
+          minHeight: "100vh",
+          backgroundColor: "#f5f5f5",
+        }}
+      >
         <PageBreadCrumbs items={["Dashboard", "Settings"]} />
-      
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          Account Settings
-        </Title>
-        <Text type="secondary">
-          Manage your account settings and preferences
-        </Text>
-      </div>
-      
-      <Card style={{ borderRadius: 12 }}>
-        <Tabs
-          activeKey={activeTab}
-          onChange={setActiveTab}
-          items={tabItems}
-          size="large"
-        />
-      </Card>
+
+        <div style={{ marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>
+            Account Settings
+          </Title>
+          <Text type="secondary">
+            Manage your account settings and preferences
+          </Text>
+        </div>
+
+        <Card style={{ borderRadius: 12 }}>
+          <Tabs
+            activeKey={activeTab}
+            onChange={setActiveTab}
+            items={tabItems}
+            size="large"
+          />
+        </Card>
       </div>
     </>
   );

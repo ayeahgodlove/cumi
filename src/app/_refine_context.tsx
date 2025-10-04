@@ -18,7 +18,6 @@ import { Spin, App as AntdApp } from "antd";
 import { accessControlProvider } from "../providers/access-control-provider";
 import { useLocale, useTranslations } from "next-intl";
 import { setUserLocale } from "../i18n/index";
-import ClientProvider from "@contexts/provider";
 
 export const App = (props: any) => {
   const { data, status } = useSession();
@@ -134,17 +133,30 @@ export const App = (props: any) => {
     return true;
   });
 
+  // Don't block rendering during authentication check
   if (status === "loading") {
     return (
-      <Spin
-        size="large"
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      />
+      <RefineKbarProvider>
+        <AntdRegistry>
+          <AntdApp>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+                flexDirection: "column",
+                background: "linear-gradient(135deg, #f0fdf4 0%, #f0f9ff 100%)",
+              }}
+            >
+              <Spin size="large" />
+              <p style={{ marginTop: 16, color: "#666", fontSize: 16 }}>
+                Loading your experience...
+              </p>
+            </div>
+          </AntdApp>
+        </AntdRegistry>
+      </RefineKbarProvider>
     );
   }
 
@@ -153,42 +165,40 @@ export const App = (props: any) => {
       <RefineKbarProvider>
         <AntdRegistry>
           <AntdApp>
-            <ClientProvider>
-              <Refine
-                routerProvider={routerProvider}
-                dataProvider={dataProvider}
-                accessControlProvider={{
-                  can: async ({ resource, action }) => {
-                    const user = await authProvider.getPermissions();
-                    return accessControlProvider.can({
-                      resource,
-                      action,
-                      params: { user },
-                    });
-                  },
-                  options: {},
-                }}
-                notificationProvider={notificationProvider}
-                authProvider={authProvider}
-                i18nProvider={i18nProvider}
-                resources={filteredMenus}
-                options={{
-                  syncWithLocation: true,
-                  warnWhenUnsavedChanges: true,
-                  useNewQueryKeys: true,
-                  projectId: "njMZZm-fu7OWZ-sdebsw",
-                  breadcrumb: true,
-                  mutationMode: "optimistic",
-                }}
-                // liveProvider={liveProvider}
-              >
-                {props.children}
-                <RefineKbar />
+            <Refine
+              routerProvider={routerProvider}
+              dataProvider={dataProvider}
+              accessControlProvider={{
+                can: async ({ resource, action }) => {
+                  const user = await authProvider.getPermissions();
+                  return accessControlProvider.can({
+                    resource,
+                    action,
+                    params: { user },
+                  });
+                },
+                options: {},
+              }}
+              notificationProvider={notificationProvider}
+              authProvider={authProvider}
+              i18nProvider={i18nProvider}
+              resources={filteredMenus}
+              options={{
+                syncWithLocation: true,
+                warnWhenUnsavedChanges: true,
+                useNewQueryKeys: true,
+                projectId: "njMZZm-fu7OWZ-sdebsw",
+                breadcrumb: true,
+                mutationMode: "optimistic",
+              }}
+              // liveProvider={liveProvider}
+            >
+              {props.children}
+              <RefineKbar />
               </Refine>
-            </ClientProvider>
-          </AntdApp>
-        </AntdRegistry>
-      </RefineKbarProvider>
+            </AntdApp>
+          </AntdRegistry>
+        </RefineKbarProvider>
     </>
   );
 };

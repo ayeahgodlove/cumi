@@ -1,8 +1,8 @@
 "use client";
 
-import { PlusOutlined } from "@ant-design/icons";
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
 import { Edit, useForm, useSelect } from "@refinedev/antd";
@@ -10,19 +10,14 @@ import {
   Col,
   Form,
   Input,
-  message,
   Row,
   Select,
   Space,
   Typography,
-  Upload,
 } from "antd";
-import { useUpload, deleteUploadedFile, getImageUrlFromEvent } from "@hooks/shared/upload.hook";
-import { useEffect, useState } from "react";
 
 export default function BlogPostEdit() {
   const { formProps, saveButtonProps, queryResult } = useForm({});
-  const [initialImageUrl, setInitialImageUrl] = useState<string>("");
 
   const { queryResult: categoryData, selectProps: categoryProps } =
     useSelect<ICategory>({
@@ -35,55 +30,6 @@ export default function BlogPostEdit() {
   const categories = categoryData?.data || [];
   const tags = tagData?.data || [];
 
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: formProps.form,
-    fieldName: 'imageUrl',
-    onSuccess: (response) => {
-      // Update form with the uploaded file URL
-      formProps.form?.setFieldsValue({
-        imageUrl: response.url
-      });
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Set initial file list when data loads
-  useEffect(() => {
-    if (queryResult?.data?.data?.imageUrl) {
-      const imageUrl = queryResult.data.data.imageUrl;
-      setInitialImageUrl(imageUrl);
-      
-      // Create file list item for existing image
-      const existingFile = {
-        uid: '-1',
-        name: imageUrl.split('/').pop() || 'image',
-        status: 'done',
-        url: imageUrl,
-        response: { url: imageUrl }
-      };
-      setFileList([existingFile]);
-    }
-  }, [queryResult?.data?.data?.imageUrl, setFileList]);
-
-
-  const handleRemoveWithCleanup = async (file: any) => {
-    // If removing existing file, delete it from server
-    if (file.url === initialImageUrl && initialImageUrl) {
-      const deleted = await deleteUploadedFile(initialImageUrl);
-      if (deleted) {
-        message.success('File deleted successfully');
-      } else {
-        message.warning('File removed from form but may still exist on server');
-      }
-    }
-    
-    // Use the hook's handleRemove for uploaded files
-    return await handleRemove(file);
-  };
   return (
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists", "Edit"]} />
@@ -215,41 +161,13 @@ export default function BlogPostEdit() {
             />
           </Form.Item>
 
-          <Form.Item 
-            name="imageUrl" 
-            label="Upload Image"
+          <ImageUploadField
+            name="imageUrl"
+            label="Featured Image"
             required={true}
-            rules={[
-              { required: true, message: "This field is a required field" },
-              {
-                validator: (_, value) => {
-                  // Check if we have a valid URL string
-                  if (typeof value === 'string' && value.trim() !== '') {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error('Please upload an image'));
-                }
-              }
-            ]}
-          >
-            <Upload
-              listType="picture-card"
-              beforeUpload={beforeUpload}
-              onChange={handleUploadChange}
-              action="/api/uploads"
-              maxCount={1}
-              showUploadList={{ showPreviewIcon: true }}
-              onRemove={handleRemoveWithCleanup}
-              fileList={Array.isArray(fileList) ? fileList : []}
-            >
-              {fileList.length < 1 && (
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              )}
-            </Upload>
-          </Form.Item>
+            form={formProps.form}
+            initialImageUrl={queryResult?.data?.data?.imageUrl}
+          />
         </Form>
       </Edit>
     </>

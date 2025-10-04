@@ -1040,7 +1040,19 @@ export default function CreatorDashboard() {
             {t('common.close')}
           </Button>,
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         {viewModalData && (
           <Descriptions bordered column={1}>
@@ -1188,7 +1200,8 @@ export default function CreatorDashboard() {
             {t('creator.view_full_event')}
           </Button>,
         ]}
-        width={1000}
+        width="95%"
+        style={{ maxWidth: '1100px' }}
       >
         {selectedEvent && (
           <Card style={{ backgroundColor: 'white', border: 'none' }}>

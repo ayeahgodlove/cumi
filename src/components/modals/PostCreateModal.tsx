@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Modal, Form, Input, Select, Upload, message, Row, Col, Button } from "antd";
-import { PlusOutlined, SaveOutlined, CloseOutlined } from "@ant-design/icons";
+import { Modal, Form, Input, Select, message, Row, Col, Button } from "antd";
+import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
 import { useNotification } from "@refinedev/core";
 import { useSelect } from "@refinedev/antd";
 import { ICategory } from "@domain/models/category";
 import { ITag } from "@domain/models/tag";
-import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 import RichTextEditor from "@components/shared/rich-text-editor";
 import { useTranslation } from "@contexts/translation.context";
 
@@ -35,8 +35,8 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
       // Format the data before submission
       const formattedValues = {
         ...values,
-        // Ensure imageUrl is a string (not a file object)
-        imageUrl: getImageUrlString(fileList) || values.imageUrl || "",
+        // Ensure imageUrl is a string from the ImageUploadField
+        imageUrl: values.imageUrl || "",
         // Ensure tags is an array of strings (IDs from the select)
         tags: Array.isArray(values.tags) ? values.tags : [],
         // Map excerpt to description if needed
@@ -55,7 +55,6 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
       
       // Reset form and close modal
       form.resetFields();
-      setFileList([]);
       onSuccess();
       onCancel();
     } catch (error: any) {
@@ -81,31 +80,6 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
   const categories = categoryData?.data?.data || [];
   const tags = tagData?.data?.data || [];
 
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
-    maxSize: 1024 * 1024, // 1MB
-    allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    form: form,
-    fieldName: 'imageUrl',
-    onSuccess: (response) => {
-      // This will be handled in useEffect to prevent setState in render
-    },
-    onError: (error) => {
-      message.error(error);
-    }
-  });
-
-  // Handle form field updates in useEffect to prevent setState in render
-  useEffect(() => {
-    if (fileList && fileList.length > 0) {
-      const imageUrl = getImageUrlString(fileList);
-      if (imageUrl) {
-        form.setFieldsValue({
-          imageUrl: imageUrl
-        });
-      }
-    }
-  }, [fileList, form]);
-
   // Preload form when editing
   useEffect(() => {
     if (editingPost && visible) {
@@ -118,26 +92,14 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
         tags: editingPost.tags || [],
         imageUrl: editingPost.imageUrl,
       });
-      
-      // Set file list if there's an existing image
-      if (editingPost.imageUrl) {
-        setFileList([{
-          uid: '-1',
-          name: 'existing-image',
-          status: 'done',
-          url: editingPost.imageUrl,
-        }]);
-      }
     } else if (!editingPost && visible) {
       // Reset form for new post
       form.resetFields();
-      setFileList([]);
     }
-  }, [editingPost, visible, form, setFileList]);
+  }, [editingPost, visible, form]);
 
   const handleCancel = () => {
     form.resetFields();
-    setFileList([]);
     onCancel();
   };
 
@@ -157,15 +119,18 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      width={800}
-      destroyOnClose
-      style={{
-        backgroundColor: "white"
-      }}
+      width="95%"
+      style={{ maxWidth: '900px', top: 20 }}
+      destroyOnClose={true}
+      maskClosable={true}
+      keyboard={true}
+      forceRender={false}
       styles={{
         body: {
           backgroundColor: "white",
-          padding: "24px"
+          padding: "24px",
+          maxHeight: 'calc(100vh - 200px)',
+          overflowY: 'auto'
         },
         header: {
           backgroundColor: "white",
@@ -227,7 +192,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           label={t('forms.excerpt')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.excerpt').toLowerCase() }) }]}
         >
-          <Input.TextArea rows={3} />
+          <Input.TextArea size="large" rows={3} />
         </Form.Item>
 
         <Form.Item
@@ -263,40 +228,13 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           />
         </Form.Item>
 
-        <Form.Item
+        <ImageUploadField
           name="imageUrl"
           label={t('forms.featured_image')}
-          rules={[
-            { required: true, message: t('forms.please_upload', { field: t('forms.featured_image').toLowerCase() }) },
-            {
-              validator: (_, value) => {
-                // Check if we have a valid URL string
-                if (typeof value === 'string' && value.trim() !== '') {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(t('forms.please_upload', { field: 'image' })));
-              }
-            }
-          ]}
-        >
-          <Upload
-            listType="picture-card"
-            beforeUpload={beforeUpload}
-            onChange={handleUploadChange}
-            action="/api/uploads"
-            maxCount={1}
-            showUploadList={{ showPreviewIcon: true }}
-            onRemove={handleRemove}
-            fileList={Array.isArray(fileList) ? fileList : []}
-          >
-            {fileList.length < 1 && (
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>{t('forms.upload')}</div>
-              </div>
-            )}
-          </Upload>
-        </Form.Item>
+          required={true}
+          form={form}
+          maxSize={5 * 1024 * 1024}
+        />
 
         <Form.Item>
           <div style={{ 

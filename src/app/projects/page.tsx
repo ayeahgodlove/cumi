@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import ProjectsPageComponent from "@components/page-components/projects-page.component";
-import { generatePageMetadata, generateStructuredData, defaultImages } from "../../lib/seo";
+import { generatePageMetadata, defaultImages } from "../../lib/seo";
 
 export const metadata: Metadata = generatePageMetadata({
   title: "Our Projects - CUMI Software Development Portfolio",

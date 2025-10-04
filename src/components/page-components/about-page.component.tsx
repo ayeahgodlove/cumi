@@ -38,8 +38,7 @@ import { AppCTA } from "@components/CTA.component";
 import { publicStatsAPI } from "@store/api/public-stats_api";
 import { 
   PageLayout, 
-  LoadingSpinner, 
-  ErrorBoundary 
+  LoadingSpinner 
 } from "@components/shared";
 
 const { Title, Paragraph, Text } = Typography;
@@ -140,7 +139,6 @@ export default function AboutPageComponent() {
   ];
 
   return (
-    <ErrorBoundary>
       <PageLayout
         showBanner={true}
         bannerTitle="About Us"
@@ -466,6 +464,5 @@ export default function AboutPageComponent() {
         {/* CTA Section */}
         <AppCTA />
       </PageLayout>
-    </ErrorBoundary>
   );
 }

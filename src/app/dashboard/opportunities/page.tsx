@@ -1,7 +1,6 @@
 "use client";
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
-import { BASE_URL_UPLOADS_MEDIA } from "@constants/api-url";
 import {
   DateField,
   DeleteButton,
@@ -20,11 +19,16 @@ export default function OpportunityList() {
     syncWithLocation: true,
   });
 
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <>
       <PageBreadCrumbs items={["Blog Posts", "Lists"]} />
       <List>
-        <Table {...tableProps} rowKey="id">
+        <Table {...safeTableProps} rowKey="id">
           <Table.Column
             dataIndex="id"
             title={"ID"}

@@ -25,7 +25,6 @@ import { useForm, useSelect } from "@refinedev/antd";
 import { useUpdate, useCreate, useDelete } from "@refinedev/core";
 import { ICategory } from "@domain/models/category";
 import { ICourse } from "@domain/models/course";
-import { useUpload, getImageUrlString } from "@hooks/shared/upload.hook";
 import RichTextEditor from "@components/shared/rich-text-editor";
 
 const { Title, Text } = Typography;
@@ -235,8 +234,19 @@ export default function CourseManagementModal({
       open={visible}
       onCancel={handleCancel}
       footer={null}
-      width={1000}
-      destroyOnClose
+      width="95%"
+      style={{ maxWidth: '1200px', top: 20 }}
+      destroyOnClose={true}
+      maskClosable={true}
+      keyboard={true}
+      forceRender={false}
+      styles={{
+        body: {
+          maxHeight: 'calc(100vh - 200px)',
+          overflowY: 'auto',
+          padding: '24px'
+        }
+      }}
     >
       <div style={{ marginBottom: 16 }}>
         <Button.Group>
@@ -291,7 +301,7 @@ export default function CourseManagementModal({
             label="Description"
             rules={[{ required: true, message: "Please enter course description" }]}
           >
-            <Input.TextArea rows={4} />
+            <Input.TextArea size="large" rows={4} />
           </Form.Item>
 
           <Form.Item>
@@ -364,7 +374,7 @@ export default function CourseManagementModal({
                 label="Description"
                 rules={[{ required: true, message: "Please enter module description" }]}
               >
-                <Input.TextArea rows={3} />
+                <Input.TextArea size="large" rows={3} />
               </Form.Item>
 
               <Form.Item

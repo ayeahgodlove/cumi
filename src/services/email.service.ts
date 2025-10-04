@@ -48,7 +48,21 @@ class EmailService {
       url: process.env.MAILGUN_BASE_URL || "https://api.eu.mailgun.net"
     });
     this.domain = process.env.MAILGUN_DOMAIN || "mail.cumi.dev";
-    this.baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // Get base URL with proper fallback (NEVER localhost in production)
+    const getBaseUrl = () => {
+      if (process.env.NEXT_PUBLIC_APP_URL) {
+        return process.env.NEXT_PUBLIC_APP_URL;
+      }
+      if (process.env.NEXT_PUBLIC_BASE_URL) {
+        return process.env.NEXT_PUBLIC_BASE_URL;
+      }
+      if (process.env.NODE_ENV === 'production') {
+        return 'https://cumi.dev';
+      }
+      return 'http://localhost:3000';
+    };
+    
+    this.baseUrl = getBaseUrl();
     this.logoUrl = `${this.baseUrl}/cumi-green.jpg`;
     
     logger.info("📧 Email Service Initialized:", {

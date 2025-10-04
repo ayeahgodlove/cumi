@@ -6,9 +6,15 @@ const ContactMessageList: React.FC = () => {
   const { tableProps, tableQueryResult } = useTable({
     syncWithLocation: true,
   });
+
+  const safeTableProps = {
+    ...tableProps,
+    dataSource: Array.isArray(tableProps?.dataSource) ? tableProps.dataSource : [],
+  };
+
   return (
     <List>
-      <Table {...tableProps} rowKey="id">
+      <Table {...safeTableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID" />
         <Table.Column dataIndex="name" title="Name" />
         <Table.Column dataIndex="email" title="Email" />

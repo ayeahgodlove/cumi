@@ -10,7 +10,7 @@ const userUseCase = new UserUseCase(userRepository);
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
-
+    console.log("🔑 Forgot Password Request:", { email });
     if (!email) {
       return NextResponse.json(
         { error: "Email is required" },
@@ -31,14 +31,33 @@ export async function POST(request: NextRequest) {
     // Generate reset token
     const resetToken = nanoid(32);
     const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
+    
+    // Get base URL with proper fallback (NEVER localhost in production)
+    const getBaseUrl = () => {
+      if (process.env.NEXT_PUBLIC_APP_URL) {
+        return process.env.NEXT_PUBLIC_APP_URL;
+      }
+      if (process.env.NEXT_PUBLIC_BASE_URL) {
+        return process.env.NEXT_PUBLIC_BASE_URL;
+      }
+      if (process.env.NODE_ENV === 'production') {
+        return 'https://cumi.dev';
+      }
+      return 'http://localhost:3000';
+    };
+    
+    const resetUrl = `${getBaseUrl()}/auth/reset-password?token=${resetToken}`;
 
     // Get user data
     const userData = user.toJSON ? user.toJSON() : user;
 
-    // Update user with reset token
+    // Update user with reset token - only pass necessary fields
     await userUseCase.updateUser({
-      ...userData,
+      id: userData.id,
+      email: userData.email,
+      username: userData.username,
+      fullname: userData.fullname,
+      password: userData.password,
       resetToken,
       resetTokenExpiry
     } as any);

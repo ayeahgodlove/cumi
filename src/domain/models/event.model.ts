@@ -21,6 +21,7 @@ export interface IEvent {
   whatsappNumber?: string;
   entryFee: number;
   isFree: boolean;
+  registrationFee?: string;
   maxAttendees?: number;
   currentAttendees: number;
   category?: 'workshop' | 'seminar' | 'conference' | 'training' | 'meeting' | 'social' | 'religious' | 'cultural' | 'sports' | 'business';
@@ -52,6 +53,7 @@ export const emptyEvent: IEvent = {
   whatsappNumber: "",
   entryFee: 0,
   isFree: true,
+  registrationFee: undefined,
   maxAttendees: undefined,
   currentAttendees: 0,
   category: undefined,

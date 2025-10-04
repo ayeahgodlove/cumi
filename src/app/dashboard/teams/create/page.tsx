@@ -2,8 +2,8 @@
 
 import PageBreadCrumbs from "@components/shared/page-breadcrumb/page-breadcrumb.component";
 import { Create, useForm } from "@refinedev/antd";
-import { Form, Input, Select, Switch, Upload, Button, Row, Col, Space } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Select, Switch, Row, Col } from "antd";
+import ImageUploadField from "@components/shared/image-upload-field.component";
 
 export default function TeamCreate() {
   const { formProps, saveButtonProps } = useForm();
@@ -165,19 +165,12 @@ export default function TeamCreate() {
             />
           </Form.Item>
 
-          <Form.Item
+          <ImageUploadField
             label="Avatar"
             name="avatar"
-          >
-            <Upload
-              name="avatar"
-              listType="picture-card"
-              showUploadList={false}
-              action="/api/uploads"
-            >
-              <Button icon={<UploadOutlined />}>Upload Avatar</Button>
-            </Upload>
-          </Form.Item>
+            form={formProps.form}
+            listType="picture-card"
+          />
 
           <Form.Item
             label="Active Status"

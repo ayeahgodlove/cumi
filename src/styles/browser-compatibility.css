@@ -1,0 +1,202 @@
+/* Browser Compatibility Fixes for Older Browsers */
+
+/* CSS Grid fallback - Use flexbox for older browsers */
+@supports not (display: grid) {
+  .container,
+  .row,
+  [class*="col-"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+/* CSS Custom Properties fallback */
+@supports not (--custom: property) {
+  :root {
+    /* Fallback colors for browsers without CSS variables support */
+    color: #1f2937;
+    background-color: #ffffff;
+  }
+}
+
+/* Flexbox gap fallback for older browsers (Safari < 14.1) */
+@supports not (gap: 1rem) {
+  .ant-space,
+  .d-flex,
+  [style*="gap"] {
+    margin: -8px;
+  }
+  
+  .ant-space > *,
+  .d-flex > *,
+  [style*="gap"] > * {
+    margin: 8px;
+  }
+}
+
+/* Sticky position fallback for older browsers */
+@supports not (position: sticky) {
+  [style*="position: sticky"],
+  .sticky-top {
+    position: relative !important;
+  }
+}
+
+/* Backdrop filter fallback (for Safari < 9) */
+@supports not (backdrop-filter: blur(10px)) {
+  [style*="backdrop-filter"],
+  [style*="backdropFilter"] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+  }
+}
+
+/* Object-fit fallback for older browsers (IE 11, older Edge) */
+@supports not (object-fit: cover) {
+  img[style*="object-fit"] {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+/* CSS aspect-ratio fallback */
+@supports not (aspect-ratio: 16/9) {
+  [style*="aspect-ratio"] {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+  }
+  
+  [style*="aspect-ratio"] > img,
+  [style*="aspect-ratio"] > video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Smooth scrolling fallback */
+@supports not (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* CSS clamp() fallback for older browsers */
+@supports not (width: clamp(1rem, 2vw, 3rem)) {
+  h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  h2 {
+    font-size: 2rem !important;
+  }
+  
+  h3 {
+    font-size: 1.75rem !important;
+  }
+  
+  p {
+    font-size: 1rem !important;
+  }
+}
+
+/* CSS min/max fallback */
+@supports not (width: min(100%, 500px)) {
+  [style*="min("],
+  [style*="max("] {
+    width: 100% !important;
+    max-width: 90vw !important;
+  }
+}
+
+/* Transform transitions fallback */
+@supports not (transform: translateX(0)) {
+  [style*="transform"] {
+    transition: opacity 0.3s ease !important;
+  }
+}
+
+/* Gradient fallback for very old browsers */
+@supports not (background: linear-gradient(to right, #000, #fff)) {
+  [style*="linear-gradient"],
+  [style*="radial-gradient"] {
+    background-color: #22C55E !important;
+  }
+  
+  [class*="gradient"] {
+    background-color: #22C55E !important;
+  }
+}
+
+/* CSS Grid auto-fit fallback */
+@supports not (grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))) {
+  [style*="auto-fit"],
+  [style*="auto-fill"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+  
+  [style*="auto-fit"] > *,
+  [style*="auto-fill"] > * {
+    flex: 1 1 300px !important;
+  }
+}
+
+/* Filter (blur, brightness, etc.) fallback */
+@supports not (filter: blur(10px)) {
+  [style*="filter: blur"],
+  [style*="filter:blur"] {
+    opacity: 0.8 !important;
+  }
+}
+
+/* CSS contain fallback */
+@supports not (contain: layout) {
+  [style*="contain"] {
+    overflow: hidden;
+  }
+}
+
+/* Logical properties fallback (margin-inline, padding-block, etc.) */
+@supports not (margin-inline-start: 1rem) {
+  [style*="margin-inline"] {
+    margin-left: 1rem !important;
+    margin-right: 1rem !important;
+  }
+  
+  [style*="padding-inline"] {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Mix-blend-mode fallback */
+@supports not (mix-blend-mode: multiply) {
+  [style*="mix-blend-mode"],
+  [style*="mixBlendMode"] {
+    opacity: 0.8 !important;
+  }
+}
+
+/* Display: contents fallback */
+@supports not (display: contents) {
+  [style*="display: contents"] {
+    display: block !important;
+  }
+}
+
+/* Image rendering optimization for older browsers */
+img {
+  image-rendering: -webkit-optimize-contrast; /* Webkit fallback */
+  image-rendering: crisp-edges; /* Standard */
+}
+
+/* Print media query for better older browser support */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+  }
+}
+

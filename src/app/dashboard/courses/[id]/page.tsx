@@ -791,7 +791,19 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
           moduleForm.resetFields();
         }}
         footer={null}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         <Card style={{ backgroundColor: "white" }}>
         <Form
@@ -959,7 +971,19 @@ export default function CourseDetailsPage({ params }: CourseDetailsPageProps) {
             {t('common.close')}
           </Button>
         ]}
-        width={800}
+        width="95%"
+        style={{ maxWidth: '900px', top: 20 }}
+        destroyOnClose={true}
+        maskClosable={true}
+        keyboard={true}
+        forceRender={false}
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto',
+            padding: '24px'
+          }
+        }}
       >
         {viewModalData && (
           <Descriptions bordered column={1}>
