@@ -37,7 +37,7 @@ export const AppCTA = () => {
            }}
            // styles={{ body: { padding: 0 } }}
          >
-          {/* Enhanced Decorative Background */}
+          {}
           <div
             style={{
               position: "absolute",
@@ -65,7 +65,7 @@ export const AppCTA = () => {
             }}
           />
 
-          {/* Animated Gradient Orbs */}
+{}
           <div
             style={{
               position: "absolute",
@@ -80,12 +80,12 @@ export const AppCTA = () => {
             }}
           />
 
-          <Row
+<Row
             gutter={[48, 48]}
             align="middle"
             style={{ position: "relative", zIndex: 1 }}
           >
-            {/* Left Content */}
+            {}
             <Col xs={24} lg={14} style={{ padding: "60px 40px" }}>
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -93,7 +93,7 @@ export const AppCTA = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                {/* Enhanced Badge */}
+                {}
                 <div
                   style={{
                     display: "inline-flex",
@@ -135,7 +135,7 @@ export const AppCTA = () => {
                   </Text>
                 </div>
 
-                <Title
+<Title
                   level={2}
                   style={{
                     color: "white",
@@ -150,7 +150,7 @@ export const AppCTA = () => {
                   {t("projects.ready_to_start")}
                 </Title>
 
-                <Paragraph
+<Paragraph
                   style={{
                     color: "rgba(255, 255, 255, 0.98)",
                     fontSize: "clamp(1.05rem, 2vw, 1.2rem)",
@@ -164,7 +164,7 @@ export const AppCTA = () => {
                   {t("projects.start_description")}
                 </Paragraph>
 
-                <Space size="large" wrap>
+<Space size="large" wrap>
                   <Button
                     type="primary"
                     size="large"
@@ -203,7 +203,7 @@ export const AppCTA = () => {
                     {t("projects.start_project")}
                   </Button>
 
-                  <Button
+<Button
                     size="large"
                     icon={<MailOutlined />}
                     href="mailto:info@cumi.dev"
@@ -249,7 +249,7 @@ export const AppCTA = () => {
               </motion.div>
             </Col>
 
-            {/* Right Stats/Features */}
+{}
             <Col xs={24} lg={10} style={{ padding: "40px" }}>
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
@@ -368,7 +368,7 @@ export const AppCTA = () => {
         </Card>
       </div>
 
-      {/* CSS Animation */}
+{}
       <style jsx>{`
         @keyframes float {
           0%,

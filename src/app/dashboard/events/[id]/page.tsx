@@ -54,9 +54,7 @@ export default function EventDetailsPage({ params }: EventDetailsPageProps) {
 
   // Debug logging
   useEffect(() => {
-    console.log('Event Response:', eventResponse);
-    console.log('Event Data:', event);
-    console.log('Event Registrations:', eventRegistrations);
+    // Event data loaded
   }, [eventResponse, event, eventRegistrations]);
 
   const registrationColumns = [

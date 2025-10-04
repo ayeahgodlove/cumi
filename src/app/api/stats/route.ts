@@ -34,12 +34,9 @@ function getTimeAgo(date: Date | string): string {
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Stats API called');
-    
     const session = await getServerSession(authOptions);
     
     if (!session || !session.user) {
-      console.log('Unauthorized access attempt');
       return NextResponse.json(
         {
           success: false,
@@ -49,8 +46,6 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-
-    console.log('User authorized, fetching stats...');
 
     // Initialize repositories
     const postRepository = new PostRepository();
@@ -342,8 +337,6 @@ export async function GET(request: NextRequest) {
       },
       lastUpdated: now.toISOString()
     };
-
-    console.log('Stats retrieved successfully:', stats);
     
     return NextResponse.json({
       success: true,
@@ -363,3 +356,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

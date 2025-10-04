@@ -11,9 +11,9 @@ export const Title: React.FC<TitleProps> = ({ collapsed }) => {
   const Link = useLink();
   const { Link: LegacyLink } = useRouterContext();
 
-  const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
+const ActiveLink = routerType === "legacy" ? LegacyLink : Link;
 
-  return (
+return (
     <ActiveLink to="/">
       {collapsed ? (
         <div

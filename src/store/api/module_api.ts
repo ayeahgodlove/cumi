@@ -95,3 +95,4 @@ export const {
   useUpdateModuleMutation,
   useDeleteModuleMutation,
 } = moduleAPI;
+

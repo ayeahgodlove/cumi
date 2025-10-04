@@ -65,3 +65,4 @@ export const {
   useGetProfessionalsByLocationQuery,
   useGetProfessionalsBySkillsQuery,
 } = professionalAPI;
+

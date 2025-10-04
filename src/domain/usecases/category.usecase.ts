@@ -45,3 +45,4 @@ export class CategoryUseCase {
     return this.categoryRepository.delete(id);
   }
 }
+

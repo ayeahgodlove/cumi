@@ -50,3 +50,4 @@ export class ServiceUseCase {
     return this.serviceRepository.delete(id);
   }
 }
+

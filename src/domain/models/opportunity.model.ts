@@ -79,3 +79,4 @@ export interface IOpportunityResponse extends IResponseBase {
 export interface IOpportunityResponses extends IResponseBase {
   data: IOpportunity[];
 }
+

@@ -26,18 +26,18 @@ const Share: React.FC<ShareProps> = ({
   showModern = false
 }) => {
   const [copied, setCopied] = useState(false);
-  
-  let base_url = "";
 
-  if (typeof window !== "undefined") {
+let base_url = "";
+
+if (typeof window !== "undefined") {
     base_url = window.location.origin;
   }
 
-  const pageUrl = `${base_url}/${type}/${slug}`;
+const pageUrl = `${base_url}/${type}/${slug}`;
   const encodedTitle = encodeURIComponent(title);
   const encodedDescription = encodeURIComponent(description || title);
 
-  const handleCopyLink = async () => {
+const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(pageUrl);
       setCopied(true);
@@ -48,7 +48,7 @@ const Share: React.FC<ShareProps> = ({
     }
   };
 
-  const shareLinks = [
+const shareLinks = [
     {
       name: 'Facebook',
       icon: IoLogoFacebook,
@@ -79,7 +79,7 @@ const Share: React.FC<ShareProps> = ({
     }
   ];
 
-  if (showModern) {
+if (showModern) {
     return (
       <div style={{
         background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
@@ -95,8 +95,8 @@ const Share: React.FC<ShareProps> = ({
             </span>
           </Space>
         </div>
-        
-        <Space size="middle" wrap>
+
+<Space size="middle" wrap>
           {shareLinks.map((link) => (
             <Tooltip key={link.name} title={`Share on ${link.name}`}>
               <Button
@@ -134,8 +134,8 @@ const Share: React.FC<ShareProps> = ({
               />
             </Tooltip>
           ))}
-          
-          <Tooltip title={copied ? 'Copied!' : 'Copy link'}>
+
+<Tooltip title={copied ? 'Copied!' : 'Copy link'}>
             <Button
               type="default"
               shape="circle"
@@ -161,7 +161,7 @@ const Share: React.FC<ShareProps> = ({
     );
   }
 
-  // Legacy/Classic view
+// Legacy/Classic view
   return (
     <ul className={className} style={{ listStyle: 'none', padding: 0, margin: 0 }}>
       {shareLinks.map((link) => (

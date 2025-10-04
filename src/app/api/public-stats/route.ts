@@ -11,8 +11,6 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Public Stats API called');
-
     // Initialize repositories
     const postRepository = new PostRepository();
     const userRepository = new UserRepository();
@@ -46,8 +44,6 @@ export async function GET(request: NextRequest) {
       totalCourses,
       totalUsers
     };
-
-    console.log('Public stats retrieved successfully:', stats);
     
     return NextResponse.json(stats);
 
@@ -66,3 +62,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

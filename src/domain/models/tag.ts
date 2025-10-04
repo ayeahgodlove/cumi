@@ -21,3 +21,4 @@ export interface ITagState extends IBaseState {
 export interface ITagResponse extends IResponseBase {
   data: ITag | null | ITag[];
 }
+

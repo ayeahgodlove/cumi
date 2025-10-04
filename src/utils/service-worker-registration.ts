@@ -7,7 +7,7 @@ export const registerServiceWorker = () => {
     navigator.serviceWorker
       .register('/sw.js')
       .then((registration) => {
-        console.log('[SW] Service Worker registered successfully:', registration.scope);
+        // Service Worker registered successfully
 
         // Check for updates periodically
         setInterval(() => {
@@ -54,7 +54,6 @@ export const unregisterServiceWorker = () => {
 export const requestPersistentStorage = async () => {
   if (navigator.storage && navigator.storage.persist) {
     const isPersisted = await navigator.storage.persist();
-    console.log(`[Storage] Persistent storage granted: ${isPersisted}`);
   }
 };
 
@@ -69,13 +68,12 @@ export const setupOnlineStatusListeners = (
   onOffline?: () => void
 ) => {
   window.addEventListener('online', () => {
-    console.log('[Network] Back online');
     onOnline?.();
   });
 
   window.addEventListener('offline', () => {
-    console.log('[Network] Gone offline');
     onOffline?.();
   });
 };
+
 

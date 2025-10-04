@@ -14,14 +14,11 @@ export class ReviewUseCase {
 
   async createReview(review: IReview): Promise<InstanceType<typeof Review>> {
     try {
-      console.log("Creating review with data:", review);
-      
       // First, verify that the course exists
       const course = await this.courseRepository.findById(review.courseId);
       if (!course) {
         throw new Error(`Course with ID ${review.courseId} does not exist.`);
       }
-      console.log("Course found:", course.getDataValue('title'));
       
       // Check if user already has a review for this course
       const existingReview = await this.reviewRepository.findByUserAndCourse(
@@ -42,7 +39,6 @@ export class ReviewUseCase {
       review.status = 'pending';
       review.helpfulVotes = 0;
 
-      console.log("About to create review in repository with:", review);
       return await this.reviewRepository.create(review);
     } catch (error) {
       console.error("Error in createReview use case:", error);
@@ -199,7 +195,6 @@ export class ReviewUseCase {
     }
   }
 
-
   async getCourseReviewStats(courseId: string): Promise<{
     totalReviews: number;
     averageRating: number;
@@ -222,3 +217,4 @@ export class ReviewUseCase {
     }
   }
 }
+

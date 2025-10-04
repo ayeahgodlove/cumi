@@ -57,15 +57,15 @@ export default function CourseManagementModal({
   const [activeTab, setActiveTab] = useState("modules");
   const [editingModule, setEditingModule] = useState<any>(null);
 
-  // Course form mutation
+// Course form mutation
   const { mutate: updateCourse, isLoading: updatingCourse } = useUpdate();
 
-  // Module form mutations
+// Module form mutations
   const { mutate: createModule, isLoading: creatingModule } = useCreate();
   const { mutate: updateModuleMutation, isLoading: updatingModule } = useUpdate();
   const { mutate: deleteModule, isLoading: deletingModule } = useDelete();
 
-  // Mock modules data - in real implementation, this would come from API
+// Mock modules data - in real implementation, this would come from API
   const [modules, setModules] = useState([
     {
       id: "1",
@@ -96,7 +96,7 @@ export default function CourseManagementModal({
     },
   ]);
 
-  const handleCourseUpdate = (values: any) => {
+const handleCourseUpdate = (values: any) => {
     updateCourse({
       resource: "courses",
       id: courseId!,
@@ -107,7 +107,7 @@ export default function CourseManagementModal({
     });
   };
 
-  const handleModuleSubmit = (values: ModuleFormData) => {
+const handleModuleSubmit = (values: ModuleFormData) => {
     if (editingModule) {
       updateModuleMutation({
         resource: "modules",
@@ -135,13 +135,13 @@ export default function CourseManagementModal({
     }
   };
 
-  const handleEditModule = (module: any) => {
+const handleEditModule = (module: any) => {
     setEditingModule(module);
     moduleForm.setFieldsValue(module);
     setActiveTab("modules");
   };
 
-  const handleDeleteModule = (moduleId: string) => {
+const handleDeleteModule = (moduleId: string) => {
     Modal.confirm({
       title: "Are you sure you want to delete this module?",
       content: "This action cannot be undone.",
@@ -157,7 +157,7 @@ export default function CourseManagementModal({
     });
   };
 
-  const moduleColumns = [
+const moduleColumns = [
     {
       title: "Order",
       dataIndex: "order",
@@ -202,7 +202,7 @@ export default function CourseManagementModal({
           <Button 
             icon={<EyeOutlined />} 
             size="small" 
-            onClick={() => {/* View module */}}
+            onClick={() => {}}
           />
           <Button 
             icon={<EditOutlined />} 
@@ -220,7 +220,7 @@ export default function CourseManagementModal({
     },
   ];
 
-  const handleCancel = () => {
+const handleCancel = () => {
     form.resetFields();
     moduleForm.resetFields();
     setEditingModule(null);
@@ -228,7 +228,7 @@ export default function CourseManagementModal({
     onCancel();
   };
 
-  return (
+return (
     <Modal
       title={`Manage Course: ${courseTitle || 'Untitled'}`}
       open={visible}
@@ -265,7 +265,7 @@ export default function CourseManagementModal({
         </Button.Group>
       </div>
 
-      {activeTab === "course" && (
+{activeTab === "course" && (
         <Form
           form={form}
           layout="vertical"
@@ -296,7 +296,7 @@ export default function CourseManagementModal({
             </Col>
           </Row>
 
-          <Form.Item
+<Form.Item
             name="description"
             label="Description"
             rules={[{ required: true, message: "Please enter course description" }]}
@@ -304,7 +304,7 @@ export default function CourseManagementModal({
             <Input.TextArea size="large" rows={4} />
           </Form.Item>
 
-          <Form.Item>
+<Form.Item>
             <Space>
               <Button type="primary" htmlType="submit" loading={updatingCourse}>
                 Update Course
@@ -317,7 +317,7 @@ export default function CourseManagementModal({
         </Form>
       )}
 
-      {activeTab === "modules" && (
+{activeTab === "modules" && (
         <div>
           <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Title level={4}>
@@ -333,7 +333,7 @@ export default function CourseManagementModal({
             )}
           </div>
 
-          <Card style={{ marginBottom: 16 }}>
+<Card style={{ marginBottom: 16 }}>
             <Form
               form={moduleForm}
               layout="vertical"
@@ -369,7 +369,7 @@ export default function CourseManagementModal({
                 </Col>
               </Row>
 
-              <Form.Item
+<Form.Item
                 name="description"
                 label="Description"
                 rules={[{ required: true, message: "Please enter module description" }]}
@@ -377,7 +377,7 @@ export default function CourseManagementModal({
                 <Input.TextArea size="large" rows={3} />
               </Form.Item>
 
-              <Form.Item
+<Form.Item
                 name="content"
                 label="Module Content"
                 rules={[{ required: true, message: "Please enter module content" }]}
@@ -390,7 +390,7 @@ export default function CourseManagementModal({
                 />
               </Form.Item>
 
-              <Form.Item
+<Form.Item
                 name="isPublished"
                 label="Publish Module"
                 valuePropName="checked"
@@ -399,7 +399,7 @@ export default function CourseManagementModal({
                 <Switch />
               </Form.Item>
 
-              <Form.Item>
+<Form.Item>
                 <Space>
                   <Button 
                     type="primary" 
@@ -419,16 +419,16 @@ export default function CourseManagementModal({
             </Form>
           </Card>
 
-          <Divider />
+<Divider />
 
-          <div style={{ marginBottom: 16 }}>
+<div style={{ marginBottom: 16 }}>
             <Title level={4}>Course Modules</Title>
             <Text type="secondary">
               Manage the modules in this course. Drag to reorder or click edit to modify.
             </Text>
           </div>
 
-          <Table
+<Table
             dataSource={modules}
             columns={moduleColumns}
             rowKey="id"

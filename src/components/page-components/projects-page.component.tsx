@@ -5,18 +5,7 @@ import { AppFootnote } from "@components/footnote/footnote";
 import { AppNav } from "@components/nav/nav.component";
 import ProjectCard from "@components/project/ProjectCard";
 import { projectAPI } from "@store/api/project_api";
-import {
-  Col,
-  Empty,
-  Layout,
-  Row,
-  Spin,
-  Typography,
-  Card,
-  Space,
-  Tag,
-  Statistic,
-} from "antd";
+import { Col, Empty, Layout, Row, Spin, Typography, Card, Space, Tag, Statistic } from "antd";
 import { motion } from "framer-motion";
 import styles from "@app/projects/project-card.module.css";
 import {
@@ -34,15 +23,15 @@ const { Title, Paragraph, Text } = Typography;
 export default function ProjectsPageComponent() {
   const { t } = useTranslation();
 
-  const {
+const {
     data: projects,
     isLoading: isLoadingEvent,
     isFetching: isFetchEvent,
   } = projectAPI.useFetchAllProjectsQuery(1);
 
-  const loading = isLoadingEvent || isFetchEvent;
+const loading = isLoadingEvent || isFetchEvent;
 
-  const stats = [
+const stats = [
     {
       title: t("about.projects_completed"),
       value: projects?.length || 0,
@@ -61,7 +50,7 @@ export default function ProjectsPageComponent() {
     },
   ];
 
-  const technologies = [
+const technologies = [
     "JavaScript",
     "PHP",
     "React",
@@ -77,13 +66,13 @@ export default function ProjectsPageComponent() {
     "Laravel",
   ];
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      {loading ? (
+{loading ? (
         <div
           style={{
             minHeight: "65vh",
@@ -113,7 +102,7 @@ export default function ProjectsPageComponent() {
             breadcrumbs={[{ label: t("nav.projects"), uri: "projects" }]}
             pageTitle={t("nav.projects")}
           />
-          {/* Stats Section */}
+          {}
           <section className="py-5 my-5">
             <div className="container">
               <Row gutter={[24, 24]} justify="center">
@@ -148,7 +137,7 @@ export default function ProjectsPageComponent() {
             </div>
           </section>
 
-          {/* Technologies Section */}
+{}
           <section className="py-5 my-5">
             <div className="container">
               <Row justify="center" className="mb-4">
@@ -188,7 +177,7 @@ export default function ProjectsPageComponent() {
             </div>
           </section>
 
-          {/* Projects Grid */}
+{}
           <Content className="container py-5">
             <Row justify="center" className="mb-5">
               <Col xs={24} lg={16} className="text-center">
@@ -203,7 +192,7 @@ export default function ProjectsPageComponent() {
               </Col>
             </Row>
 
-            {projects && projects.length > 0 ? (
+{projects && projects.length > 0 ? (
               <Row gutter={[24, 24]} justify="center">
                 {projects?.map((project, index) => (
                   <Col xs={24} sm={12} lg={8} key={project.id}>
@@ -235,7 +224,7 @@ export default function ProjectsPageComponent() {
             )}
           </Content>
 
-          <AppCTA />
+<AppCTA />
           <AppFooter logoPath="/" />
           <AppFootnote />
         </>

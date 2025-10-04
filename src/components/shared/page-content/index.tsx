@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 export default function PageContent(props: any) {
   const { title, breadcrumb, desc, banner } = props;
 
-  return (
+return (
     <Col
       span={24}
       className="overflow-hidden"
@@ -26,7 +26,7 @@ export default function PageContent(props: any) {
         padding: "80px 20px",
       }}
     >
-      {/* Decorative Elements */}
+      {}
       <div
         style={{
           position: "absolute",
@@ -39,11 +39,11 @@ export default function PageContent(props: any) {
         }}
       />
 
-      {/* Animated Particles */}
+{}
       <div style={{ position: "absolute", top: "10%", left: "10%", width: "100px", height: "100px", borderRadius: "50%", background: "rgba(255, 255, 255, 0.1)", filter: "blur(40px)" }} />
       <div style={{ position: "absolute", bottom: "15%", right: "15%", width: "150px", height: "150px", borderRadius: "50%", background: "rgba(34, 197, 94, 0.15)", filter: "blur(60px)" }} />
-      
-      <Row justify="center" style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: "1200px" }}>
+
+<Row justify="center" style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: "1200px" }}>
         {breadcrumb && (
           <Col span={24} style={{ marginBottom: "20px" }}>
             <motion.div
@@ -135,7 +135,7 @@ export default function PageContent(props: any) {
           </Col>
         )}
 
-        {title && (
+{title && (
           <Col span={24} style={{ textAlign: "center" }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -160,7 +160,7 @@ export default function PageContent(props: any) {
               >
                 {title}
               </h1>
-              {/* Decorative underline */}
+              {}
               <div
                 style={{
                   width: "80px",
@@ -175,7 +175,7 @@ export default function PageContent(props: any) {
           </Col>
         )}
 
-        {desc && (
+{desc && (
           <Col span={24} style={{ textAlign: "center", marginTop: "24px" }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

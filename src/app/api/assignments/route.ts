@@ -26,30 +26,18 @@ export async function GET(request: NextRequest) {
     const courseId = searchParams.get('courseId');
     const lessonId = searchParams.get('lessonId');
 
-    console.log("Assignments API called with params:", { moduleId, courseId, lessonId });
-
     let assignments;
     if (lessonId) {
-      console.log("Fetching assignments for lessonId:", lessonId);
       assignments = await assignmentUseCase.getAssignmentsByLessonId(lessonId);
-      console.log("Found assignments for lesson:", assignments.length);
-    } else if (moduleId) {
-      console.log("Fetching assignments for moduleId:", moduleId);
+      } else if (moduleId) {
       assignments = await assignmentUseCase.getAssignmentsByModuleId(moduleId);
-      console.log("Found assignments for module:", assignments.length);
-    } else if (courseId) {
-      console.log("Fetching assignments for courseId:", courseId);
+      } else if (courseId) {
       assignments = await assignmentUseCase.getAssignmentsByCourseId(courseId);
-      console.log("Found assignments for course:", assignments.length);
-    } else {
-      console.log("Fetching all assignments");
+      } else {
       assignments = await assignmentUseCase.getAll();
-      console.log("Found total assignments:", assignments.length);
-    }
+      }
     
     const assignmentsDto = assignmentMapper.toDTOs(assignments);
-    console.log("Mapped assignments DTOs:", assignmentsDto.length);
-    
     return NextResponse.json({
       data: assignmentsDto,
       message: "Assignments retrieved successfully",
@@ -145,4 +133,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

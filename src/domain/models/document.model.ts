@@ -31,3 +31,4 @@ export interface IDocumentState extends IBaseState {
 export interface IDocumentResponse extends IResponseBase {
   data: IDocument | null | IDocument[];
 }
+

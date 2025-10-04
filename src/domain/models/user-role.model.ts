@@ -13,3 +13,4 @@ export const emptyUserRole: IUserRole = {
 export interface IUserRoleResponse extends IResponseBase {
   data: IUserRole | null | IUserRole[];
 }
+

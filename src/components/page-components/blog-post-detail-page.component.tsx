@@ -42,7 +42,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     isFetching,
   } = postAPI.useGetSinglePostBySlugQuery(slug);
 
-  const {
+const {
     data: posts,
     isLoading: isLoadingPosts,
     isFetching: isFetchingPosts,
@@ -55,21 +55,21 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     isFetching: isFetchBaner,
   } = bannerAPI.useFetchAllBannersQuery(1);
 
-  const {
+const {
     data: categories,
     isLoading: isLoadingCategory,
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
 
-  const { data: users } = userAPI.useFetchAllUsersQuery(1);
+const { data: users } = userAPI.useFetchAllUsersQuery(1);
 
-  const {
+const {
     data: user,
     isLoading: isLoadingUser,
     isFetching: isFetchUser,
   } = userAPI.useGetSingleUserQuery(post ? post.authorId : "");
 
-  const {
+const {
     data: tags,
     isLoading: isLoadingTag,
     isFetching: isFetchingTag,
@@ -78,9 +78,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     ? posts?.filter((p) => p.categoryId === post.categoryId)
     : [];
 
-  const category = categories?.find((c) => c.id === post?.categoryId);
+const category = categories?.find((c) => c.id === post?.categoryId);
 
-  // Redux Toolkit Query hooks for post interactions
+// Redux Toolkit Query hooks for post interactions
   const {
     data: postStatsData,
     isLoading: loadingStats,
@@ -92,16 +92,16 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     }
   );
 
-  // Provide default values for postStats with proper null/undefined handling
+// Provide default values for postStats with proper null/undefined handling
   const postStats = {
     likesCount: postStatsData?.likesCount ?? 0,
     dislikesCount: postStatsData?.dislikesCount ?? 0,
     userInteraction: postStatsData?.userInteraction ?? null as 'like' | 'dislike' | null
   };
 
-  const [handlePostInteraction] = postInteractionAPI.useHandlePostInteractionMutation();
+const [handlePostInteraction] = postInteractionAPI.useHandlePostInteractionMutation();
 
-  // Handle post like/dislike
+// Handle post like/dislike
   const handlePostLikeDislike = async (action: 'like' | 'dislike') => {
     if (!session?.user?.id) {
       api.warning({
@@ -112,9 +112,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
       return;
     }
 
-    if (!post?.id) return;
+if (!post?.id) return;
 
-    try {
+try {
       await handlePostInteraction({ postId: post.id, action }).unwrap();
       api.success({
         message: t('common.success'),
@@ -132,19 +132,19 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
     }
   };
 
-  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching || 
+const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching || 
     isLoadingUser || isFetchUser || isFetchBaner || isLoadingBaner ||
     isLoadingPosts || isFetchingPosts || isLoadingTag || isFetchingTag;
 
-  return (
+return (
     <>
       {contextHolder}
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-      
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -181,7 +181,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                       }}
                       styles={{ body: { padding: 0 } }}
                     >
-                      {/* Hero Image */}
+                      {}
                       <div style={{ position: "relative", overflow: "hidden", height: "450px" }}>
                         <ImageFallback
                           src={post.imageUrl}
@@ -213,9 +213,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                         />
                       </div>
 
-                      {/* Content */}
+{}
                       <div style={{ padding: "clamp(1.5rem, 4vw, 3rem)" }}>
-                        {/* Post Meta */}
+                        {}
                         <div style={{ 
                           marginBottom: "2rem",
                           padding: "16px 20px",
@@ -243,10 +243,10 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                                 </Link>
                               </div>
                             </Space>
-                            
-                            <Divider type="vertical" style={{ height: '40px', borderColor: 'rgba(34, 197, 94, 0.2)' }} />
-                            
-                            <Space>
+
+<Divider type="vertical" style={{ height: '40px', borderColor: 'rgba(34, 197, 94, 0.2)' }} />
+
+<Space>
                               <div style={{
                                 width: '36px',
                                 height: '36px',
@@ -267,10 +267,10 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                                 </Link>
                               </div>
                             </Space>
-                            
-                            <Divider type="vertical" style={{ height: '40px', borderColor: 'rgba(34, 197, 94, 0.2)' }} />
-                            
-                            <Space>
+
+<Divider type="vertical" style={{ height: '40px', borderColor: 'rgba(34, 197, 94, 0.2)' }} />
+
+<Space>
                               <div style={{
                                 width: '36px',
                                 height: '36px',
@@ -292,7 +292,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           </Space>
                         </div>
 
-                        {/* Title */}
+{}
                         <Title level={1} style={{ 
                           marginBottom: "1.5rem",
                           fontSize: "clamp(1.8rem, 4vw, 3rem)",
@@ -304,7 +304,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           {post?.title}
                         </Title>
 
-                        {/* Description */}
+{}
                         {post?.description && (
                           <Paragraph
                             style={{
@@ -323,9 +323,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           </Paragraph>
                         )}
 
-                        <Divider style={{ margin: "2rem 0" }} />
+<Divider style={{ margin: "2rem 0" }} />
 
-                        {/* Content */}
+{}
                         <div
                           style={{
                             fontSize: "1.1rem",
@@ -337,9 +337,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           }}
                         />
 
-                        <Divider style={{ margin: "2rem 0" }} />
+<Divider style={{ margin: "2rem 0" }} />
 
-                        {/* Post Interactions */}
+{}
                         <Card 
                           className="interactions-card"
                           style={{ 
@@ -444,7 +444,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           </Row>
                         </Card>
 
-                        {/* Tags */}
+{}
                         <div style={{ marginBottom: "2rem" }}>
                           <Text style={{ 
                             display: 'block', 
@@ -492,9 +492,9 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           </Space>
                         </div>
 
-                        <Divider style={{ margin: "2rem 0", borderColor: "rgba(34, 197, 94, 0.15)" }} />
+<Divider style={{ margin: "2rem 0", borderColor: "rgba(34, 197, 94, 0.15)" }} />
 
-                        {/* Share Section */}
+{}
                         <Share
                           title={post?.title as any}
                           description={post?.description}
@@ -506,7 +506,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                     </Card>
                   )}
 
-                  {/* Comments Section */}
+{}
                   {post && (
                     <div style={{ marginTop: "2rem" }}>
                       <CommentSection 
@@ -519,7 +519,7 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                 </Col>
               </Row>
 
-              {/* Related Posts Section */}
+{}
               {similarPosts && similarPosts.length > 0 && (
                 <section style={{ margin: "4rem 0", padding: "0 1rem" }}>
                   <Row justify="center">
@@ -554,8 +554,8 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
                           {t('blog_detail.discover_more')}
                         </Text>
                       </div>
-                      
-                      <Row gutter={[24, 24]}>
+
+<Row gutter={[24, 24]}>
                         {similarPosts?.slice(0, 3).map((post, index) => (
                           <Col xs={24} md={12} lg={8} key={post.slug}>
                             <motion.div
@@ -582,8 +582,8 @@ export default function BlogPostDetailPageComponent({ slug }: BlogPostDetailPage
             </div>
           </section>
         </Content>
-        
-        <AppFooter logoPath="/" />
+
+<AppFooter logoPath="/" />
         <AppFootnote />
         </>
       )}

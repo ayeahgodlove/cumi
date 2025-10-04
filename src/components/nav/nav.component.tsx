@@ -24,12 +24,12 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
   const [isMounted, setIsMounted] = useState(false);
   const { t } = useTranslation();
 
-  // Fix hydration mismatch - only use Affix on client
+// Fix hydration mismatch - only use Affix on client
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleLogout = useCallback(async () => {
+const handleLogout = useCallback(async () => {
     setIsNavigating(true);
     try {
       await signOut({ callbackUrl: "/" });
@@ -40,12 +40,12 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     }
   }, []);
 
-  const handleNavigation = useCallback((href: string) => {
+const handleNavigation = useCallback((href: string) => {
     setIsNavigating(true);
     setTimeout(() => setIsNavigating(false), 1000);
   }, []);
 
-  const getLinkStyle = (path: string) => ({
+const getLinkStyle = (path: string) => ({
     color: pathname === path ? "#22C55E" : "#4b5563",
     fontWeight: pathname === path ? "600" : "500",
     letterSpacing: "0.3px",
@@ -56,10 +56,10 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       : "transparent",
   });
 
-  const getLinkClassName = (path: string) => 
+const getLinkClassName = (path: string) => 
     `nav-link ${pathname === path ? " active fw-bold" : ""}`;
 
-  const userMenuItems = [
+const userMenuItems = [
     {
       key: "username",
       label: (
@@ -157,7 +157,7 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
     },
   ];
 
-  const navContent = (
+const navContent = (
       <nav 
         className="navbar navbar-expand-lg navbar-full-width" 
         style={{ 
@@ -410,6 +410,6 @@ export const AppNav: React.FC<Props> = ({ logoPath }) => {
       </nav>
   );
 
-  // Only use Affix on client to prevent hydration mismatch
+// Only use Affix on client to prevent hydration mismatch
   return isMounted ? <Affix offsetTop={0}>{navContent}</Affix> : navContent;
 };

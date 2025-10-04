@@ -10,7 +10,6 @@ const userUseCase = new UserUseCase(userRepository);
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
-    console.log("🔑 Forgot Password Request:", { email });
     if (!email) {
       return NextResponse.json(
         { error: "Email is required" },

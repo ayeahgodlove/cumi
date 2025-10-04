@@ -33,3 +33,4 @@ const PostTag = (sequelize: Sequelize, DataTypes: any) => {
   return PostTagModel;
 };
 export default PostTag;
+

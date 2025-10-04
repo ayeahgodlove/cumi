@@ -46,10 +46,10 @@ export default function RegisterPageComponent() {
   const [loading, setLoading] = useState(false);
   const { open } = useNotification();
 
-  const onFinish = async (values: any) => {
+const onFinish = async (values: any) => {
     setLoading(true);
 
-    try {
+try {
       const response = await signIn("credentials", {
         email: values.email,
         username: values.username,
@@ -59,7 +59,7 @@ export default function RegisterPageComponent() {
         redirect: false,
       });
 
-      if (response?.ok) {
+if (response?.ok) {
         router.push("/"); // Redirect after successful registration
         open?.({
           type: "success",
@@ -88,14 +88,14 @@ export default function RegisterPageComponent() {
     }
   };
 
-  return (
+return (
     <>
-      {/* Navigation */}
+      {}
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      {/* Modern Register Section */}
+{}
       <div
         style={{
           minHeight: "calc(100vh - 200px)",
@@ -117,7 +117,7 @@ export default function RegisterPageComponent() {
               }}
               styles={{ body: { padding: "3rem 2rem" } }}
             >
-              {/* Header Section */}
+              {}
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div
                   style={{
@@ -145,7 +145,7 @@ export default function RegisterPageComponent() {
                 </Text>
               </div>
 
-              {/* Register Form */}
+{}
               <Form
                 name="register"
                 layout="vertical"
@@ -198,7 +198,7 @@ export default function RegisterPageComponent() {
                   />
                 </Form.Item>
 
-                <Form.Item
+<Form.Item
                   label={
                     <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
                       Email Address
@@ -243,7 +243,7 @@ export default function RegisterPageComponent() {
                   />
                 </Form.Item>
 
-                <Form.Item
+<Form.Item
                   label={
                     <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
                       Password
@@ -298,7 +298,7 @@ export default function RegisterPageComponent() {
                   />
                 </Form.Item>
 
-                <Form.Item
+<Form.Item
                   label={
                     <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
                       Confirm Password
@@ -363,7 +363,7 @@ export default function RegisterPageComponent() {
                   />
                 </Form.Item>
 
-                {/* Register Button */}
+{}
                 <Form.Item style={{ marginBottom: "1.5rem" }}>
                   <Button
                     type="primary"
@@ -395,12 +395,12 @@ export default function RegisterPageComponent() {
                   </Button>
                 </Form.Item>
 
-                {/* Divider */}
+{}
                 <Divider style={{ margin: "2rem 0" }}>
                   <Text style={{ color: "#999", fontSize: "14px" }}>OR</Text>
                 </Divider>
 
-                {/* Social Login Buttons */}
+{}
                 <div style={{ marginBottom: "2rem" }}>
                   <Text
                     strong
@@ -415,12 +415,12 @@ export default function RegisterPageComponent() {
                     Register with Social Media
                   </Text>
 
-                  <Space
+<Space
                     direction="vertical"
                     size="middle"
                     style={{ width: "100%" }}
                   >
-                    {/* Google */}
+                    {}
                     <Button
                       icon={<SiGoogle style={{ fontSize: "20px" }} />}
                       onClick={auth0SocialLogin.google}
@@ -451,7 +451,7 @@ export default function RegisterPageComponent() {
                       Register with Google
                     </Button>
 
-                    {/* Facebook */}
+{}
                     <Button
                       icon={<SiFacebook style={{ fontSize: "20px" }} />}
                       onClick={auth0SocialLogin.facebook}
@@ -484,7 +484,7 @@ export default function RegisterPageComponent() {
                   </Space>
                 </div>
 
-                {/* Auth0 Universal Login */}
+{}
                 <div style={{ marginBottom: "2rem" }}>
                   <Text
                     strong
@@ -530,7 +530,7 @@ export default function RegisterPageComponent() {
                 </div>
               </Form>
 
-              {/* Login Link */}
+{}
               <div style={{ textAlign: "center", marginTop: "2rem" }}>
                 <Text style={{ color: "#666", fontSize: "16px" }}>
                   Already have an account?{" "}
@@ -552,7 +552,7 @@ export default function RegisterPageComponent() {
         </Row>
       </div>
 
-      {/* Footer */}
+{}
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

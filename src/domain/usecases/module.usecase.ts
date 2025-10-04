@@ -48,3 +48,4 @@ export class ModuleUseCase {
     return this.moduleRepository.delete(id);
   }
 }
+

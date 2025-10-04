@@ -39,3 +39,4 @@ const Role = (sequelize: Sequelize, DataTypes: any) => {
   return RoleModel;
 };
 export default Role;
+

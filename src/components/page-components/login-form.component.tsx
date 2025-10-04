@@ -40,10 +40,10 @@ export default function LoginFormComponent() {
   const [showPassword, setShowPassword] = useState(false);
   const { open } = useNotification();
 
-  const onFinish = async (values: any) => {
+const onFinish = async (values: any) => {
     setLoading(true);
 
-    try {
+try {
       const response = await signIn("credentials", {
         email: values.email,
         password: values.password,
@@ -51,7 +51,7 @@ export default function LoginFormComponent() {
         redirect: false,
       });
 
-      if (response?.ok) {
+if (response?.ok) {
         router.push("/"); // Redirect after successful login
         open?.({
           type: "success",
@@ -80,11 +80,11 @@ export default function LoginFormComponent() {
     }
   };
 
-  return (
+return (
     <>
       <AppNav logoPath="/" />
 
-      {/* Modern Login Section */}
+{}
       <div
         style={{
           minHeight: "calc(100vh - 200px)",
@@ -106,7 +106,7 @@ export default function LoginFormComponent() {
               }}
               styles={{ body: { padding: "3rem 2rem" } }}
             >
-              {/* Header Section */}
+              {}
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div
                   style={{
@@ -134,7 +134,7 @@ export default function LoginFormComponent() {
                 </Text>
               </div>
 
-              {/* Login Form */}
+{}
               <Form
                 name="login"
                 layout="vertical"
@@ -187,7 +187,7 @@ export default function LoginFormComponent() {
                   />
                 </Form.Item>
 
-                <Form.Item
+<Form.Item
                   label={
                     <Text strong style={{ color: "#1a1a1a", fontSize: "14px" }}>
                       Password
@@ -238,7 +238,7 @@ export default function LoginFormComponent() {
                   />
                 </Form.Item>
 
-                {/* Forgot Password Link */}
+{}
                 <div style={{ textAlign: "right", marginBottom: "1.5rem" }}>
                   <Link
                     href="/forgot-password"
@@ -253,7 +253,7 @@ export default function LoginFormComponent() {
                   </Link>
                 </div>
 
-                {/* Login Button */}
+{}
                 <Form.Item style={{ marginBottom: "1.5rem" }}>
                   <Button
                     type="primary"
@@ -285,12 +285,12 @@ export default function LoginFormComponent() {
                   </Button>
                 </Form.Item>
 
-                {/* Divider */}
+{}
                 <Divider style={{ margin: "2rem 0" }}>
                   <Text style={{ color: "#999", fontSize: "14px" }}>OR</Text>
                 </Divider>
 
-                {/* Social Login Buttons */}
+{}
                 <div style={{ marginBottom: "2rem" }}>
                   <Text
                     strong
@@ -305,12 +305,12 @@ export default function LoginFormComponent() {
                     Continue with Social Media
                   </Text>
 
-                  <Space
+<Space
                     direction="vertical"
                     size="middle"
                     style={{ width: "100%" }}
                   >
-                    {/* Google */}
+                    {}
                     <Button
                       icon={<SiGoogle style={{ fontSize: "20px" }} />}
                       onClick={auth0SocialLogin.google}
@@ -341,7 +341,7 @@ export default function LoginFormComponent() {
                       Continue with Google
                     </Button>
 
-                    {/* Facebook */}
+{}
                     <Button
                       icon={<SiFacebook style={{ fontSize: "20px" }} />}
                       onClick={auth0SocialLogin.facebook}
@@ -374,7 +374,7 @@ export default function LoginFormComponent() {
                   </Space>
                 </div>
 
-                {/* Auth0 Universal Login */}
+{}
                 <div style={{ marginBottom: "2rem" }}>
                   <Text
                     strong
@@ -420,7 +420,7 @@ export default function LoginFormComponent() {
                 </div>
               </Form>
 
-              {/* Signup Link */}
+{}
               <div style={{ textAlign: "center", marginTop: "2rem" }}>
                 <Text style={{ color: "#666", fontSize: "16px" }}>
                   Don&apos;t have an account?{" "}
@@ -442,7 +442,7 @@ export default function LoginFormComponent() {
         </Row>
       </div>
 
-      {/* Footer */}
+{}
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

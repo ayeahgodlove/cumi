@@ -1,4 +1,3 @@
-// Shared Components Export
 export { default as PageLayout } from "./page-layout.component";
 export { default as LoadingSpinner } from "./loading-spinner.component";
 export { default as ImageUploadField } from "./image-upload-field.component";

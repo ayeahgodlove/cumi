@@ -76,3 +76,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function CategoriesPage() {
   return <CategoriesPageComponent />;
 }
+

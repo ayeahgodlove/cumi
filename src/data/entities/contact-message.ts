@@ -73,3 +73,4 @@ const ContactMessage = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default ContactMessage;
+

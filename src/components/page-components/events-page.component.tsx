@@ -1,32 +1,7 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  Space,
-  Button,
-  Tag,
-  Input,
-  Select,
-  Empty,
-  Spin,
-  App,
-} from "antd";
-import {
-  CalendarOutlined,
-  EnvironmentOutlined,
-  EyeOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  TeamOutlined,
-  RocketOutlined,
-  FireOutlined,
-  TrophyOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { Card, Row, Col, Typography, Space, Button, Tag, Input, Select, Empty, Spin, App } from "antd";
+import { CalendarOutlined, EnvironmentOutlined, EyeOutlined, SearchOutlined, FilterOutlined, TeamOutlined, RocketOutlined, FireOutlined, TrophyOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { AppNav } from "@components/nav/nav.component";
 import { AppFooter } from "@components/footer/footer";
@@ -59,7 +34,7 @@ export default function EventsPageComponent() {
     useState(false);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
 
-  const {
+const {
     data: events,
     error,
     isLoading,
@@ -69,16 +44,16 @@ export default function EventsPageComponent() {
     sortBy: "date",
   });
 
-  // Debounce search term
+// Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 300);
 
-    return () => clearTimeout(timer);
+return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredEvents =
+const filteredEvents =
     events?.filter((event) => {
       const matchesSearch =
         event.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
@@ -89,12 +64,12 @@ export default function EventsPageComponent() {
       return matchesSearch;
     }) || [];
 
-  const handleRegisterEvent = (event: IEvent) => {
+const handleRegisterEvent = (event: IEvent) => {
     setSelectedEvent(event);
     setRegistrationModalVisible(true);
   };
 
-  const formatDate = (dateString: string) => {
+const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -103,9 +78,9 @@ export default function EventsPageComponent() {
     });
   };
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  return (
+return (
     <>
       <div
         className="container-fluid"
@@ -114,7 +89,7 @@ export default function EventsPageComponent() {
         <AppNav logoPath="/" />
       </div>
 
-      {loading ? (
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -123,17 +98,17 @@ export default function EventsPageComponent() {
         </div>
       ) : (
         <>
-      {/* Banner */}
+      {}
       <BannerComponent
         breadcrumbs={[{ label: t("nav.events"), uri: "events" }]}
         pageTitle={t("nav.events")}
       />
 
-      <div
+<div
         className="container pb-5"
         style={{ marginTop: 24, backgroundColor: "white" }}
       >
-        {/* Stats Section */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -215,7 +190,7 @@ export default function EventsPageComponent() {
           </Row>
         </motion.div>
 
-        {/* Filters */}
+{}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,7 +219,7 @@ export default function EventsPageComponent() {
                 </div>
               </Col>
 
-              <Col xs={24} style={{ textAlign: 'center' }}>
+<Col xs={24} style={{ textAlign: 'center' }}>
                 <Search
                   placeholder={t("events.search_placeholder")}
                   value={searchTerm}
@@ -262,8 +237,8 @@ export default function EventsPageComponent() {
                   size="large"
                 />
               </Col>
-              
-              <Col xs={24} style={{ textAlign: 'center' }}>
+
+<Col xs={24} style={{ textAlign: 'center' }}>
                 <Space wrap size="middle">
                   {[
                     { key: 'all', label: t("events.all_categories"), icon: <FireOutlined /> },
@@ -301,7 +276,7 @@ export default function EventsPageComponent() {
           </Card>
         </motion.div>
 
-        {/* Events Grid */}
+{}
         {filteredEvents.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -572,7 +547,7 @@ export default function EventsPageComponent() {
         )}
       </div>
 
-      {/* Registration Modal */}
+{}
       <EventRegistrationModal
         visible={registrationModalVisible}
         onCancel={() => setRegistrationModalVisible(false)}
@@ -582,7 +557,7 @@ export default function EventsPageComponent() {
         }}
       />
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

@@ -30,7 +30,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
     redirect: false, // Prevent automatic redirect
   });
 
-  const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: any) => {
     try {
       // Format the data before submission
       const formattedValues = {
@@ -43,17 +43,17 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
         description: values.excerpt || values.description || "",
       };
 
-      // Use the form submission logic from Refine
+// Use the form submission logic from Refine
       await formProps.onFinish?.(formattedValues);
-      
-      // Show success notification
+
+// Show success notification
       open?.({
         type: "success",
         message: t('common.success'),
         description: editingPost ? t('creator.post_updated_success') : t('creator.post_created_success'),
       });
-      
-      // Reset form and close modal
+
+// Reset form and close modal
       form.resetFields();
       onSuccess();
       onCancel();
@@ -64,23 +64,23 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
         message: t('common.error'),
         description: t('forms.post_create_failed', { message: error.message }),
       });
-      
-      // Don't close modal on error - let user fix the issues
+
+// Don't close modal on error - let user fix the issues
     }
   };
 
-  const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
+const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
     resource: "categories",
   });
 
-  const { queryResult: tagData } = useSelect<ITag>({
+const { queryResult: tagData } = useSelect<ITag>({
     resource: "tags",
   });
 
-  const categories = categoryData?.data?.data || [];
+const categories = categoryData?.data?.data || [];
   const tags = tagData?.data?.data || [];
 
-  // Preload form when editing
+// Preload form when editing
   useEffect(() => {
     if (editingPost && visible) {
       form.setFieldsValue({
@@ -98,12 +98,12 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
     }
   }, [editingPost, visible, form]);
 
-  const handleCancel = () => {
+const handleCancel = () => {
     form.resetFields();
     onCancel();
   };
 
-  return (
+return (
     <Modal
       title={
         <div style={{ 
@@ -152,7 +152,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           <Input size="large" />
         </Form.Item>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="categoryId"
@@ -187,7 +187,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           </Col>
         </Row>
 
-        <Form.Item
+<Form.Item
           name="excerpt"
           label={t('forms.excerpt')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.excerpt').toLowerCase() }) }]}
@@ -195,7 +195,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           <Input.TextArea size="large" rows={3} />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="content"
           label={t('common.content')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('common.content').toLowerCase() }) }]}
@@ -208,7 +208,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="tags"
           label={t('forms.tags')}
           rules={[{ required: true, message: t('forms.select_at_least_one_tag') }]}
@@ -228,7 +228,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           />
         </Form.Item>
 
-        <ImageUploadField
+<ImageUploadField
           name="imageUrl"
           label={t('forms.featured_image')}
           required={true}
@@ -236,7 +236,7 @@ export default function PostCreateModal({ visible, onCancel, onSuccess, editingP
           maxSize={5 * 1024 * 1024}
         />
 
-        <Form.Item>
+<Form.Item>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'flex-end', 

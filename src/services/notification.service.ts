@@ -32,7 +32,6 @@ class NotificationService {
 
       // Check if user has email notifications enabled
       if (!user.emailNotifications) {
-        console.log(`Email notifications disabled for user: ${data.userId}`);
         return false;
       }
 
@@ -44,7 +43,6 @@ class NotificationService {
         data.actionUrl
       );
 
-      console.log(`Email notification sent to user: ${data.userId}`);
       return true;
     } catch (error) {
       console.error(`Failed to send email notification to user ${data.userId}:`, error);
@@ -268,3 +266,4 @@ class NotificationService {
 
 export const notificationService = new NotificationService();
 export default notificationService;
+

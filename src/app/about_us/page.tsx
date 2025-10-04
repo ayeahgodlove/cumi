@@ -72,3 +72,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function AboutPage() {
   return <AboutPageComponent />;
 }
+

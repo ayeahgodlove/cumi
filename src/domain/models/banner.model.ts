@@ -31,3 +31,4 @@ export interface IBannerResponses extends IResponseBase {
   data: IBanner[];
 }
 
+

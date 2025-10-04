@@ -55,3 +55,4 @@ export const emptyAssignmentSubmission: IAssignmentSubmission = {
   createdAt: new Date(),
   updatedAt: new Date(),
 };
+

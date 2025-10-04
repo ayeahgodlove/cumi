@@ -59,10 +59,7 @@ export default function PostDetailsPage({ params }: PostDetailsPageProps) {
 
   // Debug logging
   useEffect(() => {
-    console.log('Post Response:', postResponse);
-    console.log('Post Data:', post);
-    console.log('Post Stats:', postStats);
-    console.log('Post Comments:', postComments);
+    // Post data loaded
   }, [postResponse, post, postStats, postComments]);
 
   // Handle comment approval

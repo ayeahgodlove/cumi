@@ -122,3 +122,4 @@ const Module = (sequelizeInstance: Sequelize, DataTypes: any) => {
 };
 
 export default Module;
+

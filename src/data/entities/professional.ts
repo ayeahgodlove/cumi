@@ -107,3 +107,4 @@ const Professional = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Professional;
+

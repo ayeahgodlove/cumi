@@ -19,8 +19,8 @@ type Props = {
 };
 const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
   const { t } = useTranslation();
-  
-  return (
+
+return (
     <>
       <div className="container-fluid mx-auto px-3 position-relative custom__banner">
         <div
@@ -42,7 +42,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             </Paragraph>
           </motion.div>
 
-          <Breadcrumb
+<Breadcrumb
             style={{ display: "flex", justifyContent: "center" }}
             items={[
               {
@@ -64,7 +64,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             ]}
           />
 
-          <div className="d-flex justify-content-center gap-3 mt-5">
+<div className="d-flex justify-content-center gap-3 mt-5">
             <Button
               type="primary"
               size="large"
@@ -106,7 +106,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             size={25}
             src={`/img/banner/round2.png`}
           />
-          {/*  */}
+          {}
           <Avatar
             className="position-absolute top-50 start-50 translate-middle-y top-circle"
             size={25}
@@ -117,7 +117,7 @@ const BannerComponent: React.FC<Props> = ({ pageTitle, breadcrumbs }) => {
             size={25}
             src={`/img/banner/circle.png`}
           />
-          {/*  */}
+          {}
           <Avatar
             className="position-absolute bottom-0 start-0 bottom-circle"
             size={70}

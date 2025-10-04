@@ -202,3 +202,4 @@ CourseEnrollmentEntity.prototype.toJSON = function() {
 };
 
 export default CourseEnrollmentEntity;
+

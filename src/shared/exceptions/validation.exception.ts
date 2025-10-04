@@ -6,3 +6,4 @@ export class ValidationException extends Error {
         this.name = 'ValidationException';
     }
 }
+

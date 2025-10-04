@@ -29,3 +29,4 @@ export interface IServiceState extends IBaseState {
 export interface IServiceResponse extends IResponseBase {
   data: IService | null | IService[];
 }
+

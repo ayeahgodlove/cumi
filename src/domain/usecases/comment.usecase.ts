@@ -75,3 +75,4 @@ export class CommentUseCase {
     return this.commentRepository.findCommentsByUser(userId, limit);
   }
 }
+

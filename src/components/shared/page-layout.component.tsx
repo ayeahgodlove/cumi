@@ -42,18 +42,18 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         </div>
       )}
 
-      {showBanner && bannerTitle && (
+{showBanner && bannerTitle && (
         <BannerComponent
           breadcrumbs={bannerBreadcrumbs || []}
           pageTitle={bannerTitle}
         />
       )}
 
-      <div className={className}>
+<div className={className}>
         {children}
       </div>
 
-      {showFooter && (
+{showFooter && (
         <>
           <AppFooter logoPath={footerLogoPath} />
           <AppFootnote />

@@ -269,3 +269,4 @@ export function generateStructuredData(type: string, data: any) {
       return null;
   }
 }
+

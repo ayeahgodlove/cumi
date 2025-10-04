@@ -1,21 +1,6 @@
 "use client";
-import {
-  Col,
-  Empty,
-  Layout,
-  Row,
-  Spin,
-  Card,
-  Typography,
-  Input,
-  Select,
-  Space,
-  Tag,
-  Button,
-  Badge,
-  Divider,
-} from "antd";
 import { useState } from "react";
+import { Col, Empty, Layout, Row, Spin, Card, Typography, Input, Select, Space, Tag, Button, Badge, Divider } from "antd";
 import { motion } from "framer-motion";
 import { postAPI } from "@store/api/post_api";
 import { SortPostsType } from "@domain/models/shared/sort.model";
@@ -56,7 +41,7 @@ export default function BlogPostsPageComponent() {
   const [searchTitle, setSearchTitle] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<SortPostsType>();
 
-  const {
+const {
     data: postsResponse,
     error,
     isLoading,
@@ -68,39 +53,39 @@ export default function BlogPostsPageComponent() {
     limit: 10,
   });
 
-  const posts = postsResponse || [];
+const posts = postsResponse || [];
 
-  const {
+const {
     data: categories,
     isLoading: isLoadingCategory,
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
 
-  const {
+const {
     data: tags,
     isLoading: isLoadingTag,
     isFetching: isFetchTag,
   } = tagAPI.useFetchAllTagsQuery(1);
 
-  const {
+const {
     data: users,
     isLoading: isLoadingUser,
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  const loading = isLoadingCategory || isFetchCategory || isLoadingTag || isFetchTag || isLoadingUser || isFetchUser;
+const loading = isLoadingCategory || isFetchCategory || isLoadingTag || isFetchTag || isLoadingUser || isFetchUser;
 
-  return (
+return (
       <PageLayout
         showBanner={true}
         bannerTitle={t("blog.title")}
         bannerBreadcrumbs={[{ label: t("blog.breadcrumb"), uri: "blog_posts" }]}
       >
 
-      <div className="container py-5 mb-5">
+<div className="container py-5 mb-5">
         {error && <h1>{t("blog.something_wrong")}</h1>}
 
-        {loading ? (
+{loading ? (
           <div style={{ minHeight: "50vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
             <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
               <Spin size="large" />
@@ -109,7 +94,7 @@ export default function BlogPostsPageComponent() {
           </div>
         ) : (
           <>
-        {/* Stats Section */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -173,7 +158,7 @@ export default function BlogPostsPageComponent() {
           </Row>
         </motion.div>
 
-        {/* Search and Filter Section */}
+{}
         <Card 
           className="search-filter-card"
           style={{ 
@@ -230,8 +215,8 @@ export default function BlogPostsPageComponent() {
               </Space>
             </Col>
           </Row>
-          
-          {/* Results Count */}
+
+{}
           <Divider style={{ margin: '20px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
           <div style={{ textAlign: 'center' }}>
             <Badge 
@@ -251,7 +236,7 @@ export default function BlogPostsPageComponent() {
           </div>
         </Card>
 
-        <div style={{ 
+<div style={{ 
           borderRadius: '20px',
           padding: '0',
         }}>
@@ -263,7 +248,7 @@ export default function BlogPostsPageComponent() {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  {/* Posts Header */}
+                  {}
                   <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ 
@@ -291,7 +276,7 @@ export default function BlogPostsPageComponent() {
                     </Tag>
                   </div>
 
-                  <Row gutter={[24, 24]}>
+<Row gutter={[24, 24]}>
                     {posts?.map((post, index) => (
                       <Col
                         className="gutter-row"

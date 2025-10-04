@@ -9,3 +9,4 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default ClientProvider;
+

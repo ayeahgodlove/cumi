@@ -51,3 +51,4 @@ export const {
   useDeletePartnerMutation,
   useGetPartnersByLocationQuery,
 } = partnerAPI;
+

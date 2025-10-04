@@ -85,3 +85,4 @@ export interface IAssignmentResponse extends IResponseBase {
 export interface IAssignmentResponses extends IResponseBase {
   data: IAssignment[];
 }
+

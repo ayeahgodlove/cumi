@@ -232,3 +232,4 @@ export const useCreatorDashboard = (): CreatorDashboardData => {
         isLoadingCourseProgress,
     };
 };
+

@@ -85,3 +85,4 @@ export class EventRegistrationUsecase {
 }
 
 export default EventRegistrationUsecase;
+

@@ -15,3 +15,4 @@ export const emptyRole: IRole = {
 export interface IRoleResponse extends IResponseBase {
   data: IRole | null | IRole[];
 }
+

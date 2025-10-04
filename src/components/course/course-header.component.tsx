@@ -8,14 +8,14 @@ const CourseHeader = ({ course }: { course: ICourse }) => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const maxDescriptionLength = 400;
 
-  const shouldTruncateDescription =
+const shouldTruncateDescription =
     course.description && course.description.length > maxDescriptionLength;
   const displayDescription =
     shouldTruncateDescription && !showFullDescription
       ? course.description.substring(0, maxDescriptionLength) + "..."
       : course.description;
 
-  return (
+return (
     <Card
       style={{
         marginBottom: 24,
@@ -27,7 +27,7 @@ const CourseHeader = ({ course }: { course: ICourse }) => {
       styles={{ body: { padding: 0 } }}
     >
       <Row gutter={[0, 0]} style={{ minHeight: 200 }}>
-        {/* Course Image Column */}
+        {}
         {course.imageUrl && (
           <Col xs={24} sm={8}>
             <div
@@ -51,7 +51,7 @@ const CourseHeader = ({ course }: { course: ICourse }) => {
           </Col>
         )}
 
-        {/* Content Column */}
+{}
         <Col xs={24} sm={course.imageUrl ? 16 : 24}>
           <div
             style={{

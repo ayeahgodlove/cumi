@@ -147,3 +147,4 @@ const Course = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Course;
+

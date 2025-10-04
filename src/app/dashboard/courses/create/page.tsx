@@ -257,7 +257,6 @@ export default function CourseCreate() {
                     validator: (_, value) => {
                       if (!value) return Promise.resolve();
                       const countryCode = formProps.form?.getFieldValue('countryCode') || 'CM';
-                      console.log('Validating course create phone with country code:', countryCode, 'Phone:', value);
                       if (validatePhoneNumber(countryCode, value)) {
                         return Promise.resolve();
                       }
@@ -271,7 +270,6 @@ export default function CourseCreate() {
                   showMoneyServices={true}
                   countryCode="CM"
                   onCountryCodeChange={(code) => {
-                    console.log('Course Create: Country code changed to:', code);
                     formProps.form?.setFieldValue('countryCode', code);
                   }}
                 />
@@ -319,3 +317,4 @@ export default function CourseCreate() {
     </>
   );
 }
+

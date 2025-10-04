@@ -62,7 +62,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
   const [replyingToUsername, setReplyingToUsername] = useState<string | null>(null);
   const [form] = Form.useForm();
 
-  // Redux Toolkit Query hooks
+// Redux Toolkit Query hooks
   const {
     data: commentsData,
     isLoading: loading,
@@ -71,31 +71,31 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     pollingInterval: 30000, // Poll every 30 seconds for new comments
   });
 
-  const [createComment, { isLoading: submitting }] = commentAPI.useCreateCommentMutation();
+const [createComment, { isLoading: submitting }] = commentAPI.useCreateCommentMutation();
   const [handleCommentInteraction] = commentInteractionAPI.useHandleCommentInteractionMutation();
 
-  // Get current URL for sharing
+// Get current URL for sharing
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = postTitle || 'Check out this post';
   const shareText = `Read "${postTitle}" on CUMI`;
 
-  // Share functions
+// Share functions
   const shareToFacebook = () => {
     const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
     window.open(url, '_blank', 'width=600,height=400');
   };
 
-  const shareToTwitter = () => {
+const shareToTwitter = () => {
     const url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`;
     window.open(url, '_blank', 'width=600,height=400');
   };
 
-  const shareToLinkedIn = () => {
+const shareToLinkedIn = () => {
     const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`;
     window.open(url, '_blank', 'width=600,height=400');
   };
 
-  const copyToClipboard = async () => {
+const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(currentUrl);
       api.success({
@@ -112,7 +112,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     }
   };
 
-  const shareMenuItems = [
+const shareMenuItems = [
     {
       key: 'facebook',
       label: t('comments.share_facebook'),
@@ -139,27 +139,20 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     },
   ];
 
-  // Process comments with stats - backend already provides tree structure
+// Process comments with stats - backend already provides tree structure
   const comments: CommentWithStats[] = React.useMemo(() => {
     if (!commentsData) return [];
-    
-    // Handle both array response and object response with data property
+
+// Handle both array response and object response with data property
     const commentsArray = Array.isArray(commentsData) 
       ? commentsData 
       : (commentsData as any)?.data || [];
-    
-    if (!Array.isArray(commentsArray)) {
+
+if (!Array.isArray(commentsArray)) {
       console.warn('Comments data is not an array:', commentsData);
       return [];
     }
-    
-    // Log the raw data for debugging
-    console.log('Comments data received:', {
-      totalComments: commentsArray.length,
-      sample: commentsArray[0],
-      hasReplies: commentsArray.some((c: any) => c.replies && c.replies.length > 0)
-    });
-    
+
     // Recursively add stats to comments and their replies
     const addStatsToComment = (comment: IComment): CommentWithStats => {
       const withStats = {
@@ -172,28 +165,18 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
           ? comment.replies.map((reply: any) => addStatsToComment(reply))
           : undefined,
       };
-      
-      // Log if this comment has replies
-      if (comment.replies && comment.replies.length > 0) {
-        console.log(`Comment ${comment.id} has ${comment.replies.length} replies`);
-      }
-      
+
       return withStats;
     };
-    
+
     // Backend returns comments already in tree structure with replies nested
     // We just need to add stats to each comment and its replies
     const processedComments = commentsArray.map(comment => addStatsToComment(comment));
-    
-    console.log('Processed comments:', {
-      rootCommentsCount: processedComments.length,
-      totalWithReplies: processedComments.filter((c: any) => c.replies && c.replies.length > 0).length
-    });
-    
+
     return processedComments;
   }, [commentsData]);
 
-  // Handle like/dislike
+// Handle like/dislike
   const handleLikeDislike = async (commentId: string, action: 'like' | 'dislike') => {
     if (!session?.user?.id) {
       api.warning({
@@ -204,7 +187,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
       return;
     }
 
-    try {
+try {
       await handleCommentInteraction({ commentId, action }).unwrap();
       api.success({
         message: t('common.success'),
@@ -222,8 +205,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     }
   };
 
-
-  // Submit comment or reply
+// Submit comment or reply
   const handleSubmit = async (values: { content: string }) => {
     if (!session?.user?.id) {
       api.warning({
@@ -234,17 +216,17 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
       return;
     }
 
-    const isReply = replyingTo !== null;
+const isReply = replyingTo !== null;
     const parentId = isReply ? replyingTo : undefined;
 
-    try {
+try {
       await createComment({
         content: values.content,
         postId: postId,
         parentId: parentId,
       }).unwrap();
-      
-      api.success({
+
+api.success({
         message: t('common.success'),
         description: t(isReply ? 'comments.reply_success' : 'comments.comment_success'),
         placement: 'topRight',
@@ -255,8 +237,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
       setReplyingToUsername(null);
     } catch (error: any) {
       console.error(`Error posting ${isReply ? 'reply' : 'comment'}:`, error);
-      
-      if (error?.data?.message?.includes("not available yet")) {
+
+if (error?.data?.message?.includes("not available yet")) {
         api.info({
           message: t('comments.coming_soon_title'),
           description: t('comments.coming_soon'),
@@ -273,7 +255,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     }
   };
 
-  // Calculate total comment count including replies
+// Calculate total comment count including replies
   const getTotalCommentCount = (comments: CommentWithStats[]): number => {
     return comments.reduce((total, comment) => {
       let count = 1; // Count the comment itself
@@ -284,15 +266,15 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     }, 0);
   };
 
-  const totalCommentCount = getTotalCommentCount(comments);
+const totalCommentCount = getTotalCommentCount(comments);
 
-  // Render comment item with proper nesting
+// Render comment item with proper nesting
   const renderComment = (comment: CommentWithStats, depth: number = 0, isLastReply: boolean = false) => {
     const maxDepth = 3; // Limit nesting depth for better UX
     const effectiveDepth = Math.min(depth, maxDepth);
     const replyCount = comment.replies?.length || 0;
-    
-    return (
+
+return (
       <div
         key={comment.id}
         style={{ 
@@ -317,9 +299,9 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
               size={effectiveDepth === 0 ? 40 : effectiveDepth === 1 ? 32 : 28}
             />
           </div>
-          
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Header with user info and timestamp */}
+
+<div style={{ flex: 1, minWidth: 0 }}>
+            {}
             <div style={{ marginBottom: "8px" }}>
               <Space size={4} wrap>
                 <Text strong style={{ fontSize: effectiveDepth > 1 ? "13px" : "14px" }}>
@@ -343,8 +325,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
                 )}
               </Space>
             </div>
-            
-            {/* Comment content */}
+
+{}
             <div style={{ 
               marginBottom: "10px",
               fontSize: effectiveDepth > 1 ? "13px" : "14px",
@@ -353,16 +335,16 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
             }}>
               <Text style={{ whiteSpace: "pre-wrap" }}>{comment.content}</Text>
             </div>
-            
-            {comment.id.startsWith('temp-') && (
+
+{comment.id.startsWith('temp-') && (
               <div style={{ marginBottom: "8px" }}>
                 <Text type="secondary" style={{ fontSize: '12px', fontStyle: 'italic' }}>
                   {t('comments.posting')}
                 </Text>
               </div>
             )}
-            
-            {/* Action buttons */}
+
+{}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <Button
                 type="text"
@@ -381,8 +363,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
               >
                 {comment.likesCount || 0}
               </Button>
-              
-              <Button
+
+<Button
                 type="text"
                 size="small"
                 icon={<DislikeOutlined />}
@@ -399,8 +381,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
               >
                 {comment.dislikesCount || 0}
               </Button>
-              
-              {depth < maxDepth && (
+
+{depth < maxDepth && (
                 <Button
                   type="text"
                   size="small"
@@ -424,8 +406,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
             </div>
           </div>
         </div>
-        
-        {/* Render nested replies */}
+
+{}
         {comment.replies && comment.replies.length > 0 && (
           <div style={{ 
             marginLeft: effectiveDepth === 0 ? "clamp(32px, 52px, 52px)" : effectiveDepth === 1 ? "clamp(24px, 44px, 44px)" : "clamp(20px, 40px, 40px)",
@@ -442,7 +424,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
     );
   };
 
-  return (
+return (
     <>
       {contextHolder}
       <Card
@@ -469,7 +451,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
       }
       style={{ marginTop: "24px", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
     >
-      {/* Comment Form */}
+      {}
       {session?.user && (
         <Form form={form} onFinish={handleSubmit} layout="vertical" size="large">
           {replyingTo && (
@@ -532,7 +514,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
         </Form>
       )}
 
-      {!session?.user && (
+{!session?.user && (
         <div style={{ 
           textAlign: "center", 
           padding: "32px", 
@@ -552,9 +534,9 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
         </div>
       )}
 
-      <Divider style={{ margin: "24px 0" }} />
+<Divider style={{ margin: "24px 0" }} />
 
-      {/* Comments List */}
+{}
       {loading ? (
         <div style={{ textAlign: "center", padding: "40px" }}>
           <Spin size="large" tip={t('comments.loading')} />
@@ -583,7 +565,7 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
         </div>
       )}
 
-      {/* Share Modal */}
+{}
       <Modal
         title={t('comments.share_post')}
         open={shareModalVisible}
@@ -600,8 +582,8 @@ export default function CommentSection({ postId, postTitle, postSlug }: CommentS
                 {currentUrl}
               </Text>
             </div>
-            
-            <Space wrap style={{ justifyContent: 'center' }}>
+
+<Space wrap style={{ justifyContent: 'center' }}>
               <Button 
                 icon={<FacebookOutlined />} 
                 onClick={shareToFacebook}

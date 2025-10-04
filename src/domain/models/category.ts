@@ -20,3 +20,4 @@ export interface ICategoryState extends IBaseState {
 export interface ICategoryResponse extends IResponseBase {
   data: ICategory | null | ICategory[];
 }
+

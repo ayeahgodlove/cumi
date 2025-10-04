@@ -13,35 +13,35 @@ export default function LoadingWrapper({ children }: LoadingWrapperProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleStart = useCallback(() => setIsLoading(true), []);
+const handleStart = useCallback(() => setIsLoading(true), []);
   const handleComplete = useCallback(() => setIsLoading(false), []);
 
-  useEffect(() => {
+useEffect(() => {
     // Listen for route changes
     const originalPush = router.push;
     const originalReplace = router.replace;
 
-    router.push = (...args) => {
+router.push = (...args) => {
       handleStart();
       originalPush.apply(router, args);
       // Use optimized setTimeout for better performance
       optimizedSetTimeout(handleComplete, 30);
     };
 
-    router.replace = (...args) => {
+router.replace = (...args) => {
       handleStart();
       originalReplace.apply(router, args);
       // Use optimized setTimeout for better performance
       optimizedSetTimeout(handleComplete, 30);
     };
 
-    return () => {
+return () => {
       router.push = originalPush;
       router.replace = originalReplace;
     };
   }, [router, handleStart, handleComplete]);
 
-  if (isLoading) {
+if (isLoading) {
     return (
       <div style={{
         position: 'fixed',
@@ -60,5 +60,5 @@ export default function LoadingWrapper({ children }: LoadingWrapperProps) {
     );
   }
 
-  return <>{children}</>;
+return <>{children}</>;
 }

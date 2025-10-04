@@ -55,3 +55,4 @@ export class PostUseCase {
     return this.postRepository.delete(id);
   }
 }
+

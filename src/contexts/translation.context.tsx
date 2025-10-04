@@ -2122,3 +2122,4 @@ export const LanguageSelector: React.FC = () => {
     </Dropdown>
   );
 };
+

@@ -14,18 +14,14 @@ export async function GET(
   try {
     const category = params.category;
     
-    console.log(`Fetching posts for category: ${category}`);
-
     const posts = await postUseCase.getPostByCategory(category);
     
     // If no posts found, return empty array instead of error
     if (!posts || posts.length === 0) {
-      console.log(`No posts found for category: ${category}`);
       return NextResponse.json([]);
     }
 
     const postsDTO = postMapper.toDTOs(posts);
-    console.log(`Found ${postsDTO.length} posts for category: ${category}`);
 
     return NextResponse.json(postsDTO);
   } catch (error: any) {

@@ -162,3 +162,4 @@ const QuizSubmission = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default QuizSubmission;
+

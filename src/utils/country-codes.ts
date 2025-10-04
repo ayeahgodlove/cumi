@@ -460,7 +460,7 @@ export const validatePhoneNumber = (countryCode: string, phoneNumber: string): b
     .replace(/[\s\-\(\)]/g, ''); // Remove spaces, dashes, parentheses
   
   const isValid = /^\d{6,15}$/.test(cleanNumber);
-  console.log(`Phone validation: Country=${countryCode}, Input="${phoneNumber}", Clean="${cleanNumber}", Valid=${isValid}`);
   
   return isValid; // 6-15 digits for African countries
 };
+

@@ -39,3 +39,4 @@ const Tag = (sequelize: Sequelize, DataTypes: any) => {
   return TagModel;
 };
 export default Tag;
+

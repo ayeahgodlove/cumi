@@ -207,3 +207,4 @@ const Assignment = (sequelizeInstance: Sequelize, DataTypes: any) => {
 };
 
 export default Assignment;
+

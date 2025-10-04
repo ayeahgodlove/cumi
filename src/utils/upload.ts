@@ -17,3 +17,4 @@ export async function upload(endpointName: string, formData: FormData) {
       return err;
     });
 }
+

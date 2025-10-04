@@ -8,8 +8,8 @@ import { useTranslation } from "@contexts/translation.context";
 export const AppService = () => {
   const { width } = useWindowSize();
   const { t } = useTranslation();
-  
-  return (
+
+return (
     <div
       id="work-with-us"
       className="container mx-auto"

@@ -33,3 +33,4 @@ export interface IPostInteractionState extends IBaseState {
 export interface IPostInteractionResponse extends IResponseBase {
   data: IPostInteraction[];
 }
+

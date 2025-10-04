@@ -23,7 +23,7 @@ const PageBreadCrumbs: React.FunctionComponent<Props> = ({
     })),
   ];
 
-  return (
+return (
     <>
       <Breadcrumb
         items={breadcrumbItems}

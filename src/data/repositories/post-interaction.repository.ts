@@ -9,3 +9,4 @@ export interface IPostInteractionRepository {
   delete(id: string): Promise<void>;
   getStats(postId: string, userId?: string): Promise<IPostInteractionStats>;
 }
+

@@ -15,9 +15,9 @@ const FeatureSection = () => {
     isFetching: isFetchService,
   } = serviceAPI.useFetchAllServicesQuery(1);
 
-  const loading = isLoadingService || isFetchService;
+const loading = isLoadingService || isFetchService;
 
-  if (loading) {
+if (loading) {
     return (
       <section className={`section ${styles.section}`} style={{ minHeight: "400px", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
         <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
@@ -27,8 +27,8 @@ const FeatureSection = () => {
       </section>
     );
   }
-  
-  return (
+
+return (
     <>
       <section className={`section ${styles.section}`}>
         <div className="container">
@@ -39,7 +39,7 @@ const FeatureSection = () => {
             </p>
           </div>
 
-          <div className={styles.content}>
+<div className={styles.content}>
             <div className={styles.content_group}>
               <Image
                 height={500}
@@ -69,7 +69,7 @@ const FeatureSection = () => {
               </div>
             </div>
 
-            <div className={styles.content_group}>
+<div className={styles.content_group}>
               <div className={styles.content_group_2_text}>
                 <h1 className={styles.content_group_heading}>
                   {t('features.training.title')}

@@ -52,7 +52,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     onClearFilters?.();
   };
 
-  return (
+return (
     <div className={`mb-4 ${className}`}>
       <Row gutter={[16, 16]} align="middle">
         <Col xs={24} md={12}>
@@ -72,7 +72,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
           />
         </Col>
 
-        {filters.length > 0 && (
+{filters.length > 0 && (
           <Col xs={24} md={12}>
             <Space wrap>
               {filters.map((filter) => (
@@ -95,7 +95,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
                 </Select>
               ))}
 
-              {showClearButton && (
+{showClearButton && (
                 <Button
                   icon={<ClearOutlined />}
                   onClick={handleClearFilters}
@@ -109,7 +109,7 @@ export const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
         )}
       </Row>
 
-      {resultsCount !== undefined && (
+{resultsCount !== undefined && (
         <div style={{ marginTop: "12px", textAlign: "right" }}>
           <span style={{ color: "#666", fontSize: "14px" }}>
             {resultsCount} {resultsLabel}

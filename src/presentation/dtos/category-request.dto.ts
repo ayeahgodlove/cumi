@@ -10,8 +10,6 @@ export class CategoryRequestDto {
   @Length(4, 25)
   name: string;
 
-
-
   constructor(data: ICategory) {
     this.name = data.name;
   }
@@ -33,3 +31,4 @@ export class CategoryRequestDto {
     }
   }
 }
+

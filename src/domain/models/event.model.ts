@@ -75,3 +75,4 @@ export interface IEventResponse extends IResponseBase {
   data: IEvent | null | IEvent[];
 }
 
+

@@ -14,3 +14,4 @@ export default class HttpException extends Error {
     this.error = error || null;
   }
 }
+

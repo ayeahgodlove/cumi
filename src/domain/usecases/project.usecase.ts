@@ -34,7 +34,6 @@ export class ProjectUseCase {
     return this.projectRepository.findBySlug(slug);
   }
 
-
   async updateProject(project: IProject): Promise<InstanceType<typeof Project>> {
     return this.projectRepository.update(project);
   }
@@ -43,3 +42,4 @@ export class ProjectUseCase {
     return this.projectRepository.delete(id);
   }
 }
+

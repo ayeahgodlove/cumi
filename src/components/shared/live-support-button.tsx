@@ -27,18 +27,18 @@ const modernSupportStyles = `
     overflow: hidden;
     border: 1px solid rgba(34, 197, 94, 0.1);
   }
-  
-  .modern-support-modal .ant-modal-header {
+
+.modern-support-modal .ant-modal-header {
     background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%);
     border-bottom: 2px solid rgba(34, 197, 94, 0.1);
     padding: 24px;
   }
-  
-  .modern-support-modal .ant-modal-body {
+
+.modern-support-modal .ant-modal-body {
     padding: 0;
   }
-  
-  .modern-support-modal .ant-modal-close {
+
+.modern-support-modal .ant-modal-close {
     top: 20px;
     right: 20px;
     width: 36px;
@@ -47,19 +47,19 @@ const modernSupportStyles = `
     background: rgba(239, 68, 68, 0.1);
     transition: all 0.3s ease;
   }
-  
-  .modern-support-modal .ant-modal-close:hover {
+
+.modern-support-modal .ant-modal-close:hover {
     background: rgba(239, 68, 68, 0.2);
     transform: rotate(90deg);
   }
-  
-  @media (max-width: 768px) {
+
+@media (max-width: 768px) {
     .modern-support-modal {
       max-width: 95vw !important;
       margin: 10px auto !important;
     }
-    
-    .modern-support-modal .ant-modal-content {
+
+.modern-support-modal .ant-modal-content {
       max-height: 90vh;
     }
   }
@@ -99,14 +99,14 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
   const [aiService, setAIService] = useState<AIService | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize AI service
+// Initialize AI service
   useEffect(() => {
     if (aiConfig) {
       try {
         const service = new AIService(aiConfig);
         setAIService(service);
-        
-        // Set initial AI greeting
+
+// Set initial AI greeting
         const greeting: ChatMessage = {
           id: '1',
           type: 'ai',
@@ -130,49 +130,49 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }
   }, [aiConfig, companyName]);
 
-  // Auto-scroll to bottom when new messages arrive
+// Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Create system prompt based on company context
+// Create system prompt based on company context
   const createSystemPrompt = (): string => {
     return `You are a helpful customer support assistant for ${companyName}. 
-    
-    Your role:
+
+Your role:
     - Provide friendly, professional customer support
     - Answer questions about products, services, and policies
     - Help resolve customer issues
     - If you cannot help with something, offer to connect them with a human agent
     - Keep responses concise and helpful
-    
-    Company Information:
+
+Company Information:
     - Company: ${companyName}
     - Support Email: ${supportEmail}
     - Support Phone: ${supportPhone}
-    
-    Guidelines:
+
+Guidelines:
     - Be empathetic and understanding
     - Provide accurate information only
     - If unsure, admit it and offer alternative help
     - Use a conversational but professional tone`;
   };
 
-  const handleSendMessage = async () => {
+const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const userMessage: ChatMessage = {
+const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
       message: inputMessage,
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
 
-    try {
+try {
       if (supportMode === 'ai' && aiService) {
         await handleAIResponse(userMessage);
       } else {
@@ -181,8 +181,8 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     } catch (error) {
       console.error('Error handling message:', error);
       setIsTyping(false);
-      
-      const errorMessage: ChatMessage = {
+
+const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
         message: 'I apologize, but I\'m experiencing technical difficulties. Please try again or contact our support team directly.',
@@ -192,7 +192,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }
   };
 
-  const handleAIResponse = async (userMessage: ChatMessage) => {
+const handleAIResponse = async (userMessage: ChatMessage) => {
     if (!aiService) {
       // Fallback to simple responses if no AI service
       setTimeout(() => {
@@ -209,7 +209,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
       return;
     }
 
-    // Build conversation history
+// Build conversation history
     const conversationHistory: AIMessage[] = [
       { role: 'system', content: createSystemPrompt() },
       ...messages
@@ -222,7 +222,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
       { role: 'user', content: userMessage.message },
     ];
 
-    // Create a streaming response message
+// Create a streaming response message
     const streamingMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
       type: 'ai',
@@ -233,7 +233,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     setMessages(prev => [...prev, streamingMessage]);
     setIsTyping(false);
 
-    try {
+try {
       await aiService.generateStreamingResponse(
         conversationHistory,
         (token: string) => {
@@ -276,7 +276,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }
   };
 
-  const handleAgentResponse = async (userMessage: ChatMessage) => {
+const handleAgentResponse = async (userMessage: ChatMessage) => {
     // Simulate agent response (replace with your live chat integration)
     setTimeout(() => {
       const agentMessage: ChatMessage = {
@@ -291,62 +291,62 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }, 2000);
   };
 
-  const getSimpleResponse = (userMessage: string): string => {
+const getSimpleResponse = (userMessage: string): string => {
     const message = userMessage.toLowerCase();
-    
-    if (message.includes('help') || message.includes('support')) {
+
+if (message.includes('help') || message.includes('support')) {
       return `I'm here to help! You can ask me about our services, or contact us directly at ${supportEmail} or ${supportPhone}. Would you like to connect with a live agent?`;
     }
-    
-    if (message.includes('course') || message.includes('learn')) {
+
+if (message.includes('course') || message.includes('learn')) {
       return 'We offer various courses and learning opportunities. You can browse our courses page or contact our team for more information about enrollment.';
     }
-    
-    if (message.includes('event') || message.includes('workshop')) {
+
+if (message.includes('event') || message.includes('workshop')) {
       return 'We regularly host events and workshops! Check our events page for upcoming sessions. You can also register for events directly from the website.';
     }
-    
-    if (message.includes('contact') || message.includes('phone') || message.includes('email')) {
+
+if (message.includes('contact') || message.includes('phone') || message.includes('email')) {
       return `You can reach us at ${supportEmail} or call us at ${supportPhone}. Our support hours are Monday-Friday, 9 AM - 6 PM. Would you like to speak with someone directly?`;
     }
-    
-    return `Thank you for your message! I'm here to help with any questions about ${companyName}. Could you provide more details about what you need assistance with?`;
+
+return `Thank you for your message! I'm here to help with any questions about ${companyName}. Could you provide more details about what you need assistance with?`;
   };
 
-  const connectToAgent = () => {
+const connectToAgent = () => {
     if (agentStatus === 'offline') {
       message.warning('Live agents are currently offline. Please try again later or continue chatting with AI.');
       return;
     }
-    
-    if (agentStatus === 'busy') {
+
+if (agentStatus === 'busy') {
       message.info('All agents are currently busy. You\'re in queue. Please wait...');
       return;
     }
-    
-    try {
+
+try {
       // Clean the phone number - remove all non-numeric characters
       const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
-      
-      // Validate phone number
+
+// Validate phone number
       if (!cleanNumber || cleanNumber.length < 10) {
         message.error('Invalid WhatsApp number. Please contact support via email.');
         return;
       }
-      
-      // Create WhatsApp message
+
+// Create WhatsApp message
       const whatsappMessage = `Hello! I need support from ${companyName}. I was chatting with your AI assistant and would like to speak with a live agent.`;
-      
-      // Create WhatsApp URL with proper encoding
+
+// Create WhatsApp URL with proper encoding
       const whatsappUrl = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-      
-      // Use setTimeout to prevent browser issues
+
+// Use setTimeout to prevent browser issues
       setTimeout(() => {
         try {
           // Open WhatsApp in a new tab with error handling
           const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
-          
-          if (newWindow) {
+
+if (newWindow) {
             message.success('Opening WhatsApp to connect with our live agent!');
           } else {
             // Fallback if popup is blocked - try direct navigation
@@ -362,14 +362,14 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
           message.error('Unable to open WhatsApp. Please contact us directly at: ' + supportEmail);
         }
       }, 100);
-      
-    } catch (error) {
+
+} catch (error) {
       console.error('Error opening WhatsApp:', error);
       message.error('Unable to open WhatsApp. Please contact us directly at: ' + supportEmail);
     }
   };
 
-  const getStatusColor = () => {
+const getStatusColor = () => {
     switch (agentStatus) {
       case 'available': return '#52c41a';
       case 'busy': return '#faad14';
@@ -378,7 +378,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }
   };
 
-  const getStatusText = () => {
+const getStatusText = () => {
     switch (agentStatus) {
       case 'available': return t('support.available') || 'Available';
       case 'busy': return t('support.busy') || 'Busy';
@@ -387,12 +387,12 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
     }
   };
 
-  return (
+return (
     <>
-      {/* Inject modern styles */}
+      {}
       <style dangerouslySetInnerHTML={{ __html: modernSupportStyles }} />
-      
-      {/* Floating Support Button */}
+
+{}
       <div
         style={{
           position: 'fixed',
@@ -430,8 +430,8 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
             e.currentTarget.style.background = 'linear-gradient(135deg, #22C55E 0%, #14B8A6 100%)';
           }}
         />
-        
-        {/* Status indicator */}
+
+{}
         <div
           style={{
             position: 'absolute',
@@ -447,7 +447,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
         />
       </div>
 
-      {/* Support Modal */}
+{}
       <Modal
         title={
           <div style={{ 
@@ -499,7 +499,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
           flexDirection: 'column',
           borderRadius: '0',
         }}>
-          {/* Mode Selector */}
+          {}
           <div style={{ 
             padding: '24px', 
             borderBottom: '2px solid rgba(34, 197, 94, 0.1)',
@@ -560,7 +560,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
             )}
           </div>
 
-          {/* Chat Messages */}
+{}
           <div style={{ 
             flex: 1, 
             padding: '20px', 
@@ -648,8 +648,8 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                   )}
                 </div>
               ))}
-              
-              {isTyping && (
+
+{isTyping && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <Avatar 
                     size="default" 
@@ -680,7 +680,7 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
             </Space>
           </div>
 
-          {/* Input Area */}
+{}
           <div style={{ 
             padding: '24px', 
             borderTop: '2px solid rgba(34, 197, 94, 0.1)',
@@ -738,8 +738,8 @@ export const LiveSupportButton: React.FC<LiveSupportProps> = ({
                 size="large"
               />
             </Space.Compact>
-            
-            {/* Quick Actions */}
+
+{}
             <div style={{ marginTop: '20px', textAlign: 'center' }}>
               <Space size="middle" wrap style={{ justifyContent: 'center' }}>
                 <Button 

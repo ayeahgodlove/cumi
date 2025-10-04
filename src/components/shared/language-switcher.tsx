@@ -18,17 +18,17 @@ export default function LanguageSwitcher() {
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
 
-  const currentLanguage = languages.find((lang) => lang.code === locale) || languages[0];
+const currentLanguage = languages.find((lang) => lang.code === locale) || languages[0];
 
-  const handleLanguageChange = async (newLocale: string) => {
+const handleLanguageChange = async (newLocale: string) => {
     if (newLocale === locale) return;
-    
-    setLoading(true);
+
+setLoading(true);
     try {
       // Update the locale cookie
       document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`;
-      
-      // Reload the page to apply the new locale
+
+// Reload the page to apply the new locale
       window.location.reload();
     } catch (error) {
       console.error("Error changing language:", error);
@@ -37,7 +37,7 @@ export default function LanguageSwitcher() {
     }
   };
 
-  const menuItems = languages.map((lang) => ({
+const menuItems = languages.map((lang) => ({
     key: lang.code,
     label: (
       <Space>
@@ -48,7 +48,7 @@ export default function LanguageSwitcher() {
     onClick: () => handleLanguageChange(lang.code),
   }));
 
-  return (
+return (
     <Dropdown
       menu={{ items: menuItems }}
       placement="bottomRight"

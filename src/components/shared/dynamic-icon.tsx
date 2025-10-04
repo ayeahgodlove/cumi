@@ -24,11 +24,11 @@ const DynamicIcon: React.FC<IDynamicIcon> = ({ icon, ...props }) => {
   const IconLibrary = getIconLibrary(icon);
   const Icon = IconLibrary ? IconLibrary[icon] : undefined;
 
-  if (!Icon) {
+if (!Icon) {
     return <span className="text-sm">Icon not found</span>;
   }
 
-  return <Icon {...props} />;
+return <Icon {...props} />;
 };
 
 const getIconLibrary = (icon: any): IconMap | undefined => {
@@ -39,7 +39,7 @@ const getIconLibrary = (icon: any): IconMap | undefined => {
     return lib;
   }, "");
 
-  return iconLibraries[libraryKey];
+return iconLibraries[libraryKey];
 };
 
 export default DynamicIcon;

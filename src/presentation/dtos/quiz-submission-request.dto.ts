@@ -110,3 +110,4 @@ export class QuizSubmissionUpdateDto {
     Object.assign(this, data);
   }
 }
+

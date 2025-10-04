@@ -68,3 +68,4 @@ export interface ICourseResponse extends IResponseBase {
 export interface ICourseResponses extends IResponseBase {
   data: ICourse[];
 }
+

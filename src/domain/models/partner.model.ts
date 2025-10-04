@@ -37,3 +37,4 @@ export interface IPartnerResponse extends IResponseBase {
 export interface IPartnerResponses extends IResponseBase {
   data: IPartner[];
 }
+

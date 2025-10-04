@@ -5,9 +5,9 @@ import LoginFormComponent from "./login-form.component";
 
 export default function LoginPageComponent() {
 
-  return (
+return (
     <>
-      {/* Structured Data for Login Page */}
+      {}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -28,14 +28,14 @@ export default function LoginPageComponent() {
         }}
       />
 
-      <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+<div className="container-fluid" style={{ width: "100%" }}>
+        {}
         <AppNav logoPath="/" />
       </div>
 
-      <LoginFormComponent />
+<LoginFormComponent />
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );

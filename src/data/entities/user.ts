@@ -229,3 +229,4 @@ const User = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default User;
+

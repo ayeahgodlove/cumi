@@ -10,3 +10,4 @@ export interface ICommentInteractionRepository {
   delete(commentId: string, userId: string): Promise<boolean>;
   deleteByCommentId(commentId: string): Promise<boolean>;
 }
+

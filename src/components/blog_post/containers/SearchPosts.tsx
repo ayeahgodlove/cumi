@@ -15,8 +15,8 @@ const SearchPosts = ({ search }: SearchPostsProps) => {
         prefix={<SearchOutlined />}
         size="large"
         allowClear
-        
-      />
+
+/>
     </>
   );
 };

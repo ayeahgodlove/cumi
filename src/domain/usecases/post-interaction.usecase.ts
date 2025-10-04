@@ -37,3 +37,4 @@ export class PostInteractionUseCase {
     return this.postInteractionRepository.findByPostId(postId);
   }
 }
+

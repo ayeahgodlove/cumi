@@ -35,35 +35,35 @@ export default function CategoryDetailPageComponent({
     isFetching,
   } = postAPI.useGetPostsByCategoryQuery(category);
 
-  const {
+const {
     data: categories,
     isLoading: isLoadingCategory,
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
 
-  const {
+const {
     data: tags,
     isLoading: isLoadingTag,
     isFetching: isFetchTag,
   } = tagAPI.useFetchAllTagsQuery(1);
 
-  const {
+const {
     data: users,
     isLoading: isLoadingUser,
     isFetching: isFetchUser,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching ||
+const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching ||
     isLoadingUser || isFetchUser || isLoadingTag || isFetchTag;
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-      
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -72,7 +72,7 @@ export default function CategoryDetailPageComponent({
         </div>
       ) : (
         <>
-      {/* banner */}
+      {}
       <BannerComponent
         breadcrumbs={[
           { label: t('category_detail.categories'), uri: "categories" },
@@ -81,7 +81,7 @@ export default function CategoryDetailPageComponent({
         pageTitle={t('category_detail.blog_posts')}
       />
 
-      <div className="container py-5 mb-5">
+<div className="container py-5 mb-5">
         {error && (
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <Title level={4} type="danger">{t('category_detail.error_loading')}</Title>
@@ -89,7 +89,7 @@ export default function CategoryDetailPageComponent({
           </div>
         )}
 
-        {/* Stats Section */}
+{}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -153,7 +153,7 @@ export default function CategoryDetailPageComponent({
           </Row>
         </motion.div>
 
-        <Content>
+<Content>
           {posts && posts.length ? (
             <div className="row justify-content-center align-items-start" style={{ gap: '0' }}>
               <div className="col-12 col-md-8" style={{ paddingRight: '24px' }}>
@@ -162,7 +162,7 @@ export default function CategoryDetailPageComponent({
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.4 }}
                 >
-                  {/* Posts Header */}
+                  {}
                   <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       <div style={{ 
@@ -190,7 +190,7 @@ export default function CategoryDetailPageComponent({
                     </Tag>
                   </div>
 
-                  <Row gutter={[24, 24]}>
+<Row gutter={[24, 24]}>
                     {posts?.map((post, index) => (
                       <Col
                         className="gutter-row"
@@ -285,7 +285,7 @@ export default function CategoryDetailPageComponent({
         </Content>
       </div>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

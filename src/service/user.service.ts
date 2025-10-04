@@ -12,3 +12,4 @@ export const userService = {
   delete: (user: IUser): Promise<IUserResponse> =>
     requestType.del(`/users`, user),
 };
+

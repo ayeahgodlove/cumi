@@ -54,23 +54,23 @@ export default function OpportunitiesPageComponent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  const {
+const {
     data: opportunities,
     error,
     isLoading,
     isFetching,
   } = opportunityAPI.useFetchAllOpportunitiesQuery();
 
-  // Debounce search term
+// Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 300);
 
-    return () => clearTimeout(timer);
+return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const filteredOpportunities = (opportunities || []).filter((opp) => {
+const filteredOpportunities = (opportunities || []).filter((opp) => {
     const matchesFilter = filter === "all" || opp.opp_type === filter;
     const matchesSearch =
       opp.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
@@ -83,7 +83,7 @@ export default function OpportunitiesPageComponent() {
     return matchesFilter && matchesSearch;
   });
 
-  const getOpportunityTypeColor = (type: string) => {
+const getOpportunityTypeColor = (type: string) => {
     switch (type) {
       case "scholarship":
         return "green";
@@ -100,7 +100,7 @@ export default function OpportunitiesPageComponent() {
     }
   };
 
-  const getOpportunityTypeIcon = (type: string) => {
+const getOpportunityTypeIcon = (type: string) => {
     switch (type) {
       case "scholarship":
         return <BookOutlined />;
@@ -117,7 +117,7 @@ export default function OpportunitiesPageComponent() {
     }
   };
 
-  const formatDeadline = (deadline: string | Date) => {
+const formatDeadline = (deadline: string | Date) => {
     const date = new Date(deadline);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -126,7 +126,7 @@ export default function OpportunitiesPageComponent() {
     });
   };
 
-  const isDeadlineNear = (deadline: string | Date) => {
+const isDeadlineNear = (deadline: string | Date) => {
     const date = new Date(deadline);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
@@ -134,7 +134,7 @@ export default function OpportunitiesPageComponent() {
     return diffDays <= 30 && diffDays > 0;
   };
 
-  return (
+return (
     <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
       <AppNav logoPath="/" />
       <Content style={{ backgroundColor: "white" }}>
@@ -145,8 +145,8 @@ export default function OpportunitiesPageComponent() {
           ]}
         />
 
-        <div className="container py-5" style={{ backgroundColor: "white" }}>
-          {/* Stats Section */}
+<div className="container py-5" style={{ backgroundColor: "white" }}>
+          {}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,7 +228,7 @@ export default function OpportunitiesPageComponent() {
             </Row>
           </motion.div>
 
-          {/* Filter Section */}
+{}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -252,7 +252,7 @@ export default function OpportunitiesPageComponent() {
                       {t("opportunities.filter_title")}
                     </Title>
 
-                    {/* Search Input */}
+{}
                     <Search
                       placeholder="Search opportunities..."
                       value={searchTerm}
@@ -268,7 +268,7 @@ export default function OpportunitiesPageComponent() {
                       size="large"
                     />
 
-                    <Space wrap>
+<Space wrap>
                       <Button
                         type={filter === "all" ? "primary" : "default"}
                         onClick={() => setFilter("all")}
@@ -318,7 +318,7 @@ export default function OpportunitiesPageComponent() {
             </Row>
           </motion.div>
 
-          {/* Opportunities List */}
+{}
           {isLoading || isFetching ? (
             <div
               style={{
@@ -470,17 +470,17 @@ export default function OpportunitiesPageComponent() {
                           )}
                         </div>
 
-                        <Title level={4} className="mb-2">
+<Title level={4} className="mb-2">
                           <Link href={`/opportunities/${opportunity.id}`}>
                             {opportunity.title}
                           </Link>
                         </Title>
 
-                        <Paragraph className="text-muted mb-3">
+<Paragraph className="text-muted mb-3">
                           {opportunity.companyOrInstitution}
                         </Paragraph>
 
-                        <div className="mb-3">
+<div className="mb-3">
                           <Space direction="vertical" size="small">
                             <div>
                               <EnvironmentOutlined className="me-2" />
@@ -507,11 +507,11 @@ export default function OpportunitiesPageComponent() {
                           </Space>
                         </div>
 
-                        <Paragraph ellipsis={{ rows: 3 }} className="mb-3">
+<Paragraph ellipsis={{ rows: 3 }} className="mb-3">
                           {opportunity.description}
                         </Paragraph>
 
-                        {(() => {
+{(() => {
                           // Parse skills if it's a string, otherwise use as-is
                           let skillsArray: string[] = [];
                           try {
@@ -524,7 +524,7 @@ export default function OpportunitiesPageComponent() {
                             skillsArray = [];
                           }
 
-                          return skillsArray && skillsArray.length > 0 ? (
+return skillsArray && skillsArray.length > 0 ? (
                             <div className="mb-3">
                               <Text strong className="me-2">
                                 Skills:

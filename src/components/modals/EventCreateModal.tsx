@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Select, message, Row, Col, DatePicker, InputNumber, Button } from "antd";
 import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
@@ -30,7 +29,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
     redirect: false, // Prevent automatic redirect
   });
 
-  const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: any) => {
     try {
       // Format the data before submission
       const formattedValues = {
@@ -45,17 +44,17 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
         content: values.content || values.description || "",
       };
 
-      // Use the form submission logic from Refine
+// Use the form submission logic from Refine
       await formProps.onFinish?.(formattedValues);
-      
-      // Show success notification
+
+// Show success notification
       open?.({
         type: "success",
         message: t('common.success'),
         description: editingEvent ? t('creator.event_updated_success') : t('creator.event_created_success'),
       });
-      
-      // Reset form and close modal
+
+// Reset form and close modal
       form.resetFields();
       onSuccess();
       onCancel();
@@ -66,18 +65,18 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
         message: t('common.error'),
         description: t('forms.event_create_failed', { message: error.message }),
       });
-      
-      // Don't close modal on error - let user fix the issues
+
+// Don't close modal on error - let user fix the issues
     }
   };
 
-  const { queryResult: tagData } = useSelect<ITag>({
+const { queryResult: tagData } = useSelect<ITag>({
     resource: "tags",
   });
 
-  const tags = tagData?.data?.data || [];
+const tags = tagData?.data?.data || [];
 
-  // Preload form when editing
+// Preload form when editing
   useEffect(() => {
     if (editingEvent && visible) {
       // Parse the eventDate safely
@@ -95,7 +94,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
         }
       }
 
-      form.setFieldsValue({
+form.setFieldsValue({
         title: editingEvent.title,
         category: editingEvent.category,
         status: editingEvent.status,
@@ -114,12 +113,12 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
     }
   }, [editingEvent, visible, form]);
 
-  const handleCancel = () => {
+const handleCancel = () => {
     form.resetFields();
     onCancel();
   };
 
-  return (
+return (
     <Modal
       title={
         <div style={{ 
@@ -168,7 +167,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           <Input size="large" />
         </Form.Item>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="category"
@@ -208,7 +207,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="eventDate"
@@ -234,7 +233,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="maxAttendees"
@@ -263,7 +262,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           </Col>
         </Row>
 
-        <Form.Item
+<Form.Item
           name="description"
           label={t('common.description')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) }]}
@@ -271,7 +270,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           <Input.TextArea size="large" rows={4} />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="content"
           label={t('forms.event_details')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('forms.event_details').toLowerCase() }) }]}
@@ -284,7 +283,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="tags"
           label={t('forms.tags')}
         >
@@ -303,7 +302,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           />
         </Form.Item>
 
-        <ImageUploadField
+<ImageUploadField
           name="imageUrl"
           label={t('forms.event_image')}
           required={true}
@@ -314,7 +313,7 @@ export default function EventCreateModal({ visible, onCancel, onSuccess, editing
           draggerHint={t('forms.upload_hint')}
         />
 
-        <Form.Item>
+<Form.Item>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'flex-end', 

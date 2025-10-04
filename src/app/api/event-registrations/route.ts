@@ -135,8 +135,6 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId");
     const eventId = searchParams.get("eventId");
 
-    console.log('Fetching event registrations - userId:', userId, 'eventId:', eventId);
-
     // Require at least one filter parameter for security and performance
     if (!userId && !eventId) {
       console.warn('Event registration query missing required parameters');
@@ -158,8 +156,6 @@ export async function GET(request: NextRequest) {
       where: whereClause,
       order: [['createdAt', 'DESC']],
     });
-
-    console.log(`Found ${registrations.length} registrations for eventId: ${eventId}`);
 
     return NextResponse.json(
       {

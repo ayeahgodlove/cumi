@@ -23,3 +23,4 @@ export const emptyContactMessage: IContactMessage = {
   createdAt: new Date(),
   updatedAt: new Date()
 };
+

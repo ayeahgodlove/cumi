@@ -216,7 +216,6 @@ Review.belongsTo(Course, { foreignKey: "courseId", as: "reviewCourse" });
 User.hasMany(Review, { foreignKey: "userId", as: "reviews" });
 Review.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-
 // Quiz Submission associations
 User.hasMany(QuizSubmission, { foreignKey: "userId", as: "quizSubmissions" });
 QuizSubmission.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -284,3 +283,4 @@ export {
   QuizSubmission,
   AssignmentSubmission
 };
+

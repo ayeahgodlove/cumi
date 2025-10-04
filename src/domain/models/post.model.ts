@@ -38,3 +38,4 @@ export interface IPostState extends IBaseState {
 export interface IPostResponse extends IResponseBase {
   data: IPost | null | IPost[];
 }
+

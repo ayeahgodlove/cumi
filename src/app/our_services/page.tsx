@@ -111,3 +111,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function OurServicesPage() {
   return <OurServicesPageComponent />;
 }
+

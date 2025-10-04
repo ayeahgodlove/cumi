@@ -93,3 +93,4 @@ const EventRegistration = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default EventRegistration;
+

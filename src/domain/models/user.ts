@@ -110,3 +110,4 @@ export interface IUserResponse extends IResponseBase {
   data: IUser | null | IUser[];
   message: string;
 }
+

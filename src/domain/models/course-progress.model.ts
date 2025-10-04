@@ -79,3 +79,4 @@ export interface ICourseProgressResponse extends IResponseBase {
 export interface ICourseProgressResponses extends IResponseBase {
   data: ICourseProgress[];
 }
+

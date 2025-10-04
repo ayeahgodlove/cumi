@@ -45,3 +45,4 @@ export const emptyQuizSubmission: IQuizSubmission = {
   createdAt: new Date(),
   updatedAt: new Date(),
 };
+

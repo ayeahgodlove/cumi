@@ -19,7 +19,7 @@ const CategoryContainer: React.FC<IProps> = ({ categories, posts }) => {
               (c: string) => c === category.id
             ).length;
 
-            return (
+return (
               <li key={category.id} className="inline-block">
                 <Link
                   className={`m-1 d-block rounded bg-light py-3 px-5`}

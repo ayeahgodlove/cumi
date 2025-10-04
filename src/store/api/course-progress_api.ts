@@ -124,3 +124,4 @@ export const {
   useUpdateCourseProgressMutation,
   useDeleteCourseProgressMutation,
 } = courseProgressAPI;
+

@@ -24,17 +24,17 @@ export default function FeatureCard(props: any) {
         </div>
       )}
 
-      <div className="">
+<div className="">
         {props.title && (
           <span className="h5">
             {props.title}
           </span>
         )}
 
-        {props.titleIcon && props.titleIcon}
+{props.titleIcon && props.titleIcon}
       </div>
 
-      {props.price && <span className="fwb">{props.price}</span>}
+{props.price && <span className="fwb">{props.price}</span>}
     </Card>
   );
 }

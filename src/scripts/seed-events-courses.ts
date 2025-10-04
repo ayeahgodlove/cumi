@@ -14,8 +14,6 @@ const Category = defineCategory(sequelize, DataTypes);
 
 export async function seedEventsAndCourses() {
   try {
-    console.log('Starting to seed events and courses...');
-
     // First, ensure we have a user and category
     const [user] = await User.findOrCreate({
       where: { id: 'user-001' },
@@ -209,9 +207,6 @@ export async function seedEventsAndCourses() {
       });
     }
 
-    console.log('Successfully seeded events and courses!');
-    console.log(`Created ${events.length} events and ${courses.length} courses`);
-
   } catch (error) {
     console.error('Error seeding events and courses:', error);
     throw error;
@@ -222,7 +217,6 @@ export async function seedEventsAndCourses() {
 if (require.main === module) {
   seedEventsAndCourses()
     .then(() => {
-      console.log('Seeding completed successfully');
       process.exit(0);
     })
     .catch((error) => {
@@ -230,3 +224,4 @@ if (require.main === module) {
       process.exit(1);
     });
 }
+

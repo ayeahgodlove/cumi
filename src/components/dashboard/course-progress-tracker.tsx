@@ -117,10 +117,10 @@ export default function CourseProgressTracker() {
     ]
   });
 
-  const courseProgress = Math.round((progressData.completedCourses / progressData.totalCourses) * 100);
+const courseProgress = Math.round((progressData.completedCourses / progressData.totalCourses) * 100);
   const lessonProgress = Math.round((progressData.completedLessons / progressData.totalLessons) * 100);
 
-  const getActivityIcon = (type: string) => {
+const getActivityIcon = (type: string) => {
     switch (type) {
       case 'lesson_completed': return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
       case 'course_enrolled': return <BookOutlined style={{ color: '#1890ff' }} />;
@@ -129,7 +129,7 @@ export default function CourseProgressTracker() {
     }
   };
 
-  const getAchievementColor = (type: string) => {
+const getAchievementColor = (type: string) => {
     switch (type) {
       case 'course': return '#52c41a';
       case 'lesson': return '#1890ff';
@@ -139,9 +139,9 @@ export default function CourseProgressTracker() {
     }
   };
 
-  return (
+return (
     <div>
-      {/* Progress Overview */}
+      {}
       <Card title="Learning Progress" style={{ marginBottom: 24 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
@@ -194,8 +194,8 @@ export default function CourseProgressTracker() {
         </Row>
       </Card>
 
-      <Row gutter={[16, 16]}>
-        {/* Achievements */}
+<Row gutter={[16, 16]}>
+        {}
         <Col xs={24} lg={12}>
           <Card title="Achievements" style={{ height: '100%' }}>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -247,7 +247,7 @@ export default function CourseProgressTracker() {
           </Card>
         </Col>
 
-        {/* Recent Activity */}
+{}
         <Col xs={24} lg={12}>
           <Card title="Recent Activity" style={{ height: '100%' }}>
             <Timeline
@@ -278,7 +278,7 @@ export default function CourseProgressTracker() {
         </Col>
       </Row>
 
-      {/* Study Goals */}
+{}
       <Card title="Study Goals" style={{ marginTop: 24 }}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={8}>

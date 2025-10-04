@@ -16,24 +16,24 @@ export default function TagsPageComponent() {
     isFetching,
   } = postAPI.useFetchAllPostsQuery({});
 
-  const posts = postsResponse || [];
+const posts = postsResponse || [];
 
-  const {
+const {
     data: tags,
     isLoading: isLoadingTag,
     isFetching: isFetchTag,
   } = tagAPI.useFetchAllTagsQuery(1);
 
-  const loading = isLoading || isFetching || isLoadingTag || isFetchTag;
+const loading = isLoading || isFetching || isLoadingTag || isFetchTag;
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-      
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -42,18 +42,18 @@ export default function TagsPageComponent() {
         </div>
       ) : (
         <>
-      {/* banner */}
+      {}
       <BannerComponent
         breadcrumbs={[{ label: "Tags", uri: "tags" }]}
         pageTitle="Tags"
       />
 
-      <TagContainer
+<TagContainer
         posts={isLoading || isFetching ? [] : posts}
         tags={isLoadingTag || isFetchTag ? [] : tags}
       />
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

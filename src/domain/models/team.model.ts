@@ -41,3 +41,4 @@ export const emptyTeam: ITeam = {
   createdAt: new Date(),
   updatedAt: new Date()
 };
+

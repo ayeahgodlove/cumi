@@ -41,3 +41,4 @@ export class SubscribeUseCase {
     return (subscribe as any).dataValues || subscribe;
   }
 }
+

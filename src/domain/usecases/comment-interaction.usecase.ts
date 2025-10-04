@@ -79,3 +79,4 @@ export class CommentInteractionUseCase {
     return this.commentInteractionRepository.getCommentStats(commentId, userId);
   }
 }
+

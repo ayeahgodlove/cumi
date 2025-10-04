@@ -22,3 +22,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function ForgotPasswordPage() {
   return <ForgotPasswordComponent />;
 }
+

@@ -46,3 +46,4 @@ const Category = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Category;
+

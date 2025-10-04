@@ -8,8 +8,8 @@ import { useTranslation } from "@contexts/translation.context";
 
 const AboutNote = () => {
   const { t } = useTranslation();
-  
-  return (
+
+return (
     <>
      <div id="about" className="block padding-top mt-sm-0 pb-5">
         <div className="titleHolder">
@@ -18,7 +18,7 @@ const AboutNote = () => {
             {t('about_note.subtitle')}
           </p>
         </div>
-        {/* next */}
+        {}
         <div
           className="mx-auto  row"
           style={{ width: "85%", minHeight: "15rem" }}
@@ -44,7 +44,7 @@ const AboutNote = () => {
             </Card>
           </div>
 
-          <div className="col-sm-6 col-lg-3 p-3">
+<div className="col-sm-6 col-lg-3 p-3">
             <Card
               bordered={false}
               hoverable
@@ -56,13 +56,13 @@ const AboutNote = () => {
                 style={{ width: "3rem", height: "3rem", color: "#FFDF00" }}
               />
 
-              <small className="d-block text-center">
+<small className="d-block text-center">
                 {t('about_note.innovation.description')}
               </small>
             </Card>
           </div>
 
-          <div className="col-sm-6 col-lg-3 p-3">
+<div className="col-sm-6 col-lg-3 p-3">
             <Card
               bordered={false}
               hoverable
@@ -79,7 +79,7 @@ const AboutNote = () => {
             </Card>
           </div>
 
-          <div className="col-sm-6 col-lg-3 p-3">
+<div className="col-sm-6 col-lg-3 p-3">
             <Card
               bordered={false}
               hoverable

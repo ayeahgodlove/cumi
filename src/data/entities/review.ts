@@ -127,3 +127,4 @@ const Review = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Review;
+

@@ -42,3 +42,4 @@ export class EventUseCase {
     return this.eventRepository.delete(id);
   }
 }
+

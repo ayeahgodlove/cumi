@@ -55,7 +55,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch current service
@@ -66,7 +66,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
         const serviceData = await serviceResponse.json();
         setService(serviceData);
 
-        // Fetch all services for sidebar
+// Fetch all services for sidebar
         const servicesResponse = await fetch('/api/services');
         if (servicesResponse.ok) {
           const servicesData = await servicesResponse.json();
@@ -79,16 +79,16 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
       }
     };
 
-    fetchData();
+fetchData();
   }, [slug]);
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      {loading ? (
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -128,8 +128,8 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-           
-              {/* Hero Section */}
+
+{}
               {/* <div className="cumi-hero cumi-section rounded-4 mb-5">
                 <div className="container text-center">
                   <Row justify="center" align="middle">
@@ -171,10 +171,10 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                 </div>
               </div> */}
 
-              {/* Main Content */}
+{}
               <Row gutter={[24, 24]}>
                 <Col xs={24} lg={6}>
-                  {/* Services Sidebar */}
+                  {}
                   <Card className="cumi-card mb-4">
                     <Title level={4} className="cumi-gradient-text mb-4">
                       Our Services
@@ -199,7 +199,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                     </div>
                   </Card>
 
-                  {/* Contact Card */}
+{}
                   <Card className="cumi-card">
                     <div className="text-center">
                       <div className="mb-3">
@@ -238,8 +238,8 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                   </Card>
                 </Col>
 
-                <Col xs={24} lg={18}>
-                  {/* Service Image */}
+<Col xs={24} lg={18}>
+                  {}
                   <Card className="cumi-card mb-4">
                     <img
                       src={service.imageUrl}
@@ -249,7 +249,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                     />
                   </Card>
 
-                  {/* Service Description */}
+{}
                   <Card className="cumi-card mb-4">
                     <Title level={3} className="cumi-gradient-text mb-4">
                       About This Service
@@ -259,7 +259,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                     </Paragraph>
                   </Card>
 
-                  {/* Service Features */}
+{}
                   <Card className="cumi-card mb-4">
                     <Title level={3} className="mb-4">What We Offer</Title>
                     {service.items && Array.isArray(service.items) && service.items.length > 0 ? (
@@ -283,7 +283,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                     )}
                   </Card>
 
-                  {/* Process Overview */}
+{}
                   <Card className="cumi-card mb-4">
                     <Title level={3} className="mb-4">Our Process</Title>
                     <Row gutter={[16, 16]}>
@@ -317,7 +317,7 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
                     </Row>
                   </Card>
 
-                  {/* CTA Section */}
+{}
                   <Card className="cumi-card">
                     <div className="text-center p-4">
                       <Title level={3} className="mb-3">Ready to Get Started?</Title>
@@ -351,8 +351,8 @@ export default function ServiceDetailPageComponent({ slug }: ServiceDetailPageCo
             </motion.div>
           </div>
         </Content>
-        
-      <AppFooter logoPath="/" />
+
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

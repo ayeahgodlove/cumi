@@ -64,3 +64,4 @@ export class ContactMessageRepository implements IContactMessageRepository {
     return await this.update(id, { isRead: true }) !== null;
   }
 }
+

@@ -1,5 +1,4 @@
 "use client";
-
 import React from 'react';
 import { Button, ButtonProps } from 'antd';
 import { motion } from 'framer-motion';
@@ -141,15 +140,15 @@ export const ModernButton: React.FC<ModernButtonProps> = ({
   ...props
 }) => {
   const baseStyle = modernButtonStyles[variant];
-  
-  const buttonStyle = {
+
+const buttonStyle = {
     ...baseStyle,
     ...style,
   };
 
-  const ButtonComponent = animated ? motion.button : 'button';
+const ButtonComponent = animated ? motion.button : 'button';
 
-  return (
+return (
     <Button
       {...props}
       style={buttonStyle}
@@ -192,7 +191,7 @@ export const modernButtonCSS = `
     -webkit-tap-highlight-color: transparent;
   }
 
-  .modern-button::before {
+.modern-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -203,46 +202,46 @@ export const modernButtonCSS = `
     transition: left 0.5s;
   }
 
-  .modern-button:hover::before {
+.modern-button:hover::before {
     left: 100%;
   }
 
-  .modern-button:disabled {
+.modern-button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
     transform: none !important;
   }
 
-  .modern-button:disabled:hover {
+.modern-button:disabled:hover {
     transform: none !important;
     box-shadow: inherit !important;
   }
 
-  .modern-button-primary {
+.modern-button-primary {
     color: white;
   }
 
-  .modern-button-secondary {
+.modern-button-secondary {
     color: #667eea;
   }
 
-  .modern-button-secondary:hover {
+.modern-button-secondary:hover {
     color: white;
   }
 
-  .modern-button-ghost {
+.modern-button-ghost {
     color: #667eea;
   }
 
-  .modern-button-success {
+.modern-button-success {
     color: white;
   }
 
-  .modern-button-warning {
+.modern-button-warning {
     color: white;
   }
 
-  @media (max-width: 768px) {
+@media (max-width: 768px) {
     .modern-button {
       height: 40px !important;
       font-size: 13px !important;
@@ -250,7 +249,7 @@ export const modernButtonCSS = `
     }
   }
 
-  @media (max-width: 480px) {
+@media (max-width: 480px) {
     .modern-button {
       height: 36px !important;
       font-size: 12px !important;

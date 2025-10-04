@@ -9,8 +9,8 @@ import { useTranslation } from "@contexts/translation.context";
 export const AppHero = () => {
   const { width } = useWindowSize()
   const { t } = useTranslation()
-  
-  return (
+
+return (
     <div
       className="mx-auto row align-items-center"
       style={{ marginTop: "4rem", width: "90%", minHeight: "23rem" }}

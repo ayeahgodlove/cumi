@@ -309,3 +309,4 @@ export class CourseProgressRepository implements ICourseProgressRepository {
 }
 
 export default CourseProgressRepository;
+

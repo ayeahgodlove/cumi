@@ -46,3 +46,4 @@ export class CourseProgressUseCase {
     return this.courseProgressRepository.delete(id);
   }
 }
+

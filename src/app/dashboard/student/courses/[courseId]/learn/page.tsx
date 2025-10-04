@@ -608,18 +608,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
 
   // Debug logging
   React.useEffect(() => {
-    console.log("Learning Page Debug:", {
-      courseId,
-      sessionStatus: status,
-      hasSession: !!session,
-      userId: session?.user?.id,
-      modulesCount: modules?.length || 0,
-      modulesLoading,
-      hasModulesError: !!modulesError,
-      progressDataCount: progressData?.length || 0,
-      enrollmentsCount: userEnrollments ? (Array.isArray(userEnrollments) ? userEnrollments.length : (userEnrollments as any)?.data?.length || 0) : 0
-    });
-    
     if (modulesError) {
       console.error("Modules Error:", modulesError);
       console.error("Modules Error Details:", {
@@ -630,21 +618,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
       });
     }
   }, [courseId, status, session, modules, modulesLoading, modulesError, progressData, userEnrollments]);
-
-  // Debug assignments API call
-  React.useEffect(() => {
-    if (currentLesson?.id) {
-      console.log("Assignments API Debug:", {
-        lessonId: currentLesson.id,
-        lessonTitle: currentLesson.title,
-        assignmentsLoading,
-        assignmentsError,
-        lessonAssignments,
-        shouldSkipAPICalls,
-        apiCallSkipped: !currentLesson?.id || shouldSkipAPICalls
-      });
-    }
-  }, [currentLesson?.id, assignmentsLoading, assignmentsError, lessonAssignments, shouldSkipAPICalls]);
 
   // Initialize completed lessons from progress data with defensive coding
   React.useEffect(() => {
@@ -861,7 +834,6 @@ const LearningPage: React.FC<LearningPageProps> = () => {
   // Refetch assignments and quizzes when lesson changes
   React.useEffect(() => {
     if (currentLesson?.id && !shouldSkipAPICalls) {
-      console.log("Refetching assignments and quizzes for lesson:", currentLesson.id, currentLesson.title);
       refetchAssignments();
       refetchQuizzes();
     }

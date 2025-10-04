@@ -50,3 +50,4 @@ export class ContactMessageMapper {
 }
 
 export const contactMessageMapper = new ContactMessageMapper();
+

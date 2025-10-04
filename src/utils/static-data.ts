@@ -20,3 +20,4 @@ export const staticData: StaticData = {
     altText: "Codimaniacs !-)",
   },
 };
+

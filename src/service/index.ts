@@ -33,3 +33,4 @@ export const requestType = {
       })
       .then(responseBody),
 };
+

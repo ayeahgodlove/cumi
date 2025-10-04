@@ -13,3 +13,4 @@ export interface ICommentInteractionStats {
   dislikesCount: number;
   userInteraction?: 'like' | 'dislike' | null;
 }
+

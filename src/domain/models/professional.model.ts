@@ -78,3 +78,4 @@ export interface IProfessionalResponse extends IResponseBase {
 export interface IProfessionalResponses extends IResponseBase {
   data: IProfessional[];
 }
+

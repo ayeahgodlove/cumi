@@ -22,10 +22,10 @@ const sequelize = new Sequelize(
   try {
     await sequelize.authenticate();
     await sequelize.sync();
-    console.log("Database connected successfully.");
   } catch (error) {
     console.error("Database connection failed", error);
   }
 })();
 
 export default sequelize;
+

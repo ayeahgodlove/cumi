@@ -197,3 +197,4 @@ const AssignmentSubmission = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default AssignmentSubmission;
+

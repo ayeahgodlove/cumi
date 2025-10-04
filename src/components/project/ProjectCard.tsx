@@ -38,7 +38,7 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
     }
   };
 
-  return (
+return (
     <motion.div
       whileHover={{ y: -8 }}
       transition={{ duration: 0.3 }}
@@ -130,23 +130,23 @@ const ProjectCard: React.FC<Prop> = ({ project, index, styles }) => {
             </Link>
           </Title>
         </div>
-        
-        <Paragraph 
+
+<Paragraph 
           ellipsis={{ rows: 3 }}
           className="text-muted mb-4"
         >
           {project.description}
         </Paragraph>
 
-        <div className="d-flex justify-content-between align-items-center">
+<div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center text-muted">
             <CalendarOutlined className="me-2" />
             <Text type="secondary" className="small">
               {formatDate(project.createdAt)}
             </Text>
           </div>
-          
-            <Link href={`/projects/${project.slug}`}>
+
+<Link href={`/projects/${project.slug}`}>
             <Button 
               type="primary" 
               size="small"

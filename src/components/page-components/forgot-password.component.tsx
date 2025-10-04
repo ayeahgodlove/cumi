@@ -20,28 +20,26 @@ export default function ForgotPasswordComponent() {
   const [email, setEmail] = useState("");
   const { open } = useNotification();
 
-  const onFinish = async (values: any) => {
+const onFinish = async (values: any) => {
     setLoading(true);
     setEmail(values.email);
 
-    try {
+try {
       // Validate email format
       if (!isValidEmail(values.email)) {
         throw new Error('Please enter a valid email address');
       }
 
-      // Send password reset request to custom API
+// Send password reset request to custom API
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: values.email }),
       });
 
-      console.log(response);
-
       const result = await response.json();
 
-      if (response.ok) {
+if (response.ok) {
         setEmailSent(true);
         open?.({
           type: "success",
@@ -65,16 +63,16 @@ export default function ForgotPasswordComponent() {
     }
   };
 
-  const handleBackToLogin = () => {
+const handleBackToLogin = () => {
     router.push("/login");
   };
 
-  if (emailSent) {
+if (emailSent) {
     return (
       <>
         <AppNav logoPath="/" />
 
-        {/* Success Section */}
+{}
         <div
           style={{
             minHeight: "calc(100vh - 200px)",
@@ -96,7 +94,7 @@ export default function ForgotPasswordComponent() {
                 }}
                 styles={{ body: { padding: "3rem 2rem" } }}
               >
-                {/* Success Header */}
+                {}
                 <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                   <div
                     style={{
@@ -124,7 +122,7 @@ export default function ForgotPasswordComponent() {
                   </Text>
                 </div>
 
-                {/* Success Message */}
+{}
                 <Alert
                   message="Password Reset Email Sent"
                   description={
@@ -148,7 +146,7 @@ export default function ForgotPasswordComponent() {
                   }}
                 />
 
-                {/* Instructions */}
+{}
                 <div style={{ marginBottom: "2rem" }}>
                   <Title level={4} style={{ color: "#1a1a1a", marginBottom: "1rem" }}>
                     What&apos;s Next?
@@ -163,7 +161,7 @@ export default function ForgotPasswordComponent() {
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+{}
                 <div style={{ textAlign: "center" }}>
                   <Button
                     type="primary"
@@ -191,8 +189,8 @@ export default function ForgotPasswordComponent() {
                   >
                     Back to Login
                   </Button>
-                  
-                  <Button
+
+<Button
                     onClick={() => {
                       setEmailSent(false);
                       setEmail("");
@@ -222,7 +220,7 @@ export default function ForgotPasswordComponent() {
                   </Button>
                 </div>
 
-                {/* Help Text */}
+{}
                 <div style={{ textAlign: "center", marginTop: "2rem" }}>
                   <Text style={{ color: "#999", fontSize: "14px" }}>
                     Didn&apos;t receive the email? Check your spam folder or{" "}
@@ -243,17 +241,17 @@ export default function ForgotPasswordComponent() {
           </Row>
         </div>
 
-        <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
         <AppFootnote />
       </>
     );
   }
 
-  return (
+return (
     <>
       <AppNav logoPath="/" />
 
-      {/* Forgot Password Section */}
+{}
       <div
         style={{
           minHeight: "calc(100vh - 200px)",
@@ -275,7 +273,7 @@ export default function ForgotPasswordComponent() {
               }}
               styles={{ body: { padding: "3rem 2rem" } }}
             >
-              {/* Header Section */}
+              {}
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div
                   style={{
@@ -303,7 +301,7 @@ export default function ForgotPasswordComponent() {
                 </Text>
               </div>
 
-              {/* Forgot Password Form */}
+{}
               <Form
                 name="forgotPassword"
                 layout="vertical"
@@ -356,7 +354,7 @@ export default function ForgotPasswordComponent() {
                   />
                 </Form.Item>
 
-                {/* Submit Button */}
+{}
                 <Form.Item style={{ marginBottom: "1rem" }}>
                   <Button
                     type="primary"
@@ -389,7 +387,7 @@ export default function ForgotPasswordComponent() {
                 </Form.Item>
               </Form>
 
-              {/* Back to Login */}
+{}
               <div style={{ textAlign: "center", marginTop: "2rem" }}>
                 <Text style={{ color: "#666", fontSize: "16px" }}>
                   Remember your password?{" "}
@@ -407,7 +405,7 @@ export default function ForgotPasswordComponent() {
                 </Text>
               </div>
 
-              {/* Help Section */}
+{}
               <div style={{ marginTop: "2rem", padding: "1.5rem", background: "rgba(34, 197, 94, 0.05)", borderRadius: "12px" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", marginBottom: "1rem" }}>
                   <FaExclamationCircle style={{ color: "var(--cumi-primary)", fontSize: "16px", marginRight: "8px", marginTop: "2px" }} />
@@ -425,7 +423,7 @@ export default function ForgotPasswordComponent() {
         </Row>
       </div>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );

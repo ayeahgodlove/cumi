@@ -195,3 +195,4 @@ const CourseProgress = (sequelizeInstance: Sequelize, DataTypes: any) => {
 };
 
 export default CourseProgress;
+

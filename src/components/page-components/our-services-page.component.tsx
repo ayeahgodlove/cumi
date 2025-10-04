@@ -22,7 +22,7 @@ const { Title, Paragraph, Text } = Typography;
 export default function OurServicesPageComponent() {
   const { t } = useTranslation();
 
-  const features = [
+const features = [
     {
       icon: <RocketOutlined />,
       title: t("services.fast_delivery"),
@@ -45,7 +45,7 @@ export default function OurServicesPageComponent() {
     },
   ];
 
-  const benefits = [
+const benefits = [
     t("services.support_24_7"),
     t("services.scalable_solutions"),
     t("services.modern_tech"),
@@ -54,18 +54,18 @@ export default function OurServicesPageComponent() {
     t("services.security_first"),
   ];
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      <BannerComponent
+<BannerComponent
         breadcrumbs={[{ label: t("nav.services"), uri: "our_services" }]}
         pageTitle={t("nav.services")}
       />
 
-      {/* Features Section */}
+{}
       <section className="py-5">
         <div className="container">
           <Row justify="center" className="mb-5">
@@ -119,7 +119,7 @@ export default function OurServicesPageComponent() {
         </div>
       </section>
 
-      {/* Benefits Section */}
+{}
       <section className="py-5">
         <div className="container">
           <Row justify="center" align="middle">
@@ -169,12 +169,12 @@ export default function OurServicesPageComponent() {
         </div>
       </section>
 
-      {/* Services List */}
+{}
       <ServicesSection />
-      {/* CTA Section */}
+      {}
       <AppCTA />
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );

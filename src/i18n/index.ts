@@ -11,3 +11,4 @@ export async function getUserLocale() {
 export async function setUserLocale(locale: any) {
   cookies().set(I18N_COOKIE_NAME, locale);
 }
+

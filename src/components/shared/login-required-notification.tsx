@@ -1,5 +1,4 @@
 "use client";
-
 import React from 'react';
 import { notification, Button } from 'antd';
 import { LoginOutlined, UserOutlined } from '@ant-design/icons';
@@ -24,7 +23,7 @@ export const showLoginRequiredNotification = ({
   const currentUrl = redirectUrl || (typeof window !== 'undefined' ? window.location.href : '/');
   const encodedRedirectUrl = encodeURIComponent(currentUrl);
 
-  const handleSignIn = () => {
+const handleSignIn = () => {
     notification.destroy();
     if (router) {
       router.push(`/login?callbackUrl=${encodedRedirectUrl}`);
@@ -33,7 +32,7 @@ export const showLoginRequiredNotification = ({
     }
   };
 
-  const handleSignUp = () => {
+const handleSignUp = () => {
     notification.destroy();
     if (router) {
       router.push(`/signup?callbackUrl=${encodedRedirectUrl}`);
@@ -42,7 +41,7 @@ export const showLoginRequiredNotification = ({
     }
   };
 
-  notification.open({
+notification.open({
     message: (
       <div style={{ 
         display: 'flex', 
@@ -147,8 +146,8 @@ export const showLoginRequiredNotification = ({
 export const useLoginRequiredNotification = () => {
   const { useRouter } = require('next/navigation');
   const router = useRouter();
-  
-  return {
+
+return {
     showLoginRequired: (props: Omit<LoginRequiredNotificationProps, 'router'>) => 
       showLoginRequiredNotification({ ...props, router })
   };

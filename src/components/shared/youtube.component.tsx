@@ -23,10 +23,10 @@ const YouTubePlayerFrame: React.FC<YouTubePlayerProps> = ({
 }) => {
   const embedUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
 
-  return (
+return (
     <div className="container py-4">
       <Card className="shadow-sm border-0">
-        {/* Video Player */}
+        {}
         <div className="ratio ratio-16x9 mb-3">
           <iframe
             src={embedUrl}
@@ -38,11 +38,11 @@ const YouTubePlayerFrame: React.FC<YouTubePlayerProps> = ({
           ></iframe>
         </div>
 
-        {/* Video Info */}
+{}
         <div className="px-3">
           <h4 className="fw-bold mb-2">{title}</h4>
-          
-          <Row gutter={16} align="middle" className="mb-3">
+
+<Row gutter={16} align="middle" className="mb-3">
             <Col xs={24} md={12}>
               <Space size="middle">
                 <span className="text-muted">{channel}</span>
@@ -64,7 +64,7 @@ const YouTubePlayerFrame: React.FC<YouTubePlayerProps> = ({
             </Col>
           </Row>
 
-          {/* Video Stats */}
+{}
           <div className="bg-light p-3 rounded mb-3">
             <Space size="large">
               <span className="text-muted">{views}</span>
@@ -73,7 +73,7 @@ const YouTubePlayerFrame: React.FC<YouTubePlayerProps> = ({
             <p className="mt-2 mb-0">{description}</p>
           </div>
 
-          {/* Additional Controls (optional) */}
+{}
           {showControls && (
             <div className="d-flex justify-content-between align-items-center mt-3">
               <Button type="text" icon={<PlayCircleOutlined />}>

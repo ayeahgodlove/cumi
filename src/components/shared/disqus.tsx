@@ -25,9 +25,9 @@ const Disqus: React.FC<DisqusProps> = ({
     language: "en", // or your preferred language
   };
 
-  const { theme } = useTheme();
+const { theme } = useTheme();
 
-  return (
+return (
     <div className={className} key={theme}>
       <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
     </div>

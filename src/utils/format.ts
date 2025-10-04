@@ -173,3 +173,4 @@ export const format = {
     firstMinuteOfDay: (date: Date) => firstMinuteOfDay(date),
     lastMinuteOfDay: (date: Date) => lastMinuteOfDay(date),
 }
+

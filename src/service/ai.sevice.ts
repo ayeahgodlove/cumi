@@ -51,7 +51,6 @@ class AIService {
                     ? parseInt(retryAfter) * 1000 
                     : (this.config.retryDelay || 1000) * Math.pow(2, retryCount);
                 
-                console.log(`Rate limited. Retrying in ${delayMs}ms... (attempt ${retryCount + 1}/${this.config.maxRetries})`);
                 await this.delay(delayMs);
                 return this.makeRequestWithRetry(url, options, retryCount + 1);
             }
@@ -76,7 +75,6 @@ class AIService {
         } catch (error: any) {
             if (retryCount < (this.config.maxRetries || 3) && 
                 (error instanceof TypeError || error.message.includes('network'))) {
-                console.log(`Network error. Retrying in ${this.config.retryDelay}ms... (attempt ${retryCount + 1}/${this.config.maxRetries})`);
                 await this.delay((this.config.retryDelay || 1000) * Math.pow(2, retryCount));
                 return this.makeRequestWithRetry(url, options, retryCount + 1);
             }
@@ -161,7 +159,6 @@ class AIService {
                         ? parseInt(retryAfter) * 1000 
                         : (this.config.retryDelay || 1000) * Math.pow(2, retryCount);
                     
-                    console.log(`Rate limited during streaming. Retrying in ${delayMs}ms... (attempt ${retryCount + 1}/${this.config.maxRetries})`);
                     retryCount++;
                     await this.delay(delayMs);
                     return attemptStream();

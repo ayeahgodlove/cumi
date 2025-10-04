@@ -66,3 +66,4 @@ const PostInteraction = (sequelizeInstance: Sequelize, DataTypes: any) => {
 };
 
 export default PostInteraction;
+

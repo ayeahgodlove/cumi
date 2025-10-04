@@ -25,9 +25,9 @@ export const DashboardFormWrapper: React.FC<DashboardFormWrapperProps> = ({
     onMutationSuccess: onSuccess,
   });
 
-  const FormComponent = mode === "create" ? Create : Edit;
+const FormComponent = mode === "create" ? Create : Edit;
 
-  return (
+return (
     <>
       <PageBreadCrumbs items={breadcrumbItems} />
       <FormComponent saveButtonProps={saveButtonProps}>

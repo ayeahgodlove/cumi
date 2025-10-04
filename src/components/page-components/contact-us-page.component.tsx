@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Form, Input, Button, notification, Card, Row, Col, Space, Typography } from "antd";
 import { SendOutlined, MailOutlined, PhoneOutlined, UserOutlined, MessageOutlined } from "@ant-design/icons";
@@ -20,7 +19,7 @@ export default function ContactUsPageComponent() {
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
 
-  const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: any) => {
     setLoading(true);
     try {
       const response = await fetch("/api/contact-messages", {
@@ -31,13 +30,13 @@ export default function ContactUsPageComponent() {
         body: JSON.stringify(values),
       });
 
-      const data = await response.json();
+const data = await response.json();
 
-      if (!response.ok) {
+if (!response.ok) {
         throw new Error(data.error || data.message || "Failed to send message");
       }
 
-      api.success({
+api.success({
         message: t('contact.success_title'),
         description: t('contact.success_message'),
         placement: 'topRight',
@@ -56,20 +55,20 @@ export default function ContactUsPageComponent() {
     }
   };
 
-  return (
+return (
     <>
       {contextHolder}
       <div className="container-fluid" style={{ width: "100%", backgroundColor: "white" }}>
         <AppNav logoPath="/" />
       </div>
-      
-      {/* Banner */}
+
+{}
       <BannerComponent
         breadcrumbs={[{ label: t('nav.contact_us'), uri: "contact_us" }]}
         pageTitle={t('nav.contact_us')}
       />
 
-      <section className="py-5">
+<section className="py-5">
         <div className="container">
           <Row justify="center" gutter={[24, 24]}>
             <Col xs={24} lg={16}>
@@ -105,7 +104,7 @@ export default function ContactUsPageComponent() {
                   </Space>
                 </div>
 
-                <Form
+<Form
                   form={form}
                   layout="vertical"
                   onFinish={handleSubmit}
@@ -146,12 +145,12 @@ export default function ContactUsPageComponent() {
                     </Col>
                   </Row>
 
-                  {/* Hidden field for country code */}
+{}
                   <Form.Item name="countryCode" initialValue="CM" hidden>
                     <Input />
                   </Form.Item>
 
-                  <Row gutter={16}>
+<Row gutter={16}>
                     <Col xs={24} md={12}>
                       <Form.Item
                         name="phone"
@@ -161,7 +160,6 @@ export default function ContactUsPageComponent() {
                             validator: (_, value) => {
                               if (!value) return Promise.resolve();
                               const countryCode = form.getFieldValue('countryCode') || 'CM';
-                              console.log('Validating phone with country code:', countryCode, 'Phone:', value);
                               if (validatePhoneNumber(countryCode, value)) {
                                 return Promise.resolve();
                               }
@@ -175,7 +173,6 @@ export default function ContactUsPageComponent() {
                           showMoneyServices={true}
                           countryCode="CM"
                           onCountryCodeChange={(code) => {
-                            console.log('Country code changed to:', code);
                             form.setFieldValue('countryCode', code);
                           }}
                         />
@@ -199,7 +196,7 @@ export default function ContactUsPageComponent() {
                     </Col>
                   </Row>
 
-                  <Form.Item
+<Form.Item
                     name="message"
                     label={t('contact.message')}
                     rules={[
@@ -216,7 +213,7 @@ export default function ContactUsPageComponent() {
                     />
                   </Form.Item>
 
-                  <Form.Item className="text-center" style={{ marginBottom: 0 }}>
+<Form.Item className="text-center" style={{ marginBottom: 0 }}>
                     <Button
                       type="primary"
                       htmlType="submit"
@@ -244,7 +241,7 @@ export default function ContactUsPageComponent() {
         </div>
       </section>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );

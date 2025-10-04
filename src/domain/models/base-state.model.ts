@@ -4,3 +4,4 @@ export interface IBaseState {
     readonly errors?: any
     readonly initialFetch: boolean
 }
+

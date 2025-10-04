@@ -79,3 +79,4 @@ export class CourseEnrollmentRepository {
 }
 
 export default CourseEnrollmentRepository;
+

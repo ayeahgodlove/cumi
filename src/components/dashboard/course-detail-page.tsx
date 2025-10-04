@@ -124,7 +124,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
   const [lessonModalVisible, setLessonModalVisible] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     // Mock data - replace with actual API call
     const mockCourse: CourseDetail = {
       id: courseId,
@@ -252,32 +252,32 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
       ]
     };
 
-    setTimeout(() => {
+setTimeout(() => {
       setCourse(mockCourse);
       setLoading(false);
     }, 1000);
   }, [courseId]);
 
-  const handleEnrollCourse = () => {
+const handleEnrollCourse = () => {
     if (course) {
       setCourse({ ...course, isEnrolled: true, progress: 0 });
       message.success("Successfully enrolled in course!");
     }
   };
 
-  const handleLikeCourse = () => {
+const handleLikeCourse = () => {
     if (course) {
       setCourse({ ...course, isLiked: !course.isLiked });
       message.success(course.isLiked ? "Removed from favorites" : "Added to favorites");
     }
   };
 
-  const handleStartLesson = (lesson: Lesson) => {
+const handleStartLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
     setLessonModalVisible(true);
   };
 
-  const getLessonIcon = (type: string) => {
+const getLessonIcon = (type: string) => {
     switch (type) {
       case 'video': return <VideoCameraOutlined style={{ color: '#1890ff' }} />;
       case 'text': return <FileTextOutlined style={{ color: '#52c41a' }} />;
@@ -287,7 +287,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
     }
   };
 
-  const getLevelColor = (level: string) => {
+const getLevelColor = (level: string) => {
     switch (level) {
       case 'Beginner': return 'green';
       case 'Intermediate': return 'blue';
@@ -296,17 +296,17 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
     }
   };
 
-  if (loading) {
+if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!course) {
+if (!course) {
     return <div>Course not found</div>;
   }
 
-  return (
+return (
     <div>
-      {/* Course Header */}
+      {}
       <Card style={{ marginBottom: 24 }}>
         <Row gutter={[24, 24]}>
           <Col xs={24} md={12}>
@@ -333,7 +333,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                 </Space>
               </div>
 
-              <div>
+<div>
                 <Space>
                   <StarOutlined style={{ color: '#faad14' }} />
                   <Text strong>{course.rating}</Text>
@@ -341,7 +341,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                 </Space>
               </div>
 
-              <div>
+<div>
                 <Space>
                   <Avatar src={course.instructor.avatar} icon={<UserOutlined />} />
                   <div>
@@ -352,7 +352,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                 </Space>
               </div>
 
-              <div>
+<div>
                 <Space>
                   <ClockCircleOutlined />
                   <Text>{course.duration}</Text>
@@ -361,9 +361,9 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                 </Space>
               </div>
 
-              <Divider />
+<Divider />
 
-              <div>
+<div>
                 <Space>
                   <Button
                     type="primary"
@@ -389,7 +389,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
         </Row>
       </Card>
 
-      {/* Course Content */}
+{}
       <Card>
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
           <TabPane tab="Overview" key="overview">
@@ -401,7 +401,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                     <Paragraph>{course.fullDescription}</Paragraph>
                   </div>
 
-                  <div>
+<div>
                     <Title level={4}>What You&apos;ll Learn</Title>
                     <ul>
                       {course.whatYouWillLearn.map((item, index) => (
@@ -413,7 +413,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                     </ul>
                   </div>
 
-                  <div>
+<div>
                     <Title level={4}>Requirements</Title>
                     <ul>
                       {course.requirements.map((item, index) => (
@@ -454,7 +454,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
             </Row>
           </TabPane>
 
-          <TabPane tab="Curriculum" key="curriculum">
+<TabPane tab="Curriculum" key="curriculum">
             <div>
               <Title level={4}>Course Content</Title>
               <Collapse>
@@ -518,7 +518,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
             </div>
           </TabPane>
 
-          <TabPane tab="Reviews" key="reviews">
+<TabPane tab="Reviews" key="reviews">
             <div>
               <Row gutter={[24, 24]}>
                 <Col xs={24} md={8}>
@@ -570,7 +570,7 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
         </Tabs>
       </Card>
 
-      {/* Lesson Modal */}
+{}
       <Modal
         title={selectedLesson?.title}
         open={lessonModalVisible}
@@ -591,12 +591,12 @@ export default function CourseDetailPage({ courseId }: { courseId: string }) {
                 </video>
               </div>
             )}
-            
-            <div>
+
+<div>
               <Title level={4}>Lesson Description</Title>
               <Paragraph>{selectedLesson.description}</Paragraph>
-              
-              {selectedLesson.resources && selectedLesson.resources.length > 0 && (
+
+{selectedLesson.resources && selectedLesson.resources.length > 0 && (
                 <div>
                   <Title level={5}>Resources</Title>
                   <List

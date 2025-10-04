@@ -29,25 +29,25 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
     isFetching,
   } = projectAPI.useGetSingleProjectBySlugQuery(slug);
 
-  const { data: user } = userAPI.useGetSingleUserQuery(
+const { data: user } = userAPI.useGetSingleUserQuery(
     project ? project?.userId : ""
   );
 
-  const {
+const {
     data: banners,
     isLoading: isLoadingBanner,
     isFetching: isFetchingBanner,
   } = bannerAPI.useFetchAllBannersQuery(1);
 
-  const loading = isLoading || isFetching || !project || isLoadingBanner || isFetchingBanner;
+const loading = isLoading || isFetching || !project || isLoadingBanner || isFetchingBanner;
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-        
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -56,7 +56,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
         </div>
       ) : (
         <>
-        {/* Page Banner */}
+        {}
         <PageContent
           title={project?.title}
           banner={banners ? (banners.length > 0 ? banners[0].image : "") : ""}
@@ -71,7 +71,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
           ]}
         />
 
-        <Content style={{ margin:"4rem 0"}}>
+<Content style={{ margin:"4rem 0"}}>
           <section className="section pt-4">
             <div className="container">
               <Row justify="center">
@@ -86,7 +86,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                       }}
                       styles={{ body: { padding: 0 } }}
                     >
-                      {/* Hero Image */}
+                      {}
                       <div style={{ position: "relative", overflow: "hidden" }}>
                         <ImageFallback
                           src={project.imageUrl}
@@ -112,9 +112,9 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                         />
                       </div>
 
-                      {/* Content */}
+{}
                       <div style={{ padding: "2rem" }}>
-                        {/* Project Meta */}
+                        {}
                         <div style={{ marginBottom: "1.5rem" }}>
                           <Space wrap size="middle">
                             {user && (
@@ -129,8 +129,8 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                                 </Text>
                               </Space>
                             )}
-                            
-                            <Space>
+
+<Space>
                               <CalendarOutlined style={{ color: "#52c41a" }} />
                               <Text type="secondary">
                                 {format.date(project.createdAt)}
@@ -139,7 +139,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                           </Space>
                         </div>
 
-                        {/* Title */}
+{}
                         <Title level={1} style={{ 
                           marginBottom: "1.5rem",
                           fontSize: "2.5rem",
@@ -150,7 +150,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                           {project?.title}
                         </Title>
 
-                        {/* Action Buttons */}
+{}
                         <div style={{ marginBottom: "2rem" }}>
                           <Space size="large" wrap>
                             <Link
@@ -175,8 +175,8 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                                 {t('project_detail.view_source')}
                               </Button>
                             </Link>
-                            
-                            <Link
+
+<Link
                               href={project?.deployUrl}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -201,9 +201,9 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                           </Space>
                         </div>
 
-                        <Divider style={{ margin: "2rem 0" }} />
+<Divider style={{ margin: "2rem 0" }} />
 
-                        {/* Project Information Card */}
+{}
                         <Card
                           style={{
                             marginBottom: "2rem",
@@ -233,8 +233,8 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                                 </Link>
                               </Space>
                             </Col>
-                            
-                            <Col xs={24} sm={12} md={8}>
+
+<Col xs={24} sm={12} md={8}>
                               <Space direction="vertical" size={4}>
                                 <Space>
                                   <GlobalOutlined style={{ color: "#52c41a", fontSize: "18px" }} />
@@ -253,8 +253,8 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                                 </Link>
                               </Space>
                             </Col>
-                            
-                            <Col xs={24} sm={12} md={8}>
+
+<Col xs={24} sm={12} md={8}>
                               <Space direction="vertical" size={4}>
                                 <Space>
                                   <CalendarOutlined style={{ color: "#faad14", fontSize: "18px" }} />
@@ -268,7 +268,7 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                           </Row>
                         </Card>
 
-                        {/* Description Section */}
+{}
                         <div style={{ marginBottom: "2rem" }}>
                           <Title level={3} style={{ 
                             marginBottom: "1rem",
@@ -290,9 +290,9 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
                           />
                         </div>
 
-                        <Divider style={{ margin: "2rem 0" }} />
+<Divider style={{ margin: "2rem 0" }} />
 
-                        {/* Share Section - Modern Design */}
+{}
                         <Share
                           title={project?.title as any}
                           description={project?.description}
@@ -308,8 +308,8 @@ export default function ProjectDetailPageComponent({ slug }: ProjectDetailPageCo
             </div>
           </section>
         </Content>
-        
-        <AppFooter logoPath="/" />
+
+<AppFooter logoPath="/" />
         <AppFootnote />
         </>
       )}

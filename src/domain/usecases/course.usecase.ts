@@ -28,7 +28,6 @@ export class CourseUseCase {
     return this.courseRepository.findByCategory(category);
   }
 
-
   async getAll(): Promise<InstanceType<typeof Course>[]> {
     return this.courseRepository.getAll();
   }
@@ -45,3 +44,4 @@ export class CourseUseCase {
     return this.courseRepository.delete(id);
   }
 }
+

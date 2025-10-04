@@ -35,3 +35,4 @@ export class TeamUseCase {
     return teams.map((team: any) => team.dataValues || team);
   }
 }
+

@@ -121,3 +121,4 @@ export class CourseEnrollmentRepository implements ICourseEnrollmentRepository {
     }
   }
 }
+

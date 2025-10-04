@@ -32,18 +32,18 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
   const carouselRef = useRef<CarouselRef>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile/tablet screen size
+// Detect mobile/tablet screen size
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992); // <992px = mobile/tablet (show 1 card)
     };
 
-    handleResize();
+handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  if (isLoading) {
+if (isLoading) {
     return (
       <div
         style={{
@@ -61,21 +61,21 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
     );
   }
 
-  if (!services || services.length === 0) {
+if (!services || services.length === 0) {
     return null;
   }
 
-  // Group services based on screen size: 1 for mobile/tablet (<992px), 3 for desktop (≥992px)
+// Group services based on screen size: 1 for mobile/tablet (<992px), 3 for desktop (≥992px)
   const servicesPerSlide = isMobile ? 1 : 3;
   const serviceSlides = [];
   for (let i = 0; i < services.length; i += servicesPerSlide) {
     serviceSlides.push(services.slice(i, i + servicesPerSlide));
   }
 
-  const handlePrev = () => carouselRef.current?.prev();
+const handlePrev = () => carouselRef.current?.prev();
   const handleNext = () => carouselRef.current?.next();
 
-  return (
+return (
     <section
       style={{
         padding: "80px 0",
@@ -84,7 +84,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
         overflow: "hidden",
       }}
     >
-      {/* Background decoration */}
+      {}
       <div
         style={{
           position: "absolute",
@@ -98,11 +98,11 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
         }}
       />
 
-      <div
+<div
         className={`container bg-none`}
         style={{ position: "relative", zIndex: 1 }}
       >
-        {/* Section Header */}
+        {}
         <div style={{ textAlign: "center", marginBottom: "60px" }}>
           <Title
             level={2}
@@ -133,14 +133,14 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
           </Paragraph>
         </div>
 
-        {/* Carousel Container */}
+{}
         <div
           style={{
             position: "relative",
             padding: isMobile ? "0 32px" : "0 60px",
           }}
         >
-          {/* Navigation Buttons */}
+          {}
           {serviceSlides.length > 1 && (
             <>
               <Button
@@ -220,7 +220,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
             </>
           )}
 
-          {/* Carousel */}
+{}
           <Carousel
             ref={carouselRef}
             dots={false}
@@ -278,7 +278,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                         e.currentTarget.style.borderColor = "#f0f0f0";
                       }}
                     >
-                      {/* Service Image */}
+                      {}
                       {service.imageUrl && (
                         <div
                           style={{
@@ -321,7 +321,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                         </div>
                       )}
 
-                      {/* Service Content */}
+{}
                       <div
                         style={{
                           padding: "28px 24px",
@@ -355,7 +355,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                           {service.description}
                         </Paragraph>
 
-                        {/* Service Items */}
+{}
                         {service.items && (
                           <div style={{ marginBottom: "20px" }}>
                             {(Array.isArray(service.items)
@@ -389,7 +389,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
                           </div>
                         )}
 
-                        {/* Learn More Button */}
+{}
                         <Link
                           href={`/our_services/${service.slug}`}
                           style={{ marginTop: "auto" }}
@@ -433,7 +433,7 @@ export const ServicesSection: React.FC<IServicesSectionProps> = ({
           </Carousel>
         </div>
 
-        {/* View All Services Button */}
+{}
         {showViewAllButton && (
           <div style={{ textAlign: "center", marginTop: "64px" }}>
             <Link href="/our_services">

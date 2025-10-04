@@ -45,3 +45,4 @@ export const {
   useHandlePostInteractionMutation,
   useGetUserPostInteractionsQuery,
 } = postInteractionAPI;
+

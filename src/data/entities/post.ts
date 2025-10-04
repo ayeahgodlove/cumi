@@ -70,3 +70,4 @@ const Post = (sequelize: Sequelize, DataTypes: any) => {
   return PostModel;
 };
 export default Post;
+

@@ -26,7 +26,7 @@ export default function RoleBasedLayout({
   const session = serverSession || clientSession;
   const sessionStatus = serverSession ? "authenticated" : status;
 
-  // Show loading state (only when using client session and still loading)
+// Show loading state (only when using client session and still loading)
   if (sessionStatus === "loading" && !serverSession) {
     return (
       <div
@@ -44,15 +44,15 @@ export default function RoleBasedLayout({
     );
   }
 
-  // If no session, show login (fallback)
+// If no session, show login (fallback)
   if (!session?.user) {
     return <Login />;
   }
 
-  // Determine user role
+// Determine user role
   const userRole = session.user.role || "user";
 
-  // Admin Layout - show admin dashboard with full sidebar
+// Admin Layout - show admin dashboard with full sidebar
   if (userRole === "admin") {
     return (
       <ThemedLayoutV2 Header={Header} Title={Title}>
@@ -67,7 +67,7 @@ export default function RoleBasedLayout({
     );
   }
 
-  // Creator Layout - Educational focused layout
+// Creator Layout - Educational focused layout
   if (userRole === "creator") {
     return (
       <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
@@ -78,10 +78,10 @@ export default function RoleBasedLayout({
             minHeight: "100vh",
           }}
         >
-          {/* Creator Navigation */}
+          {}
           <AppNav logoPath="/" />
 
-          {/* Creator Content Area */}
+{}
           <div
             // className="container-fluid"
             style={{ width: "100%", padding: "1.5rem 0" }}
@@ -93,7 +93,7 @@ export default function RoleBasedLayout({
             </Row>
           </div>
 
-          {/* Creator Footer */}
+{}
           <AppFooter logoPath="/" />
           <AppFootnote />
         </div>
@@ -101,7 +101,7 @@ export default function RoleBasedLayout({
     );
   }
 
-  // Student Layout - Educational focused layout
+// Student Layout - Educational focused layout
   if (userRole === "student") {
     return (
       <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
@@ -112,10 +112,10 @@ export default function RoleBasedLayout({
             minHeight: "100vh",
           }}
         >
-          {/* Student Navigation */}
+          {}
           <AppNav logoPath="/" />
 
-          {/* Student Content Area */}
+{}
           <div
             className="container-fluid"
             style={{ width: "100%", padding: "24px 0" }}
@@ -127,7 +127,7 @@ export default function RoleBasedLayout({
             </Row>
           </div>
 
-          {/* Student Footer */}
+{}
           <AppFooter logoPath="/" />
           <AppFootnote />
         </div>
@@ -135,7 +135,7 @@ export default function RoleBasedLayout({
     );
   }
 
-  // User Layout - redirect to student dashboard
+// User Layout - redirect to student dashboard
   return (
     <Authenticated key={`${userRole}-dashboard`} fallback={<Login />}>
       <div
@@ -145,10 +145,10 @@ export default function RoleBasedLayout({
           minHeight: "100vh",
         }}
       >
-        {/* Student Navigation */}
+        {}
         <AppNav logoPath="/" />
 
-        {/* Student Content Area */}
+{}
         <div
           className="container-fluid"
           style={{ width: "100%", padding: "24px 0" }}
@@ -160,7 +160,7 @@ export default function RoleBasedLayout({
           </Row>
         </div>
 
-        {/* Student Footer */}
+{}
         <AppFooter logoPath="/" />
         <AppFootnote />
       </div>

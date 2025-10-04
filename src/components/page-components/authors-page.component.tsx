@@ -21,16 +21,16 @@ export default function AuthorsPageComponent() {
     isFetching,
   } = userAPI.useFetchAllUsersQuery(1);
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-      
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -39,7 +39,7 @@ export default function AuthorsPageComponent() {
         </div>
       ) : (
         <>
-      {/* banner */}
+      {}
       <BannerComponent
         breadcrumbs={[
           { label: "Authors", uri: "authors" },
@@ -47,10 +47,10 @@ export default function AuthorsPageComponent() {
         pageTitle="Our Authors"
       />
 
-      <div className="container mb-5">
+<div className="container mb-5">
         {error && <h1>Something wrong...</h1>}
 
-        <Content>
+<Content>
           {(isLoading || isFetching) && (
             <motion.div
               className="box"
@@ -61,8 +61,8 @@ export default function AuthorsPageComponent() {
               <SpinnerList />
             </motion.div>
           )}
-          
-          <div className="row justify-content-center">
+
+<div className="row justify-content-center">
             <div className="col-12">
               <motion.div
                 className="box"
@@ -80,7 +80,7 @@ export default function AuthorsPageComponent() {
             </div>
           </div>
 
-          {users && users.length ? (
+{users && users.length ? (
             <Row gutter={[24, 24]}>
               {users?.map((user, index) => (
                 <Col
@@ -151,7 +151,7 @@ export default function AuthorsPageComponent() {
         </Content>
       </div>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

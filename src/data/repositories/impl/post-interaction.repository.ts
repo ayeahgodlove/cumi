@@ -172,3 +172,4 @@ export class PostInteractionRepository implements IPostInteractionRepository {
     };
   }
 }
+

@@ -49,9 +49,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    console.log("Review submission body:", body);
-    console.log("User ID:", session.user.id);
-    
     // Create DTO and validate
     const reviewDto = new ReviewRequestDto({
       ...body,
@@ -262,4 +259,5 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
 

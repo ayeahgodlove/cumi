@@ -15,24 +15,24 @@ export default function CategoriesPageComponent() {
     isFetching,
   } = postAPI.useFetchAllPostsQuery({});
 
-  const posts = postsResponse || [];
+const posts = postsResponse || [];
 
-  const {
+const {
     data: categories,
     isLoading: isLoadingCategory,
     isFetching: isFetchCategory,
   } = categoryAPI.useFetchAllCategoriesQuery(1);
 
-  const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching;
+const loading = isLoadingCategory || isFetchCategory || isLoading || isFetching;
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
       </div>
-      
-      {loading ? (
+
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -41,18 +41,18 @@ export default function CategoriesPageComponent() {
         </div>
       ) : (
         <>
-      {/* banner */}
+      {}
       <BannerComponent
         breadcrumbs={[{ label: "Categories", uri: "categories" }]}
         pageTitle="Categories"
       />
 
-      <CategoryContainer
+<CategoryContainer
         posts={isLoading || isFetching ? [] : posts}
         categories={isLoadingCategory || isFetchCategory ? [] : categories || []}
       />
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

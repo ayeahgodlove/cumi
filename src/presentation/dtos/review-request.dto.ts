@@ -15,7 +15,6 @@ export class ReviewRequestDto {
   @IsString()
   courseId!: string;
 
-
   @IsNotEmpty()
   @IsNumber()
   @Min(1)
@@ -27,7 +26,6 @@ export class ReviewRequestDto {
   @Length(10, 2000)
   comment!: string;
 
-
   @IsNotEmpty()
   @IsBoolean()
   wouldRecommend!: boolean;
@@ -35,7 +33,6 @@ export class ReviewRequestDto {
   @IsOptional()
   @IsEnum(['very_easy', 'easy', 'medium', 'hard', 'very_hard'])
   difficulty?: 'very_easy' | 'easy' | 'medium' | 'hard' | 'very_hard';
-
 
   @IsOptional()
   @IsBoolean()
@@ -50,11 +47,9 @@ export class ReviewRequestDto {
   @Min(0)
   helpfulVotes?: number;
 
-
   @IsOptional()
   @IsEnum(['french', 'english', 'both'])
   language?: 'french' | 'english' | 'both';
-
 
   constructor(data: Partial<ReviewRequestDto>) {
     Object.assign(this, data);
@@ -110,4 +105,5 @@ export class ReviewReportDto {
     Object.assign(this, data);
   }
 }
+
 

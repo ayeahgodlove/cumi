@@ -39,3 +39,4 @@ export class ContactMessageUseCase {
     return await this.contactMessageRepository.markAsRead(id);
   }
 }
+

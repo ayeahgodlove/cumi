@@ -32,3 +32,4 @@ export class PartnerUseCase {
     return await this.partnerRepository.delete(id);
   }
 }
+

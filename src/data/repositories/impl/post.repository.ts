@@ -100,8 +100,6 @@ export class PostRepository implements IPostRepository {
 
   async findByTag(tag: string): Promise<InstanceType<typeof Post>[] | null> {
     try {
-      console.log(`[PostRepository] Searching for tag: "${tag}"`);
-      
       // Try finding by slug first (case-insensitive), then by name
       const tagItem = await Tag.findOne({
         where: sequelize.where(
@@ -163,12 +161,10 @@ export class PostRepository implements IPostRepository {
         }
         
         const itemByName = tagByName.toJSON<any>();
-        console.log(`[PostRepository] Found ${itemByName.posts?.length || 0} posts for tag (by name): ${tag}`);
         return itemByName.posts || [];
       }
 
       const item = tagItem.toJSON<any>();
-      console.log(`[PostRepository] Found ${item.posts?.length || 0} posts for tag (by slug): ${tag}`);
       return item.posts || [];
     } catch (error) {
       console.error('[PostRepository] Error in findByTag:', error);
@@ -311,3 +307,4 @@ export class PostRepository implements IPostRepository {
     }
   }
 }
+

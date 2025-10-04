@@ -53,3 +53,4 @@ const Service = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Service;
+

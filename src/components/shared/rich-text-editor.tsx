@@ -71,18 +71,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     null
   );
 
-  const editorRef = useRef<HTMLDivElement>(null);
+const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     setIsMounted(true);
     return () => {
       setIsMounted(false);
     };
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
     if (
       isMounted &&
       editorRef.current &&
@@ -92,17 +92,17 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [value, isMounted]);
 
-  const handleInput = useCallback(() => {
+const handleInput = useCallback(() => {
     if (editorRef.current && onChange) {
       onChange(editorRef.current.innerHTML);
     }
   }, [onChange]);
 
-  const execCommand = useCallback(
+const execCommand = useCallback(
     (command: string, value?: string) => {
       if (!editorRef.current) return;
 
-      try {
+try {
         document.execCommand(command, false, value);
         editorRef.current.focus();
         handleInput();
@@ -113,7 +113,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [handleInput]
   );
 
-  // Image handling
+// Image handling
   const handleImageUpload = useCallback(
     (file: File) => {
       const reader = new FileReader();
@@ -131,7 +131,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [execCommand]
   );
 
-  const insertImageFromUrl = useCallback(() => {
+const insertImageFromUrl = useCallback(() => {
     if (imageUrl.trim()) {
       execCommand("insertImage", imageUrl.trim());
       setImageUrl("");
@@ -142,7 +142,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [imageUrl, execCommand]);
 
-  const handleImageModalOk = useCallback(() => {
+const handleImageModalOk = useCallback(() => {
     if (uploadImageFile) {
       handleImageUpload(uploadImageFile as any);
       setUploadImageFile(null);
@@ -152,7 +152,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [uploadImageFile, insertImageFromUrl, handleImageUpload]);
 
-  // Link handling
+// Link handling
   const insertLink = useCallback(() => {
     if (linkUrl.trim()) {
       const selection = window.getSelection();
@@ -173,12 +173,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
   }, [linkText, linkUrl, execCommand]);
 
-  // Table insertion
+// Table insertion
   const insertTable = useCallback(() => {
     let tableHTML =
       '<table border="1" style="border-collapse: collapse; width: 100%; margin: 16px 0;">';
 
-    // Create header row
+// Create header row
     tableHTML += "<thead><tr>";
     for (let j = 0; j < tableCols; j++) {
       tableHTML +=
@@ -188,7 +188,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
     tableHTML += "</tr></thead>";
 
-    // Create body rows
+// Create body rows
     tableHTML += "<tbody>";
     for (let i = 0; i < tableRows - 1; i++) {
       tableHTML += "<tr>";
@@ -204,14 +204,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     }
     tableHTML += "</tbody></table><br>";
 
-    execCommand("insertHTML", tableHTML);
+execCommand("insertHTML", tableHTML);
     setTableModalVisible(false);
     requestAnimationFrame(() => {
       message.success("Table inserted successfully");
     });
   }, [tableRows, tableCols, execCommand]);
 
-  // Format block
+// Format block
   const formatBlock = useCallback(
     (tag: string) => {
       execCommand("formatBlock", tag);
@@ -219,7 +219,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [execCommand]
   );
 
-  // Font size
+// Font size
   const changeFontSize = useCallback(
     (size: string) => {
       execCommand("fontSize", size);
@@ -227,18 +227,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [execCommand]
   );
 
-  // Clear formatting
+// Clear formatting
   const clearFormatting = useCallback(() => {
     execCommand("removeFormat");
     execCommand("unlink");
   }, [execCommand]);
 
-  // Fullscreen toggle
+// Fullscreen toggle
   const toggleFullscreen = useCallback(() => {
     setIsFullscreen(!isFullscreen);
   }, [isFullscreen]);
 
-  const ToolbarButton: React.FC<{
+const ToolbarButton: React.FC<{
     icon: React.ReactNode;
     command?: string;
     value?: string;
@@ -267,7 +267,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     </Tooltip>
   );
 
-  if (!isMounted) {
+if (!isMounted) {
     return (
       <div
         style={{
@@ -287,7 +287,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     );
   }
 
-  const editorStyle = isFullscreen
+const editorStyle = isFullscreen
     ? {
         position: "fixed" as const,
         top: 0,
@@ -301,7 +301,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
     : {};
 
-  return (
+return (
     <>
       <div
         style={{
@@ -312,7 +312,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           transition: "border-color 0.3s",
         }}
       >
-        {/* Toolbar */}
+        {}
         <div
           style={{
             padding: "8px 12px",
@@ -325,7 +325,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           }}
         >
           <Space size="small" wrap>
-            {/* Text formatting */}
+            {}
             <ToolbarButton
               icon={<BoldOutlined />}
               command="bold"
@@ -347,9 +347,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               tooltip="Strikethrough"
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Font size */}
+{}
             <Select
               defaultValue="3"
               style={{ width: 70 }}
@@ -366,7 +366,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <Option value="7">36pt</Option>
             </Select>
 
-            {/* Block format */}
+{}
             <Select
               defaultValue="div"
               style={{ width: 100 }}
@@ -383,9 +383,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <Option value="blockquote">Quote</Option>
             </Select>
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Text color */}
+{}
             <ColorPicker
               showText={() => <FontColorsOutlined />}
               onChangeComplete={(color) =>
@@ -394,7 +394,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               disabled={disabled}
             />
 
-            {/* Background color */}
+{}
             <ColorPicker
               showText={() => <BgColorsOutlined />}
               onChangeComplete={(color) =>
@@ -403,9 +403,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               disabled={disabled}
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Lists */}
+{}
             <ToolbarButton
               icon={<OrderedListOutlined />}
               command="insertOrderedList"
@@ -417,9 +417,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               tooltip="Unordered List"
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Alignment */}
+{}
             <ToolbarButton
               icon={<AlignLeftOutlined />}
               command="justifyLeft"
@@ -436,9 +436,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               tooltip="Align Right"
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Insert elements */}
+{}
             <ToolbarButton
               icon={<LinkOutlined />}
               onClick={() => setLinkModalVisible(true)}
@@ -461,9 +461,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               tooltip="Code Block"
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Actions */}
+{}
             <ToolbarButton
               icon={<ClearOutlined />}
               onClick={clearFormatting}
@@ -480,9 +480,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               tooltip="Redo (Ctrl+Y)"
             />
 
-            <Divider type="vertical" style={{ margin: "0 4px" }} />
+<Divider type="vertical" style={{ margin: "0 4px" }} />
 
-            {/* Fullscreen */}
+{}
             <ToolbarButton
               icon={
                 isFullscreen ? <CompressOutlined /> : <FullscreenOutlined />
@@ -494,7 +494,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </Space>
         </div>
 
-        {/* Editor */}
+{}
         <div
           ref={editorRef}
           contentEditable={!disabled}
@@ -516,7 +516,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         />
       </div>
 
-      {/* Image Modal */}
+{}
       <Modal
         title="Insert Image"
         open={imageModalVisible}
@@ -545,7 +545,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </Upload>
           </div>
 
-          <div>
+<div>
             <h4 style={{ marginBottom: 8 }}>Or enter image URL:</h4>
             <Input
               placeholder="https://example.com/image.jpg"
@@ -562,7 +562,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </Space>
       </Modal>
 
-      {/* Link Modal */}
+{}
       <Modal
         title="Insert Link"
         open={linkModalVisible}
@@ -596,7 +596,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </Space>
       </Modal>
 
-      {/* Table Modal */}
+{}
       <Modal
         title="Insert Table"
         open={tableModalVisible}
@@ -635,7 +635,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </Space>
       </Modal>
 
-      <style jsx>{`
+<style jsx>{`
         [contenteditable]:empty:before {
           content: attr(data-placeholder);
           color: #bfbfbf;

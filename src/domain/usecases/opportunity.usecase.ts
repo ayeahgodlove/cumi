@@ -42,3 +42,4 @@ export class OpportunityUseCase {
     return this.opportunityRepository.delete(id);
   }
 }
+

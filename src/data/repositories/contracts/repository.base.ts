@@ -242,3 +242,4 @@ export interface IAssignmentSubmissionRepository
   }>;
   updateGrade(id: string, score: number, feedback?: string, gradedBy?: string): Promise<InstanceType<typeof AssignmentSubmission> | null>;
 }
+

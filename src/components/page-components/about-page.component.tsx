@@ -1,37 +1,7 @@
 "use client";
 import React, { Suspense } from "react";
-import { 
-  Typography, 
-  Row, 
-  Col, 
-  Card, 
-  Button, 
-  Divider, 
-  Space, 
-  Avatar, 
-  Statistic,
-  Badge,
-  Tag
-} from "antd";
-import { 
-  RocketOutlined, 
-  CodeOutlined, 
-  TeamOutlined,
-  BulbOutlined,
-  HeartOutlined,
-  TrophyOutlined,
-  GlobalOutlined,
-  ThunderboltOutlined,
-  CheckCircleOutlined,
-  StarOutlined,
-  ArrowRightOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  LinkedinOutlined,
-  GithubOutlined,
-  TwitterOutlined
-} from "@ant-design/icons";
+import { Typography, Row, Col, Card, Button, Divider, Space, Avatar, Statistic, Badge, Tag } from "antd";
+import { RocketOutlined, CodeOutlined, TeamOutlined, BulbOutlined, HeartOutlined, TrophyOutlined, GlobalOutlined, ThunderboltOutlined, CheckCircleOutlined, StarOutlined, ArrowRightOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, LinkedinOutlined, GithubOutlined, TwitterOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
 import { useTranslation } from "@contexts/translation.context";
 import { AppCTA } from "@components/CTA.component";
@@ -45,25 +15,25 @@ const { Title, Paragraph, Text } = Typography;
 
 export default function AboutPageComponent() {
   const { t } = useTranslation();
-  
-  // Fetch real stats data
+
+// Fetch real stats data
   const {
     data: statsData,
     isLoading: isLoadingStats,
     error: statsError,
   } = publicStatsAPI.useGetPublicStatsQuery();
 
-  // Log stats data for debugging
+// Log stats data for debugging
   React.useEffect(() => {
     if (statsData) {
-      console.log('Public stats loaded successfully:', statsData);
+      // Stats data loaded successfully
     }
     if (statsError) {
       console.error('Error loading public stats:', statsError);
     }
   }, [statsData, statsError]);
 
-  // Use real stats data with proper null/undefined handling
+// Use real stats data with proper null/undefined handling
   const stats = {
     totalProjects: statsData?.totalProjects ?? 25,
     totalServices: statsData?.totalServices ?? 8,
@@ -72,8 +42,8 @@ export default function AboutPageComponent() {
     totalCourses: statsData?.totalCourses ?? 10,
     totalUsers: statsData?.totalUsers ?? 50
   };
-  
-  const statsDisplay = [
+
+const statsDisplay = [
     { 
       title: t('about.projects_completed'), 
       value: stats.totalProjects, 
@@ -100,7 +70,7 @@ export default function AboutPageComponent() {
     }
   ];
 
-  const values = [
+const values = [
     {
       icon: <BulbOutlined />,
       title: t('about.innovation'),
@@ -123,7 +93,7 @@ export default function AboutPageComponent() {
     }
   ];
 
-  const team = [
+const team = [
     {
       name: "Ayuk Godlove",
       role: "Founder & Software Engineer",
@@ -138,13 +108,13 @@ export default function AboutPageComponent() {
     }
   ];
 
-  return (
+return (
       <PageLayout
         showBanner={true}
         bannerTitle="About Us"
         bannerBreadcrumbs={[{ label: "About Us", uri: "about_us" }]}
       >
-        {/* Stats Section */}
+        {}
         <section className="py-5">
           <div className="container">
             <Row gutter={[24, 24]} justify="center">
@@ -205,7 +175,7 @@ export default function AboutPageComponent() {
           </div>
         </section>
 
-      {/* Our Story Section */}
+{}
       <section className="py-5">
         <div className="container">
           <Row justify="center" className="mb-5">
@@ -266,7 +236,7 @@ export default function AboutPageComponent() {
         </div>
       </section>
 
-      {/* Values Section */}
+{}
       <section className="py-5" style={{ backgroundColor: '#ffffff' }}>
         <div className="container">
           <Row justify="center" className="mb-5">
@@ -306,7 +276,7 @@ export default function AboutPageComponent() {
         </div>
       </section>
 
-        {/* Team Section */}
+{}
         <section className="py-5" style={{ backgroundColor: '#ffffff' }}>
           <div className="container">
             <Row justify="center" className="mb-5">
@@ -461,7 +431,7 @@ export default function AboutPageComponent() {
           </div>
         </section>
 
-        {/* CTA Section */}
+{}
         <AppCTA />
       </PageLayout>
   );

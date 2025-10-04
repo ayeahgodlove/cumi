@@ -194,3 +194,4 @@ const CourseEnrollment = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default CourseEnrollment;
+

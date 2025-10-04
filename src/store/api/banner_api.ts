@@ -14,3 +14,4 @@ export const bannerAPI = baseAPI.injectEndpoints({
   }),
   overrideExisting: true,
 });
+

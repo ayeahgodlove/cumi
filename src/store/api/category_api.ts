@@ -14,3 +14,4 @@ export const categoryAPI = baseAPI.injectEndpoints({
   }),
   overrideExisting: true,
 });
+

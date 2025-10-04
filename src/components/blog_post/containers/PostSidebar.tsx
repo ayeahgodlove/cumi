@@ -23,10 +23,9 @@ const PostSidebar = ({
     ? posts.flatMap((p) => p.tags || []) 
     : [];
 
-
-  return (
+return (
     <>
-      {/* <!-- categories --> */}
+      {}
       <div className="mb-4">
         <h5 className="mb-3">{t("blog.categories")}</h5>
         <div className="rounded bg-light p-5">
@@ -37,9 +36,9 @@ const PostSidebar = ({
                   ? allCategories.filter((c: string) => c === category.id).length
                   : 0;
 
-                const isActive = pathname === `/categories/${category.slug}`;
+const isActive = pathname === `/categories/${category.slug}`;
 
-                return (
+return (
                   <li key={category.id} className="d-block mb-2">
                     <Link
                       className="fs-6 d-flex justify-content-between"
@@ -59,7 +58,7 @@ const PostSidebar = ({
           </ul>
         </div>
       </div>
-      {/* <!-- tags --> */}
+      {}
       <div className="mb-4">
         <h5 className="mb-3">{t("blog.tags")}</h5>
         <div className="rounded bg-light p-4 px-5">
@@ -70,7 +69,7 @@ const PostSidebar = ({
                   ? allTags.filter((t: any) => t.id === tag.id).length 
                   : 0;
 
-                const isActive = pathname === `/tags/${tag.slug}`;
+const isActive = pathname === `/tags/${tag.slug}`;
                 return (
                   <li className="inline-block" key={tag.id}>
                     <Link

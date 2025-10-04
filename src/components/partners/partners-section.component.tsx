@@ -17,18 +17,18 @@ export const PartnersSection = () => {
   const carouselRef = useRef<CarouselRef>(null);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile/tablet screen size
+// Detect mobile/tablet screen size
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 992); // <992px = mobile/tablet (show 1 card)
     };
-    
-    handleResize();
+
+handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (isLoading) {
+if (isLoading) {
     return (
       <div
         style={{
@@ -44,21 +44,21 @@ export const PartnersSection = () => {
     );
   }
 
-  if (!partners || partners.length === 0) {
+if (!partners || partners.length === 0) {
     return null;
   }
 
-  // Group partners based on screen size: 1 for mobile/tablet (<992px), 4 for desktop (≥992px)
+// Group partners based on screen size: 1 for mobile/tablet (<992px), 4 for desktop (≥992px)
   const partnersPerSlide = isMobile ? 1 : 4;
   const partnerSlides = [];
   for (let i = 0; i < partners.length; i += partnersPerSlide) {
     partnerSlides.push(partners.slice(i, i + partnersPerSlide));
   }
 
-  const handlePrev = () => carouselRef.current?.prev();
+const handlePrev = () => carouselRef.current?.prev();
   const handleNext = () => carouselRef.current?.next();
 
-  return (
+return (
     <section
       style={{
         padding: "80px 0",
@@ -67,7 +67,7 @@ export const PartnersSection = () => {
         overflow: "hidden",
       }}
     >
-      {/* Background decoration */}
+      {}
       <div
         style={{
           position: "absolute",
@@ -93,8 +93,8 @@ export const PartnersSection = () => {
         }}
       />
 
-      <div className="container" style={{ position: "relative", zIndex: 1 }}>
-        {/* Section Header */}
+<div className="container" style={{ position: "relative", zIndex: 1 }}>
+        {}
         <div style={{ textAlign: "center", marginBottom: "60px" }}>
           <Title
             level={2}
@@ -125,12 +125,12 @@ export const PartnersSection = () => {
           </Paragraph>
         </div>
 
-        {/* Carousel Container */}
+{}
         <div style={{ 
           position: "relative", 
           padding: isMobile ? "0 32px" : "0 60px"
         }}>
-          {/* Navigation Buttons */}
+          {}
           {partnerSlides.length > 1 && (
             <>
               <Button
@@ -208,7 +208,7 @@ export const PartnersSection = () => {
             </>
           )}
 
-          {/* Carousel */}
+{}
           <Carousel
             ref={carouselRef}
             dots={false}
@@ -265,7 +265,7 @@ export const PartnersSection = () => {
                         e.currentTarget.style.borderColor = "#f0f0f0";
                       }}
                     >
-                      {/* Partner Logo */}
+                      {}
                       <div
                         style={{
                           width: "140px",
@@ -308,7 +308,7 @@ export const PartnersSection = () => {
                         )}
                       </div>
 
-                      {/* Partner Info */}
+{}
                       <div style={{ textAlign: "center", width: "100%", flex: 1 }}>
                         <Title
                           level={4}
@@ -360,7 +360,7 @@ export const PartnersSection = () => {
           </Carousel>
         </div>
 
-        {/* View All Partners Button */}
+{}
         <div style={{ textAlign: "center", marginTop: "64px" }}>
           <Link href="/partners">
             <Button

@@ -13,8 +13,8 @@ const { Panel } = Collapse;
 
 export default function FAQsPageComponent() {
   const { t } = useTranslation();
-  
-  const faqs = [
+
+const faqs = [
     {
       question: t('faq.services.question'),
       answer: t('faq.services.answer')
@@ -57,20 +57,20 @@ export default function FAQsPageComponent() {
     }
   ];
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      <Content style={{ minHeight: "65vh" }}>
+<Content style={{ minHeight: "65vh" }}>
         <div className="container py-5">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            {/* Header Section */}
+            {}
             <div className="text-center mb-5">
               <Title level={1} className="cumi-gradient-text mb-3">
                 {t('faq.title')}
@@ -80,7 +80,7 @@ export default function FAQsPageComponent() {
               </Paragraph>
             </div>
 
-            {/* FAQs Section */}
+{}
             <Row justify="center">
               <Col xs={24} lg={18}>
                 <Card className="cumi-card" style={{ backgroundColor: 'white' }}>
@@ -108,7 +108,7 @@ export default function FAQsPageComponent() {
               </Col>
             </Row>
 
-            {/* Contact CTA */}
+{}
             <Row justify="center" className="mt-5">
               <Col xs={24} lg={18}>
                 <Card className="cumi-card text-center">
@@ -139,7 +139,7 @@ export default function FAQsPageComponent() {
         </div>
       </Content>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );

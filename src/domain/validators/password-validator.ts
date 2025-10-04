@@ -16,3 +16,4 @@ export const validatePassword = async (password: string): Promise<boolean> => {
     return true;
   }
 };
+

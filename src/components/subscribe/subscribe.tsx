@@ -9,13 +9,13 @@ export const Subscribe = () => {
   const [form] = Form.useForm();
   const ref = useRef(null);
 
-  const handleSubscribe = async () => {
+const handleSubscribe = async () => {
     if (!email) {
       message.error("Please enter your email address");
       return;
     }
 
-    setLoading(true);
+setLoading(true);
     try {
       const response = await fetch("/api/subscribers", {
         method: "POST",
@@ -25,12 +25,12 @@ export const Subscribe = () => {
         body: JSON.stringify({ email }),
       });
 
-      if (!response.ok) {
+if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to subscribe");
       }
 
-      message.success("Successfully subscribed to our newsletter!");
+message.success("Successfully subscribed to our newsletter!");
       setEmail("");
       form.resetFields();
     } catch (error) {
@@ -45,7 +45,7 @@ export const Subscribe = () => {
     }
   };
 
-  return (
+return (
     <section id="subscribe" ref={ref} className={`section ${styles.section}`}>
       <div className="container">
         <div className={styles.content}>

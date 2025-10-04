@@ -1,28 +1,7 @@
 "use client";
-
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  Typography,
-  Space,
-  Button,
-  Tag,
-  Input,
-  Select,
-  App,
-  Empty,
-  Spin,
-} from "antd";
-import {
-  CalendarOutlined,
-  EnvironmentOutlined,
-  EyeOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  BookOutlined,
-} from "@ant-design/icons";
+import { Card, Row, Col, Typography, Space, Button, Tag, Input, Select, App, Empty, Spin } from "antd";
+import { CalendarOutlined, EnvironmentOutlined, EyeOutlined, SearchOutlined, FilterOutlined, BookOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { courseAPI } from "@store/api/course_api";
 import { courseEnrollmentAPI } from "@store/api/course-enrollment_api";
@@ -65,7 +44,7 @@ export default function CoursesPageComponent() {
     new Set()
   );
 
-  const {
+const {
     data: courses,
     error,
     isLoading,
@@ -75,7 +54,7 @@ export default function CoursesPageComponent() {
     sortBy: "date",
   });
 
-  // Fetch user enrollments
+// Fetch user enrollments
   const {
     data: userEnrollments,
     isLoading: isLoadingEnrollments,
@@ -87,16 +66,16 @@ export default function CoursesPageComponent() {
     }
   );
 
-  // Debounce search term
+// Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 300);
 
-    return () => clearTimeout(timer);
+return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Update enrolled courses when user enrollments change
+// Update enrolled courses when user enrollments change
   useEffect(() => {
     if (userEnrollments && Array.isArray(userEnrollments)) {
       const enrolledCourseIds = userEnrollments.map(
@@ -106,7 +85,7 @@ export default function CoursesPageComponent() {
     }
   }, [userEnrollments]);
 
-  const filteredCourses =
+const filteredCourses =
     courses?.filter((course) => {
       const matchesSearch =
         course.title
@@ -119,7 +98,7 @@ export default function CoursesPageComponent() {
       return matchesSearch;
     }) || [];
 
-  const handleEnrollCourse = (course: ICourse) => {
+const handleEnrollCourse = (course: ICourse) => {
     // Check if user is logged in
     if (!session?.user?.id) {
       showLoginRequiredNotificationSimple({
@@ -130,7 +109,7 @@ export default function CoursesPageComponent() {
       return;
     }
 
-    // Check if already enrolled
+// Check if already enrolled
     if (enrolledCourses.has(course.id)) {
       message.info({
         content: "You are already enrolled in this course!",
@@ -139,18 +118,18 @@ export default function CoursesPageComponent() {
       return;
     }
 
-    setSelectedCourse(course);
+setSelectedCourse(course);
     setEnrollmentModalVisible(true);
   };
 
-  const handleEnrollmentSuccess = () => {
+const handleEnrollmentSuccess = () => {
     // Refresh enrollments after successful enrollment
     refetchEnrollments();
     setEnrollmentModalVisible(false);
     setSelectedCourse(null);
   };
 
-  const formatDate = (dateString: string | Date) => {
+const formatDate = (dateString: string | Date) => {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) {
@@ -168,9 +147,9 @@ export default function CoursesPageComponent() {
     }
   };
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  return (
+return (
     <PageLayout
       showBanner={true}
       bannerTitle={t("nav.courses")}
@@ -189,7 +168,7 @@ export default function CoursesPageComponent() {
           </div>
         ) : (
           <>
-        {/* Header */}
+        {}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -215,7 +194,7 @@ export default function CoursesPageComponent() {
           </Card>
         </motion.div>
 
-        {/* Filters */}
+{}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -303,7 +282,7 @@ export default function CoursesPageComponent() {
           </Card>
         </motion.div>
 
-        {/* Courses Grid */}
+{}
         {filteredCourses.length === 0 ? (
           <Card>
             <Empty
@@ -509,7 +488,7 @@ export default function CoursesPageComponent() {
           </Row>
         )}
 
-        {/* Course Enrollment Modal */}
+{}
         <CourseEnrollmentModal
           visible={enrollmentModalVisible}
           onCancel={() => setEnrollmentModalVisible(false)}

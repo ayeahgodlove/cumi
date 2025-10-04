@@ -56,3 +56,4 @@ export class ProfessionalUseCase {
     return await this.professionalRepository.delete(id);
   }
 }
+

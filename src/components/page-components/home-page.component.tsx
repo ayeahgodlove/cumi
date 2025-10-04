@@ -13,28 +13,14 @@ export default function HomePageComponent() {
   return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
         <AppNav logoPath="/" />
-
-        {/* hero section */}
         <AppHero />
       </div>
-
-      {/* why us */}
       <AboutNote />
-
-      {/* feature section */}
       <FeatureSection />
-
-      {/* services carousel section */}
       <ServicesSection showViewAllButton={true} showContainer={true} />
-
-      {/* service section */}
       <AppService />
-
-      {/* partners section */}
       <PartnersSection />
-
       <AppFooter logoPath="/" />
       <AppFootnote />
     </>

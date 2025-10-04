@@ -61,3 +61,4 @@ export class SubscribeRepository implements ISubscribeRepository {
     return this.subscribers.find(sub => sub.email === email) || null;
   }
 }
+

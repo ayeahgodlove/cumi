@@ -52,3 +52,4 @@ export class AssignmentUseCase {
     return this.assignmentRepository.delete(id);
   }
 }
+

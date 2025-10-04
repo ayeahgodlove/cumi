@@ -30,23 +30,23 @@ const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
   const [canGoBack, setCanGoBack] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Check if we can go back in browser history and screen size
+// Check if we can go back in browser history and screen size
   useEffect(() => {
     // Check if there's history to go back to
     setCanGoBack(window.history.length > 1);
-    
-    // Check screen size
+
+// Check screen size
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
-    checkScreenSize();
+
+checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
-    
-    return () => window.removeEventListener('resize', checkScreenSize);
+
+return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const handleBackClick = () => {
+const handleBackClick = () => {
     if (window.history.length > 1) {
       router.back();
     } else {
@@ -55,7 +55,7 @@ const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
     }
   };
 
-  const handleBreadcrumbClick = (item: BreadcrumbItem) => {
+const handleBreadcrumbClick = (item: BreadcrumbItem) => {
     if (item.onClick) {
       item.onClick();
     } else if (item.href) {
@@ -63,7 +63,7 @@ const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
     }
   };
 
-  // Convert items to Ant Design breadcrumb format
+// Convert items to Ant Design breadcrumb format
   const breadcrumbItems = [
     {
       title: (
@@ -131,7 +131,7 @@ const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
     })),
   ];
 
-  return (
+return (
     <div 
       style={{ 
         marginBottom: 16, 
@@ -208,8 +208,8 @@ const EnhancedBreadcrumb: React.FC<EnhancedBreadcrumbProps> = ({
           </div>
         </Tooltip>
       )}
-      
-      <Breadcrumb
+
+<Breadcrumb
         items={breadcrumbItems}
         style={{
           fontSize: "0.9rem",

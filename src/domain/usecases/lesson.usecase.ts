@@ -50,3 +50,4 @@ export class LessonUseCase {
     return this.lessonRepository.delete(id);
   }
 }
+

@@ -17,3 +17,4 @@ export const emptySubscriber: ISubscriber = {
   createdAt: new Date(),
   updatedAt: new Date()
 };
+

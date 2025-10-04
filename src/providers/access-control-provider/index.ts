@@ -26,3 +26,4 @@ export const accessControlProvider: AccessControlProvider = {
     return { can: canAccess };
   },
 };
+

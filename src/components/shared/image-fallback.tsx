@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/alt-text */
 "use client";
 
 import React from "react";
@@ -10,12 +9,12 @@ const ImageFallback = (props: any) => {
   const { src, fallback, ...rest } = props;
   const [imgSrc, setImgSrc] = useState(src);
 
-  useEffect(() => {
+useEffect(() => {
     setImgSrc(src);
   }, [src]);
   const { width } = useWindowSize();
 
-  return (
+return (
     <Image
       {...rest}
       src={imgSrc}

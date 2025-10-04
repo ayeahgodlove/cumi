@@ -11,3 +11,4 @@ export interface ICommentRepository {
   findRecentComments(limit?: number): Promise<IComment[]>;
   findCommentsByUser(userId: string, limit?: number): Promise<IComment[]>;
 }
+

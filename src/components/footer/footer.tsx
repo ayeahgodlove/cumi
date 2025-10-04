@@ -1,29 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Button,
-  ConfigProvider,
-  Input,
-  notification,
-  Row,
-  Col,
-  Divider,
-  Typography,
-} from "antd";
-import {
-  ArrowRightOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  EnvironmentOutlined,
-  RocketOutlined,
-  BookOutlined,
-  UserOutlined,
-  DashboardOutlined,
-  FacebookFilled,
-  TwitterSquareFilled,
-  LinkedinFilled,
-  GithubFilled,
-} from "@ant-design/icons";
+import { Button, ConfigProvider, Input, notification, Row, Col, Divider, Typography } from "antd";
+import { ArrowRightOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined, RocketOutlined, BookOutlined, UserOutlined, DashboardOutlined, FacebookFilled, TwitterSquareFilled, LinkedinFilled, GithubFilled } from "@ant-design/icons";
 import styles from "./footer.module.css";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,10 +19,10 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
   const [api, contextHolder] = notification.useNotification();
   const { t } = useTranslation();
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes("@")) {
+if (!email || !email.includes("@")) {
       api.warning({
         message: t("subscribe.invalid_title"),
         description: t("subscribe.invalid_email"),
@@ -53,7 +31,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
       return;
     }
 
-    setLoading(true);
+setLoading(true);
     try {
       const response = await fetch("/api/subscribers", {
         method: "POST",
@@ -63,13 +41,13 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
         body: JSON.stringify({ email, name: email.split("@")[0] }),
       });
 
-      const data = await response.json();
+const data = await response.json();
 
-      if (!response.ok) {
+if (!response.ok) {
         throw new Error(data.error || data.message || "Failed to subscribe");
       }
 
-      api.success({
+api.success({
         message: t("subscribe.success_title"),
         description: t("subscribe.success_message"),
         placement: "topRight",
@@ -89,13 +67,13 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
     }
   };
 
-  return (
+return (
     <>
       {contextHolder}
       <footer className={`section ${styles.section}`}>
         <div className="container bg-none">
           <Row gutter={[48, 48]} className={`${styles.content}`}>
-            {/* Company Info - Hidden on mobile/tablet, visible on large screens */}
+            {}
             <Col
               xs={0}
               sm={0}
@@ -125,7 +103,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
                 {t("footer.tagline")}
               </Text>
 
-              {/* Contact Info - Hidden on mobile/tablet, visible on large screens */}
+{}
               <div className={`${styles.contactInfo} d-none d-lg-block`}>
                 <div className={styles.contactItem}>
                   <MailOutlined className={styles.contactIcon} />
@@ -145,7 +123,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
                 </div>
               </div>
 
-              {/* Social Media - Hidden on mobile/tablet, visible on large screens */}
+{}
               <div className={styles.socialMedia} style={{ display: "none" }}>
                 <a
                   href="https://web.facebook.com/ayeahgodlove/"
@@ -186,7 +164,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
               </div>
             </Col>
 
-            {/* Discover */}
+{}
             <Col xs={12} sm={12} md={8} lg={4} className={styles.content_group}>
               <Title level={5} className={styles.footerTitle}>
                 <RocketOutlined className={styles.titleIcon} />
@@ -199,7 +177,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
               <Link href="/authors">Authors</Link>
             </Col>
 
-            {/* Resources */}
+{}
             <Col xs={12} sm={12} md={8} lg={4} className={styles.content_group}>
               <Title level={5} className={styles.footerTitle}>
                 <BookOutlined className={styles.titleIcon} />
@@ -213,7 +191,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
               <Link href="/faqs">FAQs</Link>
             </Col>
 
-            {/* Account - Hidden on mobile, visible on tablet and large screens */}
+{}
             <Col
               xs={0}
               sm={12}
@@ -234,7 +212,7 @@ export const AppFooter: React.FC<Props> = ({ logoPath }) => {
               <Link href="/forgot-password">Reset Password</Link> */}
             </Col>
 
-            {/* Newsletter */}
+{}
             <Col
               xs={24}
               sm={24}

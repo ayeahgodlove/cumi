@@ -15,3 +15,4 @@ export const authService = {
   }): Promise<any> => await instance.post("/auth", user),
   logout: async (): Promise<any> => await instance.get("/auth/logout"),
 };
+

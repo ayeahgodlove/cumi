@@ -140,3 +140,4 @@ export const emptyEventRegistration: Partial<IEventRegistration> = {
   paymentMethod: '',
   paymentReference: '',
 };
+

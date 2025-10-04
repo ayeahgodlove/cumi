@@ -51,7 +51,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
   const [previewImage, setPreviewImage] = useState<string>("");
   const { open } = useNotification();
 
-  const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
+const { fileList, setFileList, handleUploadChange, beforeUpload, handleRemove } = useUpload({
     maxSize,
     allowedTypes,
     form,
@@ -78,7 +78,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     }
   });
 
-  // Handle form field updates when fileList changes
+// Handle form field updates when fileList changes
   useEffect(() => {
     if (fileList && fileList.length > 0) {
       const imageUrl = getImageUrlString(fileList);
@@ -91,7 +91,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     }
   }, [fileList, form, fieldName, onImageChange]);
 
-  // Initialize fileList with existing image (from Cloudinary or elsewhere)
+// Initialize fileList with existing image (from Cloudinary or elsewhere)
   useEffect(() => {
     const currentImageUrl = form?.getFieldValue(fieldName) || initialImageUrl;
     if (currentImageUrl && typeof currentImageUrl === 'string' && currentImageUrl.trim() !== '') {
@@ -108,13 +108,13 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     }
   }, [form, fieldName, initialImageUrl, setFileList]);
 
-  const handleRemoveWithCleanup = async (file: any) => {
+const handleRemoveWithCleanup = async (file: any) => {
     // If removing existing file, try to delete it from Cloudinary
     if (file.url || file.response?.url) {
       const urlToDelete = file.url || file.response?.url;
       const publicId = file.response?.publicId || file.publicId;
-      
-      try {
+
+try {
         // Delete from Cloudinary (non-blocking, best effort)
         const deleteResponse = await fetch('/api/cloudinary/delete', {
           method: 'DELETE',
@@ -127,7 +127,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
           }),
         });
 
-        if (deleteResponse.ok) {
+if (deleteResponse.ok) {
           open?.({
             type: "success",
             message: "Delete Successful",
@@ -138,11 +138,11 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
         // Silently fail - file will remain in Cloudinary but won't be referenced
       }
     }
-    
-    // Always remove from fileList regardless of delete success
+
+// Always remove from fileList regardless of delete success
     handleRemove(file);
-    
-    // Clear form field and preview
+
+// Clear form field and preview
     form?.setFieldsValue({
       [fieldName]: ''
     });
@@ -150,7 +150,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     onImageChange?.('');
   };
 
-  const uploadButton = (
+const uploadButton = (
     <div>
       {uploading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>
@@ -159,33 +159,33 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     </div>
   );
 
-  const customHandleUploadChange = (info: any) => {
+const customHandleUploadChange = (info: any) => {
     const { file } = info;
-    
-    if (file.status === 'uploading') {
+
+if (file.status === 'uploading') {
       setUploading(true);
     }
-    
-    if (file.status === 'done') {
+
+if (file.status === 'done') {
       setUploading(false);
       if (file.response?.url) {
         setPreviewImage(file.response.url);
       }
     }
-    
-    if (file.status === 'error') {
+
+if (file.status === 'error') {
       setUploading(false);
     }
-    
-    // Call the original handler
+
+// Call the original handler
     handleUploadChange(info);
   };
 
-  // Render image preview with actions
+// Render image preview with actions
   const renderImagePreview = () => {
     if (!previewImage) return null;
 
-    return (
+return (
       <div style={{ 
         position: 'relative', 
         width: '100%',
@@ -261,7 +261,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     );
   };
 
-  // Render dragger or regular upload
+// Render dragger or regular upload
   if (dragger) {
     return (
       <Form.Item
@@ -297,7 +297,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
     );
   }
 
-  return (
+return (
     <Form.Item
       name={fieldName}
       label={label}

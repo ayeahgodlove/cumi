@@ -45,3 +45,4 @@ const Partner = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Partner;
+

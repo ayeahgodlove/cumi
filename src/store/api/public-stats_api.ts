@@ -20,3 +20,4 @@ export const publicStatsAPI = baseAPI.injectEndpoints({
 });
 
 export const { useGetPublicStatsQuery } = publicStatsAPI;
+

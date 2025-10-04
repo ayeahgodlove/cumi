@@ -95,7 +95,7 @@ export default function CourseDashboard() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [courseModalVisible, setCourseModalVisible] = useState(false);
 
-  // Mock data - replace with actual API calls
+// Mock data - replace with actual API calls
   useEffect(() => {
     const mockCourses: Course[] = [
       {
@@ -225,16 +225,16 @@ export default function CourseDashboard() {
       }
     ];
 
-    setTimeout(() => {
+setTimeout(() => {
       setCourses(mockCourses);
       setLoading(false);
     }, 1000);
   }, []);
 
-  const enrolledCourses = courses.filter(course => course.isEnrolled);
+const enrolledCourses = courses.filter(course => course.isEnrolled);
   const availableCourses = courses.filter(course => !course.isEnrolled);
 
-  const handleEnrollCourse = (courseId: string) => {
+const handleEnrollCourse = (courseId: string) => {
     setCourses(prev => prev.map(course => 
       course.id === courseId 
         ? { ...course, isEnrolled: true, progress: 0 }
@@ -243,7 +243,7 @@ export default function CourseDashboard() {
     message.success("Successfully enrolled in course!");
   };
 
-  const handleCompleteLesson = (courseId: string, lessonId: string) => {
+const handleCompleteLesson = (courseId: string, lessonId: string) => {
     setCourses(prev => prev.map(course => 
       course.id === courseId 
         ? {
@@ -262,7 +262,7 @@ export default function CourseDashboard() {
     message.success("Lesson completed!");
   };
 
-  const getLessonIcon = (type: string) => {
+const getLessonIcon = (type: string) => {
     switch (type) {
       case 'video': return <VideoCameraOutlined style={{ color: '#1890ff' }} />;
       case 'text': return <FileTextOutlined style={{ color: '#52c41a' }} />;
@@ -272,7 +272,7 @@ export default function CourseDashboard() {
     }
   };
 
-  const getLevelColor = (level: string) => {
+const getLevelColor = (level: string) => {
     switch (level) {
       case 'Beginner': return 'green';
       case 'Intermediate': return 'blue';
@@ -281,12 +281,12 @@ export default function CourseDashboard() {
     }
   };
 
-  return (
+return (
     <div>
-      {/* Progress Tracker */}
+      {}
       <CourseProgressTracker />
 
-      {/* Header */}
+{}
       <Card style={{ marginBottom: 24, backgroundColor: 'white' }}>
         <Row justify="space-between" align="middle">
           <Col>
@@ -332,7 +332,7 @@ export default function CourseDashboard() {
         </Row>
       </Card>
 
-      {/* Enrolled Courses */}
+{}
       <Card title="Enrolled Courses" style={{ marginBottom: 24, backgroundColor: 'white' }}>
         <Row gutter={[16, 16]}>
           {enrolledCourses.map((course) => (
@@ -428,7 +428,7 @@ export default function CourseDashboard() {
         </Row>
       </Card>
 
-      {/* Available Courses */}
+{}
       <Card title="Available Courses" style={{ backgroundColor: 'white' }}>
         <Row gutter={[16, 16]}>
           {availableCourses.map((course) => (
@@ -506,7 +506,7 @@ export default function CourseDashboard() {
         </Row>
       </Card>
 
-      {/* Course Detail Modal */}
+{}
       <Modal
         title={selectedCourse?.title}
         open={courseModalVisible}
@@ -525,8 +525,8 @@ export default function CourseDashboard() {
                 />
               </Col>
             </Row>
-            
-            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+
+<Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
               <Col span={12}>
                 <Text strong>Instructor: </Text>
                 <Space>
@@ -550,9 +550,9 @@ export default function CourseDashboard() {
               </Col>
             </Row>
 
-            <Divider />
+<Divider />
 
-            <Title level={4}>Course Lessons</Title>
+<Title level={4}>Course Lessons</Title>
             <List
               dataSource={selectedCourse.lessons}
               renderItem={(lesson) => (

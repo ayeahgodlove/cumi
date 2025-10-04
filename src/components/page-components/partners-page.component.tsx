@@ -18,20 +18,20 @@ export default function PartnersPageComponent() {
   const { data: partners = [], isLoading } = useGetAllPartnersQuery();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter partners based on search
+// Filter partners based on search
   const filteredPartners = partners.filter(partner =>
     partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     partner.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     partner.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      <BannerComponent 
+<BannerComponent 
         pageTitle={t('partners.page_title')} 
         breadcrumbs={[
           { label: t('nav.welcome'), uri: '/' },
@@ -39,9 +39,9 @@ export default function PartnersPageComponent() {
         ]}
       />
 
-      <section style={{ padding: "60px 0", minHeight: "70vh" }}>
+<section style={{ padding: "60px 0", minHeight: "70vh" }}>
         <div className="container">
-          {/* Search Bar */}
+          {}
           <div style={{ maxWidth: "600px", margin: "0 auto 48px" }}>
             <Input
               size="large"
@@ -68,7 +68,7 @@ export default function PartnersPageComponent() {
             />
           </div>
 
-          {/* Partners Grid */}
+{}
           {isLoading ? (
             <div
               style={{
@@ -123,7 +123,7 @@ export default function PartnersPageComponent() {
                       e.currentTarget.style.borderColor = "#f0f0f0";
                     }}
                   >
-                    {/* Partner Logo */}
+                    {}
                     <div
                       style={{
                         width: "140px",
@@ -166,7 +166,7 @@ export default function PartnersPageComponent() {
                       )}
                     </div>
 
-                    {/* Partner Info */}
+{}
                     <div style={{ textAlign: "center", width: "100%", flex: 1 }}>
                       <Title
                         level={4}
@@ -207,7 +207,7 @@ export default function PartnersPageComponent() {
                       </Paragraph>
                     </div>
 
-                    {/* Partner Actions */}
+{}
                     <div
                       style={{
                         display: "flex",
@@ -283,7 +283,7 @@ export default function PartnersPageComponent() {
             </Row>
           )}
 
-          {/* Stats Footer */}
+{}
           {!isLoading && filteredPartners.length > 0 && (
             <div
               style={{
@@ -306,9 +306,8 @@ export default function PartnersPageComponent() {
         </div>
       </section>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </>
   );
 }
-

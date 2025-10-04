@@ -16,3 +16,4 @@ export const serviceAPI = baseAPI.injectEndpoints({
   }),
   overrideExisting: true,
 });
+

@@ -54,3 +54,4 @@ export class QuizUseCase {
     return this.quizRepository.delete(id);
   }
 }
+

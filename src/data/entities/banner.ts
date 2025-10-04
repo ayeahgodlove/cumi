@@ -51,3 +51,4 @@ const Banner = (sequelizeInstance: Sequelize, DataTypes: any) => {
 };
 
 export default Banner;
+

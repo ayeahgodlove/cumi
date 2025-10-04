@@ -55,3 +55,4 @@ const Project = (sequelize: Sequelize, DataTypes: any) => {
   return ProjectModel;
 };
 export default Project;
+

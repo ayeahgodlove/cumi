@@ -53,3 +53,4 @@ export default function PartnersPage() {
   return <PartnersPageComponent />;
 }
 
+

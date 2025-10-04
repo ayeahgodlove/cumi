@@ -59,3 +59,4 @@ const Subscriber = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Subscriber;
+

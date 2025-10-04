@@ -11,8 +11,8 @@ const TagContainer: React.FC<IProps> = ({ posts, tags }) => {
   // Flatten all tags from all posts to count occurrences
   const allTags = React.useMemo(() => {
     if (!posts || posts.length === 0) return [];
-    
-    // Collect all tags from all posts
+
+// Collect all tags from all posts
     return posts.flatMap((post) => {
       if (Array.isArray(post.Tags)) {
         return post.Tags;
@@ -23,7 +23,7 @@ const TagContainer: React.FC<IProps> = ({ posts, tags }) => {
     });
   }, [posts]);
 
-  return (
+return (
     <div className="d-flex justify-content-center align-items-center p-5">
       <ul className="nav justify-content-start">
         {tags?.length ? (
@@ -46,7 +46,7 @@ const TagContainer: React.FC<IProps> = ({ posts, tags }) => {
               );
             }).length || 0;
 
-            return (
+return (
               <li className="inline-block" key={tag.id}>
                 <Link
                   className={`m-1 d-block rounded bg-light py-3 px-5`}

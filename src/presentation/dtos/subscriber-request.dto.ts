@@ -22,3 +22,4 @@ export class SubscriberResponseDto {
   createdAt!: Date;
   updatedAt!: Date;
 }
+

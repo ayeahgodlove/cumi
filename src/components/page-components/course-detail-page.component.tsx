@@ -118,14 +118,14 @@ export default function CourseDetailPageComponent({
   const { message } = App.useApp();
   const { t } = useTranslation();
 
-  const {
+const {
     data: course,
     error,
     isLoading,
     isFetching,
   } = courseAPI.useGetSingleCourseBySlugQuery(courseSlug);
 
-  // Fetch course modules with lessons
+// Fetch course modules with lessons
   const {
     data: modules,
     isLoading: modulesLoading,
@@ -134,19 +134,19 @@ export default function CourseDetailPageComponent({
     skip: !course?.id,
   });
 
-  // Fetch course enrollments to get actual student count
+// Fetch course enrollments to get actual student count
   const { data: enrollments, isLoading: enrollmentsLoading } =
     useGetCourseEnrollmentsByCourseQuery(course?.id || "", {
       skip: !course?.id,
       pollingInterval: 60000, // Poll every 60 seconds for new enrollments
     });
 
-  // Check enrollment status when course loads
+// Check enrollment status when course loads
   useEffect(() => {
     const checkEnrollmentStatus = async () => {
       if (!course || !session?.user?.id) return;
 
-      setEnrollmentLoading(true);
+setEnrollmentLoading(true);
       try {
         const response = await fetch(
           `/api/course-enrollments?courseId=${course.id}`
@@ -162,15 +162,15 @@ export default function CourseDetailPageComponent({
       }
     };
 
-    checkEnrollmentStatus();
+checkEnrollmentStatus();
   }, [course, session?.user?.id]);
 
-  // Sort modules and lessons by order
+// Sort modules and lessons by order
   const sortedModules = modules
     ? [...modules].sort((a, b) => (a.moduleOrder || 0) - (b.moduleOrder || 0))
     : [];
 
-  // Sort lessons within each module
+// Sort lessons within each module
   const modulesWithSortedLessons = sortedModules.map((module) => ({
     ...module,
     lessons: module.lessons
@@ -180,12 +180,12 @@ export default function CourseDetailPageComponent({
       : [],
   }));
 
-  // Calculate actual enrolled students count from enrollments
+// Calculate actual enrolled students count from enrollments
   const enrolledStudentsCount = Array.isArray(enrollments) ? enrollments.length : 0;
   const handleEnroll = () => {
     if (!course) return;
 
-    // Check if user is logged in
+// Check if user is logged in
     if (!session?.user?.id) {
       showLoginRequiredNotificationSimple({
         message: "Authentication Required",
@@ -195,10 +195,10 @@ export default function CourseDetailPageComponent({
       return;
     }
 
-    setEnrollmentModalVisible(true);
+setEnrollmentModalVisible(true);
   };
 
-  const getLessonIcon = (lessonType: string) => {
+const getLessonIcon = (lessonType: string) => {
     switch (lessonType) {
       case "video":
         return <PlayCircleOutlined style={{ color: "#667eea" }} />;
@@ -211,14 +211,14 @@ export default function CourseDetailPageComponent({
     }
   };
 
-  const formatDuration = (minutes?: number) => {
+const formatDuration = (minutes?: number) => {
     if (!minutes) return "N/A";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
-  const handleLessonClick = (lesson: ILesson) => {
+const handleLessonClick = (lesson: ILesson) => {
     if ((lesson as any).isLocked) {
       message.warning({
         content:
@@ -228,25 +228,25 @@ export default function CourseDetailPageComponent({
       return;
     }
 
-    setSelectedLesson(lesson);
+setSelectedLesson(lesson);
     setLessonModalVisible(true);
   };
 
-  const handleLessonModalClose = () => {
+const handleLessonModalClose = () => {
     setLessonModalVisible(false);
     setSelectedLesson(null);
   };
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  if (error || !course) {
+if (error || !course) {
     return (
       <>
         <div className="container-fluid" style={{ width: "100%" }}>
           <AppNav logoPath="/" />
         </div>
 
-        <div
+<div
           style={{
             minHeight: "65vh",
             display: "flex",
@@ -276,19 +276,19 @@ export default function CourseDetailPageComponent({
           />
         </div>
 
-        <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
         <AppFootnote />
       </>
     );
   }
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      {loading ? (
+{loading ? (
         <div style={{ minHeight: "65vh", display: "flex", justifyContent: "center", alignItems: "center", padding: '20px' }}>
           <Card style={{ padding: '40px', borderRadius: '16px', textAlign: 'center', maxWidth: '400px' }}>
             <Spin size="large" />
@@ -342,7 +342,7 @@ export default function CourseDetailPageComponent({
         pageTitle="Course Details"
       />
 
-      <div className="container mb-5">
+<div className="container mb-5">
         <Content>
           <Row gutter={[24, 24]}>
             <Col xs={24} lg={16}>
@@ -439,7 +439,7 @@ export default function CourseDetailPageComponent({
                     </Space>
                   </div>
 
-                  {course.imageUrl && (
+{course.imageUrl && (
                     <div className="mb-6">
                       <img
                         src={course.imageUrl}
@@ -455,7 +455,7 @@ export default function CourseDetailPageComponent({
                     </div>
                   )}
 
-                  <div className="mb-3">
+<div className="mb-3">
                     <Title
                       level={3}
                       style={{
@@ -488,7 +488,7 @@ export default function CourseDetailPageComponent({
                     </div>
                   </div>
 
-                  {/* Course Details Grid */}
+{}
                   <Row gutter={[20, 20]} className="mb-6">
                     <Col xs={24} md={12}>
                       <div
@@ -585,7 +585,7 @@ export default function CourseDetailPageComponent({
                     </Col>
                   </Row>
 
-                  {/* Prerequisites */}
+{}
                   {course.prerequisites && (
                     <div className="mb-6">
                       <Title
@@ -620,7 +620,7 @@ export default function CourseDetailPageComponent({
                     </div>
                   )}
 
-                  {/* Learning Outcomes */}
+{}
                   {course.learningOutcomes && (
                     <div className="mb-6">
                       <Title
@@ -655,7 +655,7 @@ export default function CourseDetailPageComponent({
                     </div>
                   )}
 
-                  {/* Target Audience */}
+{}
                   {course.targetAudience && (
                     <div className="mb-6">
                       <Title
@@ -692,7 +692,7 @@ export default function CourseDetailPageComponent({
                   )}
                 </Card>
 
-                {/* Share Section - Modern Design */}
+{}
                 <motion.div
                   className="box mt-4"
                   initial={{ opacity: 0, y: 20 }}
@@ -708,7 +708,7 @@ export default function CourseDetailPageComponent({
                   />
                 </motion.div>
 
-                {/* Course Modules and Lessons */}
+{}
                 <motion.div
                   className="box mt-4"
                   initial={{ opacity: 0, y: 20 }}
@@ -729,7 +729,7 @@ export default function CourseDetailPageComponent({
                       {t("course_detail.course_curriculum")}
                     </Title>
 
-                    {modulesLoading ? (
+{modulesLoading ? (
                       <div className="text-center py-4">
                         <Spin size="large" />
                         <div className="mt-2">{t("course_detail.loading_curriculum")}</div>
@@ -999,7 +999,7 @@ export default function CourseDetailPageComponent({
               </motion.div>
             </Col>
 
-            <Col xs={24} lg={8}>
+<Col xs={24} lg={8}>
               <motion.div
                 className="box"
                 initial={{ opacity: 0, x: 20 }}
@@ -1021,12 +1021,12 @@ export default function CourseDetailPageComponent({
                     {t("course_detail.course_information")}
                   </Title>
 
-                  <Space
+<Space
                     direction="vertical"
                     size="large"
                     style={{ width: "100%" }}
                   >
-                    {/* Pricing */}
+                    {}
                     <div
                       style={{
                         background:
@@ -1058,7 +1058,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Duration */}
+{}
                     <div
                       style={{
                         background:
@@ -1092,7 +1092,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Level */}
+{}
                     <div
                       style={{
                         background:
@@ -1133,7 +1133,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Language */}
+{}
                     <div
                       style={{
                         background:
@@ -1166,7 +1166,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Instructor */}
+{}
                     <div>
                       <Text strong>
                         <UserOutlined className="me-2" />
@@ -1184,7 +1184,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Students */}
+{}
                     <div
                       style={{
                         background:
@@ -1223,7 +1223,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     </div>
 
-                    {/* Certificate */}
+{}
                     {course.certificateAvailable && (
                       <div
                         style={{
@@ -1259,7 +1259,7 @@ export default function CourseDetailPageComponent({
                       </div>
                     )}
 
-                    {/* Created Date */}
+{}
                     <div
                       style={{
                         background:
@@ -1292,9 +1292,9 @@ export default function CourseDetailPageComponent({
                     </div>
                   </Space>
 
-                  <Divider />
+<Divider />
 
-                  {!session?.user?.id ? (
+{!session?.user?.id ? (
                     <Button
                       type="primary"
                       size="large"
@@ -1339,7 +1339,7 @@ export default function CourseDetailPageComponent({
                     </Button>
                   )}
 
-                  {!isEnrolled && session?.user?.id && (
+{!isEnrolled && session?.user?.id && (
                     <div className="mt-3 text-center">
                       <Text type="secondary">Start learning today!</Text>
                     </div>
@@ -1351,7 +1351,7 @@ export default function CourseDetailPageComponent({
         </Content>
       </div>
 
-      {/* Course Enrollment Modal */}
+{}
       <CourseEnrollmentModal
         visible={enrollmentModalVisible}
         onCancel={() => setEnrollmentModalVisible(false)}
@@ -1361,7 +1361,7 @@ export default function CourseDetailPageComponent({
         }}
       />
 
-      {/* Lesson Content Modal */}
+{}
       <Modal
         title={
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1386,7 +1386,7 @@ export default function CourseDetailPageComponent({
       >
         {selectedLesson && (
           <div>
-            {/* Lesson Header */}
+            {}
             <div
               style={{
                 marginBottom: "24px",
@@ -1472,7 +1472,7 @@ export default function CourseDetailPageComponent({
               </Row>
             </div>
 
-            {/* Lesson Content */}
+{}
             <div
               style={{
                 padding: "20px",
@@ -1485,12 +1485,12 @@ export default function CourseDetailPageComponent({
               {selectedLesson.lessonType === "video" &&
               selectedLesson.videoUrl ? (
                 <div>
-                  {/* Extract YouTube video ID from URL */}
+                  {}
                   {(() => {
                     const videoUrl = selectedLesson.videoUrl;
                     let videoId = "";
 
-                    // Handle different YouTube URL formats
+// Handle different YouTube URL formats
                     if (videoUrl.includes("youtube.com/watch?v=")) {
                       videoId = videoUrl.split("v=")[1]?.split("&")[0] || "";
                     } else if (videoUrl.includes("youtu.be/")) {
@@ -1501,7 +1501,7 @@ export default function CourseDetailPageComponent({
                         videoUrl.split("embed/")[1]?.split("?")[0] || "";
                     }
 
-                    return videoId ? (
+return videoId ? (
                       <YouTubePlayerFrame
                         videoId={videoId}
                         title={selectedLesson.title}
@@ -1563,7 +1563,7 @@ export default function CourseDetailPageComponent({
               )}
             </div>
 
-            {/* Additional Resources */}
+{}
             {selectedLesson.downloadMaterials && (
               <div
                 style={{
@@ -1590,7 +1590,7 @@ export default function CourseDetailPageComponent({
         )}
       </Modal>
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
         </>
       )}

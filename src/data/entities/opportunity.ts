@@ -174,3 +174,4 @@ const Opportunity = (sequelize: Sequelize, DataTypes: any) => {
   return OpportunityModel;
 };
 export default Opportunity;
+

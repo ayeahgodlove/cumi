@@ -28,3 +28,4 @@ const EventTag = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default EventTag;
+

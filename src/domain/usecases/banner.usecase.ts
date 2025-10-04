@@ -38,3 +38,4 @@ export class BannerUseCase {
     return this.bannerRepository.delete(id);
   }
 }
+

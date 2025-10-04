@@ -16,3 +16,4 @@ export const themeConfig = {
     borderRadiusXS: 4,
   },
 };
+

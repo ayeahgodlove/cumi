@@ -62,3 +62,4 @@ const Comment = (sequelize: Sequelize, DataTypes: any) => {
 };
 
 export default Comment;
+

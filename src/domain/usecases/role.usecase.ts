@@ -36,3 +36,4 @@ export class RoleUseCase {
     return this.roleRepository.delete(id);
   }
 }
+

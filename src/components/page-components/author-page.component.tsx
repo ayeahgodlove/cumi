@@ -41,25 +41,25 @@ export default function AuthorPageComponent({
     isFetching,
   } = userAPI.useGetUserByUsernameQuery(username);
 
-  // Fetch real stats data
+// Fetch real stats data
   const { data: statsData, isLoading: isLoadingStats } =
     publicStatsAPI.useGetPublicStatsQuery();
 
-  // Use real stats data or fallback to hardcoded values
+// Use real stats data or fallback to hardcoded values
   const stats = statsData || {
     totalPosts: 12,
     totalProjects: 8,
     totalUsers: 1,
   };
 
-  const authorStats = [
+const authorStats = [
     { label: "Articles", value: stats.totalPosts },
     { label: "Views", value: Math.floor(stats.totalPosts * 100) },
     { label: "Comments", value: Math.floor(stats.totalPosts * 4) },
     { label: "Projects", value: stats.totalProjects },
   ];
 
-  if (!user || isLoading || isFetching) {
+if (!user || isLoading || isFetching) {
     return (
       <div
         style={{
@@ -74,20 +74,20 @@ export default function AuthorPageComponent({
     );
   }
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
-        {/* navigation bar */}
+        {}
         <AppNav logoPath="/" />
 
-        <Content style={{ minHeight: "65vh" }}>
+<Content style={{ minHeight: "65vh" }}>
           <div className="container py-5">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              {/* Hero Section */}
+              {}
               <div className="cumi-hero cumi-section rounded-4 mb-5">
                 <div className="container  bg-none text-center">
                   <Row justify="center" align="middle">
@@ -134,7 +134,7 @@ export default function AuthorPageComponent({
                 </div>
               </div>
 
-              {/* Author Details */}
+{}
               <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
                   <Card bordered={false} hoverable className="cumi-card mb-4">
@@ -147,9 +147,9 @@ export default function AuthorPageComponent({
                       }'s profile. This author brings valuable insights and expertise to our community through their engaging content and thoughtful perspectives.`}
                     </Paragraph>
 
-                    <Divider />
+<Divider />
 
-                    <Title level={4} className="mb-3">
+<Title level={4} className="mb-3">
                       Contact Information
                     </Title>
                     <Row gutter={[16, 16]}>
@@ -184,7 +184,7 @@ export default function AuthorPageComponent({
                     </Row>
                   </Card>
 
-                  {/* Author Stats */}
+{}
                   <Card bordered={false} hoverable className="cumi-card">
                     <Title level={4} className="mb-4">
                       Author Statistics
@@ -204,8 +204,8 @@ export default function AuthorPageComponent({
                   </Card>
                 </Col>
 
-                <Col xs={24} lg={8}>
-                  {/* Recent Activity */}
+<Col xs={24} lg={8}>
+                  {}
                   <Card bordered={false} hoverable className="cumi-card mb-4">
                     <Title level={4} className="mb-4">
                       Recent Activity
@@ -248,7 +248,7 @@ export default function AuthorPageComponent({
                     </div>
                   </Card>
 
-                  {/* Expertise Tags */}
+{}
                   <Card bordered={false} hoverable className="cumi-card">
                     <Title level={4} className="mb-4">
                       Areas of Expertise

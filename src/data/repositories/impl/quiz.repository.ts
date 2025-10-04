@@ -3,7 +3,6 @@ import { IQuizRepository } from "../contracts/repository.base";
 import { NotFoundException } from "@shared/exceptions/not-found.exception";
 import { Quiz } from "../../entities/index";
 
-
 export class QuizRepository implements IQuizRepository {
   /**
    *
@@ -154,3 +153,4 @@ export class QuizRepository implements IQuizRepository {
     }
   }
 }
+

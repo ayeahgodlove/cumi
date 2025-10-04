@@ -89,16 +89,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    console.log("Comment creation request body:", body);
-    
     const dto = new CommentRequestDto(body);
     const validationErrors = await validate(dto);
     const userId = session.user.id;
 
-    console.log("Validation errors:", validationErrors);
-
     if (validationErrors.length > 0) {
-      console.log("Validation failed:", displayValidationErrors(validationErrors));
+      );
       return NextResponse.json(
         {
           validationErrors: displayValidationErrors(validationErrors),
@@ -158,4 +154,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -78,3 +78,4 @@ export class TeamRepository implements ITeamRepository {
     return teams.filter(team => team.isActive);
   }
 }
+

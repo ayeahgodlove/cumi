@@ -1,5 +1,4 @@
 "use client";
-
 import React from "react";
 import { Spin } from "antd";
 
@@ -36,7 +35,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     }),
   };
 
-  return (
+return (
     <div style={containerStyle} className={className}>
       <Spin size={size} tip={tip} spinning={spinning} />
     </div>

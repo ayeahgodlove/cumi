@@ -8,7 +8,6 @@ import { Op } from "sequelize";
 export class ReviewRepository implements IReviewRepository {
   async create(review: IReview): Promise<InstanceType<typeof Review>> {
     try {
-      console.log("Repository creating review with data:", review);
       return await Review.create(review as any);
     } catch (error) {
       console.error("Error creating review:", error);
@@ -274,7 +273,6 @@ export class ReviewRepository implements IReviewRepository {
     }
   }
 
-
   async getAverageRatingByCourseId(courseId: string): Promise<number> {
     try {
       const result = await Review.findAll({
@@ -334,3 +332,4 @@ export class ReviewRepository implements IReviewRepository {
     }
   }
 }
+

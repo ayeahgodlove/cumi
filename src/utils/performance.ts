@@ -86,3 +86,4 @@ export const optimizedSetTimeout = (callback: () => void, delay: number = 0) => 
     setTimeout(callback, delay);
   });
 };
+

@@ -361,3 +361,4 @@ export class AssignmentSubmissionMapper {
     return _submissions;
   }
 }
+

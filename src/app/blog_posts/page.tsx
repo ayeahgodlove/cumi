@@ -85,3 +85,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function BlogPostsPage() {
   return <BlogPostsPageComponent />;
 }
+

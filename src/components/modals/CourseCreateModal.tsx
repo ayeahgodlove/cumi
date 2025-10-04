@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Select, message, InputNumber, Switch, DatePicker, Row, Col, Button, Space, Card } from "antd";
 import { SaveOutlined, CloseOutlined } from "@ant-design/icons";
@@ -31,7 +30,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
     redirect: false, // Prevent automatic redirect
   });
 
-  const handleSubmit = async (values: any) => {
+const handleSubmit = async (values: any) => {
     try {
       // Format the data before submission
       const formattedValues = {
@@ -42,17 +41,17 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
         authorName: values.authorName || "Unknown Author",
       };
 
-      // Use the form submission logic from Refine
+// Use the form submission logic from Refine
       await formProps.onFinish?.(formattedValues);
-      
-      // Show success notification
+
+// Show success notification
       open?.({
         type: "success",
         message: t('common.success'),
         description: editingCourse ? t('creator.course_updated_success') : t('creator.course_created_success'),
       });
-      
-      // Reset form and close modal
+
+// Reset form and close modal
       form.resetFields();
       onSuccess();
       onCancel();
@@ -63,18 +62,18 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
         message: t('common.error'),
         description: t('forms.course_create_failed', { message: error.message }),
       });
-      
-      // Don't close modal on error - let user fix the issues
+
+// Don't close modal on error - let user fix the issues
     }
   };
 
-  const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
+const { queryResult: categoryData, selectProps } = useSelect<ICategory>({
     resource: "categories",
   });
 
-  const categories = categoryData?.data?.data || [];
+const categories = categoryData?.data?.data || [];
 
-  // Preload form when editing
+// Preload form when editing
   useEffect(() => {
     if (editingCourse && visible) {
       form.setFieldsValue({
@@ -102,12 +101,12 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
     }
   }, [editingCourse, visible, form]);
 
-  const handleCancel = () => {
+const handleCancel = () => {
     form.resetFields();
     onCancel();
   };
 
-  return (
+return (
     <Modal
       title={
         <div style={{ 
@@ -171,7 +170,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="categoryId"
@@ -205,7 +204,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           </Col>
         </Row>
 
-        <Form.Item
+<Form.Item
           name="description"
           label={t('common.description')}
           rules={[{ required: true, message: t('forms.please_enter', { field: t('common.description').toLowerCase() }) }]}
@@ -213,7 +212,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           <Input.TextArea size="large" rows={4} />
         </Form.Item>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={8}>
             <Form.Item
               name="price"
@@ -252,7 +251,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="level"
@@ -283,7 +282,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           </Col>
         </Row>
 
-        <ImageUploadField
+<ImageUploadField
           name="imageUrl"
           label={t('forms.course_image')}
           required={true}
@@ -294,7 +293,7 @@ export default function CourseCreateModal({ visible, onCancel, onSuccess, editin
           draggerHint={t('forms.upload_hint')}
         />
 
-        <Form.Item>
+<Form.Item>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'flex-end', 

@@ -45,14 +45,14 @@ export default function OpportunityDetailPageComponent({
 }: OpportunityDetailPageComponentProps) {
   const { t } = useTranslation();
 
-  const {
+const {
     data: opportunity,
     error,
     isLoading,
     isFetching,
   } = opportunityAPI.useGetSingleOpportunityBySlugQuery(opportunitySlug);
 
-  const getOpportunityTypeColor = (type: string) => {
+const getOpportunityTypeColor = (type: string) => {
     switch (type) {
       case "scholarship":
         return "green";
@@ -69,7 +69,7 @@ export default function OpportunityDetailPageComponent({
     }
   };
 
-  const getOpportunityTypeIcon = (type: string) => {
+const getOpportunityTypeIcon = (type: string) => {
     switch (type) {
       case "scholarship":
         return <BookOutlined />;
@@ -86,7 +86,7 @@ export default function OpportunityDetailPageComponent({
     }
   };
 
-  const formatDeadline = (deadline: string | Date) => {
+const formatDeadline = (deadline: string | Date) => {
     const date = new Date(deadline);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -95,7 +95,7 @@ export default function OpportunityDetailPageComponent({
     });
   };
 
-  const isDeadlineNear = (deadline: string | Date) => {
+const isDeadlineNear = (deadline: string | Date) => {
     const date = new Date(deadline);
     const now = new Date();
     const diffTime = date.getTime() - now.getTime();
@@ -103,13 +103,13 @@ export default function OpportunityDetailPageComponent({
     return diffDays <= 30 && diffDays > 0;
   };
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  return (
+return (
     <Layout className="min-h-screen" style={{ backgroundColor: "white" }}>
       <AppNav logoPath="/" />
 
-      {loading ? (
+{loading ? (
         <Content
           style={{
             backgroundColor: "white",
@@ -171,7 +171,7 @@ export default function OpportunityDetailPageComponent({
               ]}
             />
 
-            <div
+<div
               className="container py-5"
               style={{ backgroundColor: "white" }}
             >
@@ -228,7 +228,7 @@ export default function OpportunityDetailPageComponent({
                         )}
                       </div>
 
-                      <Title
+<Title
                         level={2}
                         style={{
                           marginBottom: "16px",
@@ -242,7 +242,7 @@ export default function OpportunityDetailPageComponent({
                         {opportunity.title}
                       </Title>
 
-                      <div
+<div
                         style={{
                           padding: "12px 20px",
                           background:
@@ -266,7 +266,7 @@ export default function OpportunityDetailPageComponent({
                         </Text>
                       </div>
 
-                      <Row gutter={[16, 16]} className="mb-4">
+<Row gutter={[16, 16]} className="mb-4">
                         <Col xs={24} sm={12} md={6}>
                           <Card
                             style={{
@@ -437,14 +437,14 @@ export default function OpportunityDetailPageComponent({
                         )}
                       </Row>
 
-                       <Divider
+<Divider
                          style={{
                            margin: "32px 0",
                            borderColor: "rgba(34, 197, 94, 0.15)",
                          }}
                        />
 
-                       {/* Timestamps */}
+{}
                        <Row gutter={[16, 16]} className="mb-4">
                          <Col xs={24} sm={12}>
                            <Text style={{ fontSize: '13px', color: '#6b7280' }}>
@@ -460,14 +460,14 @@ export default function OpportunityDetailPageComponent({
                          </Col>
                        </Row>
 
-                       <Divider
+<Divider
                          style={{
                            margin: "24px 0",
                            borderColor: "rgba(34, 197, 94, 0.15)",
                          }}
                        />
 
-                       <div className="mb-4">
+<div className="mb-4">
                          <Title
                            level={4}
                            style={{
@@ -494,7 +494,7 @@ export default function OpportunityDetailPageComponent({
                         </Paragraph>
                       </div>
 
-                      <div className="mb-4">
+<div className="mb-4">
                         <Title
                           level={4}
                           style={{
@@ -521,7 +521,7 @@ export default function OpportunityDetailPageComponent({
                         </Paragraph>
                       </div>
 
-                       {/* Scholarship-specific fields */}
+{}
                        {opportunity.opp_type === "scholarship" && (
                          <>
                            <Divider style={{ margin: '24px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
@@ -609,7 +609,7 @@ export default function OpportunityDetailPageComponent({
                          </>
                        )}
 
-                       {/* Job-specific fields */}
+{}
                        {opportunity.opp_type === "job" && (
                          <>
                            <Divider style={{ margin: '24px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
@@ -699,7 +699,7 @@ export default function OpportunityDetailPageComponent({
                          </>
                        )}
 
-                       {(() => {
+{(() => {
                          // Parse skills if it's a string, otherwise use as-is
                          let skillsArray: string[] = [];
                          try {
@@ -712,7 +712,7 @@ export default function OpportunityDetailPageComponent({
                            skillsArray = [];
                          }
 
-                         return skillsArray && skillsArray.length > 0 ? (
+return skillsArray && skillsArray.length > 0 ? (
                            <>
                              <Divider style={{ margin: '24px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
                              <div className="mb-4">
@@ -742,9 +742,9 @@ export default function OpportunityDetailPageComponent({
                          ) : null;
                        })()}
 
-                      <Divider style={{ margin: '32px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
+<Divider style={{ margin: '32px 0', borderColor: 'rgba(34, 197, 94, 0.15)' }} />
 
-                      <div className="text-center" style={{ padding: '24px 0' }}>
+<div className="text-center" style={{ padding: '24px 0' }}>
                         <Space size="large" wrap>
                           <Button
                             type="primary"
@@ -820,7 +820,7 @@ export default function OpportunityDetailPageComponent({
               </Row>
             </div>
 
-            {/* Share Section - Modern Design */}
+{}
             <div className="container mb-4">
               <Share
                 title={opportunity.title}
@@ -834,7 +834,7 @@ export default function OpportunityDetailPageComponent({
         </>
       )}
 
-      <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
       <AppFootnote />
     </Layout>
   );

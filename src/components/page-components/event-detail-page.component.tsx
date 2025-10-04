@@ -58,34 +58,34 @@ export default function EventDetailPageComponent({
   const { data: session } = useSession();
   const { message } = App.useApp();
 
-  const {
+const {
     data: event,
     error,
     isLoading,
     isFetching,
   } = eventAPI.useGetSingleEventBySlugQuery(eventSlug);
 
-  const handleRegister = () => {
+const handleRegister = () => {
     if (!event) return;
 
-    // Check if user is logged in
+// Check if user is logged in
     if (!session?.user?.id) {
       message.error("Please log in to register for events");
       return;
     }
 
-    setRegistrationModalVisible(true);
+setRegistrationModalVisible(true);
   };
 
-  const loading = isLoading || isFetching;
+const loading = isLoading || isFetching;
 
-  return (
+return (
     <>
       <div className="container-fluid" style={{ width: "100%" }}>
         <AppNav logoPath="/" />
       </div>
 
-      {loading ? (
+{loading ? (
         <div
           style={{
             minHeight: "65vh",
@@ -130,7 +130,7 @@ export default function EventDetailPageComponent({
             pageTitle="Event Details"
           />
 
-          <div className="container mb-5">
+<div className="container mb-5">
             <Content>
               <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
@@ -258,7 +258,7 @@ export default function EventDetailPageComponent({
                           </Space>
                         </div>
 
-                        {event.imageUrl && (
+{event.imageUrl && (
                           <div
                             className="mb-4"
                             style={{
@@ -311,7 +311,7 @@ export default function EventDetailPageComponent({
                           </div>
                         )}
 
-                        <div className="mb-4">
+<div className="mb-4">
                           <Title
                             level={3}
                             style={{
@@ -338,7 +338,7 @@ export default function EventDetailPageComponent({
                           </Paragraph>
                         </div>
 
-                        {/* Event Details Grid */}
+{}
                         <Row gutter={[16, 16]} className="mb-4">
                           <Col xs={24} sm={12} md={6}>
                             <Card
@@ -536,7 +536,7 @@ export default function EventDetailPageComponent({
                           </Col>
                         </Row>
 
-                        {/* Event Requirements */}
+{}
                         {event.requirements && (
                           <div className="mb-4">
                             <Title
@@ -569,7 +569,7 @@ export default function EventDetailPageComponent({
                           </div>
                         )}
 
-                        {/* Target Audience */}
+{}
                         {event.targetAudience && (
                           <div className="mb-4">
                             <Title
@@ -615,7 +615,7 @@ export default function EventDetailPageComponent({
                   </motion.div>
                 </Col>
 
-                <Col xs={24} lg={8}>
+<Col xs={24} lg={8}>
                   <motion.div
                     className="box"
                     initial={{ opacity: 0, x: 20 }}
@@ -625,12 +625,12 @@ export default function EventDetailPageComponent({
                     <Card>
                       <Title level={3}>Event Information</Title>
 
-                      <Space
+<Space
                         direction="vertical"
                         size="large"
                         style={{ width: "100%" }}
                       >
-                        {/* Pricing */}
+                        {}
                         <div>
                           <Text strong>
                             <DollarOutlined className="me-2" />
@@ -651,7 +651,7 @@ export default function EventDetailPageComponent({
                           </div>
                         </div>
 
-                        {/* Event Date */}
+{}
                         <div>
                           <Text strong>
                             <CalendarOutlined className="me-2" />
@@ -683,7 +683,7 @@ export default function EventDetailPageComponent({
                           </div>
                         </div>
 
-                        {/* End Date */}
+{}
                         {event.eventEndDate && (
                           <div>
                             <Text strong>
@@ -715,7 +715,7 @@ export default function EventDetailPageComponent({
                           </div>
                         )}
 
-                        {/* Location */}
+{}
                         <div>
                           <Text strong>
                             <EnvironmentOutlined className="me-2" />
@@ -736,7 +736,7 @@ export default function EventDetailPageComponent({
                           </div>
                         </div>
 
-                        {/* Category */}
+{}
                         {event.category && (
                           <div>
                             <Text strong>
@@ -752,7 +752,7 @@ export default function EventDetailPageComponent({
                           </div>
                         )}
 
-                        {/* Language */}
+{}
                         <div>
                           <Text strong>
                             <GlobalOutlined className="me-2" />
@@ -766,7 +766,7 @@ export default function EventDetailPageComponent({
                           </div>
                         </div>
 
-                        {/* Attendance */}
+{}
                         <div>
                           <Text strong>
                             <TeamOutlined className="me-2" />
@@ -786,7 +786,7 @@ export default function EventDetailPageComponent({
                           </div>
                         </div>
 
-                        {/* Registration Required */}
+{}
                         {event.registrationRequired && (
                           <div>
                             <Text strong>
@@ -809,7 +809,7 @@ export default function EventDetailPageComponent({
                           </div>
                         )}
 
-                        {/* Status */}
+{}
                         <div>
                           <Text strong>
                             <InfoCircleOutlined className="me-2" />
@@ -836,9 +836,9 @@ export default function EventDetailPageComponent({
                         </div>
                       </Space>
 
-                      <Divider />
+<Divider />
 
-                      {/* Contact Information */}
+{}
                       {(event.contactPhone ||
                         event.contactEmail ||
                         event.whatsappNumber) && (
@@ -861,7 +861,7 @@ export default function EventDetailPageComponent({
                               </div>
                             )}
 
-                            {event.contactEmail && (
+{event.contactEmail && (
                               <div>
                                 <Text strong>
                                   <MailOutlined className="me-2" />
@@ -873,7 +873,7 @@ export default function EventDetailPageComponent({
                               </div>
                             )}
 
-                            {event.whatsappNumber && (
+{event.whatsappNumber && (
                               <div>
                                 <Text strong>
                                   <MessageOutlined className="me-2" />
@@ -889,7 +889,7 @@ export default function EventDetailPageComponent({
                         </div>
                       )}
 
-                      <Button
+<Button
                         type="primary"
                         size="large"
                         block
@@ -959,7 +959,7 @@ export default function EventDetailPageComponent({
             </Content>
           </div>
 
-          {/* Share Section - Modern Design */}
+{}
           <div className="container mb-4">
             <Share
               title={event.title}
@@ -970,7 +970,7 @@ export default function EventDetailPageComponent({
             />
           </div>
 
-          {/* Registration Modal */}
+{}
           <EventRegistrationModal
             visible={registrationModalVisible}
             onCancel={() => setRegistrationModalVisible(false)}
@@ -980,7 +980,7 @@ export default function EventDetailPageComponent({
             }}
           />
 
-          <AppFooter logoPath="/" />
+<AppFooter logoPath="/" />
           <AppFootnote />
         </>
       )}

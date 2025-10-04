@@ -10,18 +10,18 @@ export default function ServiceWorkerProvider({ children }: { children: React.Re
       navigator.serviceWorker
         .register('/sw.js', { scope: '/', updateViaCache: 'none' })
         .then((registration) => {
-          console.log('[SW] Service Worker registered successfully:', registration.scope);
+          // Service Worker registered successfully
 
-          // Check for updates periodically
+// Check for updates periodically
           const updateInterval = setInterval(() => {
             registration.update();
           }, 3600000); // 1 hour
 
-          // Listen for updates
+// Listen for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
 
-            if (newWorker) {
+if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                   // New version available
@@ -56,15 +56,14 @@ export default function ServiceWorkerProvider({ children }: { children: React.Re
             }
           });
 
-          return () => clearInterval(updateInterval);
+return () => clearInterval(updateInterval);
         })
         .catch((error) => {
           console.error('[SW] Service Worker registration failed:', error);
         });
 
-      // Online/offline listeners
+// Online/offline listeners
       const handleOnline = () => {
-        console.log('[Network] Back online');
         notification.success({
           message: 'Back Online',
           description: 'Your connection has been restored.',
@@ -72,8 +71,7 @@ export default function ServiceWorkerProvider({ children }: { children: React.Re
         });
       };
 
-      const handleOffline = () => {
-        console.log('[Network] Gone offline');
+const handleOffline = () => {
         notification.warning({
           message: 'Offline Mode',
           description: 'You are now offline. Some features may be limited.',
@@ -82,16 +80,15 @@ export default function ServiceWorkerProvider({ children }: { children: React.Re
         });
       };
 
-      window.addEventListener('online', handleOnline);
+window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
-      return () => {
+return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
       };
     }
   }, []);
 
-  return <>{children}</>;
+return <>{children}</>;
 }
-

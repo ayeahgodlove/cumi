@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import {
   Modal,
@@ -49,7 +48,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [api, contextHolder] = notification.useNotification();
 
-  const handleEnrollmentSubmit = async (values: any) => {
+const handleEnrollmentSubmit = async (values: any) => {
     try {
       if (!course || !session?.user?.id) {
         showLoginRequiredNotificationSimple({
@@ -60,9 +59,9 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         return;
       }
 
-      setIsEnrolling(true);
+setIsEnrolling(true);
 
-      const enrollmentData = {
+const enrollmentData = {
         courseId: course.id,
         userId: session.user.id,
         studentPhone: values.studentPhone,
@@ -82,7 +81,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         progress: 0,
       };
 
-      const response = await fetch("/api/course-enrollments", {
+const response = await fetch("/api/course-enrollments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,13 +89,13 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
         body: JSON.stringify(enrollmentData),
         });
 
-      const data = await response.json();
+const data = await response.json();
 
-      if (!response.ok) {
+if (!response.ok) {
         throw new Error(data.message || "Enrollment failed");
       }
 
-      api.success({
+api.success({
         message: "Enrollment Successful!",
         description: "Successfully enrolled in the course! You can now access all course materials.",
         placement: 'topRight',
@@ -117,13 +116,13 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
+const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  if (!course) return null;
+if (!course) return null;
 
-  return (
+return (
     <>
       {contextHolder}
       <Modal
@@ -182,18 +181,18 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           </Row>
         </Card>
 
-        <Form
+<Form
           form={form}
           layout="vertical"
           onFinish={handleEnrollmentSubmit}
           size="large"
         >
-        {/* Hidden field for country code */}
+        {}
         <Form.Item name="countryCode" initialValue="CM" hidden>
           <Input />
         </Form.Item>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="studentPhone"
@@ -204,7 +203,6 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
                   validator: (_, value) => {
                     if (!value) return Promise.resolve();
                     const countryCode = form.getFieldValue('countryCode') || 'CM';
-                    console.log('Validating enrollment phone with country code:', countryCode, 'Phone:', value);
                     if (validatePhoneNumber(countryCode, value)) {
                       return Promise.resolve();
                     }
@@ -218,7 +216,6 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
                 showMoneyServices={true}
                 countryCode="CM"
                 onCountryCodeChange={(code) => {
-                  console.log('Enrollment: Country code changed to:', code);
                   form.setFieldValue('countryCode', code);
                 }}
               />
@@ -237,7 +234,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="educationLevel"
@@ -273,7 +270,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           </Col>
         </Row>
 
-        <Row gutter={[16, 16]}>
+<Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Form.Item
               name="preferredContact"
@@ -309,7 +306,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           </Col>
         </Row>
 
-        <Form.Item
+<Form.Item
           name="certificateLanguage"
           label="Certificate Language"
           rules={[
@@ -323,7 +320,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="motivation"
           label="Motivation for Taking This Course"
           rules={[
@@ -336,7 +333,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="skillsGained"
           label="Expected Skills"
         >
@@ -346,7 +343,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           />
         </Form.Item>
 
-        <Form.Item
+<Form.Item
           name="notes"
           label="Additional Notes"
         >
@@ -356,7 +353,7 @@ export const CourseEnrollmentModal: React.FC<CourseEnrollmentModalProps> = ({
           />
         </Form.Item>
 
-        <Form.Item>
+<Form.Item>
           <Space>
             <Button 
               type="primary" 

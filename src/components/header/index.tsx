@@ -1,5 +1,4 @@
 "use client";
-
 import { ColorModeContext } from "@contexts/color-mode";
 import { IUser } from "@domain/models/user";
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
@@ -23,7 +22,7 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const { data: user } = useGetIdentity<IUser>();
   const { mode, setMode } = useContext(ColorModeContext);
 
-  const headerStyles: React.CSSProperties = {
+const headerStyles: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
     display: "flex",
     justifyContent: "space-between",
@@ -32,18 +31,15 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({
     height: "64px",
   };
 
-  if (sticky) {
+if (sticky) {
     headerStyles.position = "sticky";
     headerStyles.top = 0;
     headerStyles.zIndex = 1;
   }
 
-  return (
+return (
     <AntdLayout.Header style={headerStyles}>
-      {/* Left side - could add logo or title here */}
       <div></div>
-      
-      {/* Right side - controls */}
       <Space size="middle">
         <LanguageSwitcher />
         <Switch

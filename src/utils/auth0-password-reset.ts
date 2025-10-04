@@ -137,3 +137,4 @@ export default {
   isValidEmail,
   getAuth0ConfigStatus,
 };
+

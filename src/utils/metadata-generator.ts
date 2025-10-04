@@ -34,3 +34,4 @@ export const generatePageMetadata = ({
     canonical: `https://cumi.dev/${slug}`,
   },
 });
+

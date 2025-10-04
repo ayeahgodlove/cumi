@@ -13,7 +13,7 @@ export default function UserProfileDropdown() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
+const handleLogout = async () => {
     setLoading(true);
     try {
       await signOut({ 
@@ -27,15 +27,15 @@ export default function UserProfileDropdown() {
     }
   };
 
-  const handleDashboard = () => {
+const handleDashboard = () => {
     router.push("/dashboard");
   };
 
-  const handleSettings = () => {
+const handleSettings = () => {
     router.push("/dashboard/settings");
   };
 
-  const menuItems = [
+const menuItems = [
     {
       key: "profile",
       label: (
@@ -87,7 +87,7 @@ export default function UserProfileDropdown() {
     },
   ];
 
-  return (
+return (
     <Dropdown
       menu={{ items: menuItems }}
       placement="bottomRight"

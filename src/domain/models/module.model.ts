@@ -55,3 +55,4 @@ export interface IModuleResponse extends IResponseBase {
 export interface IModuleResponses extends IResponseBase {
   data: IModule[];
 }
+

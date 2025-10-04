@@ -92,3 +92,4 @@ export const metadata: Metadata = generatePageMetadata({
 export default function ContactUsPage() {
   return <ContactUsPageComponent />;
 }
+
